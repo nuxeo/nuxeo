@@ -183,11 +183,15 @@
      <div class="gridBox gridStyle6">
        <div class="widgetPanel">
        <h3 id="" alt="Messages">Status messages</h3>
-       <p class="specification">If you need to display a feedback or status message either in a modal pop-up or at the end of a process in a screen, use status messages. They are helpful to tell users what they did and most of all to explain what is happening next. Define your message with a <span class="code">.processMessage</span> div class, and add a secondary class to display the corresponding icon that will define the type of your message to users. 
+       <p class="specification">To display a feedback or status message, use status messages. They are helpful to tell users what and most of all to explain what is happening next. Define your message with a <span class="code">.processMessage</span> div class, and add a secondary class to get the corresponding type of message. 
        </p>
        <div class="gridBox gridStyle12">
          <table class="dataTable">
            <tbody>
+             <tr>
+               <td><span class="code">.completeInfo</span></td>
+               <td><div class="processMessage completeInfo">You process is launched.</div></td>
+             </tr>
              <tr>
                <td><span class="code">.completeSuccess</span></td>
                <td><div class="processMessage completeSuccess">Your process is complete.</div></td>
@@ -225,8 +229,8 @@
                 <td><div class="detail">A detail under a field in a form</div></td>
               </tr>
               <tr>
-                <td><span class="code">.quote</span></td>
-                <td><div class="quote">A quote, or a description</div></td>
+                <td><span class="code">.emptyResult</span></td>
+                <td><div class="quote">There is no document like this here.</div></td>
               </tr>
               <tr>
                 <td><span class="code">.specification</span></td>
@@ -234,7 +238,7 @@
               </tr>
               <tr>
                 <td><span class="code">.widgetHelpLabel</span></td>
-                <td><div class="widgetHelpLabel" title="With a tooltip to help">A widget help label in a form.</div> Roll over it to see the tooltip from the title attribute!</td>
+                <td><div class="widgetHelpLabel"><span class="widgetLabel tipsyShow tipsyGravityS " original-title="Hi, I'm a tooltip">Roll over this sentence!</span></div></td>
               </tr>
             </tbody>
           </table>

@@ -112,6 +112,17 @@ Custom CSS for the Nuxeo Styles guide
   width: auto }
 .genericPopUp .popUpContent { height: 180px }
 
+/* space in tabs */
+.mainWrapper .tabsBar { margin: 0 }
+.pageNavigationControls input[type="image"] {margin-right: -0.3em }
+
+/* action link on right */
+.gridBox .foldableBox h3 { display: block }
+
+/* Reduce icons in icons tab */
+.bubbleBox.displayIB.textAlignC > img {
+  max-height: 14px }
+
 /* Missing styles in the platform for sure */
 h2 {
   border-bottom: 1px solid;

@@ -67,61 +67,62 @@
           <form class="titleBlock">
             <h1>Page title with actions and menu</h1>
           </form>
-          <div class="globalActions contextActions">
-            <div class="widgetPanel actionsWidgetPanel">
-              <span class=" ">
-                <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a class="actionLink button " onclick="return false;" accesskey="" href="#"><img class="smallIcon " title="Verrouiller" alt="Verrouiller" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
-          </form>
-                        </span>
-              <span class=" ">
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a accesskey="k" onclick="return false;" href="#" class="actionLink button ">
-          <img class="smallIcon " title="Lien permanent vers ce document" alt="Lien permanent vers ce document" src="/nuxeo/icons/contextual_menu/share.png" /></a>
-          </form>
-                        </span>
-              <span class=" ">
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post" id="#">
-          <a class="actionLink button " onclick="return false;" accesskey="" href="#">
-            <img class="smallIcon " title="Télécharger" alt="Télécharger" src="/nuxeo/icons/contextual_menu/download.png" />
-            </a>
-            </form>
-                        </span>
-              <span class=" ">
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a class="actionLink button " onclick="return false;" accesskey="" href="#"><img class="smallIcon " title="Suivez ce document" alt="Suivez ce document" src="/nuxeo/icons/contextual_menu/subscribe.png" /></a></form>
-                        </span>
-              <span class=" ">
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a onclick="return false;" href="#" class="actionLink button "><img class="smallIcon " title="Prévisualisation" alt="Prévisualisation" src="/nuxeo/icons/contextual_menu/preview.png" /></a></form>
-                        </span>
-              <ul class="actionList" id="titlesExample">
-              <li class="dropDownMenu button dropdown">Plus
-                <ul class="actionSubList" style="display: none;">
-                    <li>
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a class="actionLink button " onclick="return false;" accesskey="" href="#"><img class="smallIcon " title="Ajouter à la sélection" alt="Ajouter à la sélection" src="/nuxeo/icons/action_add.gif" /> <span class="actionLabel ">Ajouter à la sélection</span></a></form>
-                    </li>
-                    <li>
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a class="actionLink button " onclick="return false" accesskey="" href="#"><img class="smallIcon " title="Options d'export" alt="Options d'export" src="/nuxeo/icons/export.png" /> <span class="actionLabel ">Options d'export</span></a>
-          </form>
-                    </li>
-                    <li>
-          <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
-          <a class="actionLink button " onclick="return false;" accesskey="" href="#" id="nxw_print_form:nxw_print"><img class="smallIcon " title="Imprimer" alt="Imprimer" src="/nuxeo/icons/printer.gif" /> <span class="actionLabel ">Imprimer</span></a>
-          </form>
-                    </li>
+          <div class="globalActions contextActions" id="nxw_documentActionsUpperButtons_panel">
+          <div class="widgetPanel actionsWidgetPanel">
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_addToCollectionAction_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Add to collection" alt="Add to collection" src="/nuxeo/icons/add_to_collection.png" /></a>
+              </form>
+            </span>
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_addToFavoritesAction_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Favorite" alt="Favorite" src="/nuxeo/icons/pin.png" /></a>
+              </form>
+            </span>
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_documentLock_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Lock" alt="Lock" src="/nuxeo/icons/contextual_menu/unlocked.png" /></a>
+              </form>
+            </span>
+            <span class="horizontalAction">
+              <form class="displayI subWidgetForm doubleClickShielded" id="nxw_permalinkAction_form">
+                <a class="button" onclick="return false;" href="#"><img class="smallIcon tipsyShow tipsyGravitySE " title="Link" alt="Link" src="/nuxeo/icons/contextual_menu/share.png" /></a>
+              </form>
+            </span>
+            <ul id="nxw_dropDownMenu" class="actionList">
+              <li class="dropDownMenu button dropdown">
+                Plus
+                <ul class="actionSubList">
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_downloadAction_form">
+                      <a class="button" onclick="return false;" href="#"><img class="smallIcon" title="Télécharger" alt="Download" src="/nuxeo/icons/contextual_menu/download.png" /> <span class="actionLabel ">Download</span></a>
+                    </form>
+                  </li>
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_subscribesAllDocNotifications_form">
+                      <a class="button" onclick="return false;" href="#"><img class="smallIcon" title="Follow" alt="Suivez ce document" src="/nuxeo/icons/contextual_menu/subscribe.png" /> <span class="actionLabel ">Follow</span></a>
+                    </form>
+                  </li>
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_exportView_form">
+                      <a class="button" onclick="return false;" href="#" ><img class="smallIcon" title="Export" alt="Options d'export" src="/nuxeo/icons/export.png" /> <span class="actionLabel ">Export</span></a>
+                    </form>
+                  </li>
+                  <li>
+                    <form class="subWidgetForm doubleClickShielded" id="nxw_print_form">
+                      <a class="button" onclick="return false;" href="#"><img class="smallIcon" title="Print" alt="Imprimer" src="/nuxeo/icons/printer.gif" /> <span class="actionLabel ">Print</span></a>
+                    </form>
+                  </li>
                 </ul>
               </li>
             </ul>
-           <script>
-             jQuery(document).ready(function() {
-               jQuery("#titlesExample").dropdown();
-             });
-           </script>
-              </div>
-            </div>
+            <script>
+              jQuery(document).ready(function() {
+                jQuery("#nxw_dropDownMenu").dropdown();
+              });
+            </script>
+          </div>
+          </div>
           <div class="clear"></div>
           <p class="specification">
             For now, here is how Studio is generating the actions: in a div without class, the <span class="code">h1</span> is included in a <span class="code">.titleBlock</span> form class.
