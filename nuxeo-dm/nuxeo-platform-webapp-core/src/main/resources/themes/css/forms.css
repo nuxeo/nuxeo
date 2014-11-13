@@ -118,12 +118,14 @@ input[placeholder] {
   padding: .3em .7em .33em }
 
 /* Document creation form */
-#document_create .buttonsGadget {
+#document_create .buttonsGadget,
+#createThread .buttonsGadget {
   border-top: 1px solid #eee;
   margin: 2em -2em -2em;
   padding: 1em 2em .5em }
 
 #document_create .buttonsGadget .horizontalAction:first-child .button,
+#createThread .buttonsGadget .button:first-child,
 .button.primary,
 input.button.primary {
   background-color: "primary.button (__FLAVOR__ background)";
@@ -133,12 +135,14 @@ input.button.primary {
   color: #fff }
 
 #document_create .buttonsGadget .horizontalAction:first-child .button:hover,
+#createThread .buttonsGadget .button:first-child:hover,
 .button.primary:hover,
 input.button.primary:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
   transition: all 150ms ease-in-out 0s }
 
 #document_create .buttonsGadget .horizontalAction:first-child .button:focus,
+#createThread .buttonsGadget .button:first-child:focus,
 .button.primary:focus,
 input.button.primary:focus {
   border-color: #2e9cff;
