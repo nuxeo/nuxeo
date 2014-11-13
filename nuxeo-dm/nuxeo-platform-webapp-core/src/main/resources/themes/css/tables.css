@@ -151,6 +151,16 @@ table.smallTable th,
 table.smallTable td {
   padding: .2em .4em .3em 0 }
 
+.dataTable.smallTable th,
+.dataTable.smallTable td,
+.dataTableLine.smallTable th,
+.dataTableLine.smallTable td,
+.dataInput.smallTable th,
+.dataInput.smallTable td,
+.dataTableNoBorder.smallTable th,
+.dataTableNoBorder.smallTable td {
+  padding: .2em }
+
 th:first-child input[type="checkbox"] {
   width: 1.9em }
 
