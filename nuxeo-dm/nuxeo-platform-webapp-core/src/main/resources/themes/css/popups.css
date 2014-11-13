@@ -27,6 +27,7 @@ author: lkemen@nuxeo.com
 #fancybox-content h3 {
   background-color: "neutral.light (__FLAVOR__ background)";
   border-bottom: 1px solid #e7e7e7;
+  margin: 0;
   padding: 1em 1.7em }
 
 #fancybox-content .content {
