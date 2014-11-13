@@ -1,9 +1,8 @@
 pre code {
     display: block;
     color: #000;
-    background: #f8f8ff;
+    background: #f5faff;
     padding:20px;
-    border: 1px solid #ccc;
     overflow: auto;
 }
 
