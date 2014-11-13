@@ -90,6 +90,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     protected static final long COLLECTION_CONTENT_PAGE_SIZE = 1000L;
 
+    protected static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
     /**
      * Cache holding the synchronization roots for a given user (first map key)
      * and repository (second map key).
@@ -219,9 +221,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 for (Map<String, Object> subscription : subscriptions) {
                     if (userName.equals(subscription.get("username"))) {
                         subscription.put("enabled", Boolean.TRUE);
-                        subscription.put(
-                                "lastChangeDate",
-                                Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                        subscription.put("lastChangeDate", getCalendar());
                         updated = true;
                         break;
                     }
@@ -230,8 +230,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     Map<String, Object> subscription = new HashMap<String, Object>();
                     subscription.put("username", userName);
                     subscription.put("enabled", Boolean.TRUE);
-                    subscription.put("lastChangeDate",
-                            Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                    subscription.put("lastChangeDate", getCalendar());
                     subscriptions.add(subscription);
                 }
                 newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
@@ -278,9 +277,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 for (Map<String, Object> subscription : subscriptions) {
                     if (userName.equals(subscription.get("username"))) {
                         subscription.put("enabled", Boolean.FALSE);
-                        subscription.put(
-                                "lastChangeDate",
-                                Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+                        subscription.put("lastChangeDate", getCalendar());
                         break;
                     }
                 }
@@ -629,7 +626,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             registerSynchronizationRoot(session.getPrincipal(),
                     locallyEditedCollection, session);
         }
+    }
 
+    @Override
+    public Calendar getCalendar() {
+        return Calendar.getInstance(UTC);
     }
 
 }
