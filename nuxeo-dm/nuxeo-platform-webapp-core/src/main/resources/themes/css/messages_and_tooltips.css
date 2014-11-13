@@ -52,8 +52,7 @@ a.ambiance-close {
 
 .neutralFeedback,
 .ambiance-neutral {
-  border: 1px solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
+  box-shadow: 0 0 1px #999;
   color: "default (__FLAVOR__ color)" }
 
 .infoFeedback,
@@ -123,7 +122,7 @@ a.ambiance-close {
   color: "error.status (__FLAVOR__ color)" }
 
 .processMessage {
-  background: url("${basePath}/icons/bullet.png") no-repeat scroll 0.7em 0.9em #f4f4f4;
+  background: url("${basePath}/icons/bullet.png") no-repeat scroll .7em 1em / 13px #f4f4f4;
   border-radius: 3px;
   display: inline-block;
   font-size: 1.1em;
@@ -257,7 +256,7 @@ ul.visibleList {
 /* =Small help messages */
 .specification {
   clear: both;
-	margin: 0 0 1.5em }
+  margin: 0 0 1.5em }
 
 .widgetPanel .specification {
   font-size: .95em }
