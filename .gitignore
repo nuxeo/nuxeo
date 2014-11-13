@@ -29,3 +29,4 @@ dependency-tree.log
 *.rej
 .settings
 target
+marketplace
