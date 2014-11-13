@@ -19,11 +19,10 @@ package org.nuxeo.drive.operations;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -33,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Generates a conflicted name for a {@link FileSystemItem} given its name, the
@@ -72,7 +72,7 @@ public class NuxeoDriveGenerateConflictedItemName {
             // build more user friendly name from user info
             userName = principal.getFirstName() + " " + principal.getLastName();
         }
-        Calendar userDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        Calendar userDate = Framework.getService(NuxeoDriveManager.class).getCalendar();
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh-mm");
         dateFormat.setCalendar(userDate);
