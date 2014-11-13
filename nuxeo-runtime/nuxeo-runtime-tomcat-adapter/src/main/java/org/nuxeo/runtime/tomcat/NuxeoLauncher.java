@@ -94,26 +94,25 @@ public class NuxeoLauncher implements LifecycleListener {
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
         String type = event.getType();
         try {
-            MutableClassLoader cl = (MutableClassLoader)loader.getClassLoader();
+            MutableClassLoader cl = (MutableClassLoader) loader.getClassLoader();
             boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
             if (type == Lifecycle.CONFIGURE_START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
-                    bootstrap = new DevFrameworkBootstrap(
-                            cl,
-                            homeDir);
+                    bootstrap = new DevFrameworkBootstrap(cl, homeDir);
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
+                    server.registerMBean(bootstrap, new ObjectName(
+                            DEV_BUNDLES_NAME));
                     server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
-                    ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap)bootstrap);
+                    ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap) bootstrap);
                 } else {
-                    bootstrap = new FrameworkBootstrap(
-                            cl,
-                            homeDir);
+                    bootstrap = new FrameworkBootstrap(cl, homeDir);
                 }
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion(ServerInfo.getServerNumber());
                 bootstrap.initialize();
+            } else if (type == Lifecycle.START_EVENT) {
+                bootstrap.start();
             } else if (type == Lifecycle.STOP_EVENT) {
                 if (devMode) {
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
