@@ -230,8 +230,8 @@ public interface NuxeoDriveManager {
      *
      * @since 6.0
      */
-    public void addToLocallyEditedCollection(CoreSession session,
-            DocumentModel doc) throws ClientException;
+    void addToLocallyEditedCollection(CoreSession session, DocumentModel doc)
+            throws ClientException;
 
     /**
      * Returns a thread-safe {@link Calendar} in the default time zone.
