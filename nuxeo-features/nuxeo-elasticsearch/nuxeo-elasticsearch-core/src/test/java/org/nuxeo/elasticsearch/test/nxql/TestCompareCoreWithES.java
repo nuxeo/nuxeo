@@ -192,8 +192,9 @@ public class TestCompareCoreWithES {
         testQueries(new String[] { "select * from File order by dc:title",
                 "select * from Folder order by dc:title",
                 "select * from Note order by dc:title",
-                "select * from Document where  ecm:mixinType = 'Folderish' order by dc:title",
-                "select * from Document where  ecm:mixinType != 'Folderish' order by dc:title",});
+                "select * from Note where ecm:primaryType IN ('Note', 'Folder') order by dc:title",
+                "select * from Document where ecm:mixinType = 'Folderish' order by dc:title",
+                "select * from Document where ecm:mixinType != 'Folderish' order by dc:title",});
     }
 
     @Test
@@ -201,6 +202,9 @@ public class TestCompareCoreWithES {
         // Validate that NXP-14338 is fixed
         testQueries(new String[] { "SELECT * FROM Document WHERE dc:title LIKE 'nomatch%'",
                 "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY dc:title",
+                "SELECT * from Document WHERE dc:title LIKE '%ile%' ORDER BY dc:title",
+                "SELECT * from Document WHERE dc:title NOT LIKE '%ile%' ORDER BY dc:title",
+                "SELECT * from Document WHERE dc:title NOT LIKE '%i%e%' ORDER BY dc:title",
         });
     }
 

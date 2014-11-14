@@ -256,8 +256,7 @@ final public class NxqlQueryConverter {
                 query = QueryBuilders.matchPhrasePrefixQuery(fieldName,
                         likeValue.replace("*", ""));
             } else {
-                query = QueryBuilders.regexpQuery(fieldName,
-                        likeValue.replace("*", ".*"));
+                query = QueryBuilders.wildcardQuery(fieldName, likeValue);
             }
             if (op.startsWith("NOT")) {
                 filter = FilterBuilders.notFilter(FilterBuilders
