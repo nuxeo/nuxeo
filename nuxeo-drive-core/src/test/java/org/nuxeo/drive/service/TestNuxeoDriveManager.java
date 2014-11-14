@@ -28,6 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,6 +66,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.inject.Inject;
 
 /**
@@ -188,6 +193,21 @@ public class TestNuxeoDriveManager {
 
     @Inject
     RepositorySettings settings;
+
+    @Test
+    public void cacheEquivalence() throws ExecutionException {
+        Cache<String,Object> cache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(
+                10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+        cache.put(new String("pfouh"), "zoo");
+        cache.get(new String("pfouh"), new Callable<Object>() {
+
+            @Override
+            public Object call() throws Exception {
+                throw new Error("not found");
+            }
+        });
+
+    }
 
     @Test
     public void testGetSynchronizationRoots() throws Exception {
