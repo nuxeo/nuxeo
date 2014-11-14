@@ -83,10 +83,6 @@ Custom CSS for the Nuxeo Styles guide
 .gridRow.gridVisible,
 .gridBox.gridVisible { margin: 0 0 .5em }
 
-.gridVisible .gridStyle6 { margin-right: .5em; width: 39% }
-.gridVisible .gridStyle4 { margin-right: .4em; width: 24% }
-.gridVisible .gridStyle12 { width: 85% }
-
 /* Messages section: remove the behavior of ambiance messages */
 .gridBox .ambiance {
   float: none }
