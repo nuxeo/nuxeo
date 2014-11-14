@@ -46,11 +46,13 @@ public class ActiveTopLevelFolderItemFactoryRegistry extends
     public void contributionUpdated(String id,
             ActiveTopLevelFolderItemFactoryDescriptor contrib,
             ActiveTopLevelFolderItemFactoryDescriptor newOrigContrib) {
-        log.trace(String.format(
-                "Updating activeTopLevelFolderItemFactory contribution %s.",
-                contrib));
-        log.trace(String.format("Setting active factory to %s.",
-                contrib.getName()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Updating activeTopLevelFolderItemFactory contribution %s.",
+                    contrib));
+            log.trace(String.format("Setting active factory to %s.",
+                    contrib.getName()));
+        }
         activeFactory = contrib.getName();
     }
 
@@ -64,7 +66,9 @@ public class ActiveTopLevelFolderItemFactoryRegistry extends
     @Override
     public ActiveTopLevelFolderItemFactoryDescriptor clone(
             ActiveTopLevelFolderItemFactoryDescriptor orig) {
-        log.trace(String.format("Cloning contribution %s.", orig));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Cloning contribution %s.", orig));
+        }
         ActiveTopLevelFolderItemFactoryDescriptor clone = new ActiveTopLevelFolderItemFactoryDescriptor();
         clone.name = orig.name;
         return clone;
@@ -73,8 +77,10 @@ public class ActiveTopLevelFolderItemFactoryRegistry extends
     @Override
     public void merge(ActiveTopLevelFolderItemFactoryDescriptor src,
             ActiveTopLevelFolderItemFactoryDescriptor dst) {
-        log.trace(String.format("Merging contribution %s to contribution %s.",
-                src, dst));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Merging contribution %s to contribution %s.", src, dst));
+        }
         if (!StringUtils.isEmpty(src.getName())
                 && !src.getName().equals(dst.getName())) {
             dst.setName(src.getName());

@@ -255,8 +255,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                 return factory;
             }
         }
-        log.debug(String.format(
-                "No fileSystemItemFactory named %s, returning null.", name));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "No fileSystemItemFactory named %s, returning null.", name));
+        }
         return null;
     }
 
@@ -299,9 +301,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         if (fileSystemItem != null) {
             return fileSystemItem;
         } else {
-            log.debug(String.format(
-                    "The topLevelFolderItemFactory is not able to adapt document %s as a FileSystemItem => trying fileSystemItemFactories.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "The topLevelFolderItemFactory is not able to adapt document %s as a FileSystemItem => trying fileSystemItemFactories.",
+                        doc.getId()));
+            }
         }
 
         // Try the fileSystemItemFactories
@@ -335,24 +339,30 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                             factory.getFactory().getName()), e);
                 }
                 if (fileSystemItem != null) {
-                    log.debug(String.format(
-                            "Adapted document '%s' (path: %s) to item with path %s with factory %s",
-                            doc.getTitle(), doc.getPathAsString(),
-                            fileSystemItem.getPath(),
-                            factory.getFactory().getName()));
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Adapted document '%s' (path: %s) to item with path %s with factory %s",
+                                doc.getTitle(), doc.getPathAsString(),
+                                fileSystemItem.getPath(),
+                                factory.getFactory().getName()));
+                    }
                     return fileSystemItem;
                 }
             }
         }
 
         if (matchingFactory == null) {
-            log.debug(String.format(
-                    "None of the fileSystemItemFactories matches document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "None of the fileSystemItemFactories matches document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                        doc.getId()));
+            }
         } else {
-            log.debug(String.format(
-                    "None of the fileSystemItemFactories matching document %s were able to adapt this document as a FileSystemItem => returning null.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "None of the fileSystemItemFactories matching document %s were able to adapt this document as a FileSystemItem => returning null.",
+                        doc.getId()));
+            }
         }
         return fileSystemItem;
     }

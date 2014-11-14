@@ -80,9 +80,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                 parentDoc = docSession.getDocument(parentDocRef);
             }
         } catch (DocumentSecurityException e) {
-            log.debug(String.format(
-                    "User %s has no READ access on parent of document %s (%s), will throw RootlessItemException.",
-                    principal.getName(), doc.getPathAsString(), doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "User %s has no READ access on parent of document %s (%s), will throw RootlessItemException.",
+                        principal.getName(), doc.getPathAsString(), doc.getId()));
+            }
         }
         try {
             if (parentDoc == null) {
@@ -119,9 +121,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         List<DocumentModel> docCollections = cm.getVisibleCollection(doc,
                 session);
         if (docCollections.isEmpty()) {
-            log.trace(String.format(
-                    "Doc %s (%s) is not member of any collection",
-                    doc.getPathAsString(), doc.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Doc %s (%s) is not member of any collection",
+                        doc.getPathAsString(), doc.getId()));
+            }
             return false;
         } else {
             FileSystemItem parent = null;
@@ -132,15 +136,19 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                         collection, false, relaxSyncRootConstraint);
             }
             if (parent == null) {
-                log.trace(String.format(
-                        "None of the collections of which doc %s (%s) is a member can be adapted as a FileSystemItem.",
-                        doc.getPathAsString(), doc.getId()));
+                if (log.isTraceEnabled()) {
+                    log.trace(String.format(
+                            "None of the collections of which doc %s (%s) is a member can be adapted as a FileSystemItem.",
+                            doc.getPathAsString(), doc.getId()));
+                }
                 return false;
             }
-            log.trace(String.format(
-                    "Using first collection %s (%s) of which doc %s (%s) is a member and that is adaptable as a FileSystemItem as a parent FileSystemItem.",
-                    collection.getPathAsString(), collection.getId(),
-                    doc.getPathAsString(), doc.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Using first collection %s (%s) of which doc %s (%s) is a member and that is adaptable as a FileSystemItem as a parent FileSystemItem.",
+                        collection.getPathAsString(), collection.getId(),
+                        doc.getPathAsString(), doc.getId()));
+            }
 
             parentId = parent.getId();
             path = parent.getPath() + '/' + id;

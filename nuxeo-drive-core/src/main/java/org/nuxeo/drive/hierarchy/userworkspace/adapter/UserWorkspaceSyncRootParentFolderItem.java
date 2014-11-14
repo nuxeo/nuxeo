@@ -77,9 +77,11 @@ public class UserWorkspaceSyncRootParentFolderItem extends
                 // change, for now need to check permission
                 // See https://jira.nuxeo.com/browse/NXP-11146
                 if (!session.hasPermission(idRef, SecurityConstants.READ)) {
-                    log.debug(String.format(
-                            "User %s has no READ access on synchronization root %s, not including it in children.",
-                            session.getPrincipal().getName(), idRef));
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "User %s has no READ access on synchronization root %s, not including it in children.",
+                                session.getPrincipal().getName(), idRef));
+                    }
                     continue;
                 }
                 DocumentModel doc = session.getDocument(idRef);
@@ -89,14 +91,18 @@ public class UserWorkspaceSyncRootParentFolderItem extends
                     FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
                             doc, this);
                     if (child == null) {
-                        log.debug(String.format(
-                                "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
-                                idRef));
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
+                                    idRef));
+                        }
                         continue;
                     }
-                    log.debug(String.format(
-                            "Including synchronization root %s in children.",
-                            idRef));
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Including synchronization root %s in children.",
+                                idRef));
+                    }
                     children.add(child);
                 }
             }

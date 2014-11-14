@@ -155,8 +155,10 @@ public abstract class AbstractFileSystemItemFactory implements
             return isFileSystemItem(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
-                log.debug(String.format(
-                        "No doc related to id %s, returning false.", id));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "No doc related to id %s, returning false.", id));
+                }
                 return false;
             } else {
                 throw e;
@@ -172,8 +174,10 @@ public abstract class AbstractFileSystemItemFactory implements
             return getFileSystemItem(doc);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
-                log.debug(String.format(
-                        "No doc related to id %s, returning null.", id));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "No doc related to id %s, returning null.", id));
+                }
                 return null;
             } else {
                 throw e;
@@ -198,8 +202,10 @@ public abstract class AbstractFileSystemItemFactory implements
             return getFileSystemItem(doc, (FolderItem) parentItem);
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
-                log.debug(String.format(
-                        "No doc related to id %s, returning null.", id));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "No doc related to id %s, returning null.", id));
+                }
                 return null;
             } else {
                 throw e;
@@ -236,9 +242,11 @@ public abstract class AbstractFileSystemItemFactory implements
 
         // If the doc is not adaptable as a FileSystemItem return null
         if (!isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint)) {
-            log.trace(String.format(
-                    "Document %s cannot be adapted as a FileSystemItem => returning null.",
-                    doc.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Document %s cannot be adapted as a FileSystemItem => returning null.",
+                        doc.getId()));
+            }
             return null;
         }
         return adaptDocument(doc, forceParentItem, parentItem,

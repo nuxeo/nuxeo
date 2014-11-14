@@ -100,13 +100,18 @@ public final class NuxeoDriveIntegrationTestsHelper {
                     session.getRepositoryName()));
         }
         if (results.size() > 1) {
-            log.debug(String.format(
-                    "Found more than one domain in repository %s, using first one.",
-                    session.getRepositoryName()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Found more than one domain in repository %s, using first one.",
+                        session.getRepositoryName()));
+            }
         }
         DocumentModel defaultDomain = results.get(0);
         String defaultDomainPath = defaultDomain.getPathAsString();
-        log.debug(String.format("Using default domain %s", defaultDomainPath));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Using default domain %s",
+                    defaultDomainPath));
+        }
         return defaultDomainPath;
     }
 

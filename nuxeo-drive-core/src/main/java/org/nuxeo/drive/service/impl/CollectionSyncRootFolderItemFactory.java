@@ -63,24 +63,30 @@ public class CollectionSyncRootFolderItemFactory extends
 
         // Check Collection
         if (!Framework.getService(CollectionManager.class).isCollection(doc)) {
-            log.debug(String.format(
-                    "Document %s is not a Collection, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is not a Collection, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
-            log.debug(String.format(
-                    "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check "deleted" life cycle state
         if (!includeDeleted
                 && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            log.debug(String.format(
-                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
+                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+            }
             return false;
         }
         if (!relaxSyncRootConstraint) {
@@ -90,9 +96,11 @@ public class CollectionSyncRootFolderItemFactory extends
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
                     principal, doc);
             if (!isSyncRoot) {
-                log.debug(String.format(
-                        "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
-                        doc.getId(), principal.getName()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
+                            doc.getId(), principal.getName()));
+                }
                 return false;
             }
         }

@@ -66,9 +66,10 @@ public class NuxeoDriveCanMove {
         } catch (RootlessItemException e) {
             // can happen if srcId or destId no longer match a document under an
             // active sync root: just return false in that case.
-            log.debug(
-                    String.format("Cannot move %s to %s: %s", srcId, destId,
-                            e.getMessage()), e);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cannot move %s to %s: %s", srcId,
+                        destId, e.getMessage()), e);
+            }
         }
         return NuxeoDriveOperationHelper.asJSONBlob(canMove);
     }

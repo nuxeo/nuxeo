@@ -144,9 +144,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
                     id).getFileSystemItemById(id, principal);
         } catch (RootlessItemException e) {
-            log.debug(String.format(
-                    "RootlessItemException thrown while trying to get file system item with id %s, returning null.",
-                    id));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "RootlessItemException thrown while trying to get file system item with id %s, returning null.",
+                        id));
+            }
             return null;
         }
     }
@@ -158,9 +160,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
                     id).getFileSystemItemById(id, parentId, principal);
         } catch (RootlessItemException e) {
-            log.debug(String.format(
-                    "RootlessItemException thrown while trying to get file system item with id %s and parent id %s, returning null.",
-                    id, parentId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "RootlessItemException thrown while trying to get file system item with id %s and parent id %s, returning null.",
+                        id, parentId));
+            }
             return null;
         }
     }

@@ -111,9 +111,11 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
         // Add synchronization root parent folder
         if (syncRootParentFactoryName == null) {
-            log.debug(String.format(
-                    "No synchronization root parent factory name parameter for factory %s, the synchronization roots won't be synchronized client side.",
-                    factoryName));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "No synchronization root parent factory name parameter for factory %s, the synchronization roots won't be synchronized client side.",
+                        factoryName));
+            }
 
         } else {
             VirtualFolderItemFactory syncRootParentFactory = getFileSystemItemAdapterService().getVirtualFolderItemFactory(

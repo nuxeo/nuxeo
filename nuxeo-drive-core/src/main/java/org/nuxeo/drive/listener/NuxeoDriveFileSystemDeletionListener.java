@@ -164,9 +164,11 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             return;
         } catch (NuxeoDriveContribException e) {
             // Nuxeo Drive contributions missing or component not ready
-            log.debug(String.format(
-                    "Either Nuxeo Drive contributions are missing or the FileSystemItemAdapterService component is not ready (application has nor started yet) => ignoring event '%s'.",
-                    eventName));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Either Nuxeo Drive contributions are missing or the FileSystemItemAdapterService component is not ready (application has nor started yet) => ignoring event '%s'.",
+                        eventName));
+            }
             return;
         }
         if (fsItem == null) {

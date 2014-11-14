@@ -331,17 +331,21 @@ public class NuxeoDriveActions extends InputController implements Serializable {
             String packageURL = desktopPackageBaseURL + packageName;
             packages.add(new DesktopPackageDefinition(packageURL, packageName,
                     OSX_PLATFORM));
-            log.debug(String.format(
-                    "Added %s to the list of desktop packages available for download.",
-                    packageURL));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Added %s to the list of desktop packages available for download.",
+                        packageURL));
+            }
             // Windows
             packageName = DESKTOP_PACKAGE_PREFIX + MSI_EXTENSION;
             packageURL = desktopPackageBaseURL + packageName;
             packages.add(new DesktopPackageDefinition(packageURL, packageName,
                     WINDOWS_PLATFORM));
-            log.debug(String.format(
-                    "Added %s to the list of desktop packages available for download.",
-                    packageURL));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Added %s to the list of desktop packages available for download.",
+                        packageURL));
+            }
         }
         // Debian / Ubuntu
         // TODO: remove when Debian package is available
@@ -390,9 +394,11 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         FileSystemItem fileSystemItem = Framework.getLocalService(
                 FileSystemItemAdapterService.class).getFileSystemItem(doc, null);
         if (fileSystemItem == null) {
-            log.debug(String.format(
-                    "Document %s (%s) is not adaptable as a FileSystemItem.",
-                    doc.getPathAsString(), doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s (%s) is not adaptable as a FileSystemItem.",
+                        doc.getPathAsString(), doc.getId()));
+            }
         }
         return fileSystemItem;
     }

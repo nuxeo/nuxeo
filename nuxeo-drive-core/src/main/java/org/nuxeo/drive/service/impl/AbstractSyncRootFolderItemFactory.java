@@ -58,8 +58,10 @@ public abstract class AbstractSyncRootFolderItemFactory extends
             throw new IllegalArgumentException(
                     "Parameter map is not empty whereas no parameters are contributed to the factory.");
         }
-        log.debug(String.format("Factory %s has no parameters to handle.",
-                getName()));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Factory %s has no parameters to handle.",
+                    getName()));
+        }
     }
 
     /**
@@ -81,38 +83,48 @@ public abstract class AbstractSyncRootFolderItemFactory extends
 
         // Check Folderish
         if (!doc.isFolder()) {
-            log.debug(String.format(
-                    "Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check version
         if (doc.isVersion()) {
-            log.debug(String.format(
-                    "Document %s is a version, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is a version, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check proxy
         if (doc.isProxy()) {
-            log.debug(String.format(
-                    "Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
-            log.debug(String.format(
-                    "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check "deleted" life cycle state
         if (!includeDeleted
                 && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            log.debug(String.format(
-                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
+                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+            }
             return false;
         }
         if (!relaxSyncRootConstraint) {
@@ -122,9 +134,11 @@ public abstract class AbstractSyncRootFolderItemFactory extends
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
                     principal, doc);
             if (!isSyncRoot) {
-                log.debug(String.format(
-                        "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
-                        doc.getId(), principal.getName()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
+                            doc.getId(), principal.getName()));
+                }
                 return false;
             }
         }
