@@ -74,10 +74,6 @@ public class MultiDirectory extends AbstractDirectory {
         return session;
     }
 
-    protected void addSession(MultiDirectorySession session) {
-        sessions.add(session);
-    }
-
     @Override
     public Reference getReference(String referenceFieldName) {
         return new MultiReference(this, referenceFieldName);

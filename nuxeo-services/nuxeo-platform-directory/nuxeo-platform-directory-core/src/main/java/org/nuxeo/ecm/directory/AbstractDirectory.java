@@ -22,10 +22,8 @@ package org.nuxeo.ecm.directory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,8 +51,6 @@ public abstract class AbstractDirectory implements Directory {
 
     // @since 5.7
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-
-    protected Set<Session> sessions = new HashSet<Session>();
 
     protected final Counter sessionCount;
 
@@ -131,21 +127,16 @@ public abstract class AbstractDirectory implements Directory {
         return cache;
     }
 
-    public synchronized void removeSession(Session session) {
-        if (sessions.remove(session)) {
-            sessionCount.dec();
-        }
+    public void removeSession(Session session) {
+        sessionCount.dec();
     }
 
-    public synchronized void addSession(Session session) {
-        sessions.add(session);
+    public void addSession(Session session) {
         sessionCount.inc();
         if (sessionCount.getCount() > sessionMaxCount.getCount()) {
             sessionMaxCount.inc();
         }
     }
-
-
 
     @Override
     public void invalidateDirectoryCache() throws DirectoryException{
@@ -156,20 +147,11 @@ public abstract class AbstractDirectory implements Directory {
     public boolean isMultiTenant() {
         return false;
     }
+
     @Override
-    public synchronized void shutdown() {
-        Set<Session> lastSessions = sessions;
-        sessions = new HashSet<Session>();
+    public void shutdown() {
         sessionCount.dec(sessionCount.getCount());
         sessionMaxCount.dec(sessionMaxCount.getCount());
-        for (Session session : lastSessions) {
-            try {
-                session.close();
-            } catch (DirectoryException e) {
-                log.error("Error during shutdown of directory '" + name
-                        + "'", e);
-            }
-        }
     }
 
 
