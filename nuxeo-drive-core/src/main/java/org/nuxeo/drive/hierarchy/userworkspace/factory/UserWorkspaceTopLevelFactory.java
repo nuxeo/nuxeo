@@ -86,9 +86,11 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
-            log.trace(String.format(
-                    "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         return true;

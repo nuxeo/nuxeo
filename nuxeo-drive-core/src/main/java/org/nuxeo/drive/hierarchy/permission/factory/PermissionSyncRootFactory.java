@@ -113,10 +113,12 @@ public class PermissionSyncRootFactory extends
         boolean hasRequiredPermission = session.hasPermission(doc.getRef(),
                 requiredPermission);
         if (!hasRequiredPermission) {
-            log.debug(String.format(
-                    "Required permission %s is not granted on document %s to user %s, it cannot be adapted as a FileSystemItem.",
-                    requiredPermission, doc.getId(),
-                    session.getPrincipal().getName()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Required permission %s is not granted on document %s to user %s, it cannot be adapted as a FileSystemItem.",
+                        requiredPermission, doc.getId(),
+                        session.getPrincipal().getName()));
+            }
             return false;
         }
         return super.isFileSystemItem(doc, includeDeleted,

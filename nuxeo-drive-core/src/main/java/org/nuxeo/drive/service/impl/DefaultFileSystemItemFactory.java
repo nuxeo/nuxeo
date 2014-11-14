@@ -95,53 +95,67 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
             boolean relaxSyncRootConstraint) throws ClientException {
         // Check version
         if (doc.isVersion()) {
-            log.debug(String.format(
-                    "Document %s is a version, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is a version, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check proxy
         if (doc.isProxy()) {
-            log.debug(String.format(
-                    "Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check rendition
         if (doc.hasFacet(RENDITION_FACET)) {
-            log.debug(String.format(
-                    "Document %s is a rendition, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is a rendition, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check Collections
         if (CollectionConstants.COLLECTIONS_TYPE.equals(doc.getType())) {
-            log.debug(String.format(
-                    "Document %s is the collection root folder (type=%s, path=%s), it cannot be adapted as a FileSystemItem.",
-                    doc.getId(), CollectionConstants.COLLECTIONS_TYPE,
-                    doc.getPathAsString()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is the collection root folder (type=%s, path=%s), it cannot be adapted as a FileSystemItem.",
+                        doc.getId(), CollectionConstants.COLLECTIONS_TYPE,
+                        doc.getPathAsString()));
+            }
             return false;
         }
         // Check HiddenInNavigation
         if (doc.hasFacet("HiddenInNavigation")) {
-            log.debug(String.format(
-                    "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is HiddenInNavigation, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check "deleted" life cycle state
         if (!includeDeleted
                 && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            log.debug(String.format(
-                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
+                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+            }
             return false;
         }
         // Check Folderish or BlobHolder with a blob
         if (!doc.isFolder() && !hasBlob(doc)) {
-            log.debug(String.format(
-                    "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         if (!relaxSyncRootConstraint) {
@@ -151,9 +165,11 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
                     principal, doc);
             if (isSyncRoot) {
-                log.debug(String.format(
-                        "Document %s is a registered synchronization root for user %s, it cannot be adapted as a DefaultFileSystemItem.",
-                        doc.getId(), principal.getName()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Document %s is a registered synchronization root for user %s, it cannot be adapted as a DefaultFileSystemItem.",
+                            doc.getId(), principal.getName()));
+                }
                 return false;
             }
         }
@@ -198,9 +214,11 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         boolean contributorChanged = !principal.getName().equals(
                 lastContributor);
         if (contributorChanged) {
-            log.debug(String.format(
-                    "Contributor %s is different from the last contributor %s => will create a version of the document.",
-                    principal.getName(), lastContributor));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Contributor %s is different from the last contributor %s => will create a version of the document.",
+                        principal.getName(), lastContributor));
+            }
             return true;
         }
         Calendar lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
@@ -212,14 +230,18 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
                 - lastModificationDate.getTimeInMillis();
         long versioningDelayMillis = (long) getVersioningDelay() * 1000;
         if (lastModified > versioningDelayMillis) {
-            log.debug(String.format(
-                    "Last modification was done %d milliseconds ago, this is more than the versioning delay %d milliseconds => will create a version of the document.",
-                    lastModified, versioningDelayMillis));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Last modification was done %d milliseconds ago, this is more than the versioning delay %d milliseconds => will create a version of the document.",
+                        lastModified, versioningDelayMillis));
+            }
             return true;
         }
-        log.debug(String.format(
-                "Contributor %s is the last contributor and last modification was done %d milliseconds ago, this is less than the versioning delay %d milliseconds => will not create a version of the document.",
-                principal.getName(), lastModified, versioningDelayMillis));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Contributor %s is the last contributor and last modification was done %d milliseconds ago, this is less than the versioning delay %d milliseconds => will not create a version of the document.",
+                    principal.getName(), lastModified, versioningDelayMillis));
+        }
         return false;
     }
 
@@ -247,14 +269,19 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
     protected boolean hasBlob(DocumentModel doc) throws ClientException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
-            log.debug(String.format("Document %s is not a BlobHolder.",
-                    doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Document %s is not a BlobHolder.",
+                        doc.getId()));
+            }
             return false;
         }
         Blob blob = bh.getBlob();
         if (blob == null) {
-            log.debug(String.format(
-                    "Document %s is a BlobHolder without a blob.", doc.getId()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is a BlobHolder without a blob.",
+                        doc.getId()));
+            }
             return false;
         }
         return true;

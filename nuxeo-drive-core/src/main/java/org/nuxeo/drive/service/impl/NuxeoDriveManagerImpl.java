@@ -122,15 +122,19 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     @Override
     public void invalidateSynchronizationRootsCache(String userName) {
-        log.debug("Invalidating synchronization root cache for user: "
-                + userName);
+        if (log.isDebugEnabled()) {
+            log.debug("Invalidating synchronization root cache for user: "
+                    + userName);
+        }
         syncRootCache.invalidate(userName);
     }
 
     @Override
     public void invalidateCollectionSyncRootMemberCache(String userName) {
-        log.debug("Invalidating collection sync root member cache for user: "
-                + userName);
+        if (log.isDebugEnabled()) {
+            log.debug("Invalidating collection sync root member cache for user: "
+                    + userName);
+        }
         collectionSyncRootMemberCache.invalidate(userName);
     }
 

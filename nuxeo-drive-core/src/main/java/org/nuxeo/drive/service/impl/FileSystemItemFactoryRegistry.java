@@ -62,25 +62,32 @@ public class FileSystemItemFactoryRegistry extends
     public void contributionUpdated(String id,
             FileSystemItemFactoryDescriptor contrib,
             FileSystemItemFactoryDescriptor newOrigContrib) {
-        log.trace(String.format(
-                "Putting contribution %s with id %s in factory registry",
-                contrib, id));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Putting contribution %s with id %s in factory registry",
+                    contrib, id));
+        }
         factoryDescriptors.put(id, contrib);
     }
 
     @Override
     public void contributionRemoved(String id,
             FileSystemItemFactoryDescriptor origContrib) {
-        log.trace(String.format(
-                "Removing contribution with id %s from factory registry", id));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Removing contribution with id %s from factory registry",
+                    id));
+        }
         factoryDescriptors.remove(id);
     }
 
     @Override
     public FileSystemItemFactoryDescriptor clone(
             FileSystemItemFactoryDescriptor orig) {
-        log.trace(String.format("Cloning contribution with id %s",
-                orig.getName()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Cloning contribution with id %s",
+                    orig.getName()));
+        }
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -98,9 +105,11 @@ public class FileSystemItemFactoryRegistry extends
     @Override
     public void merge(FileSystemItemFactoryDescriptor src,
             FileSystemItemFactoryDescriptor dst) {
-        log.trace(String.format(
-                "Merging contribution with id %s to contribution with id %s",
-                src.getName(), dst.getName()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Merging contribution with id %s to contribution with id %s",
+                    src.getName(), dst.getName()));
+        }
         // Order
         int srcOrder = src.getOrder();
         if (srcOrder > 0 && srcOrder != dst.getOrder()) {

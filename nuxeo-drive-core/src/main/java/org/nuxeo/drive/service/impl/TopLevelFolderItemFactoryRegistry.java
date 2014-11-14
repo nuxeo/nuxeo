@@ -55,9 +55,11 @@ public class TopLevelFolderItemFactoryRegistry extends
             TopLevelFolderItemFactoryDescriptor contrib,
             TopLevelFolderItemFactoryDescriptor newOrigContrib) {
         try {
-            log.trace(String.format(
-                    "Putting contribution with class name %s in factory registry.",
-                    contrib.getName()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Putting contribution with class name %s in factory registry.",
+                        contrib.getName()));
+            }
             factories.put(id, contrib.getFactory());
         } catch (Exception e) {
             throw new ClientRuntimeException(
@@ -68,17 +70,21 @@ public class TopLevelFolderItemFactoryRegistry extends
     @Override
     public void contributionRemoved(String id,
             TopLevelFolderItemFactoryDescriptor origContrib) {
-        log.trace(String.format(
-                "Removing contribution with class name %s in factory registry.",
-                id));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Removing contribution with class name %s in factory registry.",
+                    id));
+        }
         factories.remove(id);
     }
 
     @Override
     public TopLevelFolderItemFactoryDescriptor clone(
             TopLevelFolderItemFactoryDescriptor orig) {
-        log.trace(String.format("Cloning contribution with class name %s.",
-                orig.getName()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Cloning contribution with class name %s.",
+                    orig.getName()));
+        }
         TopLevelFolderItemFactoryDescriptor clone = new TopLevelFolderItemFactoryDescriptor();
         clone.factoryClass = orig.factoryClass;
         clone.parameters = orig.parameters;
@@ -88,9 +94,11 @@ public class TopLevelFolderItemFactoryRegistry extends
     @Override
     public void merge(TopLevelFolderItemFactoryDescriptor src,
             TopLevelFolderItemFactoryDescriptor dst) {
-        log.trace(String.format(
-                "Merging contribution with class name %s to contribution with class name %s",
-                src.getName(), dst.getName()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Merging contribution with class name %s to contribution with class name %s",
+                    src.getName(), dst.getName()));
+        }
         // Class
         if (src.getFactoryClass() != null
                 && !src.getFactoryClass().equals(dst.getFactoryClass())) {

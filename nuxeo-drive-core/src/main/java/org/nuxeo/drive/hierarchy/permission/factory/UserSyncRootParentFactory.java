@@ -73,17 +73,21 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
-            log.trace(String.format(
-                    "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
-                    doc.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+            }
             return false;
         }
         // Check "deleted" life cycle state
         if (!includeDeleted
                 && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            log.debug(String.format(
-                    "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
-                    doc.getId(), LifeCycleConstants.DELETED_STATE));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
+                        doc.getId(), LifeCycleConstants.DELETED_STATE));
+            }
             return false;
         }
         return true;

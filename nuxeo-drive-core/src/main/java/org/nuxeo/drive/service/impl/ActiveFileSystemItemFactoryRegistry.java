@@ -54,38 +54,48 @@ public class ActiveFileSystemItemFactoryRegistry extends
     public void contributionUpdated(String id,
             ActiveFileSystemItemFactoriesDescriptor contrib,
             ActiveFileSystemItemFactoriesDescriptor newOrigContrib) {
-        log.trace(String.format(
-                "Updating activeFileSystemItemFactories contribution %s.",
-                contrib));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Updating activeFileSystemItemFactories contribution %s.",
+                    contrib));
+        }
         if (contrib.isMerge()) {
             // Merge active factories
             for (ActiveFileSystemItemFactoryDescriptor factory : contrib.getFactories()) {
                 if (activeFactories.contains(factory.getName())
                         && !factory.isEnabled()) {
-                    log.trace(String.format(
-                            "Removing factory %s from active factories.",
-                            factory.getName()));
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format(
+                                "Removing factory %s from active factories.",
+                                factory.getName()));
+                    }
                     activeFactories.remove(factory.getName());
                 }
                 if (!activeFactories.contains(factory.getName())
                         && factory.isEnabled()) {
-                    log.trace(String.format(
-                            "Adding factory %s to active factories.",
-                            factory.getName()));
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format(
+                                "Adding factory %s to active factories.",
+                                factory.getName()));
+                    }
                     activeFactories.add(factory.getName());
                 }
             }
         } else {
             // No merge, reset active factories
-            log.trace(String.format(
-                    "Clearing active factories as contribution %s doesn't merge.",
-                    contrib));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(
+                        "Clearing active factories as contribution %s doesn't merge.",
+                        contrib));
+            }
             activeFactories.clear();
             for (ActiveFileSystemItemFactoryDescriptor factory : contrib.getFactories()) {
                 if (factory.isEnabled()) {
-                    log.trace(String.format(
-                            "Adding factory %s to active factories.",
-                            factory.getName()));
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format(
+                                "Adding factory %s to active factories.",
+                                factory.getName()));
+                    }
                     activeFactories.add(factory.getName());
                 }
             }
@@ -102,7 +112,9 @@ public class ActiveFileSystemItemFactoryRegistry extends
     @Override
     public ActiveFileSystemItemFactoriesDescriptor clone(
             ActiveFileSystemItemFactoriesDescriptor orig) {
-        log.trace(String.format("Cloning contribution %s.", orig));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Cloning contribution %s.", orig));
+        }
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -120,8 +132,10 @@ public class ActiveFileSystemItemFactoryRegistry extends
     @Override
     public void merge(ActiveFileSystemItemFactoriesDescriptor src,
             ActiveFileSystemItemFactoriesDescriptor dst) {
-        log.trace(String.format("Merging contribution %s to contribution %s.",
-                src, dst));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format(
+                    "Merging contribution %s to contribution %s.", src, dst));
+        }
         // Merge
         if (src.isMerge() != dst.isMerge()) {
             dst.setMerge(src.isMerge());
