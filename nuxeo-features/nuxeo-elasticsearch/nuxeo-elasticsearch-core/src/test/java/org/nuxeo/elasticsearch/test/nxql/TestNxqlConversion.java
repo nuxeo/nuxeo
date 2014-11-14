@@ -128,7 +128,27 @@ public class TestNxqlConversion {
         checkNXQL(
                 "select * from Document where dc:nature='Nature2' or dc:title='File1'",
                 2);
+    }
 
+    @Test
+    public void testQueryWithSpecialCharacters() throws Exception {
+        // special character should not raise syntax error
+        String specialChars = "^..*+ - && || ! ( ) { } [ ] )^ \" (~ * ? : \\ / \\t$";
+        checkNXQL(
+                "select * from Document where dc:title = '"+ specialChars + "'",
+                0);
+        checkNXQL(
+                "select * from Document where ecm:fulltext.dc:title = '" + specialChars + "'",
+                0);
+        checkNXQL(
+                "select * from Document where dc:title LIKE '" + specialChars + "'",
+                0);
+        checkNXQL(
+                "select * from Document where dc:title IN ('" + specialChars + "')",
+                0);
+        checkNXQL(
+                "select * from Document where dc:title STARTSWITH '" + specialChars + "'",
+                0);
     }
 
     protected void checkNXQL(String nxql, int expectedNumberOfHis)
@@ -182,7 +202,7 @@ public class TestNxqlConversion {
     }
 
     @Test
-    public void testConverterExpression() throws Exception {
+    public void testConverterEQUALS() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1").toString();
         assertEqualsEvenUnderWindows("{\n" +
@@ -194,13 +214,50 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
+
         es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where f1 IN (1, '2', 3)").toString();
+                "select * from Document where f1 != 1").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"term\" : {\n" +
+                "            \"f1\" : \"1\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 <> 1").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"term\" : {\n" +
+                "            \"f1\" : \"1\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+
+    }
+
+    @Test
+    public void testConverterIN() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 IN (1)").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
                 "      \"terms\" : {\n" +
-                "        \"f1\" : [ \"1\", \"2\", \"3\" ]\n" +
+                "        \"f1\" : [ \"1\" ]\n" +
                 "      }\n" +
                 "    }\n" +
                 "  }\n" +
@@ -220,7 +277,11 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder(
+    }
+
+    @Test
+    public void testConverterLIKE() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 LIKE 'foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match\" : {\n" +
@@ -230,9 +291,44 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        String old = es;
         es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where f1 ILIKE 'foo%'").toString();
+                "select * from Document where f1 LIKE '%Foo%'").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"wildcard\" : {\n" +
+                "    \"f1\" : {\n" +
+                "      \"wildcard\" : \"*Foo*\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 NOT LIKE 'Foo%'").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"query\" : {\n" +
+                "            \"match\" : {\n" +
+                "              \"f1\" : {\n" +
+                "                \"query\" : \"Foo\",\n" +
+                "                \"type\" : \"phrase_prefix\"\n" +
+                "              }\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        // invalid input
+        NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 LIKE '(foo.*$#@^'").toString();
+    }
+
+    @Test
+    public void testConverterILIKE() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 ILIKE 'Foo%'").toString();
         Assert.assertEquals("{\n" +
                 "  \"match\" : {\n" +
                 "    \"f1.lowercase\" : {\n" +
@@ -242,7 +338,16 @@ public class TestNxqlConversion {
                 "  }\n" +
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where f1 NOT LIKE 'foo%'").toString();
+                "select * from Document where f1 ILIKE '%Foo%'").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"wildcard\" : {\n" +
+                "    \"f1.lowercase\" : {\n" +
+                "      \"wildcard\" : \"*foo*\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 NOT ILIKE 'Foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
@@ -250,7 +355,7 @@ public class TestNxqlConversion {
                 "        \"filter\" : {\n" +
                 "          \"query\" : {\n" +
                 "            \"match\" : {\n" +
-                "              \"f1\" : {\n" +
+                "              \"f1.lowercase\" : {\n" +
                 "                \"query\" : \"foo\",\n" +
                 "                \"type\" : \"phrase_prefix\"\n" +
                 "              }\n" +
@@ -261,7 +366,11 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder(
+    }
+
+    @Test
+    public void testConverterIsNULL() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 IS NULL").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -284,7 +393,11 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder(
+    }
+
+    @Test
+    public void testConverterBETWEEN() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 BETWEEN 1 AND 2").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -320,7 +433,11 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder(
+    }
+
+    @Test
+    public void testConverterSTARTSWITH() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where ecm:path STARTSWITH '/the/path'").toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -331,7 +448,87 @@ public class TestNxqlConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
+    }
 
+    @Test
+    public void testConverterIsVersion() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:isVersion = 1").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"term\" : {\n" +
+                "        \"ecm:isVersion\" : \"1\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        String es2 = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:isCheckedInVersion = 1").toString();
+        Assert.assertEquals(es, es2);
+    }
+
+    @Test
+    public void testConverterFulltext() throws Exception {
+        // Given a search on a fulltext field
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:fulltext='+foo -bar'").toString();
+        // then we have a simple query text and not a filter
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"simple_query_string\" : {\n" +
+                "    \"query\" : \"+foo -bar\",\n" +
+                "    \"fields\" : [ \"_all\" ],\n" +
+                "    \"analyzer\" : \"fulltext\",\n" +
+                "    \"default_operator\" : \"and\"\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:fulltext_someindex LIKE '+foo -bar'").toString();
+        // don't handle nxql fulltext index definition, match to _all field
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"simple_query_string\" : {\n" +
+                "    \"query\" : \"+foo -bar\",\n" +
+                "    \"fields\" : [ \"_all\" ],\n" +
+                "    \"analyzer\" : \"fulltext\",\n" +
+                "    \"default_operator\" : \"and\"\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:fulltext.dc:title!='+foo -bar'").toString();
+        // request on field match field.fulltext
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"query\" : {\n" +
+                "            \"simple_query_string\" : {\n" +
+                "              \"query\" : \"+foo -bar\",\n" +
+                "              \"fields\" : [ \"dc:title.fulltext\" ],\n" +
+                "              \"analyzer\" : \"fulltext\",\n" +
+                "              \"default_operator\" : \"and\"\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+    }
+
+    @Test
+    public void testConverterFulltextElasticsearchPrefix() throws Exception {
+        // Given a search on a fulltext field with the
+        // elasticsearch-specific prefix
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "SELECT * FROM Document WHERE ecm:fulltext = 'es: foo bar'").toString();
+        // then we have a simple query text and not a filter
+        // and we have the OR operator
+        assertEqualsEvenUnderWindows("{\n" + "  \"simple_query_string\" : {\n"
+                + "    \"query\" : \"foo bar\",\n"
+                + "    \"fields\" : [ \"_all\" ],\n"
+                + "    \"analyzer\" : \"fulltext\",\n"
+                + "    \"default_operator\" : \"or\"\n" + "  }\n" + "}", es);
     }
 
     @Test
@@ -523,86 +720,6 @@ public class TestNxqlConversion {
                 "}", es);
     }
 
-    @Test
-    public void testConverterIsVersion() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where ecm:isVersion = 1").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"term\" : {\n" +
-                "        \"ecm:isVersion\" : \"1\"\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}", es);
-        String es2 = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where ecm:isCheckedInVersion = 1").toString();
-        Assert.assertEquals(es, es2);
-    }
-
-    @Test
-    public void testConverterFulltext() throws Exception {
-        // Given a search on a fulltext field
-        String es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where ecm:fulltext='+foo -bar'").toString();
-        // then we have a simple query text and not a filter
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"simple_query_string\" : {\n" +
-                "    \"query\" : \"+foo -bar\",\n" +
-                "    \"fields\" : [ \"_all\" ],\n" +
-                "    \"analyzer\" : \"fulltext\",\n" +
-                "    \"default_operator\" : \"and\"\n" +
-                "  }\n" +
-                "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where ecm:fulltext_someindex LIKE '+foo -bar'").toString();
-        // don't handle nxql fulltext index definition, match to _all field
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"simple_query_string\" : {\n" +
-                "    \"query\" : \"+foo -bar\",\n" +
-                "    \"fields\" : [ \"_all\" ],\n" +
-                "    \"analyzer\" : \"fulltext\",\n" +
-                "    \"default_operator\" : \"and\"\n" +
-                "  }\n" +
-                "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where ecm:fulltext.dc:title!='+foo -bar'").toString();
-        // request on field match field.fulltext
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"not\" : {\n" +
-                "        \"filter\" : {\n" +
-                "          \"query\" : {\n" +
-                "            \"simple_query_string\" : {\n" +
-                "              \"query\" : \"+foo -bar\",\n" +
-                "              \"fields\" : [ \"dc:title.fulltext\" ],\n" +
-                "              \"analyzer\" : \"fulltext\",\n" +
-                "              \"default_operator\" : \"and\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}", es);
-    }
-
-    @Test
-    public void testConverterFulltextElasticsearchPrefix() throws Exception {
-        // Given a search on a fulltext field with the
-        // elasticsearch-specific prefix
-        String es = NxqlQueryConverter.toESQueryBuilder(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'es: foo bar'").toString();
-        // then we have a simple query text and not a filter
-        // and we have the OR operator
-        assertEqualsEvenUnderWindows("{\n" + "  \"simple_query_string\" : {\n"
-                + "    \"query\" : \"foo bar\",\n"
-                + "    \"fields\" : [ \"_all\" ],\n"
-                + "    \"analyzer\" : \"fulltext\",\n"
-                + "    \"default_operator\" : \"or\"\n" + "  }\n" + "}", es);
-    }
 
     @Test
     public void testConverterWhereWithoutSelect() throws Exception {

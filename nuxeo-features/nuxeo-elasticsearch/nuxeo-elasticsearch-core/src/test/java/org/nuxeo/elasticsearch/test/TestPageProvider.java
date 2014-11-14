@@ -520,9 +520,9 @@ public class TestPageProvider {
                 "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
                 "      }\n" +
                 "    }, {\n" +
-                "      \"regexp\" : {\n" +
+                "      \"wildcard\" : {\n" +
                 "        \"dc:title\" : {\n" +
-                "          \"value\" : \"bar\"\n" +
+                "          \"wildcard\" : \"bar\"\n" +
                 "        }\n" +
                 "      }\n" +
                 "    } ]\n" +
@@ -534,29 +534,29 @@ public class TestPageProvider {
         qb = PageProviderQueryBuilder
                 .makeQuery(model, whereClause, params, true);
         assertEqualsEvenUnderWindows("{\n" +
-                "  \"bool\" : {\n" +
-                "    \"must\" : [ {\n" +
-                "      \"query_string\" : {\n" +
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
-                "      }\n" +
-                "    }, {\n" +
-                "      \"regexp\" : {\n" +
-                "        \"dc:title\" : {\n" +
-                "          \"value\" : \"bar\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }, {\n" +
-                "      \"constant_score\" : {\n" +
-                "        \"filter\" : {\n" +
-                "          \"missing\" : {\n" +
-                "            \"field\" : \"dc:modified\",\n" +
-                "            \"null_value\" : true\n" +
-                "          }\n" +
-                "        }\n" +
-                "      }\n" +
-                "    } ]\n" +
-                "  }\n" +
-                "}",
+                        "  \"bool\" : {\n" +
+                        "    \"must\" : [ {\n" +
+                        "      \"query_string\" : {\n" +
+                        "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                        "      }\n" +
+                        "    }, {\n" +
+                        "      \"wildcard\" : {\n" +
+                        "        \"dc:title\" : {\n" +
+                        "          \"wildcard\" : \"bar\"\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    }, {\n" +
+                        "      \"constant_score\" : {\n" +
+                        "        \"filter\" : {\n" +
+                        "          \"missing\" : {\n" +
+                        "            \"field\" : \"dc:modified\",\n" +
+                        "            \"null_value\" : true\n" +
+                        "          }\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    } ]\n" +
+                        "  }\n" +
+                        "}",
                 qb.toString());
 
         // only boolean available in schema without default value
@@ -564,29 +564,29 @@ public class TestPageProvider {
         qb = PageProviderQueryBuilder
                 .makeQuery(model, whereClause, params, true);
         assertEqualsEvenUnderWindows("{\n" +
-                "  \"bool\" : {\n" +
-                "    \"must\" : [ {\n" +
-                "      \"query_string\" : {\n" +
-                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
-                "      }\n" +
-                "    }, {\n" +
-                "      \"regexp\" : {\n" +
-                "        \"dc:title\" : {\n" +
-                "          \"value\" : \"bar\"\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }, {\n" +
-                "      \"constant_score\" : {\n" +
-                "        \"filter\" : {\n" +
-                "          \"missing\" : {\n" +
-                "            \"field\" : \"dc:modified\",\n" +
-                "            \"null_value\" : true\n" +
-                "          }\n" +
-                "        }\n" +
-                "      }\n" +
-                "    } ]\n" +
-                "  }\n" +
-                "}",
+                        "  \"bool\" : {\n" +
+                        "    \"must\" : [ {\n" +
+                        "      \"query_string\" : {\n" +
+                        "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                        "      }\n" +
+                        "    }, {\n" +
+                        "      \"wildcard\" : {\n" +
+                        "        \"dc:title\" : {\n" +
+                        "          \"wildcard\" : \"bar\"\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    }, {\n" +
+                        "      \"constant_score\" : {\n" +
+                        "        \"filter\" : {\n" +
+                        "          \"missing\" : {\n" +
+                        "            \"field\" : \"dc:modified\",\n" +
+                        "            \"null_value\" : true\n" +
+                        "          }\n" +
+                        "        }\n" +
+                        "      }\n" +
+                        "    } ]\n" +
+                        "  }\n" +
+                        "}",
                 qb.toString());
 
         qb = PageProviderQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'",
