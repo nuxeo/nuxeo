@@ -858,12 +858,12 @@
 
     <unzip from="${bundle.fileName}" to="nxwebplatform.tmp">
       <include>web/nuxeo.war/**</include>
-      <include>WEB/**</include>
+      <include>taglibs/**</include>
       <include>tinymce/**</include>
     </unzip>
 
     <copy from="nxwebplatform.tmp/web/nuxeo.war/" to="nuxeo.war/" />
-    <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
+    <copy from="nxwebplatform.tmp/taglibs/" to="nuxeo.war/WEB-INF/" />
     <copy from="nxwebplatform.tmp/tinymce/" to="nuxeo.war/tinymce/" />
 
     <delete path="nxwebplatform.tmp" />
