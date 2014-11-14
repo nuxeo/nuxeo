@@ -17,15 +17,15 @@
 package org.nuxeo.drive.adapter.impl;
 
 import java.security.Principal;
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base implementation of a virtual {@link FolderItem}.
@@ -48,7 +48,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
         folder = true;
         creator = "system";
         // The Fixed Origin of (Unix) Time
-        creationDate = Framework.getService(NuxeoDriveManager.class).getCalendar();
+        creationDate = Calendar.getInstance(NuxeoDriveManagerImpl.UTC);
         creationDate.set(1970, 0, 1, 0, 0, 0);
         lastModificationDate = this.creationDate;
         canRename = false;

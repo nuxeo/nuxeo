@@ -18,7 +18,6 @@
 package org.nuxeo.drive.service;
 
 import java.security.Principal;
-import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
 
@@ -232,12 +231,5 @@ public interface NuxeoDriveManager {
      */
     void addToLocallyEditedCollection(CoreSession session, DocumentModel doc)
             throws ClientException;
-
-    /**
-     * Returns a thread-safe {@link Calendar} in the default time zone.
-     *
-     * @since 7.1
-     */
-    Calendar getCalendar();
 
 }
