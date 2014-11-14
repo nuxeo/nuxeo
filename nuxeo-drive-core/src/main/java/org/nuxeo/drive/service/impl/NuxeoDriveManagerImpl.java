@@ -79,7 +79,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     public static final String DOCUMENT_CHANGE_LIMIT_PROPERTY = "org.nuxeo.drive.document.change.limit";
 
-    protected static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+    public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     /**
      * Cache holding the synchronization roots for a given user (first map key)
@@ -484,11 +484,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public void setChangeFinder(FileSystemChangeFinder changeFinder) {
         this.changeFinder = changeFinder;
-    }
-
-    @Override
-    public Calendar getCalendar() {
-        return Calendar.getInstance(UTC);
     }
 
 }

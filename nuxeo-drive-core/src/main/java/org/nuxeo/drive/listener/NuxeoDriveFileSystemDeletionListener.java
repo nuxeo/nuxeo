@@ -17,6 +17,7 @@
 package org.nuxeo.drive.listener;
 
 import java.security.Principal;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
-import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -175,7 +176,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         LogEntry entry = logger.newLogEntry();
         entry.setEventId(eventName);
         // XXX: shall we use the server local for the event date or UTC?
-        entry.setEventDate(Framework.getService(NuxeoDriveManager.class).getCalendar().getTime());
+        entry.setEventDate(Calendar.getInstance(NuxeoDriveManagerImpl.UTC).getTime());
         entry.setCategory((String) NuxeoDriveEvents.EVENT_CATEGORY);
         entry.setDocUUID(doc.getId());
         entry.setDocPath(doc.getPathAsString());
