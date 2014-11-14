@@ -462,9 +462,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public Map<String, SynchronizationRoots> getSynchronizationRoots(
             Principal principal) throws ClientException {
-        // cache uses soft keys hence physical equality: intern key before
-        // lookup
-        String userName = principal.getName().intern();
+        String userName = principal.getName();
         Map<String, SynchronizationRoots> syncRoots = syncRootCache.getIfPresent(userName);
         if (syncRoots == null) {
             syncRoots = computeSynchronizationRoots(
@@ -477,7 +475,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public Map<String, Set<String>> getCollectionSyncRootMemberIds(
             Principal principal) throws ClientException {
-        String userName = principal.getName().intern();
+        String userName = principal.getName();
         Map<String, Set<String>> collSyncRootMemberIds = collectionSyncRootMemberCache.getIfPresent(userName);
         if (collSyncRootMemberIds == null) {
             collSyncRootMemberIds = computeCollectionSyncRootMemberIds(principal);
@@ -576,7 +574,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     @Override
     public FileSystemChangeFinder getChangeFinder() {
-        return this.changeFinder;
+        return changeFinder;
     }
 
     // TODO: make changeFinder overridable with an extension point and
