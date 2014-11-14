@@ -13,41 +13,29 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Damien Metzler
  */
 package org.nuxeo.ecm.directory;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Random;
 
-import org.nuxeo.common.utils.Base64;
+import org.nuxeo.ecm.directory.digest.PasswordDigester;
+import org.nuxeo.ecm.directory.digest.PasswordDigesterService;
+import org.nuxeo.ecm.directory.digest.UnknownAlgorithmException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper to check passwords and generated hashed salted ones.
  */
 public class PasswordHelper {
 
+    @Deprecated
     public static final String SSHA = "SSHA";
 
+    @Deprecated
     public static final String SMD5 = "SMD5";
-
-    private static final String HSSHA = "{SSHA}";
-
-    private static final String HSMD5 = "{SMD5}";
-
-    private static final String SHA1 = "SHA-1";
-
-    private static final String MD5 = "MD5";
-
-    private static final int SALT_LEN = 8;
-
-    private static final Random random = new SecureRandom();
-
-    // utility class
-    private PasswordHelper() {
-    }
 
     /**
      * Checks if a password is already hashed.
@@ -56,8 +44,20 @@ public class PasswordHelper {
      * @return {@code true} if the password is hashed
      */
     public static boolean isHashed(String password) {
-        return password.startsWith(HSSHA)
-                || password.startsWith(HSMD5);
+        String name = getDigesterService().getDigesterNameFromHash(password);
+        if(name == null) {
+            return false;
+        }
+        try {
+            getDigesterService().getPasswordDigester(name);
+            return true;
+        } catch (UnknownAlgorithmException e) {
+            return false;
+        }
+    }
+
+    private static PasswordDigesterService getDigesterService() {
+        return Framework.getService(PasswordDigesterService.class);
     }
 
     /**
@@ -73,28 +73,13 @@ public class PasswordHelper {
         if (algorithm == null || "".equals(algorithm)) {
             return password;
         }
-        String digestalg;
-        String prefix;
-        if (SSHA.equals(algorithm)) {
-            digestalg = SHA1;
-            prefix = HSSHA;
-        } else if (SMD5.equals(algorithm)) {
-            digestalg = MD5;
-            prefix = HSMD5;
-        } else {
-            throw new RuntimeException("Unknown algorithm: " + algorithm);
-        }
 
-        byte[] salt = new byte[SALT_LEN];
-        synchronized (random) {
-            random.nextBytes(salt);
-        }
-        byte[] hash = digestWithSalt(password, salt, digestalg);
-        byte[] bytes = new byte[hash.length + salt.length];
-        System.arraycopy(hash, 0, bytes, 0, hash.length);
-        System.arraycopy(salt, 0, bytes, hash.length, salt.length);
-        return prefix + Base64.encodeBytes(bytes);
+        PasswordDigester digester = getDigesterService().getPasswordDigester(
+                algorithm);
+        return digester.hashPassword(password);
+
     }
+
 
     /**
      * Verify a password against a hashed password.
@@ -104,36 +89,18 @@ public class PasswordHelper {
      * @return {@code true} if the password matches
      */
     public static boolean verifyPassword(String password, String hashedPassword) {
-        String digestalg;
-        int len;
-        if (hashedPassword.startsWith(HSSHA)) {
-            digestalg = SHA1;
-            len = 20;
-        } else if (hashedPassword.startsWith(HSMD5)) {
-            digestalg = MD5;
-            len = 16;
-        } else {
-            return hashedPassword.equals(password);
+        // Extract method from hashed password
+        PasswordDigesterService ds = getDigesterService();
+        String digesterName = ds.getDigesterNameFromHash(hashedPassword);
+        if (digesterName == null) {
+            return password.equals(hashedPassword);
         }
-        String digest = hashedPassword.substring(6);
 
-        byte[] bytes = Base64.decode(digest);
-        if (bytes == null) {
-            // invalid base64
-            return false;
-        }
-        if (bytes.length < len + 2) {
-            // needs hash + at least two bytes of salt
-            return false;
-        }
-        byte[] hash = new byte[len];
-        byte[] salt = new byte[bytes.length - len];
-        System.arraycopy(bytes, 0, hash, 0, hash.length);
-        System.arraycopy(bytes, hash.length, salt, 0, salt.length);
-        return MessageDigest.isEqual(hash, digestWithSalt(password, salt,
-                digestalg));
+        return ds.getPasswordDigester(digesterName).verifyPassword(password, hashedPassword);
     }
 
+
+    @Deprecated
     public static byte[] digestWithSalt(String password, byte[] salt,
             String algorithm) {
         try {

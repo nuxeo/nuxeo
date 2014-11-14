@@ -21,7 +21,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+
+
+@RunWith(FeaturesRunner.class)
+@Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.api" })
+@Features(RuntimeFeature.class)
 public class TestPasswordHelper {
 
     @Test
@@ -43,6 +53,11 @@ public class TestPasswordHelper {
         assertFalse(PasswordHelper.verifyPassword("abcd",
                 "{SSHA}WPvqVeSt0Mr2llICYmAX9+pjtPH271eznDHvrwfghijkl"));
         assertFalse(PasswordHelper.verifyPassword("abcd", "{SSHA}/wZ7JQUARlC*"));
+
+        assertTrue(PasswordHelper.verifyPassword("abcdéf",
+                "{PBKDF2HmacSHA1}UdzRLXPJ8UcV6+FfyLG5PvxxV9qKcCNqZHYEW1b1Ppw0jrpN1pI38Q=="));
+        assertFalse(PasswordHelper.verifyPassword("abcdéf",
+                "{PBKDF2HmacSHA1}Bla=="));
     }
 
     @Test
@@ -58,6 +73,15 @@ public class TestPasswordHelper {
         hashed = PasswordHelper.hashPassword(password, PasswordHelper.SMD5);
         assertTrue(hashed.startsWith("{SMD5}"));
         assertTrue(PasswordHelper.verifyPassword(password, hashed));
+
+        hashed = PasswordHelper.hashPassword(password, "HmacSHA256");
+        assertTrue(hashed.startsWith("{HmacSHA256}"));
+        assertTrue(PasswordHelper.verifyPassword(password, hashed));
+
+        hashed = PasswordHelper.hashPassword(password, "PBKDF2HmacSHA1");
+        assertTrue(hashed.startsWith("{PBKDF2HmacSHA1}"));
+        assertTrue(PasswordHelper.verifyPassword(password, hashed));
+
     }
 
     @Test

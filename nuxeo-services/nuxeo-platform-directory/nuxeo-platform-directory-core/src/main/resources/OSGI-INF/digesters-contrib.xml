@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.digest.defaultDigesters">
+
+  <extension target="org.nuxeo.ecm.directory.digest.PasswordDigesterServiceImpl"
+    point="digester">
+
+    <digester name="SSHA"
+      class="org.nuxeo.ecm.directory.digest.SaltedDigester">
+      <params>
+        <param name="algorithm">SHA-1</param>
+        <param name="saltLength">8</param>
+      </params>
+    </digester>
+
+
+    <digester name="SMD5"
+      class="org.nuxeo.ecm.directory.digest.SaltedDigester">
+      <params>
+        <param name="algorithm">MD5</param>
+        <param name="saltLength">8</param>
+      </params>
+    </digester>
+
+
+    <digester name="HmacMD5"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">HmacMD5</param>
+        <param name="saltLength">16</param>
+      </params>
+    </digester>
+
+    <digester name="HmacSHA1"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">HmacSHA1</param>
+        <param name="saltLength">20</param>
+      </params>
+    </digester>
+
+    <digester name="HmacSHA256"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">HmacSHA256</param>
+        <param name="saltLength">32</param>
+      </params>
+    </digester>
+
+    <digester name="HmacSHA384"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">HmacSHA384</param>
+        <param name="saltLength">48</param>
+      </params>
+    </digester>
+
+    <digester name="HmacSHA512"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">HmacSHA512</param>
+        <param name="saltLength">64</param>
+      </params>
+    </digester>
+
+
+    <digester name="PBKDF2HmacSHA1"
+      class="org.nuxeo.ecm.directory.digest.PBKDF2WithHmacDigester">
+      <params>
+        <param name="algorithm">PBKDF2WithHmacSHA1</param>
+        <param name="saltLength">20</param>
+        <param name="keyLength">160</param>
+        <param name="numberOfIterations">1000</param>
+      </params>
+    </digester>
+
+
+    <digester name="PBKDF2Hmac256"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">PBKDF2WithHmacSHA256</param>
+        <param name="saltLength">20</param>
+        <param name="keyLength">256</param>
+        <param name="numberOfIterations">1000</param>
+      </params>
+    </digester>
+
+    <digester name="PBKDF2Hmac512"
+      class="org.nuxeo.ecm.directory.digest.HmacDigester">
+      <params>
+        <param name="algorithm">PBKDF2WithHmacSHA512</param>
+        <param name="keyLength">512</param>
+        <param name="numberOfIterations">1000</param>
+      </params>
+    </digester>
+
+
+
+
+
+
+  </extension>
+</component>
