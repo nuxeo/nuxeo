@@ -89,7 +89,6 @@ import com.google.inject.Inject;
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core",
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.platform.query.api" })
