@@ -18,6 +18,7 @@ package org.nuxeo.drive.adapter.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -130,8 +131,9 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         } else {
             FileSystemItem parent = null;
             DocumentModel collection = null;
-            while (docCollections.iterator().hasNext() && parent == null) {
-                collection = docCollections.iterator().next();
+            Iterator<DocumentModel> it = docCollections.iterator();
+            while (it.hasNext() && parent == null) {
+                collection = it.next();
                 parent = getFileSystemItemAdapterService().getFileSystemItem(
                         collection, false, relaxSyncRootConstraint);
             }
