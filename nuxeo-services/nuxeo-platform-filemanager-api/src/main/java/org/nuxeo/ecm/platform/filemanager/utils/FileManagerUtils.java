@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.Normalizer;
 
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -146,6 +147,7 @@ public final class FileManagerUtils {
     public static DocumentModel getExistingDocByPropertyName(
             CoreSession documentManager, String path, String value,
             String propertyName) throws ClientException {
+        value = Normalizer.normalize(value, Normalizer.Form.NFC);
         DocumentModel existing = null;
         String parentId = documentManager.getDocument(new PathRef(path)).getId();
         String query = "SELECT * FROM Document WHERE ecm:parentId = '"
