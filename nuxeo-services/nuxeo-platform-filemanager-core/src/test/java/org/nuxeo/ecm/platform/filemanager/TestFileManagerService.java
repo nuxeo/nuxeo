@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
+import java.text.Normalizer;
 import java.util.List;
 
 import org.apache.commons.lang.SystemUtils;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -312,6 +314,26 @@ public class TestFileManagerService {
                 workspace.getPathAsString(), true, "test-data/hello.csv");
         assertNotNull(doc);
         assertEquals("Note", doc.getType());
+    }
+
+    @Test
+    public void testCreateExistingBlobWithNonNFCNormalizedFilename()
+            throws Exception {
+        // Create doc from NFC normalized filename
+        String fileName = "ÜÜÜ ÓÓÓ.rtf";
+        String nfcNormalizedFileName = Normalizer.normalize(fileName,
+                Normalizer.Form.NFC);
+        Blob blob = StreamingBlob.createFromString("Test content", "text/rtf");
+        blob.setFilename(nfcNormalizedFileName);
+        service.createDocumentFromBlob(coreSession, blob,
+                workspace.getPathAsString(), true, nfcNormalizedFileName);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
+                workspace.getPathAsString(), nfcNormalizedFileName));
+        // Check existing doc with non NFC (NFD) normalized filename
+        String nfdNormalizedFileName = Normalizer.normalize(fileName,
+                Normalizer.Form.NFD);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
+                workspace.getPathAsString(), nfdNormalizedFileName));
     }
 
 }
