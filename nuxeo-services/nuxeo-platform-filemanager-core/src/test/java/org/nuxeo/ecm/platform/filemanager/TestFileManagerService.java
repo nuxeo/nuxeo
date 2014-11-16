@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
+import java.text.Normalizer;
 import java.util.List;
 
 import org.apache.commons.lang.SystemUtils;
@@ -33,11 +34,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -294,6 +297,26 @@ public class TestFileManagerService {
         assertTrue(filters.contains("text/plain"));
         assertTrue(filters.contains("text/rtf"));
         assertTrue(filters.contains("text/xml"));
+    }
+
+    @Test
+    public void testCreateExistingBlobWithNonNFCNormalizedFilename()
+            throws Exception {
+        // Create doc from NFC normalized filename
+        String fileName = "ÜÜÜ ÓÓÓ.rtf";
+        String nfcNormalizedFileName = Normalizer.normalize(fileName,
+                Normalizer.Form.NFC);
+        Blob blob = StreamingBlob.createFromString("Test content", "text/rtf");
+        blob.setFilename(nfcNormalizedFileName);
+        service.createDocumentFromBlob(coreSession, blob,
+                workspace.getPathAsString(), true, nfcNormalizedFileName);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
+                workspace.getPathAsString(), nfcNormalizedFileName));
+        // Check existing doc with non NFC (NFD) normalized filename
+        String nfdNormalizedFileName = Normalizer.normalize(fileName,
+                Normalizer.Form.NFD);
+        assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
+                workspace.getPathAsString(), nfdNormalizedFileName));
     }
 
 }
