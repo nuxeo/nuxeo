@@ -28,6 +28,8 @@ import java.security.Principal;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -81,9 +84,12 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
+
+    private static final Log log = LogFactory.getLog(TestDefaultFileSystemItemFactory.class);
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
@@ -103,6 +109,9 @@ public class TestDefaultFileSystemItemFactory {
 
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
+
+    @Inject
+    protected CollectionManager collectionManager;
 
     protected Principal principal;
 
@@ -761,6 +770,55 @@ public class TestDefaultFileSystemItemFactory {
         checkChildren(folderChildren, folder.getId(), note.getId(),
                 file.getId(), subFolder.getId(), adaptableChild.getId(),
                 ordered);
+    }
+
+    @Test
+    public void testCollectionMembership() {
+        DocumentModel doc = session.createDocumentModel(
+                session.getRootDocument().getPathAsString(), "testDoc", "File");
+        Blob blob = new StringBlob("Content of Joe's file.");
+        blob.setFilename("Joe.odt");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        log.trace("Try to adapt a document not member of any collection");
+        try {
+            defaultFileSystemItemFactory.getFileSystemItem(doc);
+            fail("Trying to adapt doc as a FileSystemItem should throw a RootlessItemException");
+        } catch (RootlessItemException e) {
+            log.trace(e);
+        }
+
+        log.trace("Try to adapt a document member of a non sync root collection");
+        DocumentModel nonSyncrootCollection = collectionManager.createCollection(
+                session, "Non sync root collection", "",
+                session.getRootDocument().getPathAsString());
+        collectionManager.addToCollection(nonSyncrootCollection, doc, session);
+        doc = session.getDocument(doc.getRef());
+        try {
+            defaultFileSystemItemFactory.getFileSystemItem(doc);
+            fail("Trying to adapt doc as a FileSystemItem should throw a RootlessItemException");
+        } catch (RootlessItemException e) {
+            log.trace(e);
+        }
+
+        log.trace("Adapt a document member of a non sync root colllection and a sync root collection");
+        DocumentModel syncRootCollection = collectionManager.createCollection(
+                session, "Sync root collection", "",
+                session.getRootDocument().getPathAsString());
+        nuxeoDriveManager.registerSynchronizationRoot(principal,
+                syncRootCollection, session);
+        collectionManager.addToCollection(syncRootCollection, doc, session);
+        doc = session.getDocument(doc.getRef());
+        FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(doc);
+        assertNotNull(fsItem);
+
+        log.trace("Adapt a document member of a sync root collection only");
+        collectionManager.removeFromCollection(nonSyncrootCollection, doc,
+                session);
+        doc = session.getDocument(doc.getRef());
+        assertEquals(fsItem,
+                defaultFileSystemItemFactory.getFileSystemItem(doc));
     }
 
     protected void setPermission(DocumentModel doc, String userName,
