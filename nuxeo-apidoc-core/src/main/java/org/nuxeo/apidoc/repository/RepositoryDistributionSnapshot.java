@@ -160,10 +160,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     }
 
     protected DocumentModel getBundleContainer() {
-        try {
-            return getCoreSession().getChild(doc.getRef(),
-                    SnapshotPersister.Bundle_Root_NAME);
-        } catch (ClientException e) {
+        DocumentRef ref = new PathRef(doc.getPathAsString(),
+                SnapshotPersister.Bundle_Root_NAME);
+        if (getCoreSession().exists(ref)) {
+            return getCoreSession().getDocument(ref);
+        } else {
             // for compatibility with the previous persistence model
             return doc;
         }
