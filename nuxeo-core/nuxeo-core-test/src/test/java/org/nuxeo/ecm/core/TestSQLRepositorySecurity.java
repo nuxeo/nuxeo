@@ -188,22 +188,20 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             assertSame(UNKNOWN, acp.getAccess("c", "Read"));
             assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
-            if (session.isNegativeAclAllowed()) {
-                // insert a deny ACE before the GRANT
+            // insert a deny Write ACE before the GRANT
 
-                acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
-                // store changes
-                folder.setACP(acp, true);
-                // refetch ac
-                acp = folder.getACP();
-                // check perms now
-                assertSame(GRANT, acp.getAccess("a", "Read"));
-                assertSame(UNKNOWN, acp.getAccess("a", "Write"));
-                assertSame(DENY, acp.getAccess("b", "Write"));
-                assertSame(UNKNOWN, acp.getAccess("b", "Read"));
-                assertSame(UNKNOWN, acp.getAccess("c", "Read"));
-                assertSame(UNKNOWN, acp.getAccess("c", "Write"));
-            }
+            acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
+            // store changes
+            folder.setACP(acp, true);
+            // refetch ac
+            acp = folder.getACP();
+            // check perms now
+            assertSame(GRANT, acp.getAccess("a", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("a", "Write"));
+            assertSame(DENY, acp.getAccess("b", "Write"));
+            assertSame(UNKNOWN, acp.getAccess("b", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("c", "Read"));
+            assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
             // create a child document and grant on it the write for b
 
