@@ -1331,8 +1331,13 @@ public class DBSSession implements Session {
                 if (ace.isGranted()) {
                     continue;
                 }
-                if (ace.getPermission().equals(SecurityConstants.EVERYTHING)
+                String permission = ace.getPermission();
+                if (permission.equals(SecurityConstants.EVERYTHING)
                         && ace.getUsername().equals(SecurityConstants.EVERYONE)) {
+                    continue;
+                }
+                // allow Write, as we're sure it doesn't include Read/Browse
+                if (permission.equals(SecurityConstants.WRITE)) {
                     continue;
                 }
                 throw new IllegalArgumentException("Negative ACL not allowed: "

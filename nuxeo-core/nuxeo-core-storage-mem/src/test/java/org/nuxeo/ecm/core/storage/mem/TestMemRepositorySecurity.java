@@ -164,7 +164,7 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
             assertSame(UNKNOWN, acp.getAccess("c", "Read"));
             assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
-            // insert a deny ACE before the GRANT
+            // insert a deny Write ACE before the GRANT
 
             acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
             // store changes
@@ -310,14 +310,16 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
                 "Workspace");
         session.createDocument(ws2);
 
-        ACP acp = new ACPImpl();
-        ACE denyRead = new ACE("test", READ, false);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { denyRead });
-        acp.addACL(acl);
-        // TODO this produces a stack trace
-        repositoryWorkspace.setACP(acp, true);
-        ws1.setACP(acp, true);
+        if (session.isNegativeAclAllowed()) { // always false for Mem
+            ACP acp = new ACPImpl();
+            ACE denyRead = new ACE("test", READ, false);
+            ACL acl = new ACLImpl();
+            acl.setACEs(new ACE[] { denyRead });
+            acp.addACL(acl);
+            // TODO this produces a stack trace
+            repositoryWorkspace.setACP(acp, true);
+            ws1.setACP(acp, true);
+        }
 
         session.save();
 
