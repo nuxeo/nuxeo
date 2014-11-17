@@ -159,6 +159,38 @@ class Repository(object):
             system(command)
         os.chdir(cwd)
 
+    def git_recurse(self, command, with_optionals=False):
+        """Execute the given Git command on current and sub-repositories. It
+        ignores non Git repositories.
+
+        'command': the command to execute.
+        If 'with_optionals', also recurse on "optional" addons."""
+        command = "git " + command
+        cwd = os.getcwd()
+        os.chdir(self.basedir)
+        log("[.]")
+        system(command)
+        if not self.modules and self.is_nuxeoecm:
+            self.eval_modules()
+        for module in self.modules:
+            module_path = os.path.join(self.basedir, module)
+            if not os.path.isdir(os.path.join(module_path, ".git")):
+                continue
+            os.chdir(module_path)
+            log("[%s]" % module)
+            system(command)
+        if not self.addons and self.is_nuxeoecm:
+            self.eval_addons()
+        for addon in self.addons + (self.optional_addons
+                                    if with_optionals else []):
+            module_path = os.path.join(self.basedir, "addons", addon)
+            if not os.path.isdir(os.path.join(module_path, ".git")):
+                continue
+            os.chdir(module_path)
+            log("[%s]" % addon)
+            system(command)
+        os.chdir(cwd)
+
     def archive(self, archive, version=None, with_optionals=False):
         """Archive the sources of current and sub-repositories.
 
