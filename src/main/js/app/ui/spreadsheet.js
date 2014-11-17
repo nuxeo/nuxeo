@@ -54,7 +54,7 @@ class Spreadsheet {
       var cols = (!columns) ?
           layout.columns.filter((c) =>  c.selectedByDefault !== false)
           :
-          layout.columns.filter((c) => columns.indexOf(c.name) !== -1);
+          columns.map((name) => layout.columns.filter((c) => c.name == name)[0]);
       this.columns = cols
           // Exclude columns without widgets
           .filter((c) => c.widgets)
