@@ -102,7 +102,7 @@ class Repository(object):
         output = check_output("mvn -N help:effective-pom")
         self.addons = self.parse_modules(output)
         output = check_output("mvn -N help:effective-pom " +
-                                  "-f pom-optionals.xml")
+                              "-f pom-optionals.xml")
         self.optional_addons = self.parse_modules(output)
 
     def parse_modules(self, pom):
@@ -192,7 +192,7 @@ class Repository(object):
             os.chdir(os.path.join(self.basedir, "addons", addon))
             log("[%s]" % addon)
             p = system("git archive --prefix=addons/%s/ %s" % (addon, version),
-                     wait=False)
+                       wait=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         make_zip(archive, archive_dir)
         shutil.rmtree(archive_dir)
@@ -210,8 +210,8 @@ class Repository(object):
         elif version not in check_output("git branch").split():
             # create the local branch if missing
             retcode = system("git checkout --track -b %s %s/%s -q" % (version,
-                                                        self.alias, version),
-                   fallback_branch is None)
+                             self.alias, version),
+                             fallback_branch is None)
             if retcode != 0 and fallback_branch is not None:
                 log("Branch %s not found, fallback on %s" % (version,
                                                              fallback_branch))
@@ -230,9 +230,8 @@ class Repository(object):
     def get_mp_config(self, marketplace_conf):
         """Return the Marketplace packages configuration."""
         mp_config = ConfigParser.SafeConfigParser(
-                                            defaults={'other_versions': None,
-                                                      'prepared': 'False',
-                                                      'performed': 'False'})
+            defaults={'other_versions': None, 'prepared': 'False',
+                      'performed': 'False'})
         if marketplace_conf is None:
             no_remote = True
         else:
@@ -293,7 +292,7 @@ class Repository(object):
             for module in self.modules:
                 # Ignore modules which are not Git sub-repositories
                 if (not os.path.isdir(module) or
-                os.path.isdir(os.path.join(module, ".git"))):
+                        os.path.isdir(os.path.join(module, ".git"))):
                     self.git_pull(module, version, fallback_branch)
             # Addons
             os.chdir(os.path.join(self.basedir, "addons"))
@@ -344,9 +343,9 @@ class Repository(object):
             profiles_param = " -P" + ','.join(profiles_param)
         else:
             profiles_param = ""
-        system("mvn %s %s%s -Dnuxeo.tests.random.mode=BYPASS" % (commands,
-                                            skip_tests_param, profiles_param),
-               delay_stdout=False, run=(not dryrun))
+        system("mvn %s %s%s -Dnuxeo.tests.random.mode=BYPASS" % (
+               commands, skip_tests_param, profiles_param), delay_stdout=False,
+               run=(not dryrun))
 
 
 def log(message, out=sys.stdout):
@@ -431,15 +430,16 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
     if retcode != 0:
         if failonerror:
             if logOutput:
-                raise ExitException(retcode,
-                                "Command '%s' returned non-zero exit code (%s)"
-                                    % (cmd, retcode))
+                raise ExitException(
+                    retcode, "Command '%s' returned non-zero exit code (%s)"
+                    % (cmd, retcode))
             else:
                 if err is None or err == "":
                     err = out
-                raise ExitException(retcode,
-                            "Command '%s' returned non-zero exit code (%s)\n%s"
-                                    % (cmd, retcode, err))
+                raise ExitException(
+                    retcode,
+                    "Command '%s' returned non-zero exit code (%s)\n%s"
+                    % (cmd, retcode, err))
     return retcode
 
 

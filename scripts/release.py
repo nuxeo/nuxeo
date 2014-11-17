@@ -67,7 +67,7 @@ import tempfile
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 from nxutils import ExitException, Repository, assert_git_config, extract_zip, \
-     log, make_zip, system
+    log, make_zip, system
 from terminalsize import get_terminal_size
 
 
@@ -120,7 +120,7 @@ given the path parameter.
 
         'path': root path of the repository being released."""
         return os.path.abspath(os.path.join(path, os.pardir,
-                                    "release-%s.log" % os.path.basename(path)))
+                               "release-%s.log" % os.path.basename(path)))
 
     # pylint: disable=R0914
     @staticmethod
@@ -194,7 +194,7 @@ given the path parameter.
             # Files extentions
             "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
             # Properties like nuxeo.*.version
-            "{%s}(nuxeo|marketplace)\..*version" % NAMESPACES.get("pom"))
+            "{%s}(nuxeo|marketplace)\\..*version" % NAMESPACES.get("pom"))
         custom_files_pattern = ""
         custom_props_pattern = ""
         other_versions_split = []
@@ -221,9 +221,9 @@ given the path parameter.
             elif len(other_versions_split) == 1:
                 other_versions = other_versions_split[0]
             else:
-                raise ExitException(1,
-                            "Could not parse other_versions parameter '%s'."
-                                    % other_versions)
+                raise ExitException(
+                    1, "Could not parse other_versions parameter '%s'."
+                    % other_versions)
             other_versions_split = []
             if other_versions:
                 # Parse version replacements
@@ -232,9 +232,9 @@ given the path parameter.
                     if (len(other_version_split) < 2 or
                         len(other_version_split) > 3 or
                         other_version_split.count(None) > 0 or
-                        other_version_split.count("") > 0):
-                        raise ExitException(1,
-                            "Could not parse other_versions parameter '%s'."
+                            other_version_split.count("") > 0):
+                        raise ExitException(
+                            1, "Could not parse other_versions parameter '%s'."
                             % other_versions)
                     other_versions_split.append(other_version_split)
         self.other_versions = other_versions_split
@@ -267,9 +267,10 @@ given the path parameter.
             self.next_snapshot = next_snapshot
         elif self.is_final:
             snapshot_split = re.match("(^.*)(\d+)(-SNAPSHOT$)", self.snapshot)
-            self.next_snapshot = (snapshot_split.group(1)
-                    + str(int(snapshot_split.group(2)) + 1)  # increment minor
-                    + snapshot_split.group(3))
+            self.next_snapshot = (
+                snapshot_split.group(1)
+                + str(int(snapshot_split.group(2)) + 1)  # increment minor
+                + snapshot_split.group(3))
         else:
             self.next_snapshot = self.snapshot
 
@@ -299,14 +300,15 @@ given the path parameter.
                 log("Also replace version:".ljust(25) +
                     '/'.join(other_version))
         if store_params:
-            release_log = os.path.abspath(os.path.join(self.repo.basedir,
-                                                       os.pardir,
-                    "release-%s.log" % os.path.basename(self.repo.basedir)))
+            release_log = os.path.abspath(os.path.join(
+                self.repo.basedir, os.pardir,
+                "release-%s.log" % os.path.basename(self.repo.basedir)))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
-                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\nSKIP_ITS=%s\n"
-                        "PROFILES=%s\nOTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
-                        "PROPS_PATTERN=%s\nMSG_COMMIT=%s\nMSG_TAG=%s\n" %
+                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
+                        "SKIP_ITS=%s\nPROFILES=%s\nOTHER_VERSIONS=%s\n"
+                        "FILES_PATTERN=%s\nPROPS_PATTERN=%s\nMSG_COMMIT=%s\n"
+                        "MSG_TAG=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance_version,
                          self.is_final, self.skipTests, self.skipITs,
@@ -366,7 +368,7 @@ given the path parameter.
                         for prop in properties.getchildren():
                             if (not isinstance(prop, etree._Comment)
                                 and props_pattern.match(prop.tag)
-                                and prop.text == old_version):
+                                    and prop.text == old_version):
                                 prop.text = new_version
                                 replaced = True
                     tree.write_c14n(os.path.join(root, name))
@@ -395,8 +397,8 @@ given the path parameter.
         if not self.repo.is_nuxeoecm:
             log("Skip packaging step (not a main Nuxeo repository).")
             return
-        self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
-                                                   os.pardir, "archives"))
+        self.archive_dir = os.path.abspath(
+            os.path.join(self.repo.basedir, os.pardir, "archives"))
         if os.path.isdir(self.archive_dir):
             shutil.rmtree(self.archive_dir)
         os.mkdir(self.archive_dir)
@@ -444,13 +446,13 @@ given the path parameter.
 
         files = os.listdir(os.path.join(new_name, "bin"))
         for filename in (fnmatch.filter(files, "*ctl") +
-                        fnmatch.filter(files, "*.sh") +
-                        fnmatch.filter(files, "*.command")):
+                         fnmatch.filter(files, "*.sh") +
+                         fnmatch.filter(files, "*.command")):
             os.chmod(os.path.join(new_name, "bin", filename), 0744)
         with open(os.path.join(new_name, "bin", "nuxeo.conf"), "a") as f:
             f.write("nuxeo.wizard.done=false\n")
-        make_zip(os.path.join(self.archive_dir, new_name + ".zip"),
-                            os.getcwd(), new_name)
+        make_zip(os.path.join(
+                 self.archive_dir, new_name + ".zip"), os.getcwd(), new_name)
         os.chdir(cwd)
         # Cleanup temporary directory
         shutil.rmtree(os.path.join(self.tmpdir, new_name))
@@ -546,13 +548,13 @@ Packages aligned even if not released)"""
                                                        self.next_snapshot)
             if post_release_change:
                 msg_commit += "\nUpdate %s to %s" % (self.snapshot,
-                                                   self.next_snapshot)
+                                                     self.next_snapshot)
         else:
             msg_commit = ''
             post_release_change = False
         for other_version in self.other_versions:
             if (len(other_version) == 3 and
-                self.update_versions(other_version[0], other_version[2])):
+                    self.update_versions(other_version[0], other_version[2])):
                 post_release_change = True
                 msg_commit += "\nUpdate %s to %s" % (other_version[0],
                                                      other_version[2])
@@ -674,10 +676,10 @@ Packages aligned even if not released)"""
 
 # pylint: disable=R0912,R0914,R0915
 def main():
-#     global namespaces
+    # global namespaces
     assert_git_config()
-#     namespaces = {"pom": "http://maven.apache.org/POM/4.0.0"}
-#     etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
+    # namespaces = {"pom": "http://maven.apache.org/POM/4.0.0"}
+    # etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
 
     try:
         if not os.path.isdir(".git"):
@@ -711,8 +713,8 @@ possible. The release-*.log file is not read.""")
 then set the next SNAPSHOT version. If a maintenance version was provided, \
 then a maintenance branch is kept, else it is deleted after release."""
         help_formatter = IndentedHelpFormatterWithNL(
-#                 max_help_position=6,
-                 width=get_terminal_size()[0])
+            # max_help_position=6,
+            width=get_terminal_size()[0])
         parser = optparse.OptionParser(usage=usage, description=description,
                                        formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
@@ -752,33 +754,35 @@ Those profiles are activated by default (unless overriden by that parameter):\n
  - 'nightly' if 'deploy' option is used.
 """)
         versioning_options = optparse.OptionGroup(parser, 'Version policy')
-        versioning_options.add_option('-f', '--final', action="store_true",
-            dest='is_final', default=False,
-            help="Is it a final release? Default: '%default'")
-        versioning_options.add_option("-b", "--branch", action="store",
-            type="string", dest="branch", default="auto",
-            help="""Branch to release. \
+        versioning_options.add_option(
+            '-f', '--final', action="store_true", dest='is_final',
+            default=False, help="Is it a final release? Default: '%default'")
+        versioning_options.add_option(
+            "-b", "--branch", action="store", type="string", dest="branch",
+            default="auto", help="""Branch to release. \
 Default: '%default' = the current branch""")
-        versioning_options.add_option("-t", "--tag", action="store",
-            type="string", dest="tag", default="auto",
-            help="""Released version. SCM tag is 'release-$TAG'.
+        versioning_options.add_option(
+            "-t", "--tag", action="store", type="string", dest="tag",
+            default="auto", help="""Released version. SCM tag is 'release-$TAG'.
 Default: '%default'\n
 In mode 'auto', if final option is True, then the default value is the current
 version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with a date
 (aka 'date-based release').""")
-        versioning_options.add_option("-n", "--next", action="store",
-            type="string", dest="next_snapshot", default="auto",
+        versioning_options.add_option(
+            "-n", "--next", action="store", type="string",
+            dest="next_snapshot", default="auto",
             help="""Version post-release. Default: '%default'\n
 In mode 'auto', if final option is True, then the next snapshot is the current
 one increased, else it is equal to the current.""")
-        versioning_options.add_option('-m', '--maintenance', action="store",
-            dest='maintenance_version', default="auto",
-            help="""Maintenance version. Default: '%default'\n
+        versioning_options.add_option(
+            '-m', '--maintenance', action="store", dest='maintenance_version',
+            default="auto", help="""Maintenance version. Default: '%default'\n
 The maintenance branch is always named like the tag without the 'release-'
 prefix. If set, the version will be used on the maintenance branch, else, in
 mode 'auto', the maintenance branch is deleted after release.""")
-        versioning_options.add_option('--arv', '--also-replace-version',
-            action="store", dest='other_versions', default=None,
+        versioning_options.add_option(
+            '--arv', '--also-replace-version', action="store",
+            dest='other_versions', default=None,
             help="""Other version(s) to replace. Default: '%default'\n
 Use a slash ('/') as a separator between old and new version: \
 '1.0-SNAPSHOT/1.0'.\n
@@ -796,16 +800,18 @@ properties can be provided using two colon (':') separators:
 to all replacements, including the released version.\n
 Default files and properties patterns are respectively:
 '^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$' and
-'(nuxeo|marketplace)\..*version'. They can't be removed.""")
-        versioning_options.add_option('--mc', '--msg-commit', action="store",
-            type="string", dest='msg_commit', default='',
+'(nuxeo|marketplace)\\..*version'. They can't be removed.""")
+        versioning_options.add_option(
+            '--mc', '--msg-commit', action="store", type="string",
+            dest='msg_commit', default='',
             help="""Additional message to put in front of default commit \
 messages:\n
 'Release $BRANCH, update $SNAPSHOT to $TAG, update ...'.\n
 'Release release-$TAG from $SNAPSHOT on $BRANCH'
 """)
-        versioning_options.add_option('--mt', '--msg-tag', action="store",
-            type="string", dest='msg_tag', default='',
+        versioning_options.add_option(
+            '--mt', '--msg-tag', action="store", type="string", dest='msg_tag',
+            default='',
             help="""Like '--mc' option but specific to tag messages. \
 Default tag message:\n
 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
@@ -815,12 +821,12 @@ Default tag message:\n
         if len(args) == 1:
             command = args[0]
         elif len(args) > 1:
-            raise ExitException(1,
-                        "'command' must be a single argument: '%s'." % (args)
-                        + " See usage with '-h'.")
+            raise ExitException(
+                1, "'command' must be a single argument: '%s'." % (args)
+                + " See usage with '-h'.")
         if ("command" in locals() and command == "perform"
             and os.path.isfile(Release.get_release_log(os.getcwd()))
-            and options == parser.get_default_values()):
+                and options == parser.get_default_values()):
             (options.remote_alias, options.branch, options.tag,
              options.next_snapshot, options.maintenance_version,
              options.is_final, options.skipTests, options.skipITs,
@@ -846,7 +852,7 @@ Default tag message:\n
                     options.maintenance_version = options.tag + ".1-SNAPSHOT"
                 options.next_snapshot = None
             if command == "package" and options.tag != "auto":
-                    options.branch = options.tag
+                options.branch = options.tag
             if command != "maintenance":
                 if options.branch == "auto":
                     options.branch = repo.get_current_version()
@@ -857,7 +863,7 @@ Default tag message:\n
                           options.other_versions, options.profiles,
                           options.msg_commit, options.msg_tag)
         if ("command" not in locals() or
-            command != "maintenance" and command != "package"):
+                command != "maintenance" and command != "package"):
             release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
