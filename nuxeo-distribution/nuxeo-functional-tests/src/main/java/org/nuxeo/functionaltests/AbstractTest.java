@@ -379,12 +379,14 @@ public abstract class AbstractTest {
      */
     @After
     public void checkJavascriptError() {
-        List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
-        if (jsErrors != null && !jsErrors.isEmpty()) {
-            for (JavaScriptError jsError : jsErrors) {
-                log.error(jsError);
+        if (driver != null) {
+            List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
+            if (jsErrors != null && !jsErrors.isEmpty()) {
+                for (JavaScriptError jsError : jsErrors) {
+                    log.error(jsError);
+                }
+                fail("Javascript errors detected");
             }
-            fail("Javascript errors detected");
         }
     }
 
@@ -394,7 +396,6 @@ public abstract class AbstractTest {
             driver.quit();
             driver = null;
         }
-
         removeFireBug();
 
         try {

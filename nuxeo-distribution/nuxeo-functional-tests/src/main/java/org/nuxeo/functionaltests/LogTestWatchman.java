@@ -168,9 +168,11 @@ public class LogTestWatchman extends TestWatchman {
     }
 
     public void runBeforeAfters() {
-        ScreenshotTaker taker = new ScreenshotTaker();
-        lastScreenshot = taker.takeScreenshot(driver, filePrefix).getAbsolutePath();
-        lastPageSource = taker.dumpPageSource(driver, filePrefix).getAbsolutePath();
+        if (driver != null) {
+            ScreenshotTaker taker = new ScreenshotTaker();
+            lastScreenshot = taker.takeScreenshot(driver, filePrefix).getAbsolutePath();
+            lastPageSource = taker.dumpPageSource(driver, filePrefix).getAbsolutePath();
+        }
     }
 
     public void setDriver(RemoteWebDriver driver) {
