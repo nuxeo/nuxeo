@@ -36,6 +36,10 @@ import org.nuxeo.ecm.platform.query.core.AggregateBase;
 public abstract class AggregateEsBase<B extends Bucket> extends
         AggregateBase<B> {
 
+    public final static char XPATH_SEP = '/';
+
+    public final static char ES_MUTLI_LEVEL_SEP = '.';
+
     public AggregateEsBase(AggregateDefinition definition,
             DocumentModel searchDocument) {
         super(definition, searchDocument);
@@ -63,6 +67,7 @@ public abstract class AggregateEsBase<B extends Bucket> extends
         if (NXQL.ECM_FULLTEXT.equals(ret)) {
             ret = FULLTEXT_FIELD;
         }
+        ret = ret.replace(XPATH_SEP, ES_MUTLI_LEVEL_SEP);
         return ret;
     }
 
