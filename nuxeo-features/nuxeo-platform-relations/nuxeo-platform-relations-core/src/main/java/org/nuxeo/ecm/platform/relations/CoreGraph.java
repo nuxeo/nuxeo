@@ -266,6 +266,14 @@ public class CoreGraph implements Graph {
         }
 
         protected void add(Statement statement) throws ClientException {
+            DocumentModel rel = session.createDocumentModel(null, "relation",
+                    docType);
+            rel = setRelationProperties(rel, statement);
+            session.createDocument(rel);
+        }
+
+        protected DocumentModel setRelationProperties(DocumentModel rel,
+                Statement statement) throws ClientException {
             Resource pred = statement.getPredicate();
             NodeAsString predicate = getNodeAsString(pred);
             if (predicate.uri == null) {
@@ -311,8 +319,6 @@ public class CoreGraph implements Graph {
                 title = title.substring(0, MAX_TITLE);
             }
 
-            DocumentModel rel = session.createDocumentModel(null, "relation",
-                    docType);
             rel.setPropertyValue(REL_PREDICATE, predicate.uri);
             if (source.id != null) {
                 rel.setPropertyValue(REL_SOURCE_ID, source.id);
@@ -345,7 +351,7 @@ public class CoreGraph implements Graph {
             if (comment != null) {
                 rel.setPropertyValue(DC_DESCRIPTION, comment);
             }
-            session.createDocument(rel);
+            return rel;
         }
     }
 
