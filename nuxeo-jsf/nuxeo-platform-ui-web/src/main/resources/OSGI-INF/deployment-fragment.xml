@@ -301,6 +301,10 @@
       <param-name>org.richfaces.LoadScriptStrategy</param-name>
       <param-value>ALL</param-value>
     </context-param>
+    <context-param>
+      <param-name>org.richfaces.resourceOptimization.enabled</param-name>
+      <param-value>true</param-value>
+    </context-param>
 
     <!-- use a global queue for ajax requests since JSF pages rely
       on Seam that does not support concurrent requests in the same
