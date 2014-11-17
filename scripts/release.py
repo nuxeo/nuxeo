@@ -433,18 +433,18 @@ class Release(object):
             .format(self.branch, self.maintenance_branch, self.tag))
         msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot,
                                                       self.tag)
-        self.repo.system_recurse("git checkout -b %s" % self.maintenance_branch)
+        self.repo.git_recurse("checkout -b %s" % self.maintenance_branch)
         self.update_versions(self.snapshot, self.tag)
         for other_version in self.other_versions:
             if len(other_version) > 0:
                 self.update_versions(other_version[0], other_version[1])
                 msg_commit += ", update %s to %s" % (other_version[0],
                                                      other_version[1])
-        self.repo.system_recurse("git commit -m'%s %s' -a" % (self.msg_commit,
+        self.repo.git_recurse("commit -m'%s %s' -a" % (self.msg_commit,
                                                               msg_commit))
         msg_tag = "Release release-%s from %s on %s" % (self.tag, self.snapshot,
                                                         self.branch)
-        self.repo.system_recurse("git tag -a release-%s -m'%s %s'" % (self.tag,
+        self.repo.git_recurse("tag -a release-%s -m'%s %s'" % (self.tag,
                                                         self.msg_tag, msg_tag))
 
         # TODO NXP-8569 Optionally merge maintenance branch on source
@@ -453,11 +453,11 @@ class Release(object):
             log("\n[INFO] Maintenance branch (update version and commit)...")
             msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
             self.update_versions(self.tag, self.maintenance_version)
-            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
+            self.repo.git_recurse("commit -m'%s' -a" % msg_commit)
 
         log("\n[INFO] Released branch %s (update version and commit)..." %
             self.branch)
-        self.repo.system_recurse("git checkout %s" % self.branch)
+        self.repo.git_recurse("checkout %s" % self.branch)
         # Update released branches with next versions
         post_release_change = self.update_versions(self.snapshot, self.next_snapshot)
         msg_commit = "Post release %s." % self.branch
@@ -470,16 +470,16 @@ class Release(object):
                 msg_commit += ", update %s to %s" % (other_version[0],
                                                      other_version[2])
         if post_release_change:
-            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
+            self.repo.git_recurse("commit -m'%s' -a" % msg_commit)
 
         if self.maintenance_version == "auto":
             log("\n[INFO] Delete maintenance branch %s..." %
                 self.maintenance_branch)
-            self.repo.system_recurse("git branch -D %s" %
+            self.repo.git_recurse("branch -D %s" %
                                      self.maintenance_branch)
 
         log("\n[INFO] Build and package release-%s..." % self.tag)
-        self.repo.system_recurse("git checkout release-%s" % self.tag)
+        self.repo.git_recurse("checkout release-%s" % self.tag)
         if dryrun:
             return
         if dodeploy:
@@ -498,14 +498,14 @@ class Release(object):
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch)
-        self.repo.system_recurse("git push %s %s" % (self.repo.alias,
+        self.repo.git_recurse("push %s %s" % (self.repo.alias,
                                                      self.branch))
         if self.maintenance_version != "auto":
-            self.repo.system_recurse("git push %s %s" % (self.repo.alias,
+            self.repo.git_recurse("push %s %s" % (self.repo.alias,
                                                          self.maintenance_branch))
-        self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
+        self.repo.git_recurse("push %s release-%s" % (self.repo.alias,
                                                              self.tag))
-        self.repo.system_recurse("git checkout release-%s" % self.tag)
+        self.repo.git_recurse("checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
                         profiles="release,-qa" + self.profiles)
         os.chdir(cwd)
