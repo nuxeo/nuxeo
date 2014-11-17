@@ -3652,6 +3652,11 @@
         <artifactId>selenium-server-standalone</artifactId>
         <version>${selenium.version}</version>
       </dependency>
+     <dependency>
+       <groupId>net.jsourcerer.webdriver</groupId>
+       <artifactId>JSErrorCollector</artifactId>
+       <version>0.5-atlassian-2</version>
+     </dependency>
       <dependency>
         <groupId>biz.neustar</groupId>
         <artifactId>browsermob-proxy</artifactId>

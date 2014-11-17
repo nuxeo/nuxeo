@@ -60,6 +60,10 @@
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.jsourcerer.webdriver</groupId>
+      <artifactId>JSErrorCollector</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
