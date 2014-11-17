@@ -22,11 +22,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
-import org.nuxeo.runtime.metrics.MetricsService;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
+import org.nuxeo.runtime.management.counters.CounterHelper;
 
 /**
  *
@@ -37,18 +33,12 @@ import com.codahale.metrics.SharedMetricRegistries;
  */
 public class EventCounterListener implements PostCommitEventListener {
 
-    // @since 5.7.2
-    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-
     // Counters used
-    public final Counter createCount = registry.counter(MetricRegistry.name(
-            "nuxeo.events", "create"));
+    public static final String EVENT_CREATE_COUNTER = "org.nuxeo.event.create";
 
-    public final Counter updateCount = registry.counter(MetricRegistry.name(
-            "nuxeo.events", "update"));
+    public static final String EVENT_UPDATE_COUNTER = "org.nuxeo.event.update";
 
-    public final Counter removeCount = registry.counter(MetricRegistry.name(
-            "nuxeo.events", "remove"));
+    public static final String EVENT_REMOVE_COUNTER = "org.nuxeo.event.remove";
 
     // Event tracked
     protected static final List<String> createEvents = Arrays.asList(new String[] {
@@ -99,13 +89,13 @@ public class EventCounterListener implements PostCommitEventListener {
         }
 
         if (created > 0) {
-            createCount.inc(created);
+            CounterHelper.increaseCounter(EVENT_CREATE_COUNTER, created);
         }
         if (updated > 0) {
-            updateCount.inc(updated);
+            CounterHelper.increaseCounter(EVENT_UPDATE_COUNTER, updated);
         }
         if (removed > 0) {
-            removeCount.inc(removed);
+            CounterHelper.increaseCounter(EVENT_REMOVE_COUNTER, removed);
         }
     }
 
