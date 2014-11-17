@@ -400,7 +400,7 @@ public abstract class AbstractTest {
         try {
             stopProxy();
         } catch (Exception e) {
-            System.err.println("Could not stop proxy: " + e.getMessage());
+            log.error("Could not stop proxy: " + e.getMessage());
         }
     }
 
