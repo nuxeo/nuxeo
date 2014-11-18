@@ -15,6 +15,10 @@
   <description>Parent project for the Nuxeo Drive addon
   </description>
 
+  <properties>
+    <nuxeo.drive.version>6.0-HF01-SNAPSHOT</nuxeo.drive.version>
+  </properties>
+
   <modules>
     <module>nuxeo-drive-jsf</module>
     <module>nuxeo-drive-core</module>
