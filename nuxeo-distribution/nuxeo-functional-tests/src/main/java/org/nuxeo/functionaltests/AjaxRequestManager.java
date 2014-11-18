@@ -92,6 +92,9 @@ public class AjaxRequestManager {
         }));
     }
 
+    /**
+     * @since 7.1
+     */
     public void waitForJQueryRequests() {
         waitUntil(new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
