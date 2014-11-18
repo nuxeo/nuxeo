@@ -94,29 +94,26 @@ public class NuxeoContainer {
 
     private static volatile InstallContext installContext;
 
-    private static Context parentContext;
-
     protected static Context rootContext;
+
+    protected static Context parentContext;
 
     protected static String jndiPrefix = "java:comp/env/";
 
     // @since 5.7
-    protected static final MetricRegistry registry = SharedMetricRegistries
-        .getOrCreate(MetricsService.class.getName());
+    protected static final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected static final Counter rollbackCount = registry
-        .counter(MetricRegistry.name("nuxeo", "transactions", "rollbacks"));
+    protected static final Counter rollbackCount = registry.counter(MetricRegistry.name(
+            "nuxeo", "transactions", "rollbacks"));
 
-    protected static final Counter concurrentCount = registry
-        .counter(MetricRegistry.name("nuxeo", "transactions", "concurrents",
-                "count"));
+    protected static final Counter concurrentCount = registry.counter(MetricRegistry.name(
+            "nuxeo", "transactions", "concurrents", "count"));
 
-    protected static final Counter concurrentMaxCount = registry
-        .counter(MetricRegistry.name("nuxeo", "transactions", "concurrents",
-                "max"));
+    protected static final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
+            "nuxeo", "transactions", "concurrents", "max"));
 
-    protected static final Timer transactionTimer = registry
-        .timer(MetricRegistry.name("nuxeo", "transactions", "duration"));
+    protected static final Timer transactionTimer = registry.timer(MetricRegistry.name(
+            "nuxeo", "transactions", "duration"));
 
     protected static final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
 
@@ -147,7 +144,7 @@ public class NuxeoContainer {
         log.trace("Installing nuxeo container", installContext);
         rootContext = new NamingContext();
         parentContext = InitialContextAccessor.getInitialContext();
-        if (parentContext != null) {
+        if (parentContext != null && parentContext != rootContext) {
             installTransactionManager(parentContext);
         } else {
             addDeepBinding(nameOf("TransactionManager"), new Reference(
@@ -220,7 +217,6 @@ public class NuxeoContainer {
         } finally {
             log.trace("Uninstalling nuxeo container", installContext);
             installContext = null;
-            parentContext = null;
             rootContext = null;
             tm = null;
             tmRecoverable = null;
@@ -238,8 +234,7 @@ public class NuxeoContainer {
         synchronized (listeners) {
             listeners.add(listener);
         }
-        for (Map.Entry<String, ConnectionManagerWrapper> entry : connectionManagers
-            .entrySet()) {
+        for (Map.Entry<String, ConnectionManagerWrapper> entry : connectionManagers.entrySet()) {
             listener.handleNewConnectionManager(entry.getKey(),
                     entry.getValue().cm);
         }
@@ -282,7 +277,6 @@ public class NuxeoContainer {
     public static Context getRootContext() {
         return rootContext;
     }
-
 
     /**
      * Bind object in root context. Create needed sub contexts.
@@ -461,9 +455,25 @@ public class NuxeoContainer {
         }
     }
 
+    public static <T> T lookup(String name, Class<T> type)
+            throws NamingException {
+        if (rootContext == null) {
+            throw new NamingException("no naming context available");
+        }
+        return lookup(rootContext, name, type);
+    }
+
     public static <T> T lookup(Context context, String name, Class<T> type)
             throws NamingException {
-        Object resolved = context.lookup(detectJNDIPrefix(context).concat(name));
+        Object resolved;
+        try {
+            resolved = context.lookup(detectJNDIPrefix(context).concat(name));
+        } catch (NamingException cause) {
+            if (parentContext == null) {
+                throw cause;
+            }
+            return type.cast(parentContext.lookup(detectJNDIPrefix(parentContext).concat(name)));
+        }
         if (resolved instanceof Reference) {
             try {
                 resolved = NamingManager.getObjectInstance(resolved,
@@ -477,7 +487,8 @@ public class NuxeoContainer {
 
     protected static void installTransactionManager(Context context)
             throws NamingException {
-        TransactionManager actual = lookup(context, "TransactionManager", TransactionManager.class);
+        TransactionManager actual = lookup(context, "TransactionManager",
+                TransactionManager.class);
         if (tm != null) {
             return;
         }
@@ -558,8 +569,7 @@ public class NuxeoContainer {
         public void commit() throws HeuristicMixedException,
                 HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
-            Timer.Context timerContext = timers.remove(transactionManager
-                .getTransaction());
+            Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.commit();
             if (timerContext != null) {
                 timerContext.stop();
@@ -570,8 +580,7 @@ public class NuxeoContainer {
         @Override
         public void rollback() throws IllegalStateException, SecurityException,
                 SystemException {
-            Timer.Context timerContext = timers.remove(transactionManager
-                .getTransaction());
+            Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.rollback();
             concurrentCount.dec();
             if (timerContext != null) {
@@ -602,8 +611,7 @@ public class NuxeoContainer {
                 config.getIdleTimeoutMinutes(), config.getMatchOne(),
                 config.getMatchAll(), config.getSelectOneNoMatch());
 
-        ClassLoader classLoader = Thread.currentThread()
-            .getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
 
         return new GenericConnectionManager(transactionSupport, poolingSupport,
                 null, tracker, tmRecoverable, config.getName(), classLoader);
@@ -698,22 +706,18 @@ public class NuxeoContainer {
         @Override
         public void registerNamedXAResourceFactory(
                 NamedXAResourceFactory factory) {
-            if (!RecoverableTransactionManager.class.isAssignableFrom(tm
-                .getClass())) {
+            if (!RecoverableTransactionManager.class.isAssignableFrom(tm.getClass())) {
                 throw new UnsupportedOperationException();
             }
-            ((RecoverableTransactionManager) tm)
-                .registerNamedXAResourceFactory(factory);
+            ((RecoverableTransactionManager) tm).registerNamedXAResourceFactory(factory);
         }
 
         @Override
         public void unregisterNamedXAResourceFactory(String factory) {
-            if (!RecoverableTransactionManager.class.isAssignableFrom(tm
-                .getClass())) {
+            if (!RecoverableTransactionManager.class.isAssignableFrom(tm.getClass())) {
                 throw new UnsupportedOperationException();
             }
-            ((RecoverableTransactionManager) tm)
-                .unregisterNamedXAResourceFactory(factory);
+            ((RecoverableTransactionManager) tm).unregisterNamedXAResourceFactory(factory);
         }
 
         @Override
@@ -763,8 +767,8 @@ public class NuxeoContainer {
                 public void registerInterposedSynchronization(
                         javax.transaction.Synchronization synchronization) {
                     try {
-                        TransactionHelper.lookupSynchronizationRegistry()
-                            .registerInterposedSynchronization(synchronization);
+                        TransactionHelper.lookupSynchronizationRegistry().registerInterposedSynchronization(
+                                synchronization);
                     } catch (NamingException e) {
                         ;
                     }
@@ -780,8 +784,7 @@ public class NuxeoContainer {
 
             protected boolean unshareable;
 
-            protected final String threadName = Thread.currentThread()
-                .getName();
+            protected final String threadName = Thread.currentThread().getName();
 
             protected final Map<ConnectionInfo, Allocation> inuse = new HashMap<ConnectionInfo, Allocation>();
 
@@ -795,8 +798,7 @@ public class NuxeoContainer {
                     for (Allocation each : context.inuse.values()) {
                         addSuppressed(each);
                         try {
-                            each.info.getManagedConnectionInfo()
-                                .getManagedConnection().destroy();
+                            each.info.getManagedConnectionInfo().getManagedConnection().destroy();
                         } catch (ResourceException cause) {
                             addSuppressed(cause);
                         }
@@ -823,8 +825,8 @@ public class NuxeoContainer {
                 try {
                     checkIsEmpty();
                 } catch (AllocationErrors cause) {
-                    LogFactory.getLog(ConnectionTrackingCoordinator.class)
-                        .error("cleanup errors", cause);
+                    LogFactory.getLog(ConnectionTrackingCoordinator.class).error(
+                            "cleanup errors", cause);
                 }
             }
 
