@@ -9,14 +9,14 @@
 
   <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-drive-parent</artifactId>
-  <version>6.0-HF01-SNAPSHOT</version>
+  <version>6.0-HF01-I20141118_1148</version>
   <packaging>pom</packaging>
   <name>Nuxeo Drive Parent</name>
   <description>Parent project for the Nuxeo Drive addon
   </description>
 
   <properties>
-    <nuxeo.drive.version>6.0-HF01-SNAPSHOT</nuxeo.drive.version>
+    <nuxeo.drive.version>6.0-HF01-I20141118_1148</nuxeo.drive.version>
   </properties>
 
   <modules>
