@@ -281,7 +281,7 @@
       <helpLabels>
         <label mode="any">
           URL to display as the fancybox content. Example:
-          "#{previewActions.getCurrentDocumentPreviewPopupURL()}"
+          "#{'#{'}previewActions.getCurrentDocumentPreviewPopupURL()}"
         </label>
       </helpLabels>
       <fields>
