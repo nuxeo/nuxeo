@@ -21,35 +21,35 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.sql.DataSource;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestDataSourceComponent extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource" })
+public class TestDataSourceComponent  {
 
     protected static final ClassLoader LOADER = TestDataSourceComponent.class.getClassLoader();
 
-    private static final String TEST_BUNDLE = "org.nuxeo.runtime.datasource";
+    private static final String DATASOURCE_CONTRIB = "org.nuxeo.runtime.datasource:datasource-contrib.xml";
 
-    private static final URL DATASOURCE_CONTRIB = LOADER.getResource("datasource-contrib.xml");
+    private static final String XADATASOURCE_CONTRIB = "org.nuxeo.runtime.datasource:xadatasource-contrib.xml";
 
-    private static final URL XADATASOURCE_CONTRIB = LOADER.getResource("xadatasource-contrib.xml");
-
-    private static final URL XADATASOURCE_PG_CONTRIB = LOADER.getResource("xadatasource-pg-contrib.xml");
+    private static final String XADATASOURCE_PG_CONTRIB = "org.nuxeo.runtime.datasource:xadatasource-pg-contrib.xml";
 
     /** This directory will be deleted and recreated. */
     private static final String DIRECTORY = "target/test/h2";
@@ -61,20 +61,6 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     private static final String COUNT_SQL_PG = "SELECT COUNT(*) FROM PG_STAT_ACTIVITY";
 
-    private String countPhysicalConnectionsSql;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        File dir = new File(DIRECTORY);
-        FileUtils.deleteQuietly(dir);
-        dir.mkdirs();
-        Framework.getProperties().put(PROP_NAME, dir.getPath());
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.runtime.datasource");
-        fireFrameworkStarted();
-    }
 
     @Test
     public void testJNDIName() throws Exception {
@@ -97,108 +83,92 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     }
 
     @Test
+    @LocalDeploy(DATASOURCE_CONTRIB)
     public void testNonXANoTM() throws Exception {
-        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
-        try {
-            checkDataSourceOk("foo", true);
-            checkDataSourceOk("alias", true);
-        } finally {
-            ctx.destroy();
-        }
+        checkDataSourceOk("foo", true);
+        checkDataSourceOk("alias", true);
     }
 
     @Test
+    @LocalDeploy(DATASOURCE_CONTRIB)
     public void testNonXA() throws Exception {
-        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
-        try {
-            checkDataSourceOk("foo", true);
-            checkDataSourceOk("alias", true);
-        } finally {
-            ctx.destroy();
-        }
-
+        checkDataSourceOk("foo", true);
+        checkDataSourceOk("alias", true);
     }
 
     @Test
+    @LocalDeploy(XADATASOURCE_CONTRIB)
     public void testXANoTx() throws Exception {
-        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE,
-                XADATASOURCE_CONTRIB);
-        try {
-            checkDataSourceOk("foo", true);
-        } finally {
-            ctx.destroy();
-        }
+        checkDataSourceOk("foo", true);
     }
 
     @Test
+    @LocalDeploy(XADATASOURCE_CONTRIB)
     public void testXA() throws Exception {
-        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE,
-                XADATASOURCE_CONTRIB);
+        TransactionHelper.startTransaction();
         try {
-            TransactionHelper.startTransaction();
-            try {
-                checkDataSourceOk("foo", false);
-            } finally {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
+            checkDataSourceOk("foo", false);
         } finally {
-            ctx.destroy();
+            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
-    // disabled for now, see NXP-12086
-    @Ignore
+    public static class NXP12086 implements ConditionalIgnoreRule.Condition {
+
+        @Override
+        public boolean shouldIgnore() {
+            return true;
+        }
+
+    }
+
     @Test
+    @Ignore // NXP12086
+    @LocalDeploy(XADATASOURCE_CONTRIB)
     public void testXANoLeak() throws Exception {
-        countPhysicalConnectionsSql = COUNT_SQL;
-        dotestXANoLeak(XADATASOURCE_CONTRIB);
+        dotestXANoLeak(COUNT_SQL);
     }
 
     // PostgreSQL test, see pg XML contrib for connection parameters
     @Ignore
     @Test
+    @LocalDeploy(XADATASOURCE_PG_CONTRIB)
     public void testXANoLeakPostgreSQL() throws Exception {
-        countPhysicalConnectionsSql = COUNT_SQL_PG;
-        // not absolute as there may be pre-existing connections
-        dotestXANoLeak(XADATASOURCE_PG_CONTRIB);
+        dotestXANoLeak(COUNT_SQL_PG);
     }
 
     // without PatchedDataSourceXAConnectionFactory we leaked
     // connections on close (PoolableConnectionFactory.destroyObject)
-    public void dotestXANoLeak(URL contrib) throws Exception {
-        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE, contrib);
-        try {
-            // in contrib, pool is configured with maxIdle = 1
-            DataSource ds = DataSourceHelper.getDataSource("foo");
-            Connection conn1 = ds.getConnection();
-            int n = countPhysicalConnections(conn1) - 1;
-            Connection conn2 = ds.getConnection();
-            assertEquals(n + 2, countPhysicalConnections(conn1));
-            Connection conn3 = ds.getConnection();
-            assertEquals(n + 3, countPhysicalConnections(conn1));
+    public void dotestXANoLeak(String countStatement) throws Exception {
+        // in contrib, pool is configured with maxIdle = 1
+        DataSource ds = DataSourceHelper.getDataSource("foo");
+        Connection conn1 = ds.getConnection();
+        int n = countPhysicalConnections(conn1, countStatement) - 1;
+        Connection conn2 = ds.getConnection();
+        assertEquals(n + 2, countPhysicalConnections(conn1, countStatement));
+        Connection conn3 = ds.getConnection();
+        assertEquals(n + 3, countPhysicalConnections(conn1, countStatement));
 
-            conn3.close();
-            // conn3 idle in pool, conn1+conn2 active
-            assertEquals(n + 3, countPhysicalConnections(conn1));
-            conn2.close();
-            // conn2 closed, conn3 idle in pool, conn1 active
-            assertEquals(n + 2, countPhysicalConnections(conn1));
-            // conn1 closed, conn3 idle in pool
-            conn1.close();
+        conn3.close();
+        // conn3 idle in pool, conn1+conn2 active
+        assertEquals(n + 3, countPhysicalConnections(conn1, countStatement));
+        conn2.close();
+        // conn2 closed, conn3 idle in pool, conn1 active
+        assertEquals(n + 2, countPhysicalConnections(conn1, countStatement));
+        // conn1 closed, conn3 idle in pool
+        conn1.close();
 
-            Connection conn4 = ds.getConnection(); // reuses from pool
-            assertEquals(n + 1, countPhysicalConnections(conn4));
-            conn4.close();
+        Connection conn4 = ds.getConnection(); // reuses from pool
+        assertEquals(n + 1, countPhysicalConnections(conn4, countStatement));
+        conn4.close();
 
-        } finally {
-            ctx.destroy();
-        }
     }
 
-    public int countPhysicalConnections(Connection conn) throws SQLException {
+    public int countPhysicalConnections(Connection conn, String statement)
+            throws SQLException {
         Statement st = conn.createStatement();
         try {
-            ResultSet rs = st.executeQuery(countPhysicalConnectionsSql);
+            ResultSet rs = st.executeQuery(statement);
             rs.next();
             return rs.getInt(1);
         } finally {

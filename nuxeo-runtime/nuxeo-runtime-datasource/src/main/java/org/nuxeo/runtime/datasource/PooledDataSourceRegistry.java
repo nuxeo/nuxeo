@@ -44,6 +44,10 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
 
     protected final PooledDataSourceFactory poolFactory = new org.nuxeo.runtime.datasource.geronimo.PooledDataSourceFactory();
 
+    public <T> T getPool(String name, Class<T> type) {
+        return type.cast(pools.get(name));
+    }
+
     public DataSource getOrCreatePool(Object obj, Name objectName,
             Context nameCtx, Hashtable<?, ?> env) {
         final Reference ref = (Reference)obj;
@@ -78,6 +82,10 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         if (ds != null) {
             ds.dispose();
         }
+    }
+
+    public void createAlias(String name, PooledDataSource pool) {
+        pools.put(name, pool);
     }
 
  }

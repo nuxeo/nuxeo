@@ -17,7 +17,6 @@ import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.XADataSource;
 
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
@@ -98,7 +97,7 @@ public class PooledDataSourceFactory implements
             String user = refAttribute(ref, "User", "");
             String password = refAttribute(ref, "Password", "");
             String name = refAttribute(ref, "dataSourceJNDI", null);
-            XADataSource ds = (XADataSource) DataSourceHelper.getDataSource(name);
+            XADataSource ds = NuxeoContainer.lookup(name, XADataSource.class);
             XADataSourceWrapper wrapper = new XADataSourceWrapper(ds);
             wrapper.setUserName(user);
             wrapper.setPassword(password);
@@ -116,7 +115,7 @@ public class PooledDataSourceFactory implements
             String password = refAttribute(ref, "password", "");
             String dsname = refAttribute(ref, "dataSourceJNDI", "");
             if (!dsname.isEmpty()) {
-                javax.sql.DataSource ds = DataSourceHelper.getDataSource(dsname);
+                javax.sql.DataSource ds = NuxeoContainer.lookup(dsname, DataSource.class);
                 LocalDataSourceWrapper wrapper = new LocalDataSourceWrapper(ds);
                 wrapper.setUserName(user);
                 wrapper.setPassword(password);

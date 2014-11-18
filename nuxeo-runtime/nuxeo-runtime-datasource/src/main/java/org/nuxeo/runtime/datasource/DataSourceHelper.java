@@ -19,10 +19,12 @@ import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NameClassPair;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
@@ -54,15 +56,15 @@ public class DataSourceHelper {
      * @return the datasource JNDI name
      */
     public static String getDataSourceJNDIName(String name) {
-        return NuxeoContainer.nameOf("jdbc/".concat(relativize(name)));
+        return NuxeoContainer.nameOf(relativize(name));
     }
 
     protected static String relativize(String name) {
         int idx = name.lastIndexOf("/");
         if (idx > 0) {
-            return name.substring(idx + 1);
+            name = name.substring(idx + 1);
         }
-        return name;
+        return "jdbc/".concat(name);
     }
 
     /**
@@ -87,8 +89,16 @@ public class DataSourceHelper {
 
     public static <T> T getDataSource(String name, Class<T> clazz)
             throws NamingException {
-        return NuxeoContainer.lookup(NuxeoContainer.getRootContext(),
-                getDataSourceJNDIName(name), clazz);
+        PooledDataSourceRegistry pools = Framework.getService(PooledDataSourceRegistry.class);
+        if (pools == null) {
+            throw new NamingException("runtime datasource no installed");
+        }
+        T ds = pools.getPool(
+                relativize(name), clazz);
+        if (ds == null) {
+            throw new NameNotFoundException(name + " not found in container");
+        }
+        return ds;
     }
 
     public static Map<String, DataSource> getDatasources()

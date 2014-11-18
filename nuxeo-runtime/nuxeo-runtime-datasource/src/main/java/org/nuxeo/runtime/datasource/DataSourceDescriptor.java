@@ -142,7 +142,7 @@ public class DataSourceDescriptor {
             Context naming)
             throws NamingException {
         if (xaDataSource != null) {
-            String xaName = DataSourceHelper.getDataSourceJNDIName(getName()
+            String xaName = DataSourceHelper.relativize(getName()
                     + "-xa");
             poolReference = new Reference(
                     XADataSource.class.getName(),
@@ -204,9 +204,12 @@ public class DataSourceDescriptor {
         }
 
         LogFactory.getLog(DataSourceDescriptor.class).info("binding " + getName());
+        String jndiName = DataSourceHelper.getDataSourceJNDIName(getName());
         naming.bind(
-                DataSourceHelper.getDataSourceJNDIName(getName()),
+                jndiName,
                 poolReference);
+        // create pooled
+        naming.lookup(jndiName);
     }
 
     public void unbindSelf(Context naming) throws NamingException {

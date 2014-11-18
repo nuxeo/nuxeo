@@ -8,7 +8,8 @@ import java.sql.Statement;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.eclipse.jdt.internal.core.Assert;
+import junit.framework.AssertionFailedError;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -56,8 +57,9 @@ public class CanRollbackDatabaseTest {
                         try (Statement st = db.createStatement()) {
                             try (ResultSet rs = st
                                 .executeQuery("SELECT id from hierarchy where id = 'pfouh'")) {
-                                String pfouh = rs.getString(1);
-                                Assert.isTrue(pfouh.equals("pfouh"));
+                                if (rs.next()) {
+                                    throw new AssertionFailedError("connection was not rollbacked");
+                                }
                             }
                         }
                     }
