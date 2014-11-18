@@ -28,7 +28,7 @@
         <plugins>
           <plugin>
             <groupId>org.nuxeo.build</groupId>
-            <artifactId>ant-assembly-maven-plugin</artifactId>
+            <artifactId>nuxeo-distribution-tools</artifactId>
             <inherited>false</inherited>
             <executions>
               <execution>
