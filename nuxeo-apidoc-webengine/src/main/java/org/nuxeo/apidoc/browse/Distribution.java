@@ -35,7 +35,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -50,6 +49,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -62,6 +62,17 @@ public class Distribution extends ModuleRoot {
     public static final String DIST_ID = "distId";
 
     protected static final Log log = LogFactory.getLog(Distribution.class);
+
+    // handle errors
+    @Override
+    public Object handleError(WebApplicationException e) {
+        if (e instanceof WebResourceNotFoundException) {
+            return Response.status(404).entity(
+                    getTemplate("error/error_404.ftl")).type("text/html").build();
+        } else {
+            return super.handleError(e);
+        }
+    }
 
     protected SnapshotManager getSnapshotManager() {
         return Framework.getLocalService(SnapshotManager.class);

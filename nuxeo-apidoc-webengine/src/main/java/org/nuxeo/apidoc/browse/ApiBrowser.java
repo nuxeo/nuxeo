@@ -53,9 +53,11 @@ import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.tree.TreeHelper;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -511,10 +513,13 @@ public class ApiBrowser extends DefaultObject {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
                     "bundle", bundleId);
-            TreeHelper.updateTree(getContext(),
-                    wo.getNxArtifact().getHierarchyPath());
+            NuxeoArtifact nxItem = wo.getNxArtifact();
+            if (nxItem == null) {
+                throw new WebResourceNotFoundException(bundleId);
+            }
+            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
             return wo;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -524,10 +529,13 @@ public class ApiBrowser extends DefaultObject {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
                     "component", componentId);
-            TreeHelper.updateTree(getContext(),
-                    wo.getNxArtifact().getHierarchyPath());
+            NuxeoArtifact nxItem = wo.getNxArtifact();
+            if (nxItem == null) {
+                throw new WebResourceNotFoundException(componentId);
+            }
+            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
             return wo;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -560,10 +568,13 @@ public class ApiBrowser extends DefaultObject {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
                     "service", serviceId);
-            TreeHelper.updateTree(getContext(),
-                    wo.getNxArtifact().getHierarchyPath());
+            NuxeoArtifact nxItem = wo.getNxArtifact();
+            if (nxItem == null) {
+                throw new WebResourceNotFoundException(serviceId);
+            }
+            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
             return wo;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -573,10 +584,13 @@ public class ApiBrowser extends DefaultObject {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
                     "extensionPoint", epId);
-            TreeHelper.updateTree(getContext(),
-                    wo.getNxArtifact().getHierarchyPath());
+            NuxeoArtifact nxItem = wo.getNxArtifact();
+            if (nxItem == null) {
+                throw new WebResourceNotFoundException(epId);
+            }
+            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
             return wo;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -586,10 +600,13 @@ public class ApiBrowser extends DefaultObject {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
                     "contribution", cId);
-            TreeHelper.updateTree(getContext(),
-                    wo.getNxArtifact().getHierarchyPath());
+            NuxeoArtifact nxItem = wo.getNxArtifact();
+            if (nxItem == null) {
+                throw new WebResourceNotFoundException(cId);
+            }
+            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
             return wo;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -599,10 +616,13 @@ public class ApiBrowser extends DefaultObject {
         try {
             NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject(
                     "bundleGroup", gId);
-            TreeHelper.updateTree(getContext(),
-                    wo.getNxArtifact().getHierarchyPath());
+            NuxeoArtifact nxItem = wo.getNxArtifact();
+            if (nxItem == null) {
+                throw new WebResourceNotFoundException(gId);
+            }
+            TreeHelper.updateTree(getContext(), nxItem.getHierarchyPath());
             return wo;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new WebApplicationException(e);
         }
     }
