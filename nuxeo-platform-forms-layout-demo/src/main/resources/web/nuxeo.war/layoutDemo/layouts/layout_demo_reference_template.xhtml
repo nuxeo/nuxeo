@@ -44,7 +44,10 @@
                     </c:if>
                   </td>
                   <td class="fieldColumn">
-                    <h:outputText value="#{widget.helpLabel}" />
+                    <nxu:set var="widgetHelpLabel" value="#{widget.helpLabel}"
+                      resolveTwice="false" cache="true">
+                      #{widgetHelpLabel}
+                    </nxu:set>
                   </td>
                 </c:if>
                 <c:if test="#{not layout.properties.showLayoutDefinition}">
