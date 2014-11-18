@@ -64,7 +64,7 @@ public class UserAgentMatcher {
 
     public static boolean html5DndIsSupported(String UA) {
         return isFirefox3(UA) || isFirefox4OrMore(UA) || isSafari5(UA)
-                || isChrome(UA) || isMSIEWithChromeFrame(UA);
+                || isChrome(UA) || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
     }
 
     public static boolean isMSIE6or7(String UA) {
