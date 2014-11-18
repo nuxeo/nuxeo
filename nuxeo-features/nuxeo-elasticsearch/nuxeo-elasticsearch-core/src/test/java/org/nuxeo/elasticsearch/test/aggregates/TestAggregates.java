@@ -520,6 +520,49 @@ public class TestAggregates {
     }
 
     @Test
+    public void testAggregateOnComplexTypeQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("significant_terms");
+        aggDef.setId("source");
+        aggDef.setDocumentField("prefix:foo/bar");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "source_agg"));
+        aggDef.setProperty("minDocCount", "10");
+
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                AggregateFactory.create(aggDef, null));
+
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n" //
+                        + "  \"from\" : 0,\n" //
+                        + "  \"size\" : 10,\n" //
+                        + "  \"query\" : {\n" //
+                        + "    \"match_all\" : { }\n" //
+                        + "  },\n" //
+                        + "  \"aggregations\" : {\n" //
+                        + "    \"source_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"match_all\" : { }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"source\" : {\n" //
+                        + "          \"significant_terms\" : {\n" //
+                        + "            \"field\" : \"prefix:foo.bar\",\n" //
+                        + "            \"minDocCount\" : 10\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  }\n" //
+                        + "}", //
+                request.toString());
+    }
+
+    @Test
     public void testPageProvider() throws Exception {
         buildDocs();
 
