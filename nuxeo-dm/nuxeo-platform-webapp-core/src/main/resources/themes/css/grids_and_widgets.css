@@ -352,6 +352,10 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   right: 0;
   top: 0 }
 
+.infoViewDocContainer .documentPreview {
+  background-color: #fff;
+  padding: 0 5em }
+
 .infoViewLeft .pictureContainer {
   height: 100%;
   left: 0;
@@ -479,7 +483,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding-right: 1em }
 
 .infoViewDocContainer iframe {
-  border: none }
+  background-color: #fff;
+  border: none;
+  box-sizing: border-box }
 
 .infoView {
   background: url("${basePath}/icons/chevron-left.png") no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
