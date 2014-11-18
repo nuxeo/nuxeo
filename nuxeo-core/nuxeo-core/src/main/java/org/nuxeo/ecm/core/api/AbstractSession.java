@@ -1449,9 +1449,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected boolean canRemoveDocument(Document doc) throws ClientException,
             DocumentException {
-        if (isAdministrator()) {
-            return true;
-        }
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
             Collection<Document> proxies = getSession().getProxies(doc, null);
@@ -1469,9 +1466,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 return hasPermission(working, WRITE_VERSION);
             } else {
                 // no working document, only admins can remove
-                return false;
+                return isAdministrator();
             }
         } else {
+            if (isAdministrator()) {
+                return true;
+            }
             if (!hasPermission(doc, REMOVE)) {
                 return false;
             }

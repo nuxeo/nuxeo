@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -472,6 +473,34 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         } finally {
             closeSession(session2);
         }
+    }
+
+    @Test
+    public void testVersionRemoval() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel file = session.createDocumentModel("/folder", "file",
+                "File");
+        file = session.createDocument(file);
+        DocumentModel proxy = session.publishDocument(file, folder);
+        DocumentModel version = session.getLastDocumentVersion(file.getRef());
+        session.save();
+
+        // even Administrator/system cannot remove a version with a proxy
+        try {
+            session.removeDocument(version.getRef());
+            fail("Admin should not be able to remove version");
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
+
+        // remove the proxy first
+        session.removeDocument(proxy.getRef());
+        session.save();
+        // we can now remove the version
+        session.removeDocument(version.getRef());
+        session.save();
     }
 
     @Test
