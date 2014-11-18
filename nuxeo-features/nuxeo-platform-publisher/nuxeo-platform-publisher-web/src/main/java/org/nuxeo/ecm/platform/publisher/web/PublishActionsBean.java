@@ -834,15 +834,18 @@ public class PublishActionsBean extends AbstractPublishActions implements
         @Override
         public void run() throws ClientException {
             sourceDocument = session.getDocument(publishedDocument.getSourceDocumentRef());
-            liveVersion = session.getDocument(new IdRef(
-                    sourceDocument.getSourceId()));
+            String sourceId = sourceDocument.getSourceId();
+            // source may be null if the version is placeless (rendition)
+            liveVersion = sourceId == null ? null
+                    : session.getDocument(new IdRef(sourceId));
             notifyRejectToSourceDocument();
         }
 
         private void notifyRejectToSourceDocument() throws ClientException {
             notifyEvent(PublishingEvent.documentPublicationRejected.name(),
                     null, comment, null, sourceDocument);
-            if (!sourceDocument.getRef().equals(liveVersion.getRef())) {
+            if (liveVersion != null
+                    && !sourceDocument.getRef().equals(liveVersion.getRef())) {
                 notifyEvent(PublishingEvent.documentPublicationRejected.name(),
                         null, comment, null, liveVersion);
             }
