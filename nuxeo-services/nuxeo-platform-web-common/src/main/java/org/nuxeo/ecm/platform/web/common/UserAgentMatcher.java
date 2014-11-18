@@ -38,8 +38,6 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_MSIE_67 = Pattern.compile("^Mozilla/4.0 \\(compatible; MSIE [67].[0-9]((?!Trident).)*$");
 
-    private static final Pattern UA_MSIE_CF = Pattern.compile("^Mozilla.*chromeframe.*");
-
     private static final Pattern UA_MSIE_FROM_10 = Pattern.compile("^Mozilla.*[Tt]rident/[6-9]\\..*");
 
     private UserAgentMatcher() {
@@ -64,15 +62,11 @@ public class UserAgentMatcher {
 
     public static boolean html5DndIsSupported(String UA) {
         return isFirefox3(UA) || isFirefox4OrMore(UA) || isSafari5(UA)
-                || isChrome(UA) || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
+                || isChrome(UA) || isMSIE10OrMore(UA);
     }
 
     public static boolean isMSIE6or7(String UA) {
-        return UA_MSIE_67.matcher(UA).matches() && !isMSIEWithChromeFrame(UA);
-    }
-
-    public static boolean isMSIEWithChromeFrame(String UA) {
-        return UA_MSIE_CF.matcher(UA).matches();
+        return UA_MSIE_67.matcher(UA).matches();
     }
 
     /**
@@ -84,6 +78,6 @@ public class UserAgentMatcher {
 
     public static boolean isHistoryPushStateSupported(String UA) {
         return isFirefox4OrMore(UA) || isSafari5(UA) || isChrome(UA)
-                || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
+                || isMSIE10OrMore(UA);
     }
 }
