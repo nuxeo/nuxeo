@@ -134,7 +134,7 @@
 
     <filter id="rights" append="true">
       <rule grant="true">
-        <facet>DefaultSearch</facet>
+        <facet>SavedSearch</facet>
       </rule>
     </filter>
 
