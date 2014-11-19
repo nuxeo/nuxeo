@@ -52,9 +52,9 @@
           <f:facet name="header">
             <h:outputText value="#{messages['label.security.grantedPerms']}"/>
           </f:facet>
-          <ui:repeat var="perm"
+          <ui:repeat var="perm" varStatus="status"
             value="#{securityActions.securityData.parentDocsGrantLabels[user]}">
-            <h:outputText value="#{messages[perm]}"/>
+            <h:outputText value="#{messages[perm]}"/>#{(status.last)?'':', '}
           </ui:repeat>
         </h:column>
 
@@ -62,9 +62,9 @@
           <f:facet name="header">
             <h:outputText value="#{messages['label.security.deniedPerms']}"/>
           </f:facet>
-          <ui:repeat var="perm"
+          <ui:repeat var="perm" varStatus="status"
             value="#{securityActions.securityData.parentDocsDenyLabels[user]}">
-            <h:outputText value="#{messages[perm]}"/>
+            <h:outputText value="#{messages[perm]}"/>#{(status.last)?'':', '}
           </ui:repeat>
         </h:column>
       </h:dataTable>
@@ -150,15 +150,15 @@
                   </nxu:set>
 
                   <td>
-                    <ui:repeat var="perm"
+                    <ui:repeat var="perm" varStatus="status"
                       value="#{securityActions.securityData.currentDocGrantLabels[user]}">
-                      <h:outputText value="#{messages[perm]}"/>
+                      <h:outputText value="#{messages[perm]}"/>#{(status.last)?'':', '}
                     </ui:repeat>
                   </td>
                   <td>
-                    <ui:repeat var="perm"
+                    <ui:repeat var="perm" varStatus="status"
                       value="#{securityActions.securityData.currentDocDenyLabels[user]}">
-                      <h:outputText value="#{messages[perm]}"/>
+                      <h:outputText value="#{messages[perm]}"/>#{(status.last)?'':', '}
                     </ui:repeat>
                   </td>
                 </nxu:set>
