@@ -42,6 +42,9 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletRequest;
+
 /**
  * Restful actions for Nuxeo Spreadsheet
  *
@@ -78,7 +81,10 @@ public class SpreadsheetActions implements Serializable {
         }
         params.put("query", query);
 
-        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet?" +
+        ServletRequest request = (ServletRequest)
+            FacesContext.getCurrentInstance().getExternalContext().getRequest();
+
+        return VirtualHostHelper.getBaseURL(request) + "spreadsheet?" +
                 Joiner.on('&').withKeyValueSeparator("=").join(params);
     }
 
