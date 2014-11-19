@@ -152,7 +152,7 @@ input.tinyButton {
   margin: 0 }
 
 .contentViewUpperActions {
-  color: "gray.light (__FLAVOR__ color)";
+  color: "gray.dark (__FLAVOR__ color)";
   float: right;
   font-size: .9em;
   margin: .8em 0;
