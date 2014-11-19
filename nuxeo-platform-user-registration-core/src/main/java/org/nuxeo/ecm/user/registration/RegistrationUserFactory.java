@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.user.invite.InvitationUserFactory;
+import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 
 public interface RegistrationUserFactory extends InvitationUserFactory {
 
@@ -28,7 +29,8 @@ public interface RegistrationUserFactory extends InvitationUserFactory {
      * @see UserRegistrationComponent#addRightsOnDoc
      */
     DocumentModel doAddDocumentPermission(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException;
+            DocumentModel registrationDoc,
+            UserRegistrationConfiguration configuration) throws ClientException;
 
     /**
      * Called just after the right is setted

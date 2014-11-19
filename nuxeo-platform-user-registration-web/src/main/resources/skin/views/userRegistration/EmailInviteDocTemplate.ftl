@@ -12,7 +12,7 @@ You have been invited to access <a href="${info['docUrl']}">${registrationDoc.do
 
 <p>Click on the following link to validate your invitation:</p>
 <br/>
-<a href="${info['enterPasswordUrl']}${registrationDoc.id}">Validate my invitation</a>
+<a href="${info['enterPasswordUrl']}${configurationName}/${registrationDoc.id}">Validate my invitation</a>
 
 <br /><br />
 <#if !userAlreadyExists>

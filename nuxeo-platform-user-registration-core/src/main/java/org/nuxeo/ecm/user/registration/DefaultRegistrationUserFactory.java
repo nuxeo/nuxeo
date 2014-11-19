@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
+import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
-import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 
 public class DefaultRegistrationUserFactory extends
         DefaultInvitationUserFactory implements RegistrationUserFactory {
@@ -37,13 +37,15 @@ public class DefaultRegistrationUserFactory extends
 
     @Override
     public DocumentModel doAddDocumentPermission(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException {
+            DocumentModel registrationDoc,
+            UserRegistrationConfiguration configuration) throws ClientException {
         String docId = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
+
         if (StringUtils.isEmpty(docId)) {
             log.info("No document rights needed");
             return null;
         }
-        String login = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD);
+        String login = (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField());
         String permission = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_RIGHT_FIELD);
         if (StringUtils.isEmpty(permission)) {
             throw new UserRegistrationException("Permission must be specified");

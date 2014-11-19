@@ -16,9 +16,6 @@
 
 package org.nuxeo.ecm.user.registration;
 
-import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.EMAIL_FIELD;
-import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.USERNAME_FIELD;
-
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -101,8 +98,8 @@ public class UserRegistrationComponent extends UserInvitationComponent
             String title = "registration request for " + userInfo.getLogin()
                     + " (" + userInfo.getEmail() + " " + userInfo.getCompany()
                     + ") ";
-            String name = IdUtils.generateId(title + "-"
-                    + System.currentTimeMillis());
+            String name = IdUtils.generateId(
+                    title + "-" + System.currentTimeMillis(), "-", true, 24);
 
             String targetPath = getOrCreateRootDocument(session,
                     configuration.getName()).getPathAsString();
@@ -112,15 +109,17 @@ public class UserRegistrationComponent extends UserInvitationComponent
             doc.setPropertyValue("dc:title", title);
 
             // store userinfo
-            doc.setPropertyValue(USERNAME_FIELD, userInfo.getLogin());
-            doc.setPropertyValue(UserRegistrationInfo.PASSWORD_FIELD,
+            doc.setPropertyValue(configuration.getUserInfoUsernameField(),
+                    userInfo.getLogin());
+            doc.setPropertyValue(configuration.getUserInfoPasswordField(),
                     userInfo.getPassword());
-            doc.setPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD,
+            doc.setPropertyValue(configuration.getUserInfoFirstnameField(),
                     userInfo.getFirstName());
-            doc.setPropertyValue(UserRegistrationInfo.LASTNAME_FIELD,
+            doc.setPropertyValue(configuration.getUserInfoLastnameField(),
                     userInfo.getLastName());
-            doc.setPropertyValue(EMAIL_FIELD, userInfo.getEmail());
-            doc.setPropertyValue(UserRegistrationInfo.COMPANY_FIELD,
+            doc.setPropertyValue(configuration.getUserInfoEmailField(),
+                    userInfo.getEmail());
+            doc.setPropertyValue(configuration.getUserInfoCompanyField(),
                     userInfo.getCompany());
 
             // validation method
@@ -261,7 +260,7 @@ public class UserRegistrationComponent extends UserInvitationComponent
             DocumentModel registrationDoc) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         DocumentModel document = ((DefaultRegistrationUserFactory) getRegistrationUserFactory(configuration)).doAddDocumentPermission(
-                session, registrationDoc);
+                session, registrationDoc,configuration);
         if (document != null) {
             ((RegistrationUserFactory) getRegistrationUserFactory(configuration)).doPostAddDocumentPermission(
                     session, registrationDoc, document);
