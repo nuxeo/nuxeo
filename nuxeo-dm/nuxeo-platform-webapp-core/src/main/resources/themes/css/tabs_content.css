@@ -45,6 +45,7 @@ author: lkemen@nuxeo.com
   max-width: 25em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   word-wrap: break-word }
 
 .documentDownloadLink {
@@ -411,14 +412,18 @@ author: lkemen@nuxeo.com
   margin: 0 .4em 1.2em 0;
   transition: box-shadow 0.3s ease 0.01s;
   vertical-align: top;
-  width: 17.6em }
+  width: 17em }
 
 .bubbleBox.bubbleListing:hover {
   box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
   cursor: pointer; }
 
 .bubbleBox.bubbleListing .documentTitle {
-  padding-bottom: .3em }
+  padding-bottom: .3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 15em }
 
 .bubbleBox.bubbleListing span:not(.documentTitle) {
   font-size: .95em }
