@@ -89,7 +89,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .resultLayoutSelection a:hover img,
 .resultLayoutSelection.selected img {
   border: 1px solid;
-  border-color: "neutral.medium (__FLAVOR__ border)" }
+  border-color: "color.major.strong (__FLAVOR__ border)" }
 
 .thumbnailContainer {
   background: none no-repeat scroll center center transparent;
