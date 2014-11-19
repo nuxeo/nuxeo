@@ -95,7 +95,7 @@ public class UserInvitationObject extends ModuleRoot {
             Map<String, Serializable> additionalInfo = buildAdditionalInfos();
 
             // Add the entered password to the document model
-            additionalInfo.put(UserRegistrationInfo.PASSWORD_FIELD, password);
+            additionalInfo.put(usr.getConfiguration().getUserInfoPasswordField(), password);
             // Validate the creation of the user
             registrationData = usr.validateRegistration(requestId,
                     additionalInfo);
