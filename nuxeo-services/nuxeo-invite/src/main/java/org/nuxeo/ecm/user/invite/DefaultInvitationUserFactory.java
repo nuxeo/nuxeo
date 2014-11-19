@@ -40,41 +40,41 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
     @Override
     public NuxeoPrincipal doCreateUser(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException,
+            DocumentModel registrationDoc,UserRegistrationConfiguration configuration) throws ClientException,
             UserRegistrationException {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-
-        String email = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD);
+        UserManager userManager = Framework.getService(UserManager.class);
+        
+        String email = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
         if (email == null) {
             throw new UserRegistrationException(
                     "Email address must be specififed");
         }
 
-        String login = (String) registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD);
+        String login = (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField());
         NuxeoPrincipal user = userManager.getPrincipal(login);
         if (user == null) {
             DocumentModel newUserDoc = userManager.getBareUserModel();
             newUserDoc.setPropertyValue(
                     UserConfig.USERNAME_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD));
+                    login);
             newUserDoc.setPropertyValue(
                     UserConfig.PASSWORD_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.PASSWORD_FIELD));
+                    registrationDoc.getPropertyValue(configuration.getUserInfoPasswordField()));
             newUserDoc.setPropertyValue(
                     UserConfig.FIRSTNAME_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.FIRSTNAME_FIELD));
+                    registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
             newUserDoc.setPropertyValue(
                     UserConfig.LASTNAME_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.LASTNAME_FIELD));
+                    registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
             newUserDoc.setPropertyValue(
                     UserConfig.EMAIL_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD));
+                    registrationDoc.getPropertyValue(configuration.getUserInfoEmailField()));
             newUserDoc.setPropertyValue(
                     UserConfig.COMPANY_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.COMPANY_FIELD));
+                    registrationDoc.getPropertyValue(configuration.getUserInfoCompanyField()));
             newUserDoc.setPropertyValue(
                     UserConfig.GROUPS_COLUMN,
-                    registrationDoc.getPropertyValue(UserRegistrationInfo.GROUPS_FIELD));
+                    registrationDoc.getPropertyValue(configuration.getUserInfoGroupsField()));
             userManager.createUser(newUserDoc);
             user = userManager.getPrincipal(login);
 

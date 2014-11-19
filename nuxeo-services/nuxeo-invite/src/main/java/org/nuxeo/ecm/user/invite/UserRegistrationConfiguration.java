@@ -40,7 +40,31 @@ public class UserRegistrationConfiguration {
 
     @XNode("requestDocType")
     private String requestDocType;
+    
+    @XNode("userInfo/schemaName")
+    private String userInfoSchemaName = "userinfo";
+    
+    @XNode("userInfo/usernameField")
+    private String userInfoUsernameField = "userinfo:login";
 
+    @XNode("userInfo/emailField")
+    private String userInfoEmailField = "userinfo:email";
+    
+    @XNode("userInfo/firstnameField")
+    private String userInfoFirstnameField = "userinfo:firstName";
+    
+    @XNode("userInfo/lastnameField")
+    private String userInfoLastnameField = "userinfo:lastName";
+    
+    @XNode("userInfo/companyField")
+    private String userInfoCompanyField = "userinfo:company";
+    
+    @XNode("userInfo/passwordField")
+    private String userInfoPasswordField = "userinfo:password";
+    
+    @XNode("userInfo/groupsField")
+    private String userInfoGroupsField = "userinfo:groups";
+    
     @XNode("container/docType")
     private String containerDocType;
 
@@ -150,6 +174,40 @@ public class UserRegistrationConfiguration {
         return reviveEmailTemplate;
     }
 
+    
+    
+    public String getUserInfoSchemaName() {
+        return userInfoSchemaName;
+    }
+
+    public String getUserInfoUsernameField() {
+        return userInfoUsernameField;
+    }
+
+    public String getUserInfoEmailField() {
+        return userInfoEmailField;
+    }
+
+    public String getUserInfoFirstnameField() {
+        return userInfoFirstnameField;
+    }
+
+    public String getUserInfoLastnameField() {
+        return userInfoLastnameField;
+    }
+
+    public String getUserInfoCompanyField() {
+        return userInfoCompanyField;
+    }
+
+    public String getUserInfoPasswordField() {
+        return userInfoPasswordField;
+    }
+
+    public String getUserInfoGroupsField() {
+        return userInfoGroupsField;
+    }
+
     public String getName() {
         return name;
     }
@@ -249,6 +307,39 @@ public class UserRegistrationConfiguration {
 
         if (!StringUtils.isEmpty(other.listingLocalContentView)) {
             this.listingLocalContentView = other.listingLocalContentView;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoSchemaName)) {
+            this.userInfoSchemaName = other.userInfoSchemaName;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoUsernameField)) {
+            this.userInfoUsernameField = other.userInfoUsernameField;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoFirstnameField)) {
+            this.userInfoFirstnameField = other.userInfoFirstnameField;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoLastnameField)) {
+            this.userInfoLastnameField = other.userInfoLastnameField;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoEmailField)) {
+            this.userInfoEmailField = other.userInfoEmailField;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoPasswordField)) {
+            this.userInfoPasswordField = other.userInfoPasswordField;
+        }
+        
+        
+        if (!StringUtils.isEmpty(other.userInfoCompanyField)) {
+            this.userInfoCompanyField = other.userInfoCompanyField;
+        }
+        
+        if (!StringUtils.isEmpty(other.userInfoGroupsField)) {
+            this.userInfoGroupsField = other.userInfoGroupsField;
         }
     }
 }

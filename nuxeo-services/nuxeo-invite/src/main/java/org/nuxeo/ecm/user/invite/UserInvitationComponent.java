@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,9 +19,6 @@ package org.nuxeo.ecm.user.invite;
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FACET_REGISTRATION_CONFIGURATION;
 import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_CONFIGURATION_NAME;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
-import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.EMAIL_FIELD;
-import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.SCHEMA_NAME;
-import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.USERNAME_FIELD;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 
 import java.io.Serializable;
@@ -226,14 +223,14 @@ public class UserInvitationComponent extends DefaultComponent implements
         public void run() throws ClientException {
 
             String title = "registration request for "
-                    + userRegistrationModel.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD)
+                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoUsernameField())
                     + " ("
-                    + userRegistrationModel.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD)
+                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoEmailField())
                     + " "
-                    + userRegistrationModel.getPropertyValue(UserRegistrationInfo.COMPANY_FIELD)
+                    + userRegistrationModel.getPropertyValue(configuration.getUserInfoCompanyField())
                     + ") ";
             String name = IdUtils.generateId(title + "-"
-                    + System.currentTimeMillis());
+                    + System.currentTimeMillis(), "-", true, 24);
 
             String targetPath = getOrCreateRootDocument(session,
                     configuration.getName()).getPathAsString();
@@ -450,16 +447,18 @@ public class UserInvitationComponent extends DefaultComponent implements
             Map<String, Serializable> additionnalInfo,
             DocumentModel registrationDoc) throws ClientException {
 
-        String emailAdress = (String) registrationDoc.getPropertyValue(EMAIL_FIELD);
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
+        
+        String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
+        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, configuration.getName());
         input.put("info", (Serializable) additionnalInfo);
         input.put("userAlreadyExists",
                 checkUserFromRegistrationExistence(registrationDoc));
         StringWriter writer = new StringWriter();
 
-        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         try {
             rh.getRenderingEngine().render(
                     configuration.getValidationEmailTemplate(), input, writer);
@@ -489,8 +488,9 @@ public class UserInvitationComponent extends DefaultComponent implements
 
     protected boolean checkUserFromRegistrationExistence(
             DocumentModel registrationDoc) throws ClientException {
+        UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         return null != Framework.getLocalService(UserManager.class).getPrincipal(
-                (String) registrationDoc.getPropertyValue(USERNAME_FIELD));
+                (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
     }
 
     protected void generateMail(String destination, String copy, String title,
@@ -537,7 +537,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
         boolean userAlreadyExists = null != Framework.getLocalService(
                 UserManager.class).getPrincipal(
-                (String) userRegistrationModel.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD));
+                (String) userRegistrationModel.getPropertyValue(getConfiguration(configurationName).getUserInfoUsernameField()));
         // Directly accept registration if the configuration allow it and the
         // user already exists
         RegistrationRules registrationRules = getRegistrationRules(configurationName);
@@ -679,7 +679,7 @@ public class UserInvitationComponent extends DefaultComponent implements
             UserRegistrationException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         return getRegistrationUserFactory(configuration).doCreateUser(session,
-                registrationDoc);
+                registrationDoc,configuration);
     }
 
     protected class RootDocumentGetter extends UnrestrictedSessionRunner {
@@ -777,6 +777,8 @@ public class UserInvitationComponent extends DefaultComponent implements
         input.put("userAlreadyExists",
                 checkUserFromRegistrationExistence(registrationDoc));
         input.put(REGISTRATION_DATA_DOC, registrationDoc);
+        input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, getConfiguration(registrationDoc).getName());
+        
 
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         try {
@@ -786,7 +788,7 @@ public class UserInvitationComponent extends DefaultComponent implements
             throw new ClientException("Error during templating email : ", e);
         }
 
-        String emailAdress = (String) registrationDoc.getPropertyValue(EMAIL_FIELD);
+        String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
         String body = writer.getBuffer().toString();
         String title = configuration.getReviveEmailTitle();
 
@@ -805,12 +807,12 @@ public class UserInvitationComponent extends DefaultComponent implements
     public void deleteRegistrationRequests(CoreSession session,
             List<DocumentModel> registrationDocs) throws ClientException {
         for (DocumentModel registration : registrationDocs) {
-            if (!registration.hasSchema(SCHEMA_NAME)) {
+            UserRegistrationConfiguration configuration = getConfiguration(registration);
+            if (!registration.hasSchema(configuration.getUserInfoSchemaName())) {
                 throw new ClientException(
                         "Registration document do not contains needed schema");
             }
 
-            String userName = (String) registration.getPropertyValue(USERNAME_FIELD);
             session.removeDocument(registration.getRef());
         }
     }
@@ -818,23 +820,6 @@ public class UserInvitationComponent extends DefaultComponent implements
     @Override
     public Set<String> getConfigurationsName() {
         return configurations.keySet();
-    }
-
-    @Override
-    public DocumentModelList getRegistrationsForUser(final String docId,
-            final String username) throws ClientException {
-        final DocumentModelList registrationDocs = new DocumentModelListImpl();
-        new UnrestrictedSessionRunner(getTargetRepositoryName()) {
-            @Override
-            public void run() throws ClientException {
-                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
-                        + " ecm:mixinType = 'UserRegistration' AND docinfo:documentId = '%s' AND"
-                        + " userinfo:login = '%s' AND ecm:isCheckedInVersion = 0";
-                query = String.format(query, docId, username);
-                registrationDocs.addAll(session.query(query));
-            }
-        }.runUnrestricted();
-        return registrationDocs;
     }
 
     @Override
@@ -863,4 +848,5 @@ public class UserInvitationComponent extends DefaultComponent implements
     public String getNameEventRegistrationValidated() {
         return INVITATION_VALIDATED_EVENT;
     }
+
 }

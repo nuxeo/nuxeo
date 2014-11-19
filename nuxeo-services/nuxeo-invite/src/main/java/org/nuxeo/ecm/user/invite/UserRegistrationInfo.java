@@ -18,22 +18,6 @@ package org.nuxeo.ecm.user.invite;
 
 public class UserRegistrationInfo {
 
-    public static final String SCHEMA_NAME = "userinfo";
-
-    public static final String USERNAME_FIELD = "userinfo:login";
-
-    public static final String PASSWORD_FIELD = "userinfo:password";
-
-    public static final String FIRSTNAME_FIELD = "userinfo:firstName";
-
-    public static final String LASTNAME_FIELD = "userinfo:lastName";
-
-    public static final String EMAIL_FIELD = "userinfo:email";
-
-    public static final String COMPANY_FIELD = "userinfo:company";
-
-    public static final String GROUPS_FIELD = "userinfo:groups";
-
     protected String login;
 
     protected String password;

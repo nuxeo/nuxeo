@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 public interface UserInvitationService {
 
+    public static final String REGISTRATION_CONFIGURATION_NAME = "configurationName";
+    
     public static final String REGISTRATION_DATA_DOC = "registrationDoc";
 
     public static final String REGISTRATION_DATA_USER = "registeredUser";
@@ -115,14 +117,6 @@ public interface UserInvitationService {
             List<DocumentModel> registrationDoc) throws ClientException;
 
     UserRegistrationConfiguration getConfiguration();
-
-    /**
-     * Retrieve registrations for a document givent the username
-     *
-     * @since 5.6
-     */
-    DocumentModelList getRegistrationsForUser(String docId, String username)
-            throws ClientException;
 
     /**
      * Return specific configuration for the specified name
