@@ -44,7 +44,8 @@ public class MagickExecutor {
     }
 
     /**
-     * @deprecated since 5.6. Quoting file paths is done by {@link CmdParameters}.
+     * @deprecated since 5.6. Quoting file paths is done by
+     *             {@link CmdParameters}.
      */
     @Deprecated
     protected static String formatFilePath(String filePath) {

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.picture.core.mistral;
 
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COLORSPACE;
-import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COMMENT;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_COPYRIGHT;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_DESCRIPTION;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_EQUIPMENT;
@@ -38,10 +37,6 @@ import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_PIXEL_YD
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_VRESOLUTION;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBALANCE;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
-import it.tidalwave.image.EditableImage;
-import it.tidalwave.image.Rational;
-import it.tidalwave.image.metadata.EXIFDirectory;
-import it.tidalwave.image.op.ReadOp;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,11 +45,15 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.picture.ExifHelper;
 import org.nuxeo.ecm.platform.picture.IPTCHelper;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 
 import com.drew.imaging.jpeg.JpegProcessingException;
+
+import it.tidalwave.image.EditableImage;
+import it.tidalwave.image.Rational;
+import it.tidalwave.image.metadata.EXIFDirectory;
+import it.tidalwave.image.op.ReadOp;
 
 /**
  *

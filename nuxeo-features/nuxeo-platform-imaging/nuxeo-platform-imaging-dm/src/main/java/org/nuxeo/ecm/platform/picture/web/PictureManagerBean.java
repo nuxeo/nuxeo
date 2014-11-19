@@ -128,7 +128,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         this.fileurlPicture = fileurlPicture;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void initSelectItems() throws ClientException {
         selectItems = new ArrayList<Map<String, Object>>();
         DocumentModel doc = getCurrentDocument();

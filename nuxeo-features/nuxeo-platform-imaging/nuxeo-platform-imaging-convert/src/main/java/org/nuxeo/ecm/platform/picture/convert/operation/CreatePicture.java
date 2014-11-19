@@ -63,27 +63,28 @@ public class CreatePicture {
     protected static final Log log = LogFactory.getLog(CreatePicture.class);
 
     protected ArrayList<Map<String, Object>> computePictureTemplates() {
-        if (pictureTemplates==null || pictureTemplates.size()==0) {
+        if (pictureTemplates == null || pictureTemplates.size() == 0) {
             return null;
         }
-        ArrayList<Map<String, Object>> templates = new ArrayList<Map<String,Object>>();
+        ArrayList<Map<String, Object>> templates = new ArrayList<Map<String, Object>>();
 
         try {
             ObjectMapper mapper = new ObjectMapper();
 
-            //for (String templateDef : pictureTemplates) {
-            for(String name : pictureTemplates.keySet()) {
+            // for (String templateDef : pictureTemplates) {
+            for (String name : pictureTemplates.keySet()) {
                 String templateDef = pictureTemplates.get(name);
                 JsonNode node = mapper.readTree(templateDef);
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("tag", name);
-                Iterator<Entry<String, JsonNode>> it =  node.getFields();
+                Iterator<Entry<String, JsonNode>> it = node.getFields();
                 while (it.hasNext()) {
                     Entry<String, JsonNode> entry = it.next();
                     if (entry.getValue().isInt() || entry.getValue().isLong()) {
                         map.put(entry.getKey(), entry.getValue().getLongValue());
                     } else {
-                        map.put(entry.getKey(), entry.getValue().getValueAsText());
+                        map.put(entry.getKey(),
+                                entry.getValue().getValueAsText());
                     }
                 }
                 templates.add(map);
