@@ -151,7 +151,6 @@
                 <c:if test="#{useAjaxForm}">
                   <script>
                     function onSubmitToggledForm(form) {
-                      removeAllTinyMCEEditors();
                       jQuery(form).data('dirtyPage', false);
                       jQuery(window).unbind('beforeunload');
                       jQuery(form).cleanupSavedData();
