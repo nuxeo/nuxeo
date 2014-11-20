@@ -119,6 +119,14 @@ public interface UserInvitationService {
     UserRegistrationConfiguration getConfiguration();
 
     /**
+     * Retrieve registrations for a document givent the username
+     *
+     * @since 5.6
+     */
+    DocumentModelList getRegistrationsForUser(String docId, String username, String configurationName)
+            throws ClientException;
+    
+    /**
      * Return specific configuration for the specified name
      *
      * @param name configuration name

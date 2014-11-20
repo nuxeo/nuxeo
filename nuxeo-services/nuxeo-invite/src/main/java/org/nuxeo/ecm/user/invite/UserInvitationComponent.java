@@ -524,6 +524,23 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     @Override
+    public DocumentModelList getRegistrationsForUser(final String docId,
+            final String username, final String configurationName) throws ClientException {
+        final DocumentModelList registrationDocs = new DocumentModelListImpl();
+        new UnrestrictedSessionRunner(getTargetRepositoryName()) {
+            @Override
+            public void run() throws ClientException {
+                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
+                        + " ecm:mixinType = '"+ getConfiguration(configurationName).getRequestDocType() +"' AND docinfo:documentId = '%s' AND"
+                        + getConfiguration(configurationName).getUserInfoUsernameField() +" = '%s' AND ecm:isCheckedInVersion = 0";
+                query = String.format(query, docId, username);
+                registrationDocs.addAll(session.query(query));
+            }
+        }.runUnrestricted();
+        return registrationDocs;
+    }
+    
+    @Override
     public String submitRegistrationRequest(String configurationName,
             DocumentModel userRegistrationModel,
             Map<String, Serializable> additionnalInfo,
