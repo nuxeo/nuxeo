@@ -12,8 +12,14 @@ Selenium tests also ensure that all standard widget types are working ok.
 Install
 =======
 
-Put generated jar nuxeo-platform-forms-layout-demo to your
-nxserver/bundles directory and start the server.
+1. Put generated jar nuxeo-platform-forms-layout-demo to your
+   nxserver/bundles directory
+2. Add the following to you nuxeo.conf file:
+
+    nuxeo.server.declare_datasources=false
+    elasticsearch.enabled=false
+
+3. Start the server.
 
 Development
 ===========

@@ -23,13 +23,9 @@
     <antcall target="mp-install" />
   </target>
 
-  <!-- remove single datasource conf (see NXP-10308) -->
   <target name="set-layout-demo-conf" depends="_init">
     <echo message="Removing single datasource conf" />
-    <antcall target="set-conf">
-      <param name="name" value="nuxeo.db.singleDataSource" />
-      <param name="value" value="" />
-    </antcall>
+    <!-- do not declare datasources (NXP-14138) -->
     <antcall target="set-conf">
       <param name="name" value="nuxeo.server.declare_datasources" />
       <param name="value" value="false" />
