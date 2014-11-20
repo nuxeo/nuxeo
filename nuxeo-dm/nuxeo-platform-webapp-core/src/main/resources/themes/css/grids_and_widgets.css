@@ -437,11 +437,16 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .infoViewRight .containerWidgetPanel .labelColumn {
   color: #999;
+  padding: 0 .7em .5em 0;
   width: 30% }
 
 .infoViewRight .containerWidgetPanel .widgetLabel {
   color: #999;
   padding: 0 }
+
+.infoViewRight .buttonsGadget,
+.infoViewRight .buttonsGadget .smallButton:first-child {
+  margin-left: 0 }
 
 .infoViewRight .containerWidgetPanel .summaryTitle .widgetLabel {
   color: "default (__FLAVOR__ color)" }
