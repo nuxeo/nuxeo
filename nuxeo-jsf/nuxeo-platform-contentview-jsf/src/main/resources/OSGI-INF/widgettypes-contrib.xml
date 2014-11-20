@@ -84,12 +84,14 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="edit">
             <layout name="selectManyListboxAggregate_widget_type_properties_edit">
@@ -230,12 +232,14 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="any">
             <layout
@@ -381,13 +385,15 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{nxd:titleFromId(item.key)}</property>
-            <property name="width">100%</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">
@@ -502,6 +508,9 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
@@ -509,7 +518,6 @@
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
             <property name="directoryName">userDirectory</property>
-            <property name="width">100%</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">
@@ -622,12 +630,14 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="width">100%</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
             <property name="order">key desc</property>
           </defaultValues>
@@ -741,12 +751,14 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="width">100%</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
             <property name="order">key desc</property>
           </defaultValues>
@@ -862,12 +874,14 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
-            <property name="width">100%</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">
@@ -985,9 +999,11 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="notDisplayDefaultOption">true</property>
-            <property name="width">100%</property>
             <property name="var">item</property>
             <property name="itemValue">#{item.key}</property>
             <property name="itemCount">(#{item.docCount})</property>

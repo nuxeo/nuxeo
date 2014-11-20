@@ -27,7 +27,7 @@
           </supportedTypes>
         </fields>
         <properties>
-          <defaultValues mode="edit">
+          <defaultValues mode="any">
             <property name="width">100%</property>
           </defaultValues>
           <layouts mode="edit">

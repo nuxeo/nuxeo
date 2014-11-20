@@ -1083,9 +1083,11 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="minChars">3</property>
-            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="singleUserSuggestion_widget_type_properties_view">
@@ -1220,9 +1222,11 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="minChars">3</property>
-            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="multipleUsersSuggestion_widget_type_properties_view">
@@ -1368,9 +1372,11 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="minChars">0</property>
-            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="suggestOneDirectory_type_properties_view">
@@ -1519,9 +1525,11 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="minChars">0</property>
-            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="suggestManyDirectory_widget_type_properties_view">
@@ -1746,11 +1754,13 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="pageProviderName">default_document_suggestion</property>
             <property name="documentSchemas">dublincore,common</property>
             <property name="minChars">3</property>
-            <property name="width">100%</property>
             <property name="restoreSeamCtx">true</property>
           </defaultValues>
           <layouts mode="view">
@@ -1863,11 +1873,13 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
           <defaultValues mode="edit">
             <property name="pageProviderName">default_document_suggestion</property>
             <property name="documentSchemas">dublincore,common</property>
             <property name="minChars">3</property>
-            <property name="width">100%</property>
             <property name="restoreSeamCtx">true</property>
           </defaultValues>
           <layouts mode="view">
