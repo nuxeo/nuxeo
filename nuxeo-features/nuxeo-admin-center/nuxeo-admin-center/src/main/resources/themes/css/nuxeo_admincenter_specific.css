@@ -30,6 +30,7 @@ author: lkemen@nuxeo.com
 .studioUpdateActions span { color: #000; font-weight: bold; margin: 0 }
 
 .hostInfos pre { font-size: 135%; padding: 1em }
+.hostInfos pre.bubbleBox { white-space: pre-line }
 
 /* Connect registration boxes */
 .nxconnectBox {
