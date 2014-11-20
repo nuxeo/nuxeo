@@ -42,26 +42,26 @@
                   <widget>height</widget>
                 </row>
               </rows>
-              <widget name="width" type="int">
+              <widget name="width" type="text">
                 <labels>
                   <label mode="any">Width</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The width of the Video player.
+                    The width attribute of the Video player, eg. 100%, 550px or 450.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>width</field>
                 </fields>
               </widget>
-              <widget name="height" type="int">
+              <widget name="height" type="text">
                 <labels>
                   <label mode="any">Height</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The height of the Video player.
+                    The height attribute of the Video player, eg. 550px, 450.
                   </label>
                 </helpLabels>
                 <fields>
