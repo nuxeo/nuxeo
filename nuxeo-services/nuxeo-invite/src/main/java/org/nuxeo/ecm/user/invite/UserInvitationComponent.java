@@ -123,6 +123,8 @@ public class UserInvitationComponent extends DefaultComponent implements
     protected String getJavaMailJndiName() {
         return Framework.getProperty("jndi.java.mail", "java:/Mail");
     }
+    
+    
 
     public DocumentModel getUserRegistrationModel(String configurationName) throws ClientException {
         // Test if the configuration is defined
@@ -452,8 +454,21 @@ public class UserInvitationComponent extends DefaultComponent implements
         String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
 
         Map<String, Serializable> input = new HashMap<String, Serializable>();
-        input.put(REGISTRATION_DATA_DOC, registrationDoc);
+        Map<String, Serializable> userinfo = new HashMap<String, Serializable>();
+        userinfo.put("firstName", registrationDoc.getPropertyValue(configuration.getUserInfoFirstnameField()));
+        userinfo.put("lastName", registrationDoc.getPropertyValue(configuration.getUserInfoLastnameField()));
+        userinfo.put("login", registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
+        userinfo.put("id", registrationDoc.getId());
+        
+        String documentTitle = "";
+        if(registrationDoc.hasSchema("docinfo") == true);
+        {
+        	documentTitle = (String) registrationDoc.getPropertyValue("docinfo:documentTitle");
+        }
+        input.put("documentTitle", documentTitle );
+        input.put("comment", registrationDoc.getPropertyValue("registration:comment"));
         input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, configuration.getName());
+        input.put("userinfo", (Serializable) userinfo);
         input.put("info", (Serializable) additionnalInfo);
         input.put("userAlreadyExists",
                 checkUserFromRegistrationExistence(registrationDoc));
