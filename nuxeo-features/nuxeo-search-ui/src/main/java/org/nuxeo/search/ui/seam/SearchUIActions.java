@@ -275,7 +275,9 @@ public class SearchUIActions implements Serializable {
     }
 
     public void clearSearch() throws ClientException {
-        contentViewActions.reset(getCurrentContentViewName());
+        if (currentContentViewName != null) {
+            contentViewActions.reset(currentContentViewName);
+        }
     }
 
     public void refreshAndRewind() throws ClientException {
@@ -611,10 +613,15 @@ public class SearchUIActions implements Serializable {
                 Framework.getLocalService(SearchUIService.class).getContentViewHeaders(
                         actionContextProvider.createActionContext(),
                         navigationContext.getCurrentDocument()));
-        if (!temp.isEmpty()) {
-            String s = temp.get(0).getName();
-            if (s != null && !s.equals(currentContentViewName)) {
+        if (temp != null) {
+            if (!temp.equals(contentViewHeaders)) {
                 invalidateContentViewsName();
+            }
+            if (!temp.isEmpty()) {
+                String s = temp.get(0).getName();
+                if (s != null && !s.equals(currentContentViewName)) {
+                    invalidateContentViewsName();
+                }
             }
         }
     }
