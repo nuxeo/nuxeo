@@ -88,7 +88,6 @@ public class CanInjectFeatureRulesTest {
         @Override
         public void configure(FeaturesRunner runner, Binder binder) {
             binder.bind(Bean.class).toInstance(new Bean());
-            ;
         }
     }
 

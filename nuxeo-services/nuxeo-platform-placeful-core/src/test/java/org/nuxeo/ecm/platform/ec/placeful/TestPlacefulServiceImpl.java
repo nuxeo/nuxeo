@@ -19,93 +19,75 @@
 
 package org.nuxeo.ecm.platform.ec.placeful;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
-import org.osgi.framework.FrameworkEvent;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test the event conf service.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestPlacefulServiceImpl extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class,
+        CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.core.persistence",
+        "org.nuxeo.ecm.platform.placeful.core" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.placeful.core:nxplaceful-ds.xml",
+        "org.nuxeo.ecm.platform.placeful.core:nxplaceful-config.xml" })
+public class TestPlacefulServiceImpl {
 
     private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 
-    private PlacefulServiceImpl placefulServiceImpl;
+    @Inject
+    private PlacefulService placefulService;
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.placeful.core");
-
-        deployContrib("org.nuxeo.ecm.platform.placeful.core",
-                "nxplacefulservice-configs-tests.xml");
-        deployContrib("org.nuxeo.ecm.platform.placeful.core",
-        "nxplaceful-tests.xml");
-
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                runtimeBundle, null));
-
-        placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
-        assertNotNull(placefulServiceImpl);
-
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
-
-    protected DocumentModel doCreateDocument() throws ClientException {
-        DocumentModel rootDocument = session.getRootDocument();
-        DocumentModel model = session.createDocumentModel(
-                rootDocument.getPathAsString(), "youps", "File");
-        model.setProperty("dublincore", "title", "huum");
-        DocumentModel source = session.createDocument(model);
-        session.save();
-        waitForAsyncCompletion();
-        return source;
+    @Test
+    public void testRegistration() {
+        Map<String, String> registry = placefulService.getAnnotationRegistry();
+        assertEquals(1, registry.size());
+        assertTrue(registry.containsKey("SubscriptionConfig"));
+        assertEquals("org.nuxeo.ecm.platform.ec.placeful.SubscriptionConfig",
+                registry.get("SubscriptionConfig"));
     }
 
     @Test
     public void testAnnotations() {
         SubscriptionConfig config = new SubscriptionConfig();
-        //DocumentModel source = doCreateDocument();
 
         config.setEvent("deleted");
         config.setId("000123-023405-045697");
-        placefulServiceImpl.setAnnotation(config);
+        placefulService.setAnnotation(config);
 
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("event", "deleted");
         paramMap.put("id", "000123-023405-045697");
 
-        List<Annotation> annotations = placefulServiceImpl.getAnnotationListByParamMap(paramMap, "SubscriptionConfig");
-        log.info("Nombre d'annotations en bases : "+ annotations.size());
+        List<Annotation> annotations = placefulService.getAnnotationListByParamMap(
+                paramMap, "SubscriptionConfig");
+        log.info("Nombre d'annotations en bases : " + annotations.size());
         assertTrue(annotations.size() > 0);
 
-        Annotation annotation = placefulServiceImpl.getAnnotation("000123-023405-045697", "SubscriptionConfig");
+        Annotation annotation = placefulService.getAnnotation(
+                "000123-023405-045697", "SubscriptionConfig");
         assertNotNull(annotation);
     }
 

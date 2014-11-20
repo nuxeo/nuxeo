@@ -31,11 +31,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.test.Failures;
 import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
@@ -53,11 +53,10 @@ public class RandomBugTest {
 
     protected static boolean isRunningInners;
 
-    protected static class IgnoreInner implements MethodRule {
+    protected static class IgnoreInner implements TestRule {
 
         @Override
-        public Statement apply(Statement base, FrameworkMethod method,
-                Object target) {
+        public Statement apply(Statement base, Description description) {
             Assume.assumeTrue(isRunningInners);
             return base;
         }
@@ -80,6 +79,7 @@ public class RandomBugTest {
 
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
+
 
         @Before
         public void setup() {

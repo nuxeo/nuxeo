@@ -6,7 +6,9 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEvent;
 
@@ -25,8 +27,13 @@ public class DisabledThreadsTrackingTest {
         feature = runner.getFeature(FileEventsTrackingFeature.class);
     }
 
-    @Test(expected=AssertionError.class)
+    @Rule
+    public final ExpectedException thrown = ExpectedException.none();
+
+    @Test
     public void filesAreDeletedWhenThreadLeave() throws IOException {
+        thrown.handleAssertionErrors();
+        thrown.expect(AssertionError.class);
         ThreadEvent.onEnter(this, false).send();
         try {
             feature.onFile(new File("pfouh"), this).send();

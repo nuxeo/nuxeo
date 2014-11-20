@@ -17,6 +17,7 @@ public class FileEventsAreTrackedTest {
     @Inject
     protected FeaturesRunner runner = null;
 
+    @Inject
     protected FileEventsTrackingFeature feature;
 
     @Before
