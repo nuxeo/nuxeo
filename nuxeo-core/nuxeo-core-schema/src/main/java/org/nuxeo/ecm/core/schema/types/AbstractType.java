@@ -13,9 +13,13 @@
 package org.nuxeo.ecm.core.schema.types;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.TypeConstraint;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -132,6 +136,13 @@ public abstract class AbstractType implements Type {
     @Override
     public Object newInstance() {
         return null;
+    }
+
+    @Override
+    public Set<Constraint> getConstraints() {
+        HashSet<Constraint> constraints = new HashSet<Constraint>();
+        constraints.add(new TypeConstraint(this));
+        return constraints;
     }
 
 }

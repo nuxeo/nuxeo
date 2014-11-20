@@ -13,6 +13,9 @@
 package org.nuxeo.ecm.core.schema.types;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * A Type object is used to describe some ECM content.
@@ -185,5 +188,11 @@ public interface Type extends Serializable {
      * @throws TypeException if the value to convert is not compatible with the associated type
      */
     Object convert(Object value) throws TypeException;
+
+    /**
+     * @return this type's constraints
+     * @since 71
+     */
+    Set<Constraint> getConstraints();
 
 }

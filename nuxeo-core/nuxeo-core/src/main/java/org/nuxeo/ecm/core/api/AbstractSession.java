@@ -69,6 +69,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -88,6 +90,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.constraints.ConstraintViolation;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
@@ -167,6 +170,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             versioningService = Framework.getService(VersioningService.class);
         }
         return versioningService;
+    }
+
+    private transient DocumentValidationService validationService;
+
+    protected DocumentValidationService getValidationService() {
+        if (validationService == null) {
+            validationService = Framework.getService(DocumentValidationService.class);
+        }
+        return validationService;
     }
 
     /**
@@ -665,6 +677,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String childName = docModel.getName();
         try {
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
+
+            // document validation
+            if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
+                List<ConstraintViolation> violations = getValidationService().validate(docModel, true);
+                if (violations.size() > 0) {
+                    throw new DocumentValidationException(violations);
+                }
+            }
+
             Document folder = fillCreateOptions(parentRef, childName, options);
 
             // get initial life cycle state info
@@ -766,8 +787,18 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (id == null || id.length() == 0) {
             throw new IllegalArgumentException("Invalid empty id");
         }
+
         DocumentRef parentRef = docModel.getParentRef();
         Map<String, Serializable> props = getContextMapEventInfo(docModel);
+
+        // document validation
+        if (getValidationService().isActivated(DocumentValidationService.CTX_IMPORTDOC, props)) {
+            List<ConstraintViolation> violations = getValidationService().validate(docModel, true);
+            if (violations.size() > 0) {
+                throw new DocumentValidationException(violations);
+            }
+        }
+
         if (parentRef != null && EMPTY_PATH.equals(parentRef)) {
             parentRef = null;
         }
@@ -1475,6 +1506,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             checkPermission(doc, WRITE_PROPERTIES);
 
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
+
+            // document validation
+            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+                List<ConstraintViolation> violations = getValidationService().validate(docModel, true);
+                if (violations.size() > 0) {
+                    throw new DocumentValidationException(violations);
+                }
+            }
+
             options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
             // regular event, last chance to modify docModel
             options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());

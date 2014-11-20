@@ -9,10 +9,12 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types;
 
 import org.nuxeo.ecm.core.schema.SchemaNames;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * Primitive type (basic types like long, string, boolean, etc.).
@@ -50,8 +52,14 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
     }
 
     @Override
-    public SimpleType getPrimitiveType() {
+    public PrimitiveType getPrimitiveType() {
         return this;
     }
+
+    /**
+     * @return true if this primitive types supports this constraints, false otherwise.
+     * @since 7.1
+     */
+    public abstract boolean support(Class<? extends Constraint> constraint);
 
 }

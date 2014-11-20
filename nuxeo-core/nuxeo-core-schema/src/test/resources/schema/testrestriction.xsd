@@ -1,23 +1,157 @@
 <?xml version="1.0"?>
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/user"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/user">
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/user" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/user" xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/">
 
-  <xs:simpleType name="shortString">
+  <xs:element name="firstname" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value=".*\S+.*"></xs:pattern>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- boolean constraints : no supported constraints -->
+  <xs:element name="booleanConstraints" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:boolean">
+        <!-- other ignored restrictions -->
+        <xs:pattern value="tr.*"></xs:pattern>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- boolean constraints : no supported constraints -->
+  <xs:element name="binaryConstraints" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:base64Binary">
+        <!-- other ignored restrictions -->
+        <xs:pattern value="tr.*"></xs:pattern>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- string constraints : possible values are 22 and 4444 -->
+  <xs:element name="stringConstraints" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:minLength value="2" />
+        <xs:maxLength value="4" />
+        <xs:pattern value="[^3]*" />
+        <xs:enumeration value="1234" />
+        <xs:enumeration value="1" />
+        <xs:enumeration value="22" />
+        <xs:enumeration value="333" />
+        <xs:enumeration value="4444" />
+        <xs:enumeration value="55555" />
+        <!-- other ignored restrictions -->
+        <xs:whiteSpace value="preserve" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- date constraints : only possible value is any datetime between 2015-01-01 and 2016-12-31 -->
+  <xs:element name="dateConstraints" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:date">
+        <xs:minInclusive value="2015-01-01" />
+        <xs:maxInclusive value="2016-12-31" />
+        <!-- other ignored restrictions -->
+        <xs:enumeration value="2014-12-21" />
+        <xs:pattern value=".*"></xs:pattern>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- decimal constraints : possible value are 2015.1555 and 2017.15555 -->
+  <xs:element name="decimalConstraints" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:decimal">
+        <xs:enumeration value="2014.15" />
+        <xs:enumeration value="2015.1555" />
+        <xs:enumeration value="2016.15" />
+        <xs:enumeration value="2017.15" />
+        <xs:enumeration value="2017.15555" />
+        <xs:enumeration value="2017.155555" />
+        <xs:enumeration value="2018.15" />
+        <xs:minInclusive value="2015.001" />
+        <xs:maxInclusive value="2017.999" />
+        <xs:pattern value="[^6]*" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:simpleType name="externalConstraints">
     <xs:restriction base="xs:string">
-      <xs:maxLength value="50" />
+      <xs:pattern value=".*[^\s]+.*" />
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:element name="shortstring" type="nxs:shortString" />
+  <xs:element name="nomEmptyStringContainingAtLeastOneA">
+    <xs:simpleType>
+      <xs:restriction base="nxs:externalConstraints">
+        <xs:pattern value=".*A+.*" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
 
-  <xs:simpleType name = "Gender">
-        <xs:restriction base = "xs:string">
-            <xs:enumeration value = "Male"/>
-            <xs:enumeration value = "Female"/>
-            <xs:enumeration value = "Unknown"/>
-        </xs:restriction>
+  <!-- nillable element cases -->
+
+  <!-- the 3 following cases are not XSD compliant because of Nuxeo existing statement (properties are not mandatory) -->
+  <xs:element name="elementShouldNotBeNullButCanBeNull1" type="xs:string" />
+  <xs:element name="elementShouldNotBeNullButCanBeNull2" type="xs:string" nillable="false" />
+  <xs:element name="elementShouldNotBeNullButCanBeNull3" type="xs:string" nillable="false" nxsv:nillable="true" />
+  <xs:element name="elementCanBeNull1" type="xs:string" nillable="true" />
+  <xs:element name="elementCanBeNull2" type="xs:string" nxsv:nillable="true" />
+  <xs:element name="elementCanBeNull3" type="xs:string" nillable="true" nxsv:nillable="true" />
+  <xs:element name="elementCanBeNull4" type="xs:string" nillable="true" nxsv:nillable="false" />
+  <!-- !! we'll ignore NXSV:NILLABLE in the following specific case !! -->
+  <xs:element name="elementCannotBeNull1" type="xs:string" nxsv:nillable="false" />
+  <xs:element name="elementCannotBeNull2" type="xs:string" nillable="false" nxsv:nillable="false" />
+
+  <!-- attributes constraints -->
+
+  <xs:simpleType name="typeForAttribute">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2" />
+      <xs:maxLength value="4" />
+      <xs:pattern value="[^3]*" />
+      <xs:enumeration value="1234" />
+      <xs:enumeration value="1" />
+      <xs:enumeration value="22" />
+      <xs:enumeration value="333" />
+      <xs:enumeration value="4444" />
+      <xs:enumeration value="55555" />
+      <!-- other ignored restrictions -->
+      <xs:whiteSpace value="preserve" />
+    </xs:restriction>
   </xs:simpleType>
 
-  <xs:element name="gender" type = "nxs:Gender"/>
+  <xs:attribute name="schemaAttributeWithConstraints" type="nxs:typeForAttribute" />
+
+  <xs:element name="attributeWithConstraints">
+    <xs:complexType>
+      <xs:attribute name="attr" type="nxs:typeForAttribute" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- use attributes cases -->
+
+  <xs:attribute name="schemaAttributeCanBeNull1" type="xs:string" />
+
+  <xs:element name="attributeCanBeNull1">
+    <xs:complexType>
+      <xs:attribute name="attr" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attributeCanBeNull2">
+    <xs:complexType>
+      <xs:attribute name="attr" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attributeCannotBeNull1">
+    <xs:complexType>
+      <xs:attribute name="attr" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
 
 </xs:schema>

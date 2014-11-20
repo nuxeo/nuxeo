@@ -23,20 +23,21 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
-import org.nuxeo.ecm.core.schema.types.Constraint;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -223,47 +224,6 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testRestriction() throws Exception {
-        URL url = getResource("schema/testrestriction.xsd");
-        assertNotNull(url);
-        Schema schema = reader.loadSchema("testrestriction", "", url);
-        Field field = schema.getField("shortstring");
-        assertEquals(50, field.getMaxLength());
-
-        Type type = field.getType();
-        assertTrue(type instanceof SimpleTypeImpl);
-        SimpleTypeImpl t = (SimpleTypeImpl) type;
-        Type st = t.getSuperType();
-        assertEquals(st.getName(), StringType.INSTANCE.getName());
-        Constraint[] constraints = t.getConstraints();
-        assertNotNull(constraints);
-        Constraint c = constraints[0];
-        assertTrue(c instanceof StringLengthConstraint);
-        StringLengthConstraint slc = (StringLengthConstraint) c;
-        assertEquals(0, slc.getMin());
-        assertEquals(50, slc.getMax());
-
-        Field genderField = schema.getField("gender");
-        Type genderType = genderField.getType();
-        assertEquals("Gender", genderType.getName());
-        Type superType = genderType.getSuperType();
-        assertEquals("string", superType.getName());
-        assertTrue(genderType instanceof SimpleTypeImpl);
-        SimpleTypeImpl sGenderType = (SimpleTypeImpl) genderType;
-
-        constraints = sGenderType.getConstraints();
-        assertNotNull(constraints);
-        Constraint enumConstraint = constraints[0];
-        assertTrue(enumConstraint instanceof EnumConstraint);
-        EnumConstraint ec = (EnumConstraint) enumConstraint;
-        assertTrue(ec.getPossibleValues().contains("Male"));
-        assertTrue(ec.getPossibleValues().contains("Female"));
-        assertTrue(ec.getPossibleValues().contains("Unknown"));
-        assertFalse(ec.getPossibleValues().contains("Depends"));
-
-    }
-
-    @Test
     public void testAdvancedTyping() throws Exception {
         URL url = getResource("schema/advancedSchema.xsd");
         assertNotNull(url);
@@ -309,11 +269,10 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals("string", superType.getName());
         assertTrue(simpleFieldType instanceof SimpleTypeImpl);
         SimpleTypeImpl sSimpleFieldType = (SimpleTypeImpl) simpleFieldType;
-        Constraint[] constraints = sSimpleFieldType.getConstraints();
+        Set<Constraint> constraints = sSimpleFieldType.getConstraints();
         assertNotNull(constraints);
-        Constraint enumConstraint = constraints[0];
-        assertTrue(enumConstraint instanceof EnumConstraint);
-        EnumConstraint ec = (EnumConstraint) enumConstraint;
+        EnumConstraint ec = ConstraintUtils.getConstraint(constraints, EnumConstraint.class);
+        assertNotNull(ec);
         assertTrue(ec.getPossibleValues().contains("EFU"));
 
         // check inline definition of simple type with restriction Field
@@ -327,9 +286,8 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         SimpleTypeImpl sInlineFieldType = (SimpleTypeImpl) inlineFieldType;
         constraints = sInlineFieldType.getConstraints();
         assertNotNull(constraints);
-        enumConstraint = constraints[0];
-        assertTrue(enumConstraint instanceof EnumConstraint);
-        ec = (EnumConstraint) enumConstraint;
+        ec = ConstraintUtils.getConstraint(constraints, EnumConstraint.class);
+        assertNotNull(ec);
         assertTrue(ec.getPossibleValues().contains("EFU"));
 
     }

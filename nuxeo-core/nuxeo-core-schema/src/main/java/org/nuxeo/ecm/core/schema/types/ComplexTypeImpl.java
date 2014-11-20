@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.TypeConstants;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * A Complex Type holds several fields.
@@ -61,9 +62,9 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
 
     // called by XSDLoader
     @Override
-    public Field addField(String name, Type type, String defaultValue, int flags) {
+    public Field addField(String name, Type type, String defaultValue, int flags, Collection<Constraint> constraints) {
         QName qname = QName.valueOf(name, ns.prefix);
-        FieldImpl field = new FieldImpl(qname, this, type, defaultValue, flags);
+        FieldImpl field = new FieldImpl(qname, this, type, defaultValue, flags, constraints);
         addField(field);
         return field;
     }

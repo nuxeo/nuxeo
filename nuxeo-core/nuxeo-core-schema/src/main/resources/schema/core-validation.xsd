@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/core/validation/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/">
+
+  <xs:attribute name="nillable" type="xs:boolean" default="true">
+    <xs:annotation>
+      <xs:documentation><![CDATA[
+        Nuxeo doesn't fit with the default XSD behaviour which make element mandatory by default.
+        The use of this attribute for any XSD element in schema definition allows anyone to define the ability to set some value to null.
+        This attribute is available for compatibility and will be removed.
+        You should also use both default nillable and schemasValidation:nillable to ensure a future compatibility.
+      ]]></xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+</xs:schema>

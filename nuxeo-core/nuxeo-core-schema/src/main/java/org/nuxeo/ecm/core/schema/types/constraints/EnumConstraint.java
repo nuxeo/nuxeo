@@ -7,45 +7,103 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Nuxeo - Thierry Delprat <tdelprat@nuxeo.com> - Mock implementation
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 
 package org.nuxeo.ecm.core.schema.types.constraints;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-
-import org.nuxeo.ecm.core.schema.types.Constraint;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Constraint based on String enumeration NB : for now, the validation is not done.
- * 
- * @since 5.7
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * <p>
+ * This constraint ensures some object's String representation is in an enumeration.
+ * </p>
+ *
+ * @since 7.1
  */
-public class EnumConstraint implements Constraint {
+public class EnumConstraint extends AbstractConstraint {
 
     private static final long serialVersionUID = 1L;
 
-    protected final List<String> possibleValues;
+    private static final String NAME = "EnumConstraint";
 
-    public EnumConstraint(List<String> possibleValues) {
-        this.possibleValues = new ArrayList<String>();
-        this.possibleValues.addAll(possibleValues);
+    private static final String PNAME_VALUES = "Values";
+
+    protected final Set<String> possibleValues;
+
+    /**
+     * Supports any objects, use their String representation.
+     */
+    public EnumConstraint(List<?> possibleValues) {
+        this.possibleValues = new HashSet<String>();
+        for (Object possibleValue : possibleValues) {
+            this.possibleValues.add(possibleValue.toString());
+        }
     }
 
     @Override
     public boolean validate(Object object) {
-        // for now : we don't validate
-        // validation should not be done at low level otherwise
-        // we can not return an understandable error to the user
-        return true;
+        if (object == null) {
+            return true;
+        }
+        return possibleValues.contains(object.toString());
     }
 
-    public List<String> getPossibleValues() {
-        return Collections.unmodifiableList(possibleValues);
+    /**
+     * Here, value is : <br>
+     * name = {@value #NAME} <br>
+     * parameter =
+     * <ul>
+     * <li>{@value #PNAME_VALUES} : List[value1, value2, value3]</li>
+     * </ul>
+     */
+    @Override
+    public Description getDescription() {
+        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        params.put(EnumConstraint.PNAME_VALUES, new ArrayList<String>(possibleValues));
+        return new Description(EnumConstraint.NAME, params);
+    }
+
+    public Set<String> getPossibleValues() {
+        return Collections.unmodifiableSet(possibleValues);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((possibleValues == null) ? 0 : possibleValues.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EnumConstraint other = (EnumConstraint) obj;
+        if (possibleValues == null) {
+            if (other.possibleValues != null) {
+                return false;
+            }
+        } else if (!possibleValues.equals(other.possibleValues)) {
+            return false;
+        }
+        return true;
     }
 
 }

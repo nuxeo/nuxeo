@@ -9,8 +9,16 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * Implementation of a simple type that is not primitive (and therefore has constraints).
@@ -19,15 +27,16 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
 
     private static final long serialVersionUID = 1L;
 
-    protected Constraint[] constraints;
+    protected Set<Constraint> constraints;
 
-    private SimpleType primitiveType;
+    private PrimitiveType primitiveType;
 
     public SimpleTypeImpl(SimpleType superType, String schema, String name) {
         super(superType, schema, name);
         // simple types must have a not null super type
         // for example a primitive type or another simple type
         assert superType != null;
+        constraints = new HashSet<Constraint>();
     }
 
     protected boolean validateConstraints(Object object) {
@@ -52,16 +61,23 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return false;
     }
 
-    public void setConstraints(Constraint[] constraints) {
-        this.constraints = constraints;
-    }
-
-    public Constraint[] getConstraints() {
-        return constraints;
+    public void addConstraints(Collection<Constraint> constraints) {
+        this.constraints.addAll(constraints);
     }
 
     @Override
-    public SimpleType getPrimitiveType() {
+    public Set<Constraint> getConstraints() {
+        Set<Constraint> constraints = new HashSet<Constraint>();
+        constraints.addAll(this.constraints);
+        if (getSuperType() instanceof SimpleType) {
+            SimpleType superType = (SimpleType) getSuperType();
+            constraints.addAll(superType.getConstraints());
+        }
+        return Collections.unmodifiableSet(constraints);
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
         if (primitiveType == null) {
             primitiveType = ((SimpleType) getSuperType()).getPrimitiveType();
         }

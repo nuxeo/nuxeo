@@ -9,11 +9,17 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 
 /**
  * The Boolean type.
@@ -73,6 +79,20 @@ public final class BooleanType extends PrimitiveType {
 
     protected Object readResolve() {
         return INSTANCE;
+    }
+
+    public List<Class<? extends Constraint>> getRelevantConstraints() {
+        List<Class<? extends Constraint>> classes = new ArrayList<Class<? extends Constraint>>();
+        classes.add(NotNullConstraint.class);
+        return classes;
+    }
+
+    @Override
+    public boolean support(Class<? extends Constraint> constraint) {
+        if (NotNullConstraint.class.equals(constraint)) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.schema.types;
 import java.util.Collection;
 
 import org.nuxeo.ecm.core.schema.Namespace;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * A complex type is tree-like structure of named elements which can be of any type.
@@ -62,7 +63,7 @@ public interface ComplexType extends Type {
      * @param flags optional flags
      * @return the created field
      */
-    Field addField(String name, Type type, String defaultValue, int flags);
+    Field addField(String name, Type type, String defaultValue, int flags, Collection<Constraint> constraints);
 
     /**
      * Tests whether this type defines the given field name.

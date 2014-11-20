@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.DocumentValidationService" version="1.0.0">
+  <documentation>
+    Service providing a way to validates document according to constraints described in schemas.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.api.validation.DocumentValidationServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.validation.DocumentValidationService" />
+  </service>
+
+  <extension-point name="activations">
+
+    <documentation>
+      Extension Point to enable/disable validation in any context.
+      <validation context="CoreSession.saveDocument" activated="true" />
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.api.validation.DocumentValidationDescriptor" />
+
+  </extension-point>
+
+</component>
