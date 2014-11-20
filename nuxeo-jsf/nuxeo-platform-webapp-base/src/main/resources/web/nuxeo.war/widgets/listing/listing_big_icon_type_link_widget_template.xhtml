@@ -17,10 +17,12 @@
     <div id="docRef:#{field_1}"
       class="cell popupTarget dropout nxDraggable"
       docRef="#{field_1}">
-      <nxu:graphicImage
-        value="#{nxd:bigIconPath(field_0)}" alt="#{label}" title="#{label}"
-        rendered="#{!empty nxd:bigIconPath(field_0)}"
-        styleClass="bigIcon" />
+      <nxd:restDocumentLink document="#{field_0}">
+        <nxu:graphicImage
+          value="#{nxd:bigIconPath(field_0)}" alt="#{label}" title="#{label}"
+          rendered="#{!empty nxd:bigIconPath(field_0)}"
+          styleClass="bigIcon" />
+      </nxd:restDocumentLink>
     </div>
   </div>
 
