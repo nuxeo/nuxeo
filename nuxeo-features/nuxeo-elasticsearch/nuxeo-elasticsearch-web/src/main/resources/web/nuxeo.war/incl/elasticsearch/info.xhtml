@@ -11,15 +11,15 @@
 
    <c:choose>
     <c:when test="#{esAdmin.isIndexingInProgress()}">
-      <h1>Indexing in PROGRESS</h1>
+      <div class="processMessage completeWarning">Indexing in progress</div>
     </c:when>
     <c:otherwise>
-      <h2>No indexing in progress</h2>
+      <div class="processMessage completeInfo">No indexing in progress</div>
     </c:otherwise>
   </c:choose>
 
   <h3>Indexing state</h3>
-  <div>An indexing command is an Elasticsearch operation that can insert, update or delete one or many Nuxeo documents.</div>
+  <div class="detail">An indexing command is an Elasticsearch operation that can insert, update or delete one or many Nuxeo documents.</div>
   <pre class="bubbleBox">
 Indexing command running: <h:outputText value="#{esAdmin.runningCommands}"/>
 Indexing command pending: <h:outputText value="#{esAdmin.pendingCommands}"/>
@@ -27,14 +27,14 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
   </pre>
 
   <h3>Indexing rates</h3>
-  <div>Exponentially-weighted moving average rate of indexing last 1, 5 and 15 minutes in docs/s (similar to Unix load).</div>
+  <div class="detail">Exponentially-weighted moving average rate of indexing last 1, 5 and 15 minutes in docs/s (similar to Unix load).</div>
   <pre class="bubbleBox">
     <h:outputText
       value="#{esAdmin.indexingRates}"/>
   </pre>
 
   <h3>Elasticsearch documents</h3>
-  <div>Number of documents in the Elasticsearch index.</div>
+  <div class="detail">Number of documents in the Elasticsearch index.</div>
   <pre class="bubbleBox">
 <h:outputText value="#{esAdmin.numberOfDocuments}"/> (deleted: <h:outputText value="#{esAdmin.numberOfDeletedDocuments}"/>)
   </pre>
@@ -47,8 +47,8 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
   <h3> Elasticsearch Stats </h3>
 
   <div>
-    <a id="ESStatsOpen" href="#">Expand all</a>
-    <a id="ESStatsClose" href="#" style="display:none">Unexpand all</a>
+    <a id="ESStatsOpen" href="#" class="button tinyButton">Expand all</a>
+    <a id="ESStatsClose" href="#" class="button tinyButton" style="display:none">Unexpand all</a>
   </div>
 
   <div id="ESStats"></div>
@@ -56,8 +56,8 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
   <h3> Elasticsearch Cluster Config</h3>
 
   <div>
-    <a id="ESConfigOpen" href="#">Expand all</a>
-    <a id="ESConfigClose" href="#" style="display:none">Unexpand all</a>
+    <a id="ESConfigOpen" href="#" class="button tinyButton">Expand all</a>
+    <a id="ESConfigClose" href="#" class="button tinyButton" style="display:none">Unexpand all</a>
   </div>
 
   <div id="ESConfig"></div>

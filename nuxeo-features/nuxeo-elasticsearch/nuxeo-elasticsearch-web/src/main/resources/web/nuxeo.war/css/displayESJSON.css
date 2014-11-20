@@ -13,17 +13,24 @@
 
 .esname {
   color: black;
-  padding:2px;
 }
 
-.array {
-  background-color: #EEEEEE;
-  border: thin solid #777777;
-}
+.arrow ~ .esname {
+  font-size: 1.1em;
+  font-weight: bold }
 
+.arrow.hide ~ .esname {
+  color: #777;
+  display: inline-block;
+  font-size: 1em;
+  font-weight: normal;
+  padding-left: 1.2em;
+  width: 12em; }
+
+.array,
 .object {
-  background-color: #EEEEEE;
-  border: thin solid #777777;
+  background-color: #fff;
+  border: thin solid #e7e7e7;
 }
 
 .esstring {

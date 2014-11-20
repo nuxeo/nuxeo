@@ -13,7 +13,7 @@ function displayESJSON(label,json, selector) {
           if( value !== undefined ) return(" : " + value);
           else return('');
         }},
-        {'tag':'span','class':'type','html':'${type}'}
+        {'tag':'span','class':'type label label-info','html':'${type}'}
       ]},
       {'tag':'div','class':'children','children':function(obj){return(children(obj.value));}}
     ]}
