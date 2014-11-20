@@ -147,8 +147,9 @@
 
           <f:subview rendered="#{actionClicked}" id="#{fancyboxIdPrefix}fancy_subview">
 
-            <h:form>
-              <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox"
+            <h:form id="#{fancyboxIdPrefix}closeFancyboxForm">
+              <a4j:jsFunction id="#{fancyboxIdPrefix}closeFancybox"
+                name="#{fancyboxIdPrefix}closeFancybox"
                 render="#{elementsToReRender}">
                 <f:attribute name="selectedValue" value="" />
                 <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
