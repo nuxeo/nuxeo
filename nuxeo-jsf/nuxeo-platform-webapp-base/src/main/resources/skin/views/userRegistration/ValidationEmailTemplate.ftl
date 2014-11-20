@@ -2,7 +2,7 @@
 <body>
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
 <br />
-You have been invited to access the Nuxeo Platform.
+You have been invited to access the Nuxeo.
 <br />
 <#if comment != "">
 <br/>
@@ -12,7 +12,7 @@ You have been invited to access the Nuxeo Platform.
 
 <p>Click on the following link to validate your invitation:</p>
 <br/>
-<a href="${info['enterPasswordUrl']}${configuratioName}/${userinfo.id}">Validate my invitation</a>
+<a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">Validate my invitation</a>
 
 <br /><br />
 <#if !userAlreadyExists>
