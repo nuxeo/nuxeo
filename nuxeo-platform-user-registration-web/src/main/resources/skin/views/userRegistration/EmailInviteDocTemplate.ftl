@@ -1,28 +1,33 @@
 <html>
 <body>
-Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}, <br />
+Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
 <br />
-You have been invited to access <a href="${info['docUrl']}">${registrationDoc.docinfo.documentTitle}</a>.
+<#if documentTitle != "">
+You have been invited to access <a href="${info['docUrl']}">${documentTitle}</a>.
+<#else>
+<p>You have been invited to access to Nuxeo.</p>
+</#if>
+
 <br />
-<#if registrationDoc.registration.comment != "">
+<#if comment != "">
 <br/>
 <p>From the sender: </p>
-<p>${registrationDoc.registration.comment}</p>
+<p>${comment}</p>
 </#if>
 
 <p>Click on the following link to validate your invitation:</p>
 <br/>
-<a href="${info['enterPasswordUrl']}${configurationName}/${registrationDoc.id}">Validate my invitation</a>
+<a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">Validate my invitation</a>
 
 <br /><br />
 <#if !userAlreadyExists>
 <p>After you defined your password, you'll be able to log in to the application.</p>
-<p>Your username is: ${registrationDoc.userinfo.login}</p>
+<p>Your username is: ${userinfo.login}</p>
 </#if>
 
 <#if userAlreadyExists>
 <p>Here are your login credentials:</p>
-<p>Username:  ${registrationDoc.userinfo.login}</p>
+<p>Username:  ${userinfo.login}</p>
 <p>Password: Your usual account password.</p>
 </#if>
 </p>
