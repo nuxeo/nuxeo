@@ -409,6 +409,11 @@
         <categories>
           <category>summary</category>
         </categories>
+        <properties>
+          <defaultValues mode="any">
+            <property name="width">100%</property>
+          </defaultValues>
+        </properties>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
