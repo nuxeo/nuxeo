@@ -25,8 +25,11 @@
           execute="@form"
           onevent="jQuery.fancybox.close" />
       </h:commandButton>
-      <h:commandButton value="#{messages['command.cancel']}" styleClass="button" immediate="true"
-        onclick="jQuery.fancybox.close();" />
+      <h:commandButton value="#{messages['command.cancel']}" styleClass="button">
+        <f:ajax
+          execute="@this"
+          onevent="jQuery.fancybox.close" />
+      </h:commandButton>
     </div>
 
   </h:form>
