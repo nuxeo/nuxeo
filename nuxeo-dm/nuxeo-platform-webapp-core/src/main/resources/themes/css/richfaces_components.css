@@ -257,9 +257,11 @@ input.rf-cal-inp {
 
 /* =Calendar */
 table.rf-cal-extr {
+  background-color: #fff;
   border: 1px solid #c6c6c6;
   border-radius: 3px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);}
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  font-size: 12px }
 
 table.rf-cal-extr tr td {
   padding: .15em!important;
