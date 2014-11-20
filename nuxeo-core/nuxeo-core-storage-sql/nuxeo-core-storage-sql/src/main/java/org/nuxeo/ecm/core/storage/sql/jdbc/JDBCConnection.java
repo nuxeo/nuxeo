@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 /**
@@ -40,6 +41,13 @@ public class JDBCConnection {
      * overloaded.
      */
     public static final int MAX_CONNECTION_TRIES = 5;
+
+    /** JDBC application name parameter for setClientInfo. */
+    private static final String APPLICATION_NAME = "ApplicationName";
+
+    private static final String SET_CLIENT_INFO_PROP = "org.nuxeo.vcs.setClientInfo";
+
+    private static final String SET_CLIENT_INFO_DEFAULT = "false";
 
     /** The model used to do the mapping. */
     protected final Model model;
@@ -87,6 +95,8 @@ public class JDBCConnection {
     public final JDBCLogger logger = new JDBCLogger(
             String.valueOf(instanceNumber));
 
+    protected boolean setClientInfo;
+
     /**
      * Creates a new Mapper.
      *
@@ -104,6 +114,8 @@ public class JDBCConnection {
         this.connectionPropagator = connectionPropagator;
         this.noSharing = noSharing;
         dialect = sqlInfo.dialect;
+        setClientInfo = Boolean.parseBoolean(Framework.getProperty(
+                SET_CLIENT_INFO_PROP, SET_CLIENT_INFO_DEFAULT));
         connectionPropagator.addConnection(this);
     }
 
@@ -182,6 +194,10 @@ public class JDBCConnection {
             // single-datasource non-XA mode
             xaconnection = null;
         }
+        if (setClientInfo ) {
+            // log the mapper number (m=123)
+            connection.setClientInfo(APPLICATION_NAME, "nuxeo m=" + instanceNumber);
+        }
     }
 
     public void close() {
@@ -192,7 +208,14 @@ public class JDBCConnection {
     public void closeConnections() {
         if (connection != null) {
             try {
-                connection.close();
+                try {
+                    if (setClientInfo) {
+                        // connection will become idle in the pool
+                        connection.setClientInfo(APPLICATION_NAME, "nuxeo");
+                    }
+                } finally {
+                    connection.close();
+                }
             } catch (Exception e) {
                 // ignore, including UndeclaredThrowableException
                 checkConnectionValid = true;
