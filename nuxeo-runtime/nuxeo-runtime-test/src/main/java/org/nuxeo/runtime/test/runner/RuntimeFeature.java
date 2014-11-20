@@ -76,7 +76,6 @@ public class RuntimeFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(RuntimeHarness.class).toInstance(getHarness());
-        binder.bind(RuntimeFeature.class).toInstance(this);
         for (String svc : Framework.getRuntime().getComponentManager()
             .getServices()) {
             try {

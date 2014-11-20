@@ -24,16 +24,10 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -44,7 +38,9 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 import org.nuxeo.runtime.test.TargetResourceLocator;
-import org.nuxeo.runtime.test.runner.FeaturesRunner.Loader.Holder;
+import org.nuxeo.runtime.test.runner.FeaturesLoader.Callable;
+import org.nuxeo.runtime.test.runner.FeaturesLoader.Direction;
+import org.nuxeo.runtime.test.runner.FeaturesLoader.Holder;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Binder;
@@ -69,268 +65,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      */
     protected Injector injector;
 
-    protected class BindTestRules implements TestRule {
-        private final List<TestRule> rules = new ArrayList<>();
-
-        protected BindTestRules(List<TestRule> actual) {
-            rules.addAll(actual);
-        }
-
-        @Override
-        public Statement apply(final Statement base, Description description) {
-            return base;
-        }
-
-        protected Statement onStatement(final Statement base) {
-            return new Statement() {
-
-                @Override
-                public void evaluate() throws Throwable {
-                    injector = injector.createChildInjector(new Module() {
-
-                        @SuppressWarnings({ "unchecked", "rawtypes" })
-                        @Override
-                        public void configure(Binder binder) {
-                            for (Object each : rules) {
-                                binder.bind((Class) each.getClass())
-                                    .toInstance(each);
-                                binder.requestInjection(each);
-                            }
-                        }
-
-                    });
-
-                    try {
-                        base.evaluate();
-                    } finally {
-                        injector = injector.getParent();
-                    }
-
-                }
-
-            };
-        }
-
-    }
-
-    protected class BindMethodRules implements MethodRule {
-        private final List<MethodRule> rules = new ArrayList<>();
-
-        protected BindMethodRules(List<MethodRule> someRules) {
-            rules.addAll(someRules);
-        }
-
-        @Override
-        public Statement apply(Statement base, FrameworkMethod method,
-                Object target) {
-            return onStatement(base);
-        }
-
-        protected Statement onStatement(final Statement base) {
-            return new Statement() {
-
-                @Override
-                public void evaluate() throws Throwable {
-                    injector = injector.createChildInjector(new Module() {
-
-                        @SuppressWarnings({ "unchecked", "rawtypes" })
-                        @Override
-                        public void configure(Binder binder) {
-                            for (Object each : rules) {
-                                binder.bind((Class) each.getClass())
-                                    .annotatedWith(Names.named("method"))
-                                    .toInstance(each);
-                                binder.requestInjection(each);
-                            }
-                        }
-
-                    });
-
-                    try {
-                        base.evaluate();
-                    } finally {
-                        injector = injector.getParent();
-                    }
-
-                }
-
-            };
-        }
-
-    }
-
-    protected enum Direction {
-        FORWARD, BACKWARD
-    }
-
-    protected interface Callable {
-        void call(Holder holder) throws Exception;
-    }
-
-    protected class Loader {
-
-        protected class Holder {
-            protected final Class<? extends RunnerFeature> type;
-
-            protected final TestClass testClass;
-
-            protected RunnerFeature feature;
-
-            Holder(Class<? extends RunnerFeature> aType)
-                    throws InstantiationException, IllegalAccessException {
-                type = aType;
-                testClass = new TestClass(aType);
-                feature = aType.newInstance();
-            }
-
-            @Override
-            public String toString() {
-                return "Holder [type=" + type + "]";
-            }
-
-        }
-
-        protected final Map<Class<? extends RunnerFeature>, Holder> index = new HashMap<>();
-
-        protected final List<Holder> holders = new LinkedList<>();
-
-        Iterable<Holder> holders() {
-            return holders;
-        }
-
-        Iterable<RunnerFeature> features() {
-            return new Iterable<RunnerFeature>() {
-
-                @Override
-                public Iterator<RunnerFeature> iterator() {
-                    return new Iterator<RunnerFeature>() {
-
-                        Iterator<Holder> iterator = holders.iterator();
-
-                        @Override
-                        public boolean hasNext() {
-                            return iterator.hasNext();
-                        }
-
-                        @Override
-                        public RunnerFeature next() {
-                            return iterator.next().feature;
-                        }
-
-                        @Override
-                        public void remove() {
-                            throw new UnsupportedOperationException();
-                        }
-
-                    };
-                }
-
-            };
-        }
-
-        protected void apply(Direction direction, Callable callable) {
-            apply(direction == Direction.FORWARD ? holders : reversed(holders),
-                    callable);
-        }
-
-        protected void apply(Iterable<Holder> holders, Callable callable) {
-            AssertionError errors = new AssertionError(
-                    "invoke on features error " + holders);
-            for (Holder each : holders) {
-                try {
-                    callable.call(each);
-                } catch (AssumptionViolatedException cause) {
-                    throw cause;
-                } catch (Exception cause) {
-                    errors.addSuppressed(cause);
-                }
-            }
-            if (errors.getSuppressed().length > 0) {
-                throw errors;
-            }
-        }
-
-        protected boolean contains(Class<? extends RunnerFeature> aType) {
-            return index.containsKey(aType);
-        }
-
-        public void loadFeatures(Class<?> classToRun) throws Exception {
-            scanner.scan(classToRun);
-            // load required features from annotation
-            List<Features> annos = scanner.getAnnotations(classToRun,
-                    Features.class);
-            if (annos != null) {
-                for (Features anno : annos) {
-                    for (Class<? extends RunnerFeature> cl : anno.value()) {
-                        loadFeature(new HashSet<Class<?>>(), cl);
-                    }
-                }
-            }
-        }
-
-        protected void loadFeature(HashSet<Class<?>> cycles,
-                Class<? extends RunnerFeature> clazz) throws Exception {
-            if (index.containsKey(clazz)) {
-                return;
-            }
-            if (cycles.contains(clazz)) {
-                throw new IllegalStateException(
-                        "Cycle detected in features dependencies of " + clazz);
-            }
-            cycles.add(clazz);
-            scanner.scan(clazz);
-            // load required features from annotation
-            List<Features> annos = scanner
-                .getAnnotations(clazz, Features.class);
-            if (annos != null) {
-                for (Features anno : annos) {
-                    for (Class<? extends RunnerFeature> cl : anno.value()) {
-                        loadFeature(cycles, cl);
-                    }
-                }
-            }
-            final Holder actual = new Holder(clazz);
-            holders.add(actual);
-            index.put(clazz, actual);
-        }
-
-        public <T extends RunnerFeature> T getFeature(Class<T> aType) {
-            return aType.cast(index.get(aType).feature);
-        }
-
-        protected Module onModule() {
-            return new Module() {
-
-                @SuppressWarnings("unchecked")
-                @Override
-                public void configure(Binder aBinder) {
-                    for (Holder each : holders) {
-                        each.feature.configure(FeaturesRunner.this, aBinder);
-                        aBinder.bind((Class) each.feature.getClass())
-                            .toInstance(each.feature);
-                        aBinder.requestInjection(each.feature);
-                    }
-                }
-
-            };
-        }
-
-    }
-
-    protected final Loader loader = new Loader();
+    protected final FeaturesLoader loader = new FeaturesLoader(this);
 
     protected final TargetResourceLocator locator;
 
     public static AnnotationScanner getScanner() {
         return scanner;
-    }
-
-    // not the most efficient to recompute this all the time
-    // but it doesn't matter here
-    public static <T> List<T> reversed(List<T> list) {
-        List<T> reversed = new ArrayList<T>(list);
-        Collections.reverse(reversed);
-        return reversed;
     }
 
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
@@ -357,7 +97,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     public Iterable<RunnerFeature> getFeatures() {
         return loader.features();
-
     }
 
     /**
@@ -376,7 +115,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
             }
         });
-        for (Loader.Holder each : Lists.reverse(loader.holders)) {
+        for (FeaturesLoader.Holder each : Lists.reverse(loader.holders)) {
             annotation = scanner.getAnnotation(each.type, type);
             if (annotation != null) {
                 configs.add(annotation);
@@ -428,7 +167,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                         test);
             }
         });
-        injector.injectMembers(test);
     }
 
     protected void afterMethodRun(final FrameworkMethod method,
@@ -437,8 +175,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
             @Override
             public void call(Holder holder) throws Exception {
-                holder.feature
-                    .afterMethodRun(FeaturesRunner.this, method, test);
+                holder.feature.afterMethodRun(FeaturesRunner.this, method, test);
             }
         });
     }
@@ -449,16 +186,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             @Override
             public void call(Holder holder) throws Exception {
                 holder.feature.afterRun(FeaturesRunner.this);
-            }
-        });
-    }
-
-    protected void testCreated(final Object test) throws Exception {
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.testCreated(test);
             }
         });
     }
@@ -495,7 +222,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         });
 
         injector.injectMembers(underTest);
-        testCreated(underTest);
     }
 
     protected void afterTeardown() {
@@ -516,7 +242,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected Injector onInjector(final RunNotifier aNotifier) {
         return Guice.createInjector(Stage.DEVELOPMENT, new Module() {
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             public void configure(Binder aBinder) {
                 aBinder.bind(FeaturesRunner.class).toInstance(
@@ -540,7 +265,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             initialize();
             start();
             beforeRun();
-            next.evaluate();
+            injector = injector.createChildInjector(loader.onModule());
+            try {
+                next.evaluate();
+            } finally {
+                injector = injector.getParent();
+            }
         }
 
     }
@@ -571,15 +301,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return actual;
     }
 
-    protected RulesFactory<ClassRule, TestRule> classRulesFactory = new RulesFactory<>(
-            ClassRule.class, TestRule.class);
-
-    protected RulesFactory<Rule, TestRule> testRulesFactory = new RulesFactory<>(
-            Rule.class, TestRule.class);
-
-    protected RulesFactory<Rule, MethodRule> methodRulesFactory = new RulesFactory<>(
-            Rule.class, MethodRule.class);
-
     @Override
     protected Statement classBlock(final RunNotifier aNotifier) {
         injector = onInjector(aNotifier);
@@ -588,26 +309,24 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> classRules() {
-        final List<TestRule> actual = new ArrayList<>();
+        final RulesFactory<ClassRule, TestRule> factory = new RulesFactory<>(
+                ClassRule.class, TestRule.class);
 
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
             public void call(Holder holder) throws Exception {
-                actual.addAll(classRulesFactory.onRules(holder.testClass, null));
+                factory.withRules(holder.testClass, null);
             }
         });
-        actual.addAll(super.classRules());
-        actual.add(new BindTestRules(actual));
-        actual.add(new TestRule() {
-
+        factory.withRules(super.classRules()).withRule(new TestRule() {
             @Override
             public Statement apply(Statement base, Description description) {
                 return new BeforeClassStatement(base);
             }
-
         });
-        return actual;
+
+        return factory.build();
     }
 
     protected class BeforeMethodRunStatement extends Statement {
@@ -716,36 +435,48 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getTestRules(Object target) {
-        final List<TestRule> actual = new ArrayList<TestRule>();
+        final RulesFactory<Rule, TestRule> factory = new RulesFactory<Rule, TestRule>(
+                Rule.class, TestRule.class);
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
             public void call(Holder holder) throws Exception {
-                actual.addAll(testRulesFactory.onRules(holder.testClass,
-                        holder.feature));
+                factory.withRules(holder.testClass, holder.feature);
             }
 
         });
-        actual.addAll(testRulesFactory.onRules(getTestClass(), target));
-        actual.add(new BindTestRules(actual));
-        return actual;
+        factory.withRules(getTestClass(), target);
+        return factory.build();
     }
 
     @Override
     protected List<MethodRule> rules(Object target) {
-        final List<MethodRule> actual = new ArrayList<>();
+        final RulesFactory<Rule, MethodRule> factory = new RulesFactory<>(
+                Rule.class, MethodRule.class);
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
             public void call(Holder holder) throws Exception {
-                actual.addAll(methodRulesFactory.onRules(holder.testClass,
-                        holder.feature));
+                factory.withRules(holder.testClass, holder.feature);
             }
 
         });
-        actual.addAll(methodRulesFactory.onRules(getTestClass(), target));
-        actual.add(new BindMethodRules(actual));
-        return actual;
+        factory.withRules(getTestClass(), target);
+        return factory.build();
+    }
+
+    @Override
+    protected Statement methodInvoker(FrameworkMethod method, Object test) {
+        final Statement actual = super.methodInvoker(method, test);
+        return new Statement() {
+
+            @Override
+            public void evaluate() throws Throwable {
+                injector.injectMembers(underTest);
+                actual.evaluate();
+            }
+
+        };
     }
 
     protected Object underTest;
@@ -753,6 +484,14 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() throws Exception {
         underTest = super.createTest();
+        loader.apply(Direction.FORWARD, new Callable() {
+
+            @Override
+            public void call(Holder holder) throws Exception {
+                holder.feature.testCreated(underTest);
+            }
+
+        });
         // TODO replace underTest member with a binding
         // Class<?> testType = underTest.getClass();
         // injector.getInstance(Binder.class).bind(testType)
@@ -767,69 +506,115 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     @Override
-    protected Statement methodBlock(final FrameworkMethod method) {
-        return new Statement() {
-
-            final Statement base = FeaturesRunner.super.methodBlock(method);
-
-            @Override
-            public void evaluate() throws Throwable {
-                injector = injector.createChildInjector(loader.onModule());
-                try {
-                    base.evaluate();
-                } finally {
-                    injector = injector.getParent();
-                }
-
-            }
-
-        };
-    }
-
-
-    @Override
     public String toString() {
         return "FeaturesRunner [fTest=" + getTargetTestClass() + "]";
     }
 
     protected class RulesFactory<A extends Annotation, R> {
 
+        protected Statement build(final Statement base, final String name) {
+            return new Statement() {
+
+                @Override
+                public void evaluate() throws Throwable {
+                    injector = injector.createChildInjector(new Module() {
+
+                        @SuppressWarnings({ "unchecked", "rawtypes" })
+                        @Override
+                        public void configure(Binder binder) {
+                            for (Object each : rules) {
+                                binder.bind((Class) each.getClass()).annotatedWith(
+                                        Names.named(name)).toInstance(each);
+                                binder.requestInjection(each);
+                            }
+                        }
+
+                    });
+
+                    try {
+                        base.evaluate();
+                    } finally {
+                        injector = injector.getParent();
+                    }
+
+                }
+
+            };
+
+        }
+
+        protected class BindRule implements TestRule, MethodRule {
+
+            @Override
+            public Statement apply(Statement base, FrameworkMethod method,
+                    Object target) {
+                Statement statement = build(base, "method");
+                for (Object each : rules) {
+                    statement = ((MethodRule) each).apply(statement, method,
+                            target);
+                }
+                return statement;
+            }
+
+            @Override
+            public Statement apply(Statement base, Description description) {
+                if (rules.isEmpty()) {
+                    return base;
+                }
+                Statement statement = build(base, "test");
+                for (Object each : rules) {
+                    statement = ((TestRule) each).apply(statement, description);
+                }
+                return statement;
+            }
+
+        }
+
         protected final Class<A> annotationType;
 
         protected final Class<R> ruleType;
+
+        protected ArrayList<R> rules = new ArrayList<>();
 
         protected RulesFactory(Class<A> anAnnotationType, Class<R> aRuleType) {
             annotationType = anAnnotationType;
             ruleType = aRuleType;
         }
 
-        protected List<R> onRules(TestClass aType, Object aTest) {
-            final List<R> actual = new ArrayList<>();
-            for (R each : aType.getAnnotatedFieldValues(aTest, annotationType,
-                    ruleType)) {
-                actual.add(each);
-                injector.injectMembers(each);
-            }
-
-            for (FrameworkMethod each : aType
-                .getAnnotatedMethods(annotationType)) {
-                if (ruleType.isAssignableFrom(each.getMethod().getReturnType())) {
-                    R onRule = onRule(ruleType, each, aTest);
-                    injector.injectMembers(onRule);
-                    actual.add(onRule);
-                }
-            }
-
-            return actual;
+        public RulesFactory<A, R> withRules(List<R> someRules) {
+            this.rules.addAll(someRules);
+            return this;
         }
 
-        protected R onRule(Class<R> aRuleType, FrameworkMethod aMethod,
+        public RulesFactory<A, R> withRule(R aRule) {
+            injector.injectMembers(aRule);
+            rules.add(aRule);
+            return this;
+        }
+
+        public RulesFactory<A, R> withRules(TestClass aType, Object aTest) {
+            for (R each : aType.getAnnotatedFieldValues(aTest, annotationType,
+                    ruleType)) {
+                withRule(each);
+            }
+
+            for (FrameworkMethod each : aType.getAnnotatedMethods(annotationType)) {
+                if (ruleType.isAssignableFrom(each.getMethod().getReturnType())) {
+                    withRule(onMethod(ruleType, each, aTest));
+                }
+            }
+            return this;
+        }
+
+        public List<R> build() {
+            return Collections.singletonList(ruleType.cast(new BindRule()));
+        }
+
+        protected R onMethod(Class<R> aRuleType, FrameworkMethod aMethod,
                 Object aTarget, Object... someParms) {
             try {
-                R aRule = aRuleType.cast(aMethod.invokeExplosively(aTarget,
+                return aRuleType.cast(aMethod.invokeExplosively(aTarget,
                         someParms));
-                injector.injectMembers(aRule);
-                return aRule;
             } catch (Throwable cause) {
                 throw new RuntimeException(
                         "Errors in rules factory " + aMethod, cause);
