@@ -58,8 +58,10 @@ public class TestBlob extends NXRuntimeTestCase {
         File file = new File(url.toURI());
         length = (int) file.length();
         blobContent = new byte[length];
-        int bytesRead = new FileInputStream(file).read(blobContent);
-        assertTrue(bytesRead > 0);
+        try (InputStream is = new FileInputStream(file)) {
+            int bytesRead = is.read(blobContent);
+            assertTrue(bytesRead > 0);
+        }
     }
 
     @After
@@ -185,9 +187,6 @@ public class TestBlob extends NXRuntimeTestCase {
         assertFalse(blob.isPersistent());
 
         Blob blob2 = blob.persist();
-        String s2 = blob2.getString();
-        assertEquals(new String(blobContent), s2);
-        s2 = null;
 
         byte[] blobContent2 = blob2.getByteArray();
         assertEquals(blobContent.length, blobContent2.length);
