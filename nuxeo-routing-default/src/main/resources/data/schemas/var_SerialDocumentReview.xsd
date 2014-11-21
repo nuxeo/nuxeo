@@ -35,5 +35,5 @@
   <xs:element name="index" type="xs:integer" default="0"/>
   <xs:element name="initiatorComment" type="xs:string"/>
   <xs:element name="participants" type="nxs:stringList"/>
-  <xs:element name="validationOrReview" type="xs:string"/>
+  <xs:element name="validationOrReview" type="xs:string" default="validation"/>
 </xs:schema>
