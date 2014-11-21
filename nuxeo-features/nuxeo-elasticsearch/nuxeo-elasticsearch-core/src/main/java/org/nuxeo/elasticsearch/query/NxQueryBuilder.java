@@ -84,10 +84,12 @@ public class NxQueryBuilder {
     /**
      * No more than that many documents will be returned.
      *
-     * Default to {DEFAULT_LIMIT}
-     *
+     * Default to {DEFAULT_LIMIT}, Use -1 to return all documents.
      */
     public NxQueryBuilder limit(int limit) {
+        if (limit < 0) {
+            limit = Integer.MAX_VALUE;
+        }
         this.limit = limit;
         return this;
     }
