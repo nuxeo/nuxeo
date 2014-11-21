@@ -2,6 +2,7 @@
 Starting CSS who define the very basic styles.
 =Reset and default values -> reduce browser inconsistencies in styles and define the default font
 =Links and Titles -> generic styles for links and titles
+=Compat styles -> rules that need vendor prefixes
 author: lkemen@nuxeo.com
 */
 
@@ -105,3 +106,10 @@ h6 {
 input, select, textarea,
 button, keygen, isindex, legend, a {
   font-size: inherit }
+
+/* =Compat styles */
+.field, select, textarea, .serverChoice a,
+.tabsBar, .gridBox, .infoViewRight .infoViewInfoLayout,
+input[type="text"], input[type="file"], input[type="password"] {
+ -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box }
