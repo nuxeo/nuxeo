@@ -22,14 +22,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.tag.operations.RemoveDocumentTags;
 import org.nuxeo.ecm.platform.tag.operations.TagDocument;
 import org.nuxeo.ecm.platform.tag.operations.UntagDocument;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -41,7 +40,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, EmbeddedAutomationServerFeature.class })
+@Features({ CoreFeature.class, AutomationFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.tag" })
 public class TestTagOperations {
 
