@@ -18,9 +18,9 @@ package org.nuxeo.ecm.collections.jsf.actions;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.ecm.collections.api.CollectionConstants.MAGIC_PREFIX_ID;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.seam.annotations.In;
@@ -58,21 +58,22 @@ public class CollectionBulkEditActions implements Serializable {
                 org.nuxeo.common.collections.ScopeType.REQUEST,
                 "bulk_collections");
         if (collectionIds != null && !collectionIds.isEmpty()) {
-            List<DocumentModel> collections = new ArrayList<>();
-            for (String collectionId : collectionIds) {
-                IdRef idRef = new IdRef(collectionId);
-                if (documentManager.exists(idRef)) {
-                    collections.add(documentManager.getDocument(idRef));
-                }
-            }
-
             CollectionManager collectionManager = Framework.getService(CollectionManager.class);
-            for (DocumentModel collection : collections) {
-                if (collectionManager.canAddToCollection(collection,
-                        documentManager)) {
-                    collectionManager.addToCollection(collection, documents,
+            for (String collectionId : collectionIds) {
+                if (collectionId.startsWith(MAGIC_PREFIX_ID)) {
+                    String title = collectionId.replaceAll("^"
+                            + MAGIC_PREFIX_ID, "");
+                    collectionManager.addToNewCollection(title, "", documents,
                             documentManager);
+                } else {
+                    IdRef idRef = new IdRef(collectionId);
+                    if (documentManager.exists(idRef)) {
+                        DocumentModel collection = documentManager.getDocument(idRef);
+                        collectionManager.addToCollection(collection,
+                                documents, documentManager);
+                    }
                 }
+
             }
         }
     }
