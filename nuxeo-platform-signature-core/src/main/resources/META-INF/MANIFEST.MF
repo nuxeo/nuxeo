@@ -16,4 +16,5 @@ Nuxeo-Component:
  OSGI-INF/root-service-contrib.xml,
  OSGI-INF/cert-service-contrib.xml,
  OSGI-INF/signature-service-contrib.xml,
- OSGI-INF/cuser-service-contrib.xml
+ OSGI-INF/cuser-service-contrib.xml,
+ OSGI-INF/sign-operations-contrib.xml

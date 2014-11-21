@@ -320,7 +320,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     @Override
     public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword,
-            String reason) throws SignException, ClientException {
+            String reason) throws ClientException {
         CertService certService = Framework.getLocalService(CertService.class);
         CUserService cUserService = Framework.getLocalService(CUserService.class);
         File outputFile = null;
