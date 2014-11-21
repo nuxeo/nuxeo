@@ -24,6 +24,7 @@ import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ListELResolver;
 import javax.el.MapELResolver;
+import javax.el.ResourceBundleELResolver;
 
 public class ExpressionResolver extends CompositeELResolver {
 
@@ -32,6 +33,7 @@ public class ExpressionResolver extends CompositeELResolver {
         add(new MapELResolver());
         add(new ListELResolver());
         add(new ArrayELResolver());
+        add(new ResourceBundleELResolver());
         add(new BeanELResolver());
     }
 
