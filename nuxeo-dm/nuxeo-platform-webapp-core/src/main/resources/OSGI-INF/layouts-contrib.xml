@@ -427,8 +427,12 @@
       <properties widgetMode="any">
         <property name="minChars">0</property>
         <property name="hideHelpLabel">true</property>
-        <property name="pageProviderName">default_collection</property>
-        <property name="suggestionFormatter">docSelectionDefaultFormatter</property>
+        <property name="restoreSeamCtx">false</property>
+        <property name="placeholder">label.addToCollection.collection.placeHolder</property>
+        <property name="operationId">Collection.Suggestion</property>
+        <property name="selectionFormatter">formatSelectedCollection</property>
+        <property name="suggestionFormatter">formatSuggestedCollection</property>
+        <property name="documentSchemas">dublincore,common</property>
       </properties>
     </widget>
 
