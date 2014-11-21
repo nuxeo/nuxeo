@@ -482,6 +482,8 @@
         <layout name="listWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-list-widget.xml" />
         <layout name="complexListWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
+        <layout name="complexListWidgetLayout2"
+          src="sources/OSGI-INF/demo/layout-demo-complex-list2-widget.xml" />
         <!-- disabled: need to handle file size restriction -->
         <!-- <layout name="fileListWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml"
           /> -->

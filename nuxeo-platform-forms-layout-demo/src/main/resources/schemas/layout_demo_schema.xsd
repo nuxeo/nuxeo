@@ -75,6 +75,21 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="complexType2">
+    <xs:sequence>
+      <xs:element name="stringComplexItem1" type="xs:string" />
+      <xs:element name="stringComplexItem2" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexList2" type="nxs:complexListType2" />
+  <xs:complexType name="complexListType2">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexType2" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="fileList" type="nxs:fileListType" />
   <xs:complexType name="fileListType">
     <xs:sequence>
