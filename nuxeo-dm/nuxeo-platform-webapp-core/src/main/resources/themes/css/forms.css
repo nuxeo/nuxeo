@@ -51,6 +51,7 @@ textarea {
 
 select {
   margin: 0 .5em .5em 0;
+  max-height: 20em;
   min-width: 14em }
 
 label {
