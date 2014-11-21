@@ -87,10 +87,10 @@ public class TestDefaultTopLevelFolderItemFactory {
         syncRoot2 = session.createDocument(session.createDocumentModel("/",
                 "syncRoot2", "Folder"));
         Principal administrator = session.getPrincipal();
-        nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                syncRoot1, session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                syncRoot2, session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2,
+                session);
 
         // Add a child file to syncRoot1
         DocumentModel syncRoot1Child = session.createDocumentModel(
