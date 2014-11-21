@@ -131,6 +131,33 @@ public class TestNxqlConversion {
     }
 
     @Test
+    public void testQueryLimits() throws Exception {
+        buildDocs();
+
+        // limit does not change the total size, only the returned number of docs
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document").limit(1));
+        Assert.assertEquals(10, docs.totalSize());
+        Assert.assertEquals(1, docs.size());
+        // default is 10
+        docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document"));
+        Assert.assertEquals(10, docs.totalSize());
+        Assert.assertEquals(10, docs.size());
+        // all
+        docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document").limit(-1));
+        Assert.assertEquals(10, docs.totalSize());
+        Assert.assertEquals(10, docs.size());
+        // only interested about totalSize
+        docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document").limit(0));
+        Assert.assertEquals(10, docs.totalSize());
+        Assert.assertEquals(0, docs.size());
+    }
+
+
+    @Test
     public void testQueryWithSpecialCharacters() throws Exception {
         // special character should not raise syntax error
         String specialChars = "^..*+ - && || ! ( ) { } [ ] )^ \" (~ * ? : \\ / \\t$";
@@ -155,8 +182,8 @@ public class TestNxqlConversion {
             throws Exception {
         //System.out.println(NXQLQueryConverter.toESQueryString(nxql));
         DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql(nxql).limit(10));
-        Assert.assertEquals(expectedNumberOfHis, docs.size());
+                .nxql(nxql).limit(0));
+        Assert.assertEquals(expectedNumberOfHis, docs.totalSize());
     }
 
     @Test
@@ -826,7 +853,7 @@ public class TestNxqlConversion {
     @Test
     public void testOrderByFromNxql() throws Exception {
         NxQueryBuilder qb = new NxQueryBuilder(session)
-                .nxql("name='foo' ORDER BY name DESC").limit(10);
+                .nxql("name='foo' ORDER BY name DESC");
         String es = qb.makeQuery().toString();
         // Note that in 5.8 the Administrator user is not admin see NXP-14118
         assertEqualsEvenUnderWindows("{\n"

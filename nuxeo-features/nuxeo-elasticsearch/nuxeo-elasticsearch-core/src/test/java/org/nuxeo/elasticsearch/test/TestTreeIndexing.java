@@ -271,8 +271,7 @@ public class TestTreeIndexing {
         buildAndIndexTree();
 
         DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql("select * from Document")
-                .limit(10));
+                .nxql("select * from Document"));
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
@@ -281,8 +280,7 @@ public class TestTreeIndexing {
         try {
             docs = ess
                     .query(new NxQueryBuilder(restrictedSession)
-                            .nxql("select * from Document")
-                            .limit(10));
+                            .nxql("select * from Document"));
             Assert.assertEquals(0, docs.totalSize());
 
             // add READ rights and check that user now has access
@@ -308,7 +306,7 @@ public class TestTreeIndexing {
             startTransaction();
             docs = ess
                     .query(new NxQueryBuilder(restrictedSession)
-                            .nxql("select * from Document").limit(10));
+                            .nxql("select * from Document"));
             Assert.assertEquals(8, docs.totalSize());
 
             // block rights and check that blocking is taken into account
@@ -340,7 +338,7 @@ public class TestTreeIndexing {
 
             docs = ess
                     .query(new NxQueryBuilder(restrictedSession)
-                            .nxql("select * from Document").limit(10));
+                            .nxql("select * from Document"));
             Assert.assertEquals(3, docs.totalSize());
         } finally {
             CoreInstance.getInstance().close(restrictedSession);
@@ -351,13 +349,13 @@ public class TestTreeIndexing {
     public void shouldDenyAccessOnUnsupportedACL() throws Exception {
         buildAndIndexTree();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql("select * from Document").limit(10));
+                .nxql("select * from Document"));
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
         CoreSession restrictedSession = getRestrictedSession("toto");
         docs = ess.query(new NxQueryBuilder(restrictedSession)
-                .nxql("select * from Document").limit(10));
+                .nxql("select * from Document"));
         Assert.assertEquals(0, docs.totalSize());
 
         // add READ rights and check that user now has access
@@ -373,8 +371,7 @@ public class TestTreeIndexing {
 
         startTransaction();
         docs = ess.query(new NxQueryBuilder(restrictedSession)
-                .nxql("select * from Document order by dc:title")
-                .limit(10));
+                .nxql("select * from Document order by dc:title"));
         Assert.assertEquals(8, docs.totalSize());
 
         // Add an unsupported negative ACL
@@ -391,8 +388,7 @@ public class TestTreeIndexing {
 
         startTransaction();
         docs = ess.query(new NxQueryBuilder(restrictedSession)
-                .nxql("select * from Document order by dc:title")
-                .limit(10));
+                .nxql("select * from Document order by dc:title"));
         // can view folder2, folder3 and folder4
         Assert.assertEquals(3, docs.totalSize());
         CoreInstance.getInstance().close(restrictedSession);
@@ -417,7 +413,7 @@ public class TestTreeIndexing {
         DocumentModelList docs = ess
                 .query(new NxQueryBuilder(session)
                         .nxql("select * from Document where ecm:currentLifeCycleState != 'deleted'")
-                        .limit(20));
+                );
         // for (DocumentModel doc : docs) {
         // System.out.println(doc.getPathAsString());
         // }
@@ -437,7 +433,7 @@ public class TestTreeIndexing {
 
         startTransaction();
         DocumentModelList docs = ess.query(new NxQueryBuilder(session)
-                .nxql("select * from Document").limit(20));
+                .nxql("select * from Document"));
         Assert.assertEquals(18, docs.totalSize());
     }
 
