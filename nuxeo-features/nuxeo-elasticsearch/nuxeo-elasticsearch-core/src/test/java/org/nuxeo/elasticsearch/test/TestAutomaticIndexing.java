@@ -301,12 +301,11 @@ public class TestAutomaticIndexing {
 
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document").limit(10));
+                .nxql("SELECT * FROM Document"));
         Assert.assertEquals(1, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
-                "SELECT * FROM Document WHERE ecm:fulltext='search'")
-                .limit(10));
+                "SELECT * FROM Document WHERE ecm:fulltext='search'"));
         Assert.assertEquals(1, ret.totalSize());
     }
 

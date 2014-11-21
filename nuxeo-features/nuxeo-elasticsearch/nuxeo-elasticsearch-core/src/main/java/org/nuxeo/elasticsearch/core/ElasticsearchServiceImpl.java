@@ -110,9 +110,10 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
     protected DocumentModelListImpl getDocumentModels(
             NxQueryBuilder queryBuilder, SearchResponse response) {
         DocumentModelListImpl ret;
+        long totalSize = response.getHits().getTotalHits();
         if (response.getHits().getHits().length == 0) {
             ret = new DocumentModelListImpl(0);
-            ret.setTotalSize(0);
+            ret.setTotalSize(totalSize);
             return ret;
         }
         Context stopWatch = fetchTimer.time();
@@ -123,7 +124,6 @@ public class ElasticsearchServiceImpl implements ElasticSearchService {
         } finally {
             stopWatch.stop();
         }
-        long totalSize = response.getHits().getTotalHits();
         ret.setTotalSize(totalSize);
         return ret;
     }
