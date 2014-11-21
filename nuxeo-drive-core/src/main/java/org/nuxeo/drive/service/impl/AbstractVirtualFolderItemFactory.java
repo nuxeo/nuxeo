@@ -164,7 +164,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
     @Override
     public FileSystemItem getFileSystemItemById(String id, String parentId,
             Principal principal) throws ClientException {
-        return getFileSystemItemById(parentId, principal);
+        return getFileSystemItemById(id, principal);
     }
 
     @Override

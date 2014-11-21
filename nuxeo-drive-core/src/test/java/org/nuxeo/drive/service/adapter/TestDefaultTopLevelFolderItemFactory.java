@@ -290,5 +290,11 @@ public class TestDefaultTopLevelFolderItemFactory {
                     "Cannot get the file system item for an id that cannot be handled from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
+        // #getFileSystemItemById(String id, String parentId, Principal
+        // principal)
+        topLevelFolderItem = defaultTopLevelFolderItemFactory.getFileSystemItemById(
+                "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#",
+                null, session.getPrincipal());
+        assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
     }
 }
