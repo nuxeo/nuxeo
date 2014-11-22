@@ -30,6 +30,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -416,4 +418,17 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DocumentModelList getDocuments(DocumentModel currentDoc) {
+        CoreSession session = currentDoc.getCoreSession();
+        DocumentModelList docs = session.query(String.format("SELECT * FROM " +
+                "Document WHERE " +
+                "ecm:mixinType != 'HiddenInNavigation' AND " +
+                "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = " +
+                "'deleted' AND ecm:parentId = '%s'", currentDoc.getId()));
+        return docs;
+    }
 }

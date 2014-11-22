@@ -19,6 +19,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -122,5 +123,13 @@ public interface TrashService {
      */
     Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs)
             throws ClientException;
+
+    /**
+     * Get all documents from the trash of the current document.
+     * @since 7.1
+     * @param currentDoc The current/parent document of trash document.
+     * @return All documents in the trash of the current document.
+     */
+    DocumentModelList getDocuments(DocumentModel currentDoc);
 
 }

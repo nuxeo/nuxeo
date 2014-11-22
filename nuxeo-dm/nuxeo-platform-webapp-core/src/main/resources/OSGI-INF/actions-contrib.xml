@@ -270,7 +270,7 @@
     </action>
 
     <action id="CURRENT_SELECTION_DELETE" link="#{deleteActions.purgeSelection}"
-      label="command.deleteDocs" icon="" help="comand.deleteDocs.help"
+      label="command.deleteDocs" icon="" help="command.deleteDocs.help"
       confirm="if( !confirmDeleteDocumentsForever() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
       <filter id="canPurge">
@@ -280,8 +280,19 @@
       </filter>
     </action>
 
+    <action id="CURRENT_SELECTION_EMPTY_TRASH" link="#{deleteActions.emptyTrash}"
+      label="command.emptyTrash" icon="" help="command.emptyTrash.help"
+      confirm="if( !confirmEmptyTrash() ) return false;">
+      <category>CURRENT_SELECTION_TRASH_LIST</category>
+      <filter id="canEmptyTrash">
+        <rule grant="true">
+          <condition>#{deleteActions.canEmptyTrash}</condition>
+        </rule>
+      </filter>
+    </action>
+
     <action id="CURRENT_SELECTION_UNDELETE" link="#{deleteActions.undeleteSelection}"
-      label="command.undeleteDocs" icon="" help="comand.undeleteDocs.help"
+      label="command.undeleteDocs" icon="" help="command.undeleteDocs.help"
       confirm="if( !confirmUndeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
       <filter id="canPurge">

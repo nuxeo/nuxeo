@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -79,6 +80,9 @@ public class DeleteActionsBean extends InputController implements
     protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
+    protected NavigationContext navigationContext;
+
+    @In(create = true)
     protected transient TrashManager trashManager;
 
     @In(create = true)
@@ -87,12 +91,8 @@ public class DeleteActionsBean extends InputController implements
     @In(create = true)
     protected transient WebActions webActions;
 
-    protected DocumentModelList currentDocumentChildren;
-
     @In
     protected transient Principal currentUser;
-
-    protected Boolean searchDeletedDocuments;
 
     protected transient TrashService trashService;
 
@@ -149,6 +149,25 @@ public class DeleteActionsBean extends InputController implements
         }
     }
 
+    public boolean getCanEmptyTrash() throws ClientException {
+        List<DocumentModel> selectedDocuments = documentsListsManager
+                .getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
+        if (selectedDocuments.size() == 0) {
+            DocumentModelList currentTrashDocuments = trashService
+                    .getDocuments(navigationContext
+                            .getCurrentDocument());
+            try {
+                return getTrashService().canPurgeOrUndelete
+                        (currentTrashDocuments, currentUser);
+
+            } catch (ClientException e) {
+                log.error("Cannot check delete permission", e);
+                return false;
+            }
+        }
+        return false;
+    }
+
     public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
         try {
             return getTrashService().checkDeletePermOnParents(docs);
@@ -182,6 +201,12 @@ public class DeleteActionsBean extends InputController implements
             throws ClientException {
         int op = isTrashManagementEnabled() ? OP_DELETE : OP_PURGE;
         return actOnSelection(op, docs);
+    }
+
+    public String emptyTrash() {
+        DocumentModelList currentTrashDocuments = trashService.getDocuments
+                (navigationContext.getCurrentDocument());
+        return purgeSelection(currentTrashDocuments);
     }
 
     public String purgeSelection() throws ClientException {
