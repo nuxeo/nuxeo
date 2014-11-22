@@ -28,12 +28,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
-@Operation(id = SignPDF.ID, category = Constants.CAT_CONVERSION,
+@Operation(id = SignPDF.ID, category = Constants.CAT_SERVICES,
         label = "Sign PDF", description = "Applies a digital signature to the" +
         " input PDF.")
 public class SignPDF {
 
-    public static final String ID = "Conversion.SignPDF";
+    public static final String ID = "Services.SignPDF";
 
     @Context
     protected UserManager userManager;
