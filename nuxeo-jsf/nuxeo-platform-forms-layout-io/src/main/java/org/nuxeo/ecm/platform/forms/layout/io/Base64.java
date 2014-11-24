@@ -350,8 +350,9 @@ public class Base64
             gzos = new java.util.zip.GZIPOutputStream(b64os);
             oos = new java.io.ObjectOutputStream(gzos);
          }   // end if: gzip
-         else
+ else {
             oos = new java.io.ObjectOutputStream(b64os);
+        }
 
          oos.writeObject(serializableObject);
       }   // end try
@@ -490,50 +491,19 @@ public class Base64
       // Compress?
       if (gzip == GZIP)
       {
-         java.io.ByteArrayOutputStream baos = null;
-         java.util.zip.GZIPOutputStream gzos = null;
-         Base64.OutputStream b64os = null;
+         java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+         Base64.OutputStream b64os =  new Base64.OutputStream(baos, ENCODE | dontBreakLines);
 
 
-         try
+         try (java.io.OutputStream gzos =  new java.util.zip.GZIPOutputStream(b64os))
          {
-            // GZip -> Base64 -> ByteArray
-            baos = new java.io.ByteArrayOutputStream();
-            b64os = new Base64.OutputStream(baos, ENCODE | dontBreakLines);
-            gzos = new java.util.zip.GZIPOutputStream(b64os);
-
             gzos.write(source, off, len);
-            gzos.close();
          }   // end try
          catch (java.io.IOException e)
          {
-            e.printStackTrace();
             return null;
          }   // end catch
-         finally
-         {
-            try
-            {
-               gzos.close();
-            }
-            catch (Exception e)
-            {
-            }
-            try
-            {
-               b64os.close();
-            }
-            catch (Exception e)
-            {
-            }
-            try
-            {
-               baos.close();
-            }
-            catch (Exception e)
-            {
-            }
-         }   // end finally
+
 
          // Return value according to relevant encoding.
          try
@@ -726,8 +696,9 @@ public class Base64
                   b4Posn = 0;
 
                   // If that was the equals sign, break out of 'for' loop
-                  if (sbiCrop == EQUALS_SIGN)
-                     break;
+                  if (sbiCrop == EQUALS_SIGN) {
+                    break;
+                }
                }   // end if: quartet built
 
             }   // end if: equals sign or better
@@ -1002,8 +973,9 @@ public class Base64
          bis = new Base64.InputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(file)), Base64.DECODE);
 
          // Read until done
-         while ((numBytes = bis.read(buffer, length, 4096)) >= 0)
+         while ((numBytes = bis.read(buffer, length, 4096)) >= 0) {
             length += numBytes;
+        }
 
          // Save in a variable to return
          decodedData = new byte[length];
@@ -1054,8 +1026,9 @@ public class Base64
          bis = new Base64.InputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(file)), Base64.ENCODE);
 
          // Read until done
-         while ((numBytes = bis.read(buffer, length, 4096)) >= 0)
+         while ((numBytes = bis.read(buffer, length, 4096)) >= 0) {
             length += numBytes;
+        }
 
          // Save in a variable to return
          encodedData = new String(buffer, 0, length, Base64.PREFERRED_ENCODING);
@@ -1141,12 +1114,12 @@ public class Base64
       public InputStream(java.io.InputStream in, int options)
       {
          super(in);
-         this.breakLines = (options & DONT_BREAK_LINES) != DONT_BREAK_LINES;
-         this.encode = (options & ENCODE) == ENCODE;
-         this.bufferLength = encode ? 4 : 3;
-         this.buffer = new byte[bufferLength];
-         this.position = -1;
-         this.lineLength = 0;
+         breakLines = (options & DONT_BREAK_LINES) != DONT_BREAK_LINES;
+         encode = (options & ENCODE) == ENCODE;
+         bufferLength = encode ? 4 : 3;
+         buffer = new byte[bufferLength];
+         position = -1;
+         lineLength = 0;
       }   // end constructor
 
       /**
@@ -1156,7 +1129,8 @@ public class Base64
        * @return next byte
        * @since 1.3
        */
-      public int read() throws java.io.IOException
+      @Override
+    public int read() throws java.io.IOException
       {
          // Do we need to get data?
          if (position < 0)
@@ -1182,8 +1156,9 @@ public class Base64
                   catch (java.io.IOException e)
                   {
                      // Only a problem if we got no data at all.
-                     if (i == 0)
+                     if (i == 0) {
                         throw e;
+                    }
 
                   }   // end catch
                }   // end for: each needed input byte
@@ -1216,7 +1191,9 @@ public class Base64
                   while (b >= 0 && DECODABET[b & 0x7f] <= WHITE_SPACE_ENC);
 
                   if (b < 0)
-                     break; // Reads a -1 if end of stream
+                 {
+                    break; // Reads a -1 if end of stream
+                }
 
                   b4[i] = (byte)b;
                }   // end for: each needed input byte
@@ -1243,8 +1220,9 @@ public class Base64
          if (position >= 0)
          {
             // End of relevant data?
-            if (/*!encode &&*/ position >= numSigBytes)
-               return -1;
+            if (/*!encode &&*/ position >= numSigBytes) {
+                return -1;
+            }
 
             if (encode && breakLines && lineLength >= MAX_LINE_LENGTH)
             {
@@ -1259,8 +1237,9 @@ public class Base64
 
                int b = buffer[position++];
 
-               if (position >= bufferLength)
-                  position = -1;
+               if (position >= bufferLength) {
+                position = -1;
+            }
 
                return b & 0xFF; // This is how you "cast" a byte that's
                // intended to be unsigned.
@@ -1288,7 +1267,8 @@ public class Base64
        * @return bytes read into array or -1 if end of stream is encountered.
        * @since 1.3
        */
-      public int read(byte[] dest, int off, int len) throws java.io.IOException
+      @Override
+    public int read(byte[] dest, int off, int len) throws java.io.IOException
       {
          int i;
          int b;
@@ -1299,12 +1279,14 @@ public class Base64
             //if( b < 0 && i == 0 )
             //    return -1;
 
-            if (b >= 0)
-               dest[off + i] = (byte)b;
-            else if (i == 0)
-               return -1;
-            else
-               break; // Out of 'for' loop
+            if (b >= 0) {
+                dest[off + i] = (byte)b;
+            } else if (i == 0) {
+                return -1;
+            }
+            else {
+                break; // Out of 'for' loop
+            }
          }   // end for: each byte read
          return i;
       }   // end read
@@ -1374,14 +1356,14 @@ public class Base64
       public OutputStream(java.io.OutputStream out, int options)
       {
          super(out);
-         this.breakLines = (options & DONT_BREAK_LINES) != DONT_BREAK_LINES;
-         this.encode = (options & ENCODE) == ENCODE;
-         this.bufferLength = encode ? 3 : 4;
-         this.buffer = new byte[bufferLength];
-         this.position = 0;
-         this.lineLength = 0;
-         this.suspendEncoding = false;
-         this.b4 = new byte[4];
+         breakLines = (options & DONT_BREAK_LINES) != DONT_BREAK_LINES;
+         encode = (options & ENCODE) == ENCODE;
+         bufferLength = encode ? 3 : 4;
+         buffer = new byte[bufferLength];
+         position = 0;
+         lineLength = 0;
+         suspendEncoding = false;
+         b4 = new byte[4];
       }   // end constructor
 
 
@@ -1397,7 +1379,8 @@ public class Base64
        * @param theByte the byte to write
        * @since 1.3
        */
-      public void write(int theByte) throws java.io.IOException
+      @Override
+    public void write(int theByte) throws java.io.IOException
       {
          // Encoding suspended?
          if (suspendEncoding)
@@ -1457,7 +1440,8 @@ public class Base64
        * @param len max number of bytes to read into array
        * @since 1.3
        */
-      public void write(byte[] theBytes, int off, int len) throws java.io.IOException
+      @Override
+    public void write(byte[] theBytes, int off, int len) throws java.io.IOException
       {
          // Encoding suspended?
          if (suspendEncoding)
@@ -1501,7 +1485,8 @@ public class Base64
        *
        * @since 1.3
        */
-      public void close() throws java.io.IOException
+      @Override
+    public void close() throws java.io.IOException
       {
          // 1. Ensure that pending characters are written
          flushBase64();
@@ -1525,7 +1510,7 @@ public class Base64
       public void suspendEncoding() throws java.io.IOException
       {
          flushBase64();
-         this.suspendEncoding = true;
+         suspendEncoding = true;
       }   // end suspendEncoding
 
 
@@ -1538,7 +1523,7 @@ public class Base64
        */
       public void resumeEncoding()
       {
-         this.suspendEncoding = false;
+         suspendEncoding = false;
       }   // end resumeEncoding
 
 

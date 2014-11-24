@@ -440,8 +440,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non regression test for NXP-11419, showing an issue when restoring with
-     * a search doc and a current page > 0
+     * Non regression test for NXP-11419, showing an issue when restoring with a
+     * search doc and a current page > 0
      */
     @Test
     public void testRestoreContentViewWithSearchDocAndCurrentPage()
@@ -524,9 +524,18 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
-        assertEquals(
-                "H4sIAAAAAAAAAD2Q3WqDQBCFX6XMbQ1oYlvYu6ApCmkajGkvShDRMV2qu3Z%2FCFZ8985Gkr2aPXPmO8OMUElhUJgPjpdd2SEwiI5ZttnlRfweHd9cESXpNiap%2BEzzpDhs1lmU3LvgQV%2Be8cD%2FaHbpQWWVIt6eNGC%2BB78W1bAvFbENKg3s6%2BSBxlJV37GsbEdeYCOYoXfZr7xFR1SyR2U4aterK9bJmjcca7Is%2FSBc%2BOEieM6DJ7Z6YeHq0adHY2Q03LQONCc8%2FOBwkarW1GwIfY2fJlpAKpOKRjphvP4i2dpO0OQdMrvWukJRc3EGZpTFibZXqG1rtuUgLe0ubNvetBnioHRXVxYBnKZ%2F2JEe%2BWUBAAA%3D",
-                encodedJson);
+        JSONAssert.assertEquals(
+                expectedJson,
+                JSONContentViewState.toJSON(
+                        JSONContentViewState.fromJSON(encodedJson, true), false),
+                true);
+
+        JSONAssert.assertEquals(
+                expectedJson,
+                JSONContentViewState.toJSON(
+                        JSONContentViewState.fromJSON(
+                                "H4sIAAAAAAAAAD2Q3WqDQBCFX6XMbQ1oYlvYu6ApCmkajGkvShDRMV2qu3Z%2FCFZ8985Gkr2aPXPmO8OMUElhUJgPjpdd2SEwiI5ZttnlRfweHd9cESXpNiap%2BEzzpDhs1lmU3LvgQV%2Be8cD%2FaHbpQWWVIt6eNGC%2BB78W1bAvFbENKg3s6%2BSBxlJV37GsbEdeYCOYoXfZr7xFR1SyR2U4aterK9bJmjcca7Is%2FSBc%2BOEieM6DJ7Z6YeHq0adHY2Q03LQONCc8%2FOBwkarW1GwIfY2fJlpAKpOKRjphvP4i2dpO0OQdMrvWukJRc3EGZpTFibZXqG1rtuUgLe0ubNvetBnioHRXVxYBnKZ%2F2JEe%2BWUBAAA%3D",
+                                true), false), true);
     }
 
     @Test
