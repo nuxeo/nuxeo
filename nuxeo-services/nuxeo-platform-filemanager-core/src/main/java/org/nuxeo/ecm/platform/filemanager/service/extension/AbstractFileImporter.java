@@ -147,6 +147,19 @@ public abstract class AbstractFileImporter implements FileImporter {
     }
 
     /**
+     * Tries to update the document <code>doc</code> with the blob
+     * <code>content</code>.
+     * <p>
+     * Returns <code>true</code> if the document is really updated.
+     *
+     * @since 7.1
+     */
+    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
+        updateDocument(doc, content);
+        return true;
+    }
+
+    /**
      * Updates the document (sets its properties).
      * <p>
      * Default implementation sets the content.
@@ -194,7 +207,10 @@ public abstract class AbstractFileImporter implements FileImporter {
                 checkIn(doc);
             }
             // update data
-            updateDocument(doc, content);
+            boolean isDocumentUpdated = updateDocumentIfPossible(doc, content);
+            if (!isDocumentUpdated) {
+                return null;
+            }
             if (Framework.isBooleanPropertyTrue(SKIP_UPDATE_AUDIT_LOGGING)) {
                 // skip the update event if configured to do so
                 doc.putContextData(DISABLE_AUDIT_LOGGER, true);
