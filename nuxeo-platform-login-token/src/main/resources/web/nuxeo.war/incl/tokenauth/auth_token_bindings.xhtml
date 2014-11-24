@@ -41,7 +41,7 @@
       </c:if>
       <c:if test="#{empty currentUserAuthTokenBindings}">
         <div>
-          <h:outputText value="#{messages['label.tokenauth.noTokens']}" />
+          <h:outputText value="#{messages['label.tokenauth.noTokens']}" class="emptyResult"/>
         </div>
       </c:if>
       <a4j:commandButton value="#{messages['label.tokenauth.refresh']}"
