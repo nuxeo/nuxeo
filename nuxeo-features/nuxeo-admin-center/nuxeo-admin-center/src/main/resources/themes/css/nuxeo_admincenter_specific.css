@@ -17,6 +17,7 @@ author: lkemen@nuxeo.com
 .actionBar h3 { padding: .3em 0 }
 .actionBar a {
   vertical-align: top }
+.actionBar label, .actionBar input[type="checkbox"] { vertical-align: middle }
 
 /* =Marketplace, Nuxeo Connect & Updates */
 .marketplace { background-color: #fbfbfb }
