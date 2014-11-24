@@ -1,10 +1,14 @@
 package org.nuxeo.ecm.platform;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.ws.Endpoint;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -31,12 +35,19 @@ public class TestWSEndpointRegistration {
     @Inject
     WSEndpointManager service;
 
+    Map<String, WSEndpointDescriptor> contribs = new HashMap<>();
+
+    @Before
+    public void indexRegistry() {
+        for (WSEndpointDescriptor desc : service.getDescriptors()) {
+            contribs.put(desc.name, desc);
+        }
+        assertEquals(2, contribs.size());
+    }
+
     @Test
     public void testServiceRegistration() {
-        assertNotNull(service);
-        assertEquals(2, service.getDescriptors().size());
-
-        WSEndpointDescriptor desc = (WSEndpointDescriptor) service.getDescriptors().toArray()[0];
+        WSEndpointDescriptor desc = contribs.get("nuxeoremoting");
         assertEquals("/nuxeoremoting", desc.address);
         assertEquals(NuxeoRemotingBean.class.getName(), desc.clazz.getName());
         assertEquals(0, desc.handlers.length);
@@ -44,7 +55,8 @@ public class TestWSEndpointRegistration {
 
     @Test
     public void testCompleteWebService() throws Exception {
-        WSEndpointDescriptor desc = (WSEndpointDescriptor) service.getDescriptors().toArray()[1];
+        WSEndpointDescriptor desc = contribs.get("testWS");
+
         assertEquals("testWS", desc.name);
         assertEquals("/nuxeoremoting", desc.address);
         assertEquals(NuxeoRemotingBean.class.getName(), desc.clazz.getName());
