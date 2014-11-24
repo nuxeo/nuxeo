@@ -1,13 +1,13 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
      xmlns:nxl="http://nuxeo.org/nxforms/layout"
-     xmlns:c="http://java.sun.com/jstl/core">
+     xmlns:c="http://java.sun.com/jstl/core"
+     class="mainNoTabs">
 
     <h2>
-        <h:outputText styleClass="label"
-                      value="#{messages['label.cert.user.center.certificate']}" />
+        <h:outputText value="#{messages['label.cert.user.center.certificate']}" />
     </h2>
 
-    <h:outputText styleClass="label"
+    <h:outputText styleClass="processMessage completeInfo"
                   value="#{currentUser.getName()}, #{messages['label.cert.missing']}"
                   rendered="#{certActions.canGenerateCertificate() and !certActions.hasCertificate()}" />
 
