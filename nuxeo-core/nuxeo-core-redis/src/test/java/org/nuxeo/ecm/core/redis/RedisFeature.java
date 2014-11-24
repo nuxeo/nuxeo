@@ -83,14 +83,6 @@ public class RedisFeature extends SimpleFeature {
         disabled, embedded, server, sentinel
     }
 
-    public RedisFeature() {
-
-    }
-
-    public RedisFeature(Config config) {
-        this.config = config;
-    }
-
     protected RedisServerDescriptor newRedisServerDescriptor() {
         RedisServerDescriptor desc = new RedisServerDescriptor();
         desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(
@@ -113,7 +105,7 @@ public class RedisFeature extends SimpleFeature {
     }
 
     public static boolean setup(RuntimeHarness harness) throws Exception {
-        return new RedisFeature(Defaults.of(Config.class)).setupMe(harness);
+        return new RedisFeature().setupMe(harness);
     }
 
     protected boolean setupMe(RuntimeHarness harness) throws Exception {
@@ -186,7 +178,7 @@ public class RedisFeature extends SimpleFeature {
         return new InlineRef("redis-test", bos.toString());
     }
 
-    protected Config config;
+    protected Config config = Defaults.of(Config.class);
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
