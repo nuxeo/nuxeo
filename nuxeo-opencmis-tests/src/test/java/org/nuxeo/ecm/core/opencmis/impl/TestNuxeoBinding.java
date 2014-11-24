@@ -142,6 +142,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -3374,6 +3375,22 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testRecoverableException() throws Exception {
+        // listener that will cause a RecoverableClientException to be thrown
+        // when a doc whose name starts with "throw" is created
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/recoverable-exc-listener-contrib.xml");
+        try {
+            createDocument("throw_foo", rootFolderId, "File");
+            fail("should throw RecoverableClientException");
+        } catch (CmisRuntimeException e) {
+            Throwable cause = e.getCause();
+            assertTrue(String.valueOf(cause),
+                    cause instanceof RecoverableClientException);
+        }
     }
 
 }

@@ -79,6 +79,7 @@ public class TestNuxeoSessionWebServices extends
 
     @Override
     protected void addParams(Map<String, String> params) {
+        super.addParams(params);
         String uri = serverURI.toString();
         uri += "services/"; // from sun-jaxws.xml
         params.put(SessionParameter.BINDING_TYPE,

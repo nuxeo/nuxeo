@@ -47,6 +47,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.resource.Resource;
 import org.mortbay.thread.QueuedThreadPool;
+import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 
 /**
  * Test case of the high-level session using a client-server connection.
@@ -97,7 +98,10 @@ public abstract class NuxeoSessionClientServerTestCase extends
     }
 
     /** Adds protocol-specific parameters. */
-    protected abstract void addParams(Map<String, String> params);
+    protected void addParams(Map<String, String> params) {
+        params.put(SessionParameter.HTTP_INVOKER_CLASS,
+                StatusLoggingDefaultHttpInvoker.class.getName());
+    }
 
     @Override
     public void tearDownCmisSession() throws Exception {

@@ -16,7 +16,6 @@ import java.util.EventListener;
 
 import javax.servlet.Servlet;
 
-import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +24,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAtomPubServlet;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
@@ -116,7 +116,7 @@ public class MainWithServlet extends SQLRepositoryTestCase {
     }
 
     protected Servlet getServlet() {
-        return new CmisAtomPubServlet();
+        return new NuxeoCmisAtomPubServlet();
     }
 
     protected EventListener[] getEventListeners() {

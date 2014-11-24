@@ -17,11 +17,9 @@ import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
-import org.junit.Ignore;
-
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
-import org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAtomPubServlet;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 
 /**
@@ -31,13 +29,14 @@ public class TestNuxeoSessionAtomPub extends NuxeoSessionClientServerTestCase {
 
     @Override
     protected void addParams(Map<String, String> params) {
+        super.addParams(params);
         params.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
         params.put(SessionParameter.ATOMPUB_URL, serverURI.toString());
     }
 
     @Override
     protected Servlet getServlet() {
-        return new CmisAtomPubServlet();
+        return new NuxeoCmisAtomPubServlet();
     }
 
     @Override

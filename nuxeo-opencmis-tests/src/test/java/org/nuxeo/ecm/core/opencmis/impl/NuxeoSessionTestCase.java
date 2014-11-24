@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
@@ -62,7 +63,9 @@ import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
@@ -80,6 +83,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -88,6 +92,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
+import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -115,6 +120,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     protected Session session;
 
     protected String rootFolderId;
+
+    protected boolean isHttp;
 
     protected boolean isAtomPub;
 
@@ -178,6 +185,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         rootFolderId = rid.getRootFolderId();
         assertNotNull(rootFolderId);
 
+        isHttp = this instanceof NuxeoSessionClientServerTestCase;
         isAtomPub = this instanceof TestNuxeoSessionAtomPub;
         isBrowser = this instanceof TestNuxeoSessionBrowser;
     }
@@ -1190,6 +1198,42 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         expected.put("administrators*", set(READ, WRITE, ALL, "Everything"));
         expected.put("Administrator*", set(READ, WRITE, ALL, "Everything"));
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testRecoverableException() throws Exception {
+        // listener that will cause a RecoverableClientException to be thrown
+        // when a doc whose name starts with "throw" is created
+        tearDownData();
+        tearDownCmisSession();
+        Thread.sleep(1000); // otherwise sometimes fails to set up again
+        // deploy the LastModifiedServiceWrapper
+        deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/recoverable-exc-listener-contrib.xml");
+        setUpCmisSession();
+        setUpData();
+
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
+        properties.put(PropertyIds.NAME, "throw_foo");
+        try {
+            session.getRootFolder().createDocument(properties, null, null,
+                    null, null, null, NuxeoSession.DEFAULT_CONTEXT);
+            fail("should throw RecoverableClientException");
+        } catch (CmisInvalidArgumentException e) {
+            // ok, this is what we get for a 400
+        } catch (CmisRuntimeException e) {
+            // check status code
+            if (isHttp) {
+                fail("should have thrown CmisInvalidArgumentException");
+                // int status = StatusLoggingDefaultHttpInvoker.lastStatus;
+                // assertEquals(400, status);
+            } else {
+                Throwable cause = e.getCause();
+                assertTrue(String.valueOf(cause),
+                        cause instanceof RecoverableClientException);
+            }
+        }
     }
 
 }

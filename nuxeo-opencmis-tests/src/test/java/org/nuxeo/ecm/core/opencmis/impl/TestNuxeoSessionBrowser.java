@@ -19,8 +19,7 @@ import javax.servlet.Servlet;
 
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
-import org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet;
-import org.junit.Ignore;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisBrowserBindingServlet;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisContextListener;
 
 /**
@@ -30,13 +29,14 @@ public class TestNuxeoSessionBrowser extends NuxeoSessionClientServerTestCase {
 
     @Override
     protected void addParams(Map<String, String> params) {
+        super.addParams(params);
         params.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value());
         params.put(SessionParameter.BROWSER_URL, serverURI.toString());
     }
 
     @Override
     protected Servlet getServlet() {
-        return new CmisBrowserBindingServlet();
+        return new NuxeoCmisBrowserBindingServlet();
     }
 
     @Override
