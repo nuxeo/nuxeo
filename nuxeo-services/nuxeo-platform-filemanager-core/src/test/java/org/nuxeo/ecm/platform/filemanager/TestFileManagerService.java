@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.Normalizer;
 import java.util.List;
@@ -334,6 +335,63 @@ public class TestFileManagerService {
                 Normalizer.Form.NFD);
         assertNotNull(FileManagerUtils.getExistingDocByFileName(coreSession,
                 workspace.getPathAsString(), nfdNormalizedFileName));
+    }
+
+    @Test
+    public void testUpdateFileDocWithPlainTextFile() throws Exception {
+
+        // create a File whose title is "hello.html" and content is "hello.rtf"
+        File file = getTestFile("test-data/hello.rtf");
+        byte[] content = FileManagerUtils.getBytesFromFile(file);
+        ByteArrayBlob input = new ByteArrayBlob(content, "text/rtf");
+        input.setFilename("hello.html");
+
+        DocumentModel doc = coreSession.createDocumentModel(
+                workspace.getPathAsString(), "hello.html", "File");
+        doc.setPropertyValue("dc:title", "hello.html");
+        doc.setPropertyValue("file:content", input);
+        doc.setPropertyValue("file:filename", "hello.html");
+
+        // create doc
+        doc = coreSession.createDocument(doc);
+        coreSession.save();
+        DocumentRef docRef = doc.getRef();
+
+        assertNotNull(doc);
+        assertEquals("hello.html", doc.getProperty("dublincore", "title"));
+        assertEquals("hello.html", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+        assertTrue(extractText(doc).contains("RTF"));
+        assertEquals("text/rtf", getMimeType(doc));
+
+        List<DocumentModel> versions = coreSession.getVersions(docRef);
+        assertEquals(0, versions.size());
+
+        // update the with a file that matches the same importer
+        file = getTestFile("test-data/hello.html");
+        content = FileManagerUtils.getBytesFromFile(file);
+        input = new ByteArrayBlob(content, "text/html");
+        doc = service.createDocumentFromBlob(coreSession, input,
+                workspace.getPathAsString(), true, "test-data/hello.html");
+        assertNotNull(doc);
+
+        DocumentRef newDocRef = doc.getRef();
+        assertEquals(docRef, newDocRef);
+        assertEquals("hello.html", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+        assertTrue(extractText(doc).contains("HTML"));
+        assertEquals("text/html", getMimeType(doc));
+
+        versions = coreSession.getVersions(docRef);
+        assertEquals(1, versions.size());
+    }
+
+    private Object getMimeType(DocumentModel doc) {
+        return ((Blob) doc.getProperty("file", "content")).getMimeType();
+    }
+
+    private String extractText(DocumentModel doc) throws IOException {
+        return ((Blob) doc.getProperty("file", "content")).getString();
     }
 
 }

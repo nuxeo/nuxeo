@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +42,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * document is updated instead.
  */
 public class NoteImporter extends AbstractFileImporter {
+
+    private static final Log log = LogFactory.getLog(NoteImporter.class);
 
     private static final String NOTE_TYPE = "Note";
 
@@ -59,6 +63,16 @@ public class NoteImporter extends AbstractFileImporter {
     @Override
     public boolean isOverwriteByTitle() {
         return true;
+    }
+
+    @Override
+    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
+        if (!doc.hasSchema(NOTE_SCHEMA)) {
+            log.warn("Schema '" + NOTE_SCHEMA
+                    + "' is not available for document " + doc);
+            return false;
+        }
+        return super.updateDocumentIfPossible(doc, content);
     }
 
     @Override
