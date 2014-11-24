@@ -74,6 +74,9 @@ public abstract class PackageTestCase {
         env.init();
         service = new StandaloneUpdateService(env);
         service.initialize();
+        File storeDir = ((StandaloneUpdateService) service).getPersistence().getStore();
+        File junkPackageFile = File.createTempFile("junk", null, storeDir);
+        junkPackageFile.deleteOnExit();
     }
 
     protected void tearDownStandaloneUpdateService() {

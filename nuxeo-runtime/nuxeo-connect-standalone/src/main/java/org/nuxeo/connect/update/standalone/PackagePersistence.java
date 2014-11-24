@@ -89,6 +89,13 @@ public class PackagePersistence {
         return root;
     }
 
+    /**
+     * @since 7.1
+     */
+    public File getStore() {
+        return store;
+    }
+
     public synchronized Map<String, PackageState> getStates() {
         return new HashMap<>(states);
     }
@@ -244,6 +251,11 @@ public class PackagePersistence {
         if (list != null) {
             List<LocalPackage> pkgs = new ArrayList<>(list.length);
             for (File file : list) {
+                if (!file.isDirectory()) {
+                    log.warn("Ignoring file '" + file.getName()
+                            + "' in package store");
+                    continue;
+                }
                 pkgs.add(new LocalPackageImpl(file, getState(file.getName()),
                         service));
             }
