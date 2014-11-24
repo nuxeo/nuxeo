@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
-import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
+import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -59,14 +59,14 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+            ArrayList<Map<String, Object>> pictureConversions)
             throws IOException, ClientException {
-        return fillPictureViews(blob, filename, title, pictureTemplates);
+        return fillPictureViews(blob, filename, title, pictureConversions);
     }
 
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+            ArrayList<Map<String, Object>> pictureConversions)
             throws IOException, ClientException {
         if (blob == null) {
             clearViews();
@@ -112,23 +112,23 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         }
         if (width != null && height != null) {
             clearViews();
-            addViews(pictureTemplates, filename, title);
+            addViews(pictureConversions, filename, title);
         }
         return true;
     }
 
     @Override
     public void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
+            List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
             throws IOException, ClientException {
         ImagingService imagingService = getImagingService();
         List<PictureView> pictureViews = null;
 
-        if (pictureTemplates != null) {
-            List<PictureTemplate> templates = new ArrayList<PictureTemplate>(
-                    pictureTemplates.size());
-            for (Map<String, Object> template : pictureTemplates) {
-                templates.add(new PictureTemplate(
+        if (pictureConversions != null) {
+            List<PictureConversion> templates = new ArrayList<PictureConversion>(
+                    pictureConversions.size());
+            for (Map<String, Object> template : pictureConversions) {
+                templates.add(new PictureConversion(
                         (String) template.get("title"),
                         (String) template.get("description"),
                         (String) template.get("tag"), 0));

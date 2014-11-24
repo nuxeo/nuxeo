@@ -43,7 +43,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import com.google.inject.Inject;
 
 /**
- * @since 5.9.6
+ * @since 7.1
  *
  * @author Vincent Vergnolle
  */

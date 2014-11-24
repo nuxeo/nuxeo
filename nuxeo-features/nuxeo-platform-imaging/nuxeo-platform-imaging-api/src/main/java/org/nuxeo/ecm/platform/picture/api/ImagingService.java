@@ -123,59 +123,59 @@ public interface ImagingService {
 
     /**
      * Computes a {@link PictureView} for the given {@code blob} and
-     * {@code pictureTemplate}.
+     * {@code pictureConversion}.
      *
-     * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     * @param convert true if the {@code blob} is converted to fit the
+     *            {@code pictureConversion}, false if the {@code blob} is put as
      *            it in the PictureView (without any conversion)
      * @return the computed picture view
      * @since 5.7
      */
-    PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate,
+    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion,
             boolean convert) throws IOException, ClientException;
 
     /**
      * Computes a {@link PictureView} for the given {@code blob} and
-     * {@code pictureTemplate}.
+     * {@code pictureConversion}.
      *
      * @param imageInfo the {@code ImageInfo} to use when computing the view
-     * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     * @param convert true if the {@code blob} is converted to fit the
+     *            {@code pictureConversion}, false if the {@code blob} is put as
      *            it in the PictureView (without any conversion)
      * @return the computed picture view
      * @since 5.7
      */
-    PictureView computeViewFor(Blob blob, PictureTemplate pictureTemplate,
+    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion,
             ImageInfo imageInfo, boolean convert) throws IOException,
             ClientException;
 
     /**
      * Computes a List of {@link PictureView}s for the given {@code blob} and
-     * {@code pictureTemplates}.
+     * {@code pictureConversions}.
      *
      * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     *            {@code PictureConversion}, false if the {@code blob} is put as
      *            it in the PictureView (without any conversion)
      * @return the computed picture views as a List of {@code PictureView}s
      * @since 5.7
      */
     List<PictureView> computeViewsFor(Blob blob,
-            List<PictureTemplate> pictureTemplates, boolean convert)
+            List<PictureConversion> pictureConversions, boolean convert)
             throws IOException, ClientException;
 
     /**
      * Computes a List of {@link PictureView}s for the given {@code blob} and
-     * {@code pictureTemplates}.
+     * {@code pictureConversions}.
      *
      * @param imageInfo the {@code ImageInfo} to use when computing the view
      * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     *            {@code PictureConversion}, false if the {@code blob} is put as
      *            it in the PictureView (without any conversion)
      * @return the computed picture views as a List of {@code PictureView}s
      * @since 5.7
      */
     List<PictureView> computeViewsFor(Blob blob,
-            List<PictureTemplate> pictureTemplates, ImageInfo imageInfo,
+            List<PictureConversion> pictureConversions, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException;
 
     /**
@@ -183,12 +183,12 @@ public interface ImagingService {
      * {@code blobs}.
      *
      * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     *            {@code PictureConversion}, false if the {@code blob} is put as
      *            it in the PictureView (without any conversion)
      * @since 5.7
      */
     List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureTemplate> pictureTemplates, boolean convert)
+            List<PictureConversion> pictureConversions, boolean convert)
             throws IOException, ClientException;
 
     /**
@@ -197,31 +197,22 @@ public interface ImagingService {
      *
      * @param imageInfo the {@code ImageInfo} to use when computing the view
      * @param convert true if the {@code blob} is converted to fit each
-     *            {@code PictureTemplate}, false if the {@code blob} is put as
+     *            {@code PictureConversion}, false if the {@code blob} is put as
      *            it in the PictureView (without any conversion)
      * @since 5.7
      */
     List<List<PictureView>> computeViewsFor(List<Blob> blobs,
-            List<PictureTemplate> pictureTemplates, ImageInfo imageInfo,
+            List<PictureConversion> pictureConversions, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException;
 
     /**
-     * Compute all the registered {@link PictureTemplate}
-     *
-     * <br />
-     * <br />
+     * Compute all the registered {@link PictureConversion}
      *
      * For each picture template the
-     * {@link ImagingService#computeViewFor(Blob, PictureTemplate, ImageInfo, boolean)}
+     * {@link ImagingService#computeViewFor(Blob, PictureConversion, ImageInfo, boolean)}
      * method is call
      *
-     * @param fileContent
-     * @param b
-     * @return
-     * @throws IOException
-     * @throws ClientException
-     *
-     * @since 5.9.6
+     * @since 7.1
      */
     List<PictureView> computeViewFor(Blob fileContent, boolean b)
             throws ClientException, IOException;

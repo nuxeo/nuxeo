@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * Shared utils methods for the converters
  *
- * @since 5.9.6
+ * @since 7.1
  *
  * @author Vincent Vergnolle
  */

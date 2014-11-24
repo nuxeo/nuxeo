@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
 /**
  * Operation which simply return the passed blob
  *
- * @since 5.9.6
+ * @since 7.1
  *
  * @author Vincent Vergnolle
  */

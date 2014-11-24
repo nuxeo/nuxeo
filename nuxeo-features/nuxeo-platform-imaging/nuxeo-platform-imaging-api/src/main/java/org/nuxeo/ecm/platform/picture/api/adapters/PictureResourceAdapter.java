@@ -41,19 +41,19 @@ public interface PictureResourceAdapter {
      */
     @Deprecated
     boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+            ArrayList<Map<String, Object>> pictureConversions)
             throws IOException, ClientException;
 
     /**
-     * Fill this Picture views using the given {@code pictureTemplates} and
+     * Fill this Picture views using the given {@code pictureConversions} and
      * {@code blob} to compute the picture views.
      * <p>
-     * The {@code blob} is converted to fit the defined {@code pictureTemplates}.
+     * The {@code blob} is converted to fit the defined {@code pictureConversions}.
      *
      * @since 5.7
      */
     boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+            ArrayList<Map<String, Object>> pictureConversions)
             throws IOException, ClientException;
 
     /**
@@ -75,7 +75,7 @@ public interface PictureResourceAdapter {
             throws IOException, ClientException;
 
     /**
-     * Pre-fill this Picture views using the given {@code pictureTemplates} and
+     * Pre-fill this Picture views using the given {@code pictureConversions} and
      * {@code blob}.
      * <p>
      * The {@code blob} is not converted and just stored as the Blob of the
@@ -84,7 +84,7 @@ public interface PictureResourceAdapter {
      * @since 5.7
      */
     void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
+            List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
             throws IOException, ClientException;
 
     void doRotate(int angle) throws ClientException;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.ImagingComponent.test.config">
+
+  <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
+    point="pictureConversions">
+
+    <pictureConversion title="Original" enabled="false" />
+    <pictureConversion title="OriginalJpeg" enabled="false" />
+
+    <pictureConversion title="Small" description="Small size (override)"
+      maxSize="50" />
+
+    <pictureConversion title="Medium" description="Medium size (override)" />
+
+    <pictureConversion title="Thumbnail" maxSize="320" />
+  </extension>
+
+</component>

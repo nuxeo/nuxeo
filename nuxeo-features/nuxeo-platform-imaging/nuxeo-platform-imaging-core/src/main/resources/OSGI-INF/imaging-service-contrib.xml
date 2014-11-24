@@ -17,21 +17,21 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
-    point="pictureTemplates">
+    point="pictureConversions">
 
-    <pictureTemplate title="Original" description="Original image"
+    <pictureConversion title="Original" description="Original image"
       order="10" chainId="Blob.Nop" />
 
-    <pictureTemplate title="OriginalJpeg" enabled="true"
+    <pictureConversion title="OriginalJpeg" enabled="true"
       description="Original jpeg image" order="25" chainId="Image.Blob.Resize" />
 
-    <pictureTemplate title="Medium" description="Medium size"
+    <pictureConversion title="Medium" description="Medium size"
       maxSize="550" order="5" chainId="Image.Blob.Resize" />
 
-    <pictureTemplate title="Small" description="Small size"
+    <pictureConversion title="Small" description="Small size"
       maxSize="280" order="15" chainId="Image.Blob.Resize" />
 
-    <pictureTemplate title="Thumbnail" description="Thumbnail size"
+    <pictureConversion title="Thumbnail" description="Thumbnail size"
       maxSize="100" order="20" chainId="Image.Blob.Resize" />
 
   </extension>

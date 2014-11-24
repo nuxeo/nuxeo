@@ -35,7 +35,7 @@ public class NoPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates)
+            ArrayList<Map<String, Object>> pictureConversions)
             throws IOException, ClientException {
         // create no views
         return true;
@@ -73,13 +73,13 @@ public class NoPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureTemplates) {
+            ArrayList<Map<String, Object>> pictureConversions) {
         return true;
     }
 
     @Override
     public void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo) {
+            List<Map<String, Object>> pictureConversions, ImageInfo imageInfo) {
     }
 
 }

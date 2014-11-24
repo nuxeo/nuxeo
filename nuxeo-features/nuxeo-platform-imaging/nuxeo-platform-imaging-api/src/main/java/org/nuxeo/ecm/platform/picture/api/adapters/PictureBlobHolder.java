@@ -53,7 +53,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         xPathFilename = null;
         super.setBlob(blob);
         // check if there are templates
-        ArrayList<Map<String, Object>> pictureTemplates = null;
+        ArrayList<Map<String, Object>> pictureConversions = null;
 
         CoreSession session = doc.getCoreSession();
         DocumentModel parent;
@@ -67,9 +67,9 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         if (parent != null
                 && ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME.equals(parent.getType())) {
             // use PictureBook Properties
-            pictureTemplates = (ArrayList<Map<String, Object>>) parent.getPropertyValue("picturebook:picturetemplates");
-            if (pictureTemplates.isEmpty()) {
-                pictureTemplates = null;
+            pictureConversions = (ArrayList<Map<String, Object>>) parent.getPropertyValue("picturebook:picturetemplates");
+            if (pictureConversions.isEmpty()) {
+                pictureConversions = null;
             }
         }
 
@@ -78,7 +78,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         String filename = blob == null ? null : blob.getFilename();
         String title = (String) doc.getPropertyValue("dc:title"); // re-set
         try {
-            picture.fillPictureViews(blob, filename, title, pictureTemplates);
+            picture.fillPictureViews(blob, filename, title, pictureConversions);
         } catch (IOException e) {
             throw new ClientException(e.toString(), e);
         }

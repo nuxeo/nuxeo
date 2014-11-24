@@ -73,13 +73,12 @@ public class PictureViewsGenerationWork extends AbstractWork {
 
         setStatus("Generating views");
         Property fileProp = workingDocument.getProperty(xpath);
-        ArrayList<Map<String, Object>> pictureTemplates = null;
         PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
         Blob blob = (Blob) fileProp.getValue();
         String filename = blob == null ? null : blob.getFilename();
         String title = workingDocument.getTitle();
         try {
-            picture.fillPictureViews(blob, filename, title, pictureTemplates);
+            picture.fillPictureViews(blob, filename, title, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

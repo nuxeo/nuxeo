@@ -20,8 +20,8 @@
     <object class="org.nuxeo.ecm.platform.picture.api.ImagingConfigurationDescriptor" />
   </extension-point>
 
-  <extension-point name="pictureTemplates">
-    <object class="org.nuxeo.ecm.platform.picture.api.PictureTemplate" />
+  <extension-point name="pictureConversions">
+    <object class="org.nuxeo.ecm.platform.picture.api.PictureConversion" />
   </extension-point>
 </component>
 

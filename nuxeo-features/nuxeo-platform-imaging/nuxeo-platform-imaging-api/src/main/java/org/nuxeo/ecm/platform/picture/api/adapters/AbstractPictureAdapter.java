@@ -94,7 +94,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
-import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
+import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -340,12 +340,12 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
     }
 
-    protected void addViews(List<Map<String, Object>> pictureTemplates,
+    protected void addViews(List<Map<String, Object>> pictureConversions,
             String filename, String title) throws IOException, ClientException {
         doc.setProperty("dublincore", "title", title);
-        if (pictureTemplates != null) {
+        if (pictureConversions != null) {
             // Use PictureBook Properties
-            for (Map<String, Object> view : pictureTemplates) {
+            for (Map<String, Object> view : pictureConversions) {
                 Integer maxsize;
                 if (view.get("maxsize") == null) {
                     maxsize = MEDIUM_SIZE;
@@ -357,8 +357,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                         maxsize, filename, width, height, depth, fileContent);
             }
         } else {
-            // TODO - Call the picture template registry here ? (call with true
-            // for convert params)
             List<PictureView> pictureViews = getImagingService().computeViewFor(
                     fileContent, true);
             addPictureViews(pictureViews);
@@ -377,11 +375,11 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             maxsize = 0;
         }
 
-        PictureTemplate pictureTemplate = new PictureTemplate(title,
+        PictureConversion pictureConversion = new PictureConversion(title,
                 description, tag, maxsize);
 
         PictureView view = getImagingService().computeViewFor(fileContent,
-                pictureTemplate, getImageInfo(), true);
+                pictureConversion, getImageInfo(), true);
 
         addPictureView(view);
     }
@@ -394,7 +392,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
      * @see AbstractPictureAdapter#addViews(List, String, String)
      * @see DefaultPictureAdapter#preFillPictureViews(Blob, List, ImageInfo)
      *
-     * @since 5.9.6
+     * @since 7.1
      */
     protected void addPictureViews(List<PictureView> pictureViews) {
         List<Map<String, Serializable>> views = getPictureViews();
@@ -426,7 +424,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
      *
      * <b>This method never return null</b>
      *
-     * @since 5.9.6
+     * @since 7.1
      */
     @SuppressWarnings("unchecked")
     private List<Map<String, Serializable>> getPictureViews() {
@@ -442,7 +440,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
      * Add a pictureView to the existing picture views attached with the
      * document
      *
-     * @since 5.9.6
+     * @since 7.1
      */
     protected void addPictureView(PictureView view) {
         List<Map<String, Serializable>> views = getPictureViews();

@@ -180,15 +180,15 @@ public class PictureManagerBean implements PictureManager, Serializable {
         doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
         try {
             DocumentModel parent = getCurrentDocument();
-            ArrayList<Map<String, Object>> pictureTemplates = null;
+            ArrayList<Map<String, Object>> pictureConversions = null;
             if (parent.getType().equals("PictureBook")) {
                 // Use PictureBook Properties
-                pictureTemplates = (ArrayList<Map<String, Object>>) parent.getProperty(
+                pictureConversions = (ArrayList<Map<String, Object>>) parent.getProperty(
                         "picturebook", "picturetemplates");
             }
             PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
             boolean status = picture.fillPictureViews(fileContent, filename,
-                    title, pictureTemplates);
+                    title, pictureConversions);
             if (!status) {
                 documentManager.cancel();
                 log.info("Picture type unsupported.");

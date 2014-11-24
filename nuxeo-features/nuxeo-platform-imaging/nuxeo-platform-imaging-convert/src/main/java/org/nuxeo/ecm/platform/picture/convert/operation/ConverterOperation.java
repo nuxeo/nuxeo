@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
- * @since 5.9.6
+ * @since 7.1
  *
  * @author Vincent Vergnolle
  */

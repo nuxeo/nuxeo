@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * @since 5.9.6
+ * @since 7.1
  *
  * @author Vincent Vergnolle
  */

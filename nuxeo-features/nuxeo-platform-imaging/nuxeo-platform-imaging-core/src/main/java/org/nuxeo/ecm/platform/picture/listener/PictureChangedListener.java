@@ -105,13 +105,13 @@ public class PictureChangedListener implements EventListener {
 
             DocumentModel parentDoc = getParentDocument(session, doc);
 
-            List<Map<String, Object>> pictureTemplates = null;
+            List<Map<String, Object>> pictureConversions = null;
             if (parentDoc != null
                     && PICTUREBOOK_TYPE_NAME.equals(parentDoc.getType())) {
                 // use PictureBook Properties
-                pictureTemplates = (ArrayList<Map<String, Object>>) parentDoc.getPropertyValue("picturebook:picturetemplates");
-                if (pictureTemplates.isEmpty()) {
-                    pictureTemplates = null;
+                pictureConversions = (ArrayList<Map<String, Object>>) parentDoc.getPropertyValue("picturebook:picturetemplates");
+                if (pictureConversions.isEmpty()) {
+                    pictureConversions = null;
                 }
             }
 
@@ -121,7 +121,7 @@ public class PictureChangedListener implements EventListener {
             }
 
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
-            adapter.preFillPictureViews(blob, pictureTemplates,
+            adapter.preFillPictureViews(blob, pictureConversions,
                     emptyPictureImageInfo);
         } catch (Exception e) {
             log.error(

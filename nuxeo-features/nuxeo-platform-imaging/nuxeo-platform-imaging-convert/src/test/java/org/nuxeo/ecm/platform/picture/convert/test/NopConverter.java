@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  * Converter which do nothing on the input blob. It just return a new blob
  * holder with the same blobs.
  *
- * @since 5.9.6
+ * @since 7.1
  *
  * @author Vincent Vergnolle
  */

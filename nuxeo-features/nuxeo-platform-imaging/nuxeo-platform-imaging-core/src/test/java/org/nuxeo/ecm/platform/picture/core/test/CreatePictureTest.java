@@ -49,9 +49,6 @@ public class CreatePictureTest {
     @Inject
     BatchManager batchManager;
 
-    @Inject
-    protected ImagingService imagingService;
-
     @Test
     public void testCreate() throws Exception {
 
@@ -72,9 +69,6 @@ public class CreatePictureTest {
         fakeJSON.append(", \"upload-batch\" : " + "\"BID\"");
         fakeJSON.append(", \"upload-fileId\" : \"1\" ");
         fakeJSON.append("}");
-
-        // System.out.println("***************************************");
-        // System.out.println(fakeJSON.toString());
 
         DocumentModel root = session.getRootDocument();
 
@@ -101,12 +95,7 @@ public class CreatePictureTest {
         params.put("properties", properties);
         params.put("pictureTemplates", templates);
 
-        OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(CreatePicture.ID,
-                params);
-        chain.add(oparams);
-
-        DocumentModel picture = (DocumentModel) service.run(ctx, chain);
+        DocumentModel picture = (DocumentModel) service.run(ctx, CreatePicture.ID, params);
         assertNotNull(picture);
 
         MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);
