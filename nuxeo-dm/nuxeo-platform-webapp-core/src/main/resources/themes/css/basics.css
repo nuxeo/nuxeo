@@ -36,12 +36,16 @@ a img,
 b,
 strong {
   font-weight: bold }
+
 i,
 em,
 var,
 dfn,
 cide {
   font-style: italic }
+
+button i {
+  font-style: normal }
 
 /* =Links and Titles */
 a,
@@ -108,8 +112,8 @@ button, keygen, isindex, legend, a {
   font-size: inherit }
 
 /* =Compat styles */
-.field, select, textarea, .serverChoice a,
-.tabsBar, .gridBox, .infoViewRight .infoViewInfoLayout,
+.field, select, textarea, .serverChoice a, .fullWidth, .tabsBar,
+.gridBox, .grayBox, .simpleBox, .infoViewRight .infoViewInfoLayout,
 input[type="text"], input[type="file"], input[type="password"] {
  -moz-box-sizing: border-box;
  -webkit-box-sizing: border-box }
