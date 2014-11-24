@@ -240,7 +240,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
                     }
                 } finally {
                     if (event.isBubbleException()) {
-                        throw new RuntimeException(rollbackException);
+                        if (rollbackException instanceof RuntimeException) {
+                            throw (RuntimeException) rollbackException;
+                        } else {
+                            throw new RuntimeException(rollbackException);
+                        }
                     } else if (event.isMarkedForRollBack()) {
 
                         String message = "Exception during " + desc.getName()
