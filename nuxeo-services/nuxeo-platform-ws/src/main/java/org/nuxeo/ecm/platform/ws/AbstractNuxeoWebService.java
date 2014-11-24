@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.api.login.UserSession;
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSessionManager;
@@ -91,6 +90,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
         return sid;
     }
 
+    @Override
     @PermitAll
     @WebMethod
     public String connect(@WebParam(name = "userName") String username, @WebParam(name = "password")String password)
@@ -134,6 +134,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
         return sid;
     }
 
+    @Override
     @WebMethod
     public void disconnect(@WebParam(name = "sessionId") String sid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
@@ -149,8 +150,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     protected void login(String username, String password)
             throws ClientException {
         try {
-            UserSession userSession = new UserSession(username, password);
-            userSession.login();
+            Framework.login(username, password);
         } catch (Exception e) {
             throw new ClientException("Login failed for " + username, e);
         }

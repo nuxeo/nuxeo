@@ -32,9 +32,9 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -77,6 +77,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
 
     private static final Log log = LogFactory.getLog(NuxeoRemotingBean.class);
 
+    @Override
     @WebMethod
     public String getRepositoryName(@WebParam(name = "sessionId") String sid)
             throws ClientException {
@@ -84,6 +85,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return rs.getRepository();
     }
 
+    @Override
     @WebMethod
     public WsACE[] getDocumentACL(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
@@ -97,6 +99,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
+    @Override
     @WebMethod
     public DocumentSnapshot getDocumentSnapshot(
             @WebParam(name = "sessionId") String sid,
@@ -104,6 +107,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return getDocumentSnapshotExt(sid, uuid, false);
     }
 
+    @Override
     public DocumentSnapshot getDocumentSnapshotExt(
             @WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid,
@@ -127,6 +131,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return ds;
     }
 
+    @Override
     @WebMethod
     public WsACE[] getDocumentLocalACL(
             @WebParam(name = "sessionId") String sid,
@@ -146,6 +151,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
+    @Override
     public boolean hasPermission(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid,
             @WebParam(name = "permission") String permission)
@@ -159,6 +165,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return docMgr.hasPermission(doc.getRef(), permission);
     }
 
+    @Override
     @WebMethod
     public DocumentBlob[] getDocumentBlobs(
             @WebParam(name = "sessionId") String sid,
@@ -166,6 +173,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return getDocumentBlobsExt(sid, uuid, false);
     }
 
+    @Override
     public DocumentBlob[] getDocumentBlobsExt(
             @WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid,
@@ -196,6 +204,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return blobs.toArray(new DocumentBlob[blobs.size()]);
     }
 
+    @Override
     @WebMethod
     public String[] listUsers(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "startIndex") int from,
@@ -205,6 +214,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return userIds.toArray(new String[userIds.size()]);
     }
 
+    @Override
     @WebMethod
     public String[] listGroups(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "startIndex") int from,
@@ -214,6 +224,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return groupIds.toArray(new String[groupIds.size()]);
     }
 
+    @Override
     @WebMethod
     public DocumentProperty[] getDocumentProperties(
             @WebParam(name = "sessionId") String sid,
@@ -235,6 +246,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return props.toArray(new DocumentProperty[props.size()]);
     }
 
+    @Override
     @WebMethod
     public DocumentProperty[] getDocumentNoBlobProperties(
             @WebParam(name = "sessionId") String sid,
@@ -256,6 +268,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return props.toArray(new DocumentProperty[props.size()]);
     }
 
+    @Override
     public DocumentDescriptor getCurrentVersion(
             @WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uuid) throws ClientException {
@@ -268,6 +281,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return null;
     }
 
+    @Override
     public DocumentDescriptor getSourceDocument(
             @WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uid) throws ClientException {
@@ -283,6 +297,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return null;
     }
 
+    @Override
     public DocumentDescriptor[] getVersions(
             @WebParam(name = "sessionId") String sid,
             @WebParam(name = "uuid") String uid) throws ClientException {
@@ -301,6 +316,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return null;
     }
 
+    @Override
     @WebMethod
     public DocumentDescriptor getRootDocument(
             @WebParam(name = "sessionId") String sessionId)
@@ -310,6 +326,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return doc != null ? new DocumentDescriptor(doc) : null;
     }
 
+    @Override
     @WebMethod
     public DocumentDescriptor getDocument(
             @WebParam(name = "sessionId") String sessionId,
@@ -319,6 +336,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return doc != null ? new DocumentDescriptor(doc) : null;
     }
 
+    @Override
     @WebMethod
     public DocumentDescriptor[] getChildren(
             @WebParam(name = "sessionId") String sessionId,
@@ -357,7 +375,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
                     try {
                         // strValue = ((Blob) value).getString();
                         byte[] bytes = ((Blob) value).getByteArray();
-                        strValue = Base64.encodeBytes(bytes);
+                        strValue = Base64.encodeBase64String(bytes);
                     } catch (IOException e) {
                         throw new ClientException(
                                 "Failed to get blob property value", e);
@@ -467,6 +485,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return sb.toString();
     }
 
+    @Override
     @WebMethod
     public String[] getUsers(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "parentGroup") String parentGroup)
@@ -483,6 +502,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return users.toArray(new String[users.size()]);
     }
 
+    @Override
     @WebMethod
     public String[] getGroups(@WebParam(name = "sessionId") String sid,
             @WebParam(name = "parentGroup") String parentGroup)
@@ -498,6 +518,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return groups.toArray(new String[groups.size()]);
     }
 
+    @Override
     @WebMethod
     public String getRelativePathAsString(
             @WebParam(name = "sessionId") String sessionId,
@@ -543,6 +564,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     @WebMethod
     public String uploadDocument(@WebParam(name = "sessionId") String sid,
@@ -578,7 +600,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         document.setProperty("dublincore", "title", dublincoreMap.get("title"));
         String filname = (String) fileMap.get("filename");
         document.setProperty("file", "filename", filname);
-        final byte[] contentData = Base64.decode((String) contentMap.get("data"));
+        final byte[] contentData = Base64.decodeBase64((String) contentMap.get("data"));
         // String contentType = (String) contentMap.get("mime-type") ;
         Blob blob = StreamingBlob.createFromByteArray(contentData);
 

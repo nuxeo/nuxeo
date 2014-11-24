@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.3
  */
-public class FakeHandler implements Handler {
+public class FakeHandler implements Handler<MessageContext> {
 
     private static final Log log = LogFactory.getLog(FakeHandler.class);
 

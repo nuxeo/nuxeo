@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.utils.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 
 /**
  * @author matic
- * 
+ *
  */
 public class DocumentSchemaLoader implements DocumentLoader {
 
@@ -50,7 +50,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
             }
         }
     }
-    
+
     protected void collectNoBlobProperty(String prefix, String name,
             Object value, List<DocumentProperty> props) throws ClientException {
         if (value instanceof Map) {
@@ -101,7 +101,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
                     try {
                         // strValue = ((Blob) value).getString();
                         byte[] bytes = ((Blob) value).getByteArray();
-                        strValue = Base64.encodeBytes(bytes);
+                        strValue = Base64.encodeBase64String(bytes);
                     } catch (IOException e) {
                         throw new ClientException(
                                 "Failed to get blob property value", e);

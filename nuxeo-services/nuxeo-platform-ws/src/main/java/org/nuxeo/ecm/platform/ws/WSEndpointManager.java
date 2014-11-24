@@ -1,9 +1,6 @@
 package org.nuxeo.ecm.platform.ws;
 
 import java.util.Collection;
-import java.util.List;
-
-import javax.xml.ws.Endpoint;
 
 import org.nuxeo.ecm.platform.api.ws.WSEndpointDescriptor;
 
