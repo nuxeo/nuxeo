@@ -327,10 +327,10 @@ public class ImagingComponent extends DefaultComponent implements
             PictureConversion pictureConversion, ImageInfo imageInfo)
             throws IOException {
         String filename = blob.getFilename();
-        String title = pictureConversion.getTitle();
+        String title = pictureConversion.getId();
         String viewFilename = title + "_" + filename;
         Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(PictureView.FIELD_TITLE, pictureConversion.getTitle());
+        map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
         map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         map.put(PictureView.FIELD_FILENAME, viewFilename);
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
@@ -367,11 +367,11 @@ public class ImagingComponent extends DefaultComponent implements
             PictureConversion pictureConversion, ImageInfo imageInfo)
             throws ClientException, IOException {
         String filename = blob.getFilename();
-        String title = pictureConversion.getTitle();
+        String title = pictureConversion.getId();
         int width = imageInfo.getWidth();
         int height = imageInfo.getHeight();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(PictureView.FIELD_TITLE, pictureConversion.getTitle());
+        map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
         map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
         map.put(PictureView.FIELD_WIDTH, width);
@@ -411,7 +411,7 @@ public class ImagingComponent extends DefaultComponent implements
     protected PictureView computeView(Blob blob,
             PictureConversion pictureConversion, ImageInfo imageInfo) {
 
-        String title = pictureConversion.getTitle();
+        String title = pictureConversion.getId();
 
         Map<String, Serializable> pictureViewMap = new HashMap<String, Serializable>();
         pictureViewMap.put(PictureView.FIELD_TITLE, title);
@@ -423,7 +423,7 @@ public class ImagingComponent extends DefaultComponent implements
 
         /*
          * If the picture template have a max size then use it for the new size
-         * computation. Else take the current size will be used.
+         * computation, else take the current size will be used.
          */
         if (pictureConversion.getMaxSize() != null) {
             size = getSize(size, pictureConversion.getMaxSize());
@@ -439,7 +439,7 @@ public class ImagingComponent extends DefaultComponent implements
         Blob viewBlob = callPictureTemplateChain(blob, pictureConversion,
                 imageInfo, size, conversionFormat);
 
-        String viewFilename = null;
+        String viewFilename;
 
         /*
          * Update the blob extension filename only if the picture template
@@ -485,7 +485,7 @@ public class ImagingComponent extends DefaultComponent implements
         if (chainId == null) {
             if (log.isErrorEnabled()) {
                 log.error("The picture template ("
-                        + pictureConversion.getTitle()
+                        + pictureConversion.getId()
                         + ") chain can't be called because it's 'chainId' property is null. The same image will be used.");
             }
 
@@ -530,7 +530,7 @@ public class ImagingComponent extends DefaultComponent implements
         view.setWidth(imageInfo.getWidth());
         view.setHeight(imageInfo.getHeight());
         view.setFilename(blob.getFilename());
-        view.setTitle(pictureConversion.getTitle());
+        view.setTitle(pictureConversion.getId());
         view.setDescription(pictureConversion.getDescription());
         view.setTag(pictureConversion.getTag());
         return view;

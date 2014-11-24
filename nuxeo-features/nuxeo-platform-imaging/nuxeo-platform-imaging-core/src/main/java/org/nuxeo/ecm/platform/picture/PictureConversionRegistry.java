@@ -59,7 +59,7 @@ public class PictureConversionRegistry extends
      * be disabled)
      */
     public boolean isDefault(PictureConversion pictureConversion) {
-        return defaultPictureConversions.contains(pictureConversion.getTitle());
+        return defaultPictureConversions.contains(pictureConversion.getId());
     }
 
     @Override
@@ -105,22 +105,22 @@ public class PictureConversionRegistry extends
     /**
      * Check if the passed picture conversion is valid.
      *
-     * A valid picture conversion should not have a null or empty title.
+     * A valid picture conversion should not have a null or empty id.
      *
-     * @throws IllegalStateException if the title is null or empty
+     * @throws IllegalStateException if the id is null or empty
      */
     protected void check(PictureConversion pictureConversion) {
         // Check if the title is null or empty
-        if (StringUtils.isEmpty(pictureConversion.getTitle())) {
+        if (StringUtils.isBlank(pictureConversion.getId())) {
             throw new IllegalStateException(
-                    "The 'title' property of a picture conversion mustn't be null or empty ("
+                    "The 'id' property of a picture conversion mustn't be null or empty ("
                             + pictureConversion + ")");
         }
     }
 
     @Override
     public String getContributionId(PictureConversion pictureConversion) {
-        return pictureConversion.getTitle();
+        return pictureConversion.getId();
     }
 
     @Override
@@ -133,7 +133,7 @@ public class PictureConversionRegistry extends
 
             if (log.isWarnEnabled()) {
                 log.warn("The picture conversion named "
-                        + pictureConversion.getTitle()
+                        + pictureConversion.getId()
                         + " can't be disabled (it's present in the default picture conversion collection)");
             }
         }
@@ -161,18 +161,8 @@ public class PictureConversionRegistry extends
         }
 
         Integer maxSize = pictureConversion.getMaxSize();
-
-        // Ignore if maxSize is not specified or negative
-        if (maxSize != null && maxSize >= 0) {
+        if (maxSize != null) {
             oldPictureConversion.setMaxSize(maxSize);
-        } else {
-            if (log.isWarnEnabled()) {
-                log.warn("Max size of the picture conversion named "
-                        + pictureConversion.getTitle() + " is null or negative ("
-                        + maxSize
-                        + "). The value has been ignored, old value is used ("
-                        + oldPictureConversion.getMaxSize() + ")");
-            }
         }
     }
 }

@@ -84,10 +84,10 @@ public class TestPictureConversionRegistry {
         for (PictureConversion pictureConversion : pictureConversionRegistry.getPictureConversions()) {
             if (log.isDebugEnabled()) {
                 log.debug("Check picture conversion "
-                        + pictureConversion.getTitle());
+                        + pictureConversion.getId());
             }
 
-            if (requiredPictureConversions.contains(pictureConversion.getTitle())) {
+            if (requiredPictureConversions.contains(pictureConversion.getId())) {
                 count++;
             }
         }
@@ -103,7 +103,7 @@ public class TestPictureConversionRegistry {
 
         for (int i = 0; i < defaultPictureConversionsOrder.length; i++) {
             Assert.assertEquals(defaultPictureConversionsOrder[i],
-                    pictureConversions.get(i).getTitle());
+                    pictureConversions.get(i).getId());
         }
     }
 
@@ -121,7 +121,7 @@ public class TestPictureConversionRegistry {
 
         for (int i = 0; i < expectedPictureConversionsOrder.length; i++) {
             Assert.assertEquals(expectedPictureConversionsOrder[i],
-                    pictureConversions.get(i).getTitle());
+                    pictureConversions.get(i).getId());
         }
 
         undeploy(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
@@ -135,13 +135,13 @@ public class TestPictureConversionRegistry {
 
         PictureConversionRegistry registry = getPictureConversionRegistry();
         for (PictureConversion pictureConversion : registry.getPictureConversions()) {
-            if (pictureConversion.getTitle().equals("Small")) {
+            if (pictureConversion.getId().equals("Small")) {
                 Assert.assertEquals(50, (int) pictureConversion.getMaxSize());
                 Assert.assertTrue(pictureConversion.getDescription().contains(
                         "override"));
-            } else if (pictureConversion.getTitle().equals("Thumbnail")) {
+            } else if (pictureConversion.getId().equals("Thumbnail")) {
                 Assert.assertEquals(320, (int) pictureConversion.getMaxSize());
-            } else if (pictureConversion.getTitle().equals("Medium")) {
+            } else if (pictureConversion.getId().equals("Medium")) {
                 Assert.assertTrue(pictureConversion.getDescription().contains(
                         "override"));
             }
@@ -162,7 +162,7 @@ public class TestPictureConversionRegistry {
 
         PictureConversionRegistry registry = getPictureConversionRegistry();
         for (PictureConversion pictureConversion : registry.getPictureConversions()) {
-            if (newPictureConversions.contains(pictureConversion.getTitle())) {
+            if (newPictureConversions.contains(pictureConversion.getId())) {
                 count++;
             }
         }

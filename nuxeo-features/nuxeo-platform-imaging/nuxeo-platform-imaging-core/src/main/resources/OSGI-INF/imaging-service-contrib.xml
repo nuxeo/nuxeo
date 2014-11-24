@@ -19,19 +19,19 @@
   <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
     point="pictureConversions">
 
-    <pictureConversion title="Original" description="Original image"
+    <pictureConversion id="Original" description="Original image"
       order="10" chainId="Blob.Nop" />
 
-    <pictureConversion title="OriginalJpeg" enabled="true"
+    <pictureConversion id="OriginalJpeg" enabled="true"
       description="Original jpeg image" order="25" chainId="Image.Blob.Resize" />
 
-    <pictureConversion title="Medium" description="Medium size"
+    <pictureConversion id="Medium" description="Medium size"
       maxSize="550" order="5" chainId="Image.Blob.Resize" />
 
-    <pictureConversion title="Small" description="Small size"
+    <pictureConversion id="Small" description="Small size"
       maxSize="280" order="15" chainId="Image.Blob.Resize" />
 
-    <pictureConversion title="Thumbnail" description="Thumbnail size"
+    <pictureConversion id="Thumbnail" description="Thumbnail size"
       maxSize="100" order="20" chainId="Image.Blob.Resize" />
 
   </extension>

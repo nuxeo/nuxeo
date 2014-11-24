@@ -4,15 +4,16 @@
   <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
     point="pictureConversions">
 
-    <pictureConversion title="ThumbnailMini" enabled="true" maxSize="96" order="0" />
-    <pictureConversion title="ThumbnailWide" enabled="true" maxSize="320" order="22" />
-    <pictureConversion title="Tiny" enabled="true" maxSize="48" order="2" />
-    <pictureConversion title="Wide" enabled="true" maxSize="2048" order="14" />
+    <pictureConversion id="ThumbnailMini" enabled="true" maxSize="96" order="0" />
+    <pictureConversion id="ThumbnailWide" enabled="true" maxSize="320" order="22" />
+    <pictureConversion id="Tiny" enabled="true" maxSize="48" order="2" />
+    <pictureConversion id="Wide" enabled="true" maxSize="2048" order="14" />
 
-    <pictureConversion title="Thumbnail" enabled="false" maxSize="160" order="11" />
-    <pictureConversion title="Original" enabled="false" maxSize="800" order="17" />
-    <pictureConversion title="OriginalJpeg" enabled="false"
+    <pictureConversion id="Thumbnail" enabled="false" maxSize="160" order="11" />
+    <pictureConversion id="Original" enabled="false" maxSize="800" order="17" />
+    <pictureConversion id="OriginalJpeg" enabled="false"
       maxSize="0" order="7" />
+
   </extension>
 
 </component>

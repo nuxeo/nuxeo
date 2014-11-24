@@ -32,11 +32,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("pictureConversion")
 public class PictureConversion implements Comparable<PictureConversion> {
 
-    @XNode("@title")
-    protected String title;
+    @XNode("@id")
+    protected String id;
 
     @XNode("@order")
-    protected Integer order = 0;
+    protected Integer order;
 
     @XNode("@description")
     protected String description;
@@ -56,14 +56,14 @@ public class PictureConversion implements Comparable<PictureConversion> {
         super();
     }
 
-    public PictureConversion(String title, String description, String tag,
+    public PictureConversion(String id, String description, String tag,
                              Integer maxSize) {
-        this(title, description, tag, maxSize, -1, null, true);
+        this(id, description, tag, maxSize, -1, null, true);
     }
 
-    public PictureConversion(String title, String description, String tag,
+    public PictureConversion(String id, String description, String tag,
                              Integer maxSize, Integer order, String chainId, Boolean enabled) {
-        this.title = title;
+        this.id = id;
         this.description = description;
         this.tag = tag;
         this.order = order;
@@ -72,21 +72,12 @@ public class PictureConversion implements Comparable<PictureConversion> {
         this.enabled = enabled;
     }
 
-    @Override
-    public int compareTo(PictureConversion other) {
-        return Integer.compare(order, other.order);
+    public String getId() {
+        return id;
     }
 
-    public String getChainId() {
-        return chainId;
-    }
-
-    public void setMaxSize(Integer maxSize) {
-        this.maxSize = maxSize;
-    }
-
-    public String getTitle() {
-        return title;
+    public Integer getOrder() {
+        return order == null ? 0 : order;
     }
 
     public String getDescription() {
@@ -97,30 +88,29 @@ public class PictureConversion implements Comparable<PictureConversion> {
         return tag;
     }
 
-    public Integer getMaxSize() {
-        return maxSize;
-    }
-
-    public Integer getSafeMaxSize() {
-        return maxSize == null ? 1 : maxSize;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public String getChainId() {
+        return chainId;
+    }
+
+    /**
+     * For compat with {@link org.nuxeo.ecm.platform.picture.api.PictureTemplate}.
+     * @deprecated since 7.1. Use {@link #getId()}.
+     */
+    @Deprecated
+    public String getTitle() {
+        return id;
+    }
+
+    public Integer getMaxSize() {
+        return maxSize;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
     public void setDescription(String description) {
@@ -139,21 +129,28 @@ public class PictureConversion implements Comparable<PictureConversion> {
         this.tag = tag;
     }
 
-    public void setMaxSize(int maxSize) {
+    public void setMaxSize(Integer maxSize) {
         this.maxSize = maxSize;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    public Integer getOrder() {
-        return order;
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int compareTo(PictureConversion other) {
+        return Integer.compare(getOrder(), other.getOrder());
     }
 
     @Override
     public PictureConversion clone() {
-        return new PictureConversion(title, description, tag, maxSize, order,
+        return new PictureConversion(id, description, tag, maxSize, order,
                 chainId, enabled);
     }
 
@@ -161,6 +158,6 @@ public class PictureConversion implements Comparable<PictureConversion> {
     public String toString() {
         return String.format(
                 "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d, order=%d, chainId=%s, enabled=%s]",
-                title, description, tag, maxSize, order, chainId, enabled);
+                id, description, tag, maxSize, order, chainId, enabled);
     }
 }
