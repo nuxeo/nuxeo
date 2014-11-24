@@ -409,6 +409,7 @@ author: lkemen@nuxeo.com
 /* BubbleBox Listing */
 .bubbleBox.bubbleListing {
   display: inline-block;
+  float: left;
   margin: 0 .4em 1.2em 0;
   transition: box-shadow 0.3s ease 0.01s;
   vertical-align: top;
