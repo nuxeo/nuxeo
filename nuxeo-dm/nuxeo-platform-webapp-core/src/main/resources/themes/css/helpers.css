@@ -36,7 +36,6 @@ author: lkemen@nuxeo.com
 
 /* width for divs */
 .fullWidth {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   width:100% }
 
