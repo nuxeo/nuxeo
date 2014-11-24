@@ -103,21 +103,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: .2em;
   padding: .2em .4em .1em }
 
-/* Lightbox on thumbnails
-.thumbnailContainer .image-popup {
-  background: url("${basePath}/icons/lightbox_call.png") no-repeat scroll center center transparent;
-  opacity: 0;
-  display: inline-block;
-  height: inherit;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-  transition: opacity 0.1s ease 0.01s }
-
-.thumbnailContainer:hover .image-popup {
-  opacity: 1 }*/
-
 /* =Standard Widgets */
 /* Widgets styles, spacing between blocks in .gridBox containers */
 .widgetPanel,
