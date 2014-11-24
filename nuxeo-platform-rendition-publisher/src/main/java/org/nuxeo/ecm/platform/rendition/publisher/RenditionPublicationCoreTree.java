@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.impl.core.RootSectionsPublicationTree;
 import org.nuxeo.ecm.platform.rendition.Constants;
@@ -35,7 +36,7 @@ import org.nuxeo.ecm.platform.rendition.Constants;
  * Implementation of
  * {@link org.nuxeo.ecm.platform.publisher.api.PublicationTree} that retrieve
  * also any published Rendition documents for the given document.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.4.1
@@ -79,7 +80,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
         List<DocumentModel> docs = coreSession.query(String.format(
                 RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT, docRef,
-                rootPath));
+                NXQL.escapeStringInner(rootPath)));
         for (DocumentModel doc : docs) {
             if (!doc.getRef().equals(sourceDocument.getRef())) {
                 publishedDocuments.add(factory.wrapDocumentModel(doc));
@@ -93,7 +94,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
         List<DocumentModel> docs = coreSession.query(String.format(
                 RENDITION_PUBLISHED_DOCUMENTS_FROM_LIVE_DOCUMENT, docRef,
-                rootPath));
+                NXQL.escapeStringInner(rootPath)));
         for (DocumentModel doc : docs) {
             publishedDocuments.add(factory.wrapDocumentModel(doc));
         }
