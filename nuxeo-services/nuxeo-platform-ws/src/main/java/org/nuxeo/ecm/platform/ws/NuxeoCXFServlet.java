@@ -1,5 +1,8 @@
 package org.nuxeo.ecm.platform.ws;
 
+import javax.servlet.ServletConfig;
+
+import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 
 /**
