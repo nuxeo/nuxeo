@@ -437,8 +437,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             String eTag = file.getPropertyValue("nuxeo:contentStreamDigest");
             GregorianCalendar lastModifiedCalendar = file.getPropertyValue("dc:modified");
             String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
-            String encoding = Base64.encodeBytes(
-                    new String(USERNAME + ":" + PASSWORD).getBytes());
+            String encoding = Base64.encodeBytes(new String(USERNAME + ":"
+                    + PASSWORD).getBytes());
             DefaultHttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet(uri);
             HttpResponse response = null;
@@ -464,7 +464,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("testfile.txt", cs.getFileName());
         if (!(isAtomPub || isBrowser)) {
-            // TODO fix AtomPub/Browser case where the length is unknown (streaming)
+            // TODO fix AtomPub/Browser case where the length is unknown
+            // (streaming)
             assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         }
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -488,7 +489,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // TODO fix AtomPub case where the filename is null
         assertEquals("foo.txt", cs.getFileName());
         if (!(isAtomPub || isBrowser)) {
-            // TODO fix AtomPub/Browser case where the length is unknown (streaming)
+            // TODO fix AtomPub/Browser case where the length is unknown
+            // (streaming)
             assertEquals(streamBytes.length, cs.getLength());
         }
         assertEquals(STREAM_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -882,7 +884,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         ob = session.getObjectByPath("/testfolder1/testfile1");
         assertFalse("new title".equals(ob.getPropertyValue("dc:title")));
 
-        //test deleteObject
+        // test deleteObject
         ob = session.getObjectByPath("/testfolder1/testfile2");
 
         map = new HashMap<String, Object>();
@@ -897,7 +899,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
             ob = session.getObjectByPath("/testfolder1/testfile2");
             fail("Document should be deleted");
         } catch (CmisObjectNotFoundException e) {
-           // ok
+            // ok
         }
 
     }
@@ -1124,7 +1126,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
         OperationContext oc = session.createOperationContext();
         oc.setIncludeAcls(true);
-        Document ob = (Document) session.getObjectByPath("/testfolder1/testfile1", oc);
+        Document ob = (Document) session.getObjectByPath(
+                "/testfolder1/testfile1", oc);
         acl = ob.getAcl();
         if (!(isAtomPub || isBrowser)) { // OpenCMIS 0.12 bug
             assertEquals(Boolean.TRUE, acl.isExact());
