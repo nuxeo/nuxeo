@@ -89,7 +89,7 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
         wrapperManager = new CmisServiceWrapperManager();
         wrapperManager.addWrappersFromServiceFactoryParameters(parameters);
         // wrap the service to provide default parameter checks
-        wrapperManager.addOuterWrapper(ConformanceCmisServiceWrapper.class,
+        wrapperManager.addOuterWrapper(NuxeoCmisServiceWrapper.class,
                 defaultTypesMaxItems, defaultTypesDepth, defaultMaxItems,
                 defaultDepth);
     }
