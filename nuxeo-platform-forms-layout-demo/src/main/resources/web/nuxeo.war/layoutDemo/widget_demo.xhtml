@@ -72,7 +72,7 @@ Needed parameters:
                       styleClass="button"
                       id="#{demoLayout.name}_edit_form_submitButton">
                       <f:ajax execute="@form"
-                        render="#{demoLayout.name}_edit_form" />
+                        render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" />
                     </h:commandButton>
                     <a4j:status>
                       <f:facet name="start">
