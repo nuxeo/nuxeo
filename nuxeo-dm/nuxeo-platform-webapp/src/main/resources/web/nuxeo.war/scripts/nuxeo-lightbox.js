@@ -63,8 +63,18 @@ nuxeo.lightbox = (function(m) {
   };
 
   m.formatPictureDoc = function(doc) {
+    var view;
+    for (var i = 0; i < doc.properties['picture:views'].length; i++) {
+        if (doc.properties['picture:views'][i].title === 'OriginalJpeg') {
+            view = doc.properties['picture:views'][i];
+            break;
+        }
+    }
+    if (view === undefined) {
+        return formatDefaultDoc(doc);
+    }
     return formatDocWithPicture(doc,
-        doc.properties['picture:views'][4].content.data);
+            view.content.data);
   };
 
   m.formatUnknownDoc = function(doc) {
