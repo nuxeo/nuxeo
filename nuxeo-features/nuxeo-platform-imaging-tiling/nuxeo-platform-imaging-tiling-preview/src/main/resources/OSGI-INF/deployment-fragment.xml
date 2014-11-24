@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <require>org.nuxeo.ecm.platform.picture.dm</require>
+  <require>org.nuxeo.ecm.platform.picture.jsf</require>
 
   <install>
     <unzip from="${bundle.fileName}" to="/" prefix="web">

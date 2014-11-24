@@ -237,9 +237,9 @@ public class PictureBookManagerBean extends InputController implements
 
     protected String formatFileName(String filename, String count) {
         StringBuilder sb = new StringBuilder();
-        CharSequence name = filename.subSequence(0, filename.lastIndexOf("."));
+        CharSequence name = filename.subSequence(0, filename.lastIndexOf(""));
         CharSequence extension = filename.subSequence(
-                filename.lastIndexOf("."), filename.length());
+                filename.lastIndexOf(""), filename.length());
         sb.append(name).append(count).append(extension);
         return sb.toString();
     }

@@ -7,6 +7,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.platform.pictures.tiles,
   org.nuxeo.ecm.platform.preview,
-  org.nuxeo.ecm.platform.picture.api,
-  org.nuxeo.ecm.platform.picture.preview
+  org.nuxeo.ecm.platform.picture.api
 Nuxeo-Component: OSGI-INF/preview-contrib.xml
