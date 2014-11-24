@@ -55,6 +55,7 @@ public class TestSidGenerator {
         Field field = SIDGenerator.class.getDeclaredField("count");
         field.setAccessible(true);
         field.set(null, Integer.MAX_VALUE - 1000);
+        Thread.sleep(1);;
 
         for (int i = 0; i < 3000; i++) {
             long id = SIDGenerator.next();
