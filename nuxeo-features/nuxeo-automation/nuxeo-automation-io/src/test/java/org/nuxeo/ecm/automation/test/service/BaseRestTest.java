@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.test.service;
 
 import com.google.inject.Inject;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
@@ -29,8 +30,10 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import javax.ws.rs.core.HttpHeaders;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,7 +62,7 @@ public class BaseRestTest {
     JsonFactory factory;
 
     protected void assertEqualsJson(String expected, String actual) throws Exception {
-        JSONAssert.assertEquals(expected, actual, false);
+        JSONAssert.assertEquals(expected, actual, JSONCompareMode.NON_EXTENSIBLE);
     }
 
     /**
