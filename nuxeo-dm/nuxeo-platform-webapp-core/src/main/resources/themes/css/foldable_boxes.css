@@ -120,8 +120,6 @@ author: lkemen@nuxeo.com
 /* =Simple boxes */
 .grayBox,
 .simpleBox {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
