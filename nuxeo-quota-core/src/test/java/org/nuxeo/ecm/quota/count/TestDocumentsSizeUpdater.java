@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,6 +61,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -78,8 +78,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
 @TransactionalConfig
-// NXP-14444, NXP-14442: disabled because randomly failing
-@Ignore
+@RandomBug.Repeat(issue = "NXP-14442, NXP-14444")
 public class TestDocumentsSizeUpdater {
 
     @Inject
