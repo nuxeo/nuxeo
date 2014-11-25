@@ -11,5 +11,8 @@ import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
  * @since 5.7.3
  */
 public class NuxeoCXFServlet extends CXFNonSpringServlet {
-
+    @Override
+    protected void loadBus(ServletConfig sc) {
+        setBus(BusFactory.getDefaultBus());
+    }
 }
