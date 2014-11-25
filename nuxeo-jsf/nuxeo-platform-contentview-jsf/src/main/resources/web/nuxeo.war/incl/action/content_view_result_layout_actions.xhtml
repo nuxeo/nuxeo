@@ -25,6 +25,7 @@ Needed parameters:
             execute="@this">
             <nxu:graphicImage value="#{iconPath}"
               title="#{title}"
+              alt="#{title}"
               styleClass="tipsyShow tipsyGravitySE" />
           </a4j:commandLink>
         </c:if>
@@ -32,6 +33,7 @@ Needed parameters:
           <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
             <nxu:graphicImage value="#{iconPath}"
               title="#{title}"
+              alt="#{title}"
               styleClass="tipsyShow tipsyGravitySE" />
           </h:commandLink>
         </c:if>
