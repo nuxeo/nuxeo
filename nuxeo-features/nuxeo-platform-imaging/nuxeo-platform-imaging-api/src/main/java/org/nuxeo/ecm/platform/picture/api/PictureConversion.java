@@ -42,11 +42,15 @@ public class PictureConversion implements Comparable<PictureConversion> {
     protected String description;
 
     @XNode("@enabled")
-    protected boolean enabled = true;
+    protected Boolean enabled;
+
+    @XNode("@default")
+    protected Boolean isDefault;
 
     @XNode("@chainId")
     protected String chainId;
 
+    @XNode("@tag")
     protected String tag;
 
     @XNode("@maxSize")
@@ -57,19 +61,11 @@ public class PictureConversion implements Comparable<PictureConversion> {
     }
 
     public PictureConversion(String id, String description, String tag,
-                             Integer maxSize) {
-        this(id, description, tag, maxSize, -1, null, true);
-    }
-
-    public PictureConversion(String id, String description, String tag,
-                             Integer maxSize, Integer order, String chainId, Boolean enabled) {
+            Integer maxSize) {
         this.id = id;
         this.description = description;
         this.tag = tag;
-        this.order = order;
         this.maxSize = maxSize;
-        this.chainId = chainId;
-        this.enabled = enabled;
     }
 
     public String getId() {
@@ -89,7 +85,19 @@ public class PictureConversion implements Comparable<PictureConversion> {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return enabled == null || enabled;
+    }
+
+    public boolean isEnabledSet() {
+        return enabled != null;
+    }
+
+    public boolean isDefault() {
+        return isDefault == null ? false : isDefault;
+    }
+
+    public boolean isDefaultSet() {
+        return isDefault != null;
     }
 
     public String getChainId() {
@@ -97,7 +105,9 @@ public class PictureConversion implements Comparable<PictureConversion> {
     }
 
     /**
-     * For compat with {@link org.nuxeo.ecm.platform.picture.api.PictureTemplate}.
+     * For compat with
+     * {@link org.nuxeo.ecm.platform.picture.api.PictureTemplate}.
+     *
      * @deprecated since 7.1. Use {@link #getId()}.
      */
     @Deprecated
@@ -119,6 +129,10 @@ public class PictureConversion implements Comparable<PictureConversion> {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
     public void setChainId(String chainId) {
@@ -150,14 +164,22 @@ public class PictureConversion implements Comparable<PictureConversion> {
 
     @Override
     public PictureConversion clone() {
-        return new PictureConversion(id, description, tag, maxSize, order,
-                chainId, enabled);
+        PictureConversion clone = new PictureConversion();
+        clone.id = id;
+        clone.description = description;
+        clone.tag = tag;
+        clone.maxSize = maxSize;
+        clone.order = order;
+        clone.chainId = chainId;
+        clone.enabled = enabled;
+        clone.isDefault = isDefault;
+        return clone;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "PictureTemplate [title=%s, description=%s, tag=%s, maxSize=%d, order=%d, chainId=%s, enabled=%s]",
-                id, description, tag, maxSize, order, chainId, enabled);
+                "PictureConversion [id=%s, description=%s, tag=%s, maxSize=%d, order=%d, chainId=%s, enabled=%s, default=%s]",
+                id, description, tag, maxSize, order, chainId, enabled, isDefault);
     }
 }

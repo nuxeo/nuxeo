@@ -35,7 +35,7 @@ public class PictureTemplate extends PictureConversion {
 
     public PictureTemplate(String title, String description, String tag,
             Integer maxSize) {
-        super(title, description, tag, maxSize, -1, null, true);
+        super(title, description, tag, maxSize);
         log.warn("PictureTemplate is deprecated since 7.1, please use PictureConversion instead");
     }
 }

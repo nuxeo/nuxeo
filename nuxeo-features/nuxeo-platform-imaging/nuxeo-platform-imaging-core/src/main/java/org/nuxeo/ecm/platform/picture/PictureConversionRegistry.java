@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.picture;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,8 @@ import org.nuxeo.ecm.platform.picture.api.PictureConversion;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion} class (merge supported)
+ * Registry for the {@link org.nuxeo.ecm.platform.picture.api.PictureConversion}
+ * class (merge supported)
  *
  * @since 7.1
  */
@@ -41,41 +41,12 @@ public class PictureConversionRegistry extends
 
     protected final Map<String, PictureConversion> pictureConversions = new HashMap<>();
 
-    /**
-     * Collection of picture conversion which can't be disabled
-     */
-    protected final List<String> defaultPictureConversions = Arrays.asList(
-            "Small", "Medium", "Original", "Thumbnail", "OriginalJpeg");
-
-    /**
-     * @return unmodifiable picture conversions titles list
-     */
-    public List<String> getDefaultPictureConversions() {
-        return Collections.unmodifiableList(defaultPictureConversions);
-    }
-
-    /**
-     * Check if the passed picture conversion is present by default (so it can't
-     * be disabled)
-     */
-    public boolean isDefault(PictureConversion pictureConversion) {
-        return defaultPictureConversions.contains(pictureConversion.getId());
-    }
-
-    @Override
-    public PictureConversion clone(PictureConversion pictureConversion) {
-        return pictureConversion.clone();
-    }
-
-    public PictureConversion getById(String id) {
+    public PictureConversion getPictureConversion(String id) {
         return pictureConversions.get(id);
     }
 
     /**
-     * FIXME- Try a different logic. Like eagerly sort the map when a picture
-     * conversion is registered
-     *
-     * @return picture conversion collection sorted by order
+     * Returns picture conversion collection sorted by order.
      */
     public List<PictureConversion> getPictureConversions() {
         List<PictureConversion> entries = new ArrayList<>(
@@ -85,84 +56,85 @@ public class PictureConversionRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id, PictureConversion pictureConversion) {
-        pictureConversions.remove(id);
+    public String getContributionId(PictureConversion pictureConversion) {
+        return pictureConversion.getId();
     }
 
     @Override
-    public void contributionUpdated(String id, PictureConversion pictureConversion,
+    public void contributionUpdated(String id,
+            PictureConversion pictureConversion,
             PictureConversion oldPictureConversion) {
         if (pictureConversions.containsKey(id)) {
             contributionRemoved(id, pictureConversion);
         }
 
         if (pictureConversion.isEnabled()) {
-            check(pictureConversion);
-            pictureConversions.put(id, pictureConversion);
-        }
-    }
+            if (!StringUtils.isBlank(id)) {
+                pictureConversions.put(id, pictureConversion);
+            } else {
+                log.warn(String.format(
+                        "Missing 'id' for picture conversion %s, not registering it.",
+                        pictureConversion));
+            }
 
-    /**
-     * Check if the passed picture conversion is valid.
-     *
-     * A valid picture conversion should not have a null or empty id.
-     *
-     * @throws IllegalStateException if the id is null or empty
-     */
-    protected void check(PictureConversion pictureConversion) {
-        // Check if the id is null or empty
-        if (StringUtils.isBlank(pictureConversion.getId())) {
-            throw new IllegalStateException(
-                    "The 'id' property of a picture conversion mustn't be null or empty ("
-                            + pictureConversion + ")");
         }
     }
 
     @Override
-    public String getContributionId(PictureConversion pictureConversion) {
-        return pictureConversion.getId();
+    public void contributionRemoved(String id,
+            PictureConversion pictureConversion) {
+        pictureConversions.remove(id);
     }
 
     @Override
-    public void merge(PictureConversion pictureConversion,
-            PictureConversion oldPictureConversion) {
+    public PictureConversion clone(PictureConversion pictureConversion) {
+        return pictureConversion.clone();
+    }
 
-        boolean enabled = pictureConversion.isEnabled();
-        if (!enabled && isDefault(pictureConversion)) {
-            enabled = true;
+    @Override
+    public void merge(PictureConversion source, PictureConversion dest) {
+        if (source.isEnabledSet() && source.isEnabled() != dest.isEnabled()) {
+            dest.setEnabled(source.isEnabled());
+        }
 
+        if (source.isDefaultSet() && source.isDefault()) {
+            dest.setDefault(source.isDefault());
+        }
+
+        // cannot disable default picture conversion
+        if (!dest.isEnabled() && dest.isDefault()) {
+            dest.setEnabled(true);
             if (log.isWarnEnabled()) {
-                log.warn("The picture conversion named "
-                        + pictureConversion.getId()
-                        + " can't be disabled (it's present in the default picture conversion collection)");
+                String message = String.format(
+                        "The picture conversion '%s' is marked as default, enabling it.",
+                        dest.getId());
+                log.warn(message);
             }
         }
 
-        oldPictureConversion.setEnabled(enabled);
-
-        String chainId = pictureConversion.getChainId();
-        if (!StringUtils.isEmpty(chainId)) {
-            oldPictureConversion.setChainId(chainId);
+        String chainId = source.getChainId();
+        if (!StringUtils.isBlank(chainId)) {
+            dest.setChainId(chainId);
         }
 
-        String tag = pictureConversion.getTag();
-        if (!StringUtils.isEmpty(tag)) {
-            oldPictureConversion.setTag(tag);
+        String tag = source.getTag();
+        if (!StringUtils.isBlank(tag)) {
+            dest.setTag(tag);
         }
 
-        String description = pictureConversion.getDescription();
-        if (!StringUtils.isEmpty(description)) {
-            oldPictureConversion.setDescription(description);
+        String description = source.getDescription();
+        if (!StringUtils.isBlank(description)) {
+            dest.setDescription(description);
         }
 
-        Integer order = pictureConversion.getOrder();
+        Integer order = source.getOrder();
         if (order != null) {
-            oldPictureConversion.setOrder(order);
+            dest.setOrder(order);
         }
 
-        Integer maxSize = pictureConversion.getMaxSize();
+        Integer maxSize = source.getMaxSize();
         if (maxSize != null) {
-            oldPictureConversion.setMaxSize(maxSize);
+            dest.setMaxSize(maxSize);
         }
     }
 }

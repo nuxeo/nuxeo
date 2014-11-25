@@ -20,19 +20,23 @@
     point="pictureConversions">
 
     <pictureConversion id="Original" description="Original image"
-      order="10" />
+      order="10" default="true" />
 
     <pictureConversion id="OriginalJpeg" enabled="true"
-      description="Original jpeg image" order="25" chainId="Image.Blob.Resize" />
+      description="Original jpeg image" order="25" chainId="Image.Blob.Resize"
+      default="true" />
 
     <pictureConversion id="Medium" description="Medium size"
-      maxSize="550" order="5" chainId="Image.Blob.Resize" />
+      maxSize="550" order="5" chainId="Image.Blob.Resize"
+      default="true" />
 
     <pictureConversion id="Small" description="Small size"
-      maxSize="280" order="15" chainId="Image.Blob.Resize" />
+      maxSize="280" order="15" chainId="Image.Blob.Resize"
+      default="true" />
 
     <pictureConversion id="Thumbnail" description="Thumbnail size"
-      maxSize="100" order="20" chainId="Image.Blob.Resize" />
+      maxSize="100" order="20" chainId="Image.Blob.Resize"
+      default="true" />
 
   </extension>
 </component>

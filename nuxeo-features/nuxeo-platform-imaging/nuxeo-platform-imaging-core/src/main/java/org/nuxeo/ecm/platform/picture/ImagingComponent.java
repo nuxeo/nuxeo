@@ -43,7 +43,6 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
@@ -76,12 +75,18 @@ public class ImagingComponent extends DefaultComponent implements
 
     protected Map<String, String> configurationParameters = new HashMap<>();
 
-    private PictureConversionRegistry pictureConversionRegistry = new PictureConversionRegistry();
+    protected PictureConversionRegistry pictureConversionRegistry = new PictureConversionRegistry();
 
     private LibrarySelector librarySelector;
 
-    public PictureConversionRegistry getPictureConversionRegistry() {
-        return pictureConversionRegistry;
+    @Override
+    public List<PictureConversion> getPictureConversions() {
+        return pictureConversionRegistry.getPictureConversions();
+    }
+
+    @Override
+    public PictureConversion getPictureConversion(String id) {
+        return pictureConversionRegistry.getPictureConversion(id);
     }
 
     @Override
@@ -318,8 +323,8 @@ public class ImagingComponent extends DefaultComponent implements
 
     /**
      * Use
-     * {@link ImagingComponent#computeView(Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)} by
-     * passing the <b>Original</b> picture template.
+     * {@link ImagingComponent#computeView(Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)}
+     * by passing the <b>Original</b> picture template.
      *
      * @deprecated since 7.1
      */
@@ -332,7 +337,8 @@ public class ImagingComponent extends DefaultComponent implements
         String viewFilename = title + "_" + filename;
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
-        map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
+        map.put(PictureView.FIELD_DESCRIPTION,
+                pictureConversion.getDescription());
         map.put(PictureView.FIELD_FILENAME, viewFilename);
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
         map.put(PictureView.FIELD_WIDTH, imageInfo.getWidth());
@@ -358,8 +364,8 @@ public class ImagingComponent extends DefaultComponent implements
 
     /**
      * Use
-     * {@link ImagingComponent#computeView(Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)} by
-     * passing the <b>OriginalJpeg</b> picture template.
+     * {@link ImagingComponent#computeView(Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)}
+     * by passing the <b>OriginalJpeg</b> picture template.
      *
      * @deprecated since 7.1
      */
@@ -373,7 +379,8 @@ public class ImagingComponent extends DefaultComponent implements
         int height = imageInfo.getHeight();
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(PictureView.FIELD_TITLE, pictureConversion.getId());
-        map.put(PictureView.FIELD_DESCRIPTION, pictureConversion.getDescription());
+        map.put(PictureView.FIELD_DESCRIPTION,
+                pictureConversion.getDescription());
         map.put(PictureView.FIELD_TAG, pictureConversion.getTag());
         map.put(PictureView.FIELD_WIDTH, width);
         map.put(PictureView.FIELD_HEIGHT, height);
@@ -437,7 +444,7 @@ public class ImagingComponent extends DefaultComponent implements
         String conversionFormat = getConfigurationValue(CONVERSION_FORMAT,
                 JPEG_CONVERSATION_FORMAT);
 
-        Blob viewBlob = callPictureTemplateChain(blob, pictureConversion,
+        Blob viewBlob = callPictureConversionChain(blob, pictureConversion,
                 imageInfo, size, conversionFormat);
 
         String viewFilename;
@@ -461,9 +468,9 @@ public class ImagingComponent extends DefaultComponent implements
         return new PictureViewImpl(pictureViewMap);
     }
 
-    protected Blob callPictureTemplateChain(Blob blob,
-            PictureConversion pictureConversion, ImageInfo imageInfo, Point size,
-            String conversionFormat) {
+    protected Blob callPictureConversionChain(Blob blob,
+            PictureConversion pictureConversion, ImageInfo imageInfo,
+            Point size, String conversionFormat) {
         Properties parameters = new Properties();
         parameters.put(OPTION_RESIZE_WIDTH, String.valueOf(size.x));
         parameters.put(OPTION_RESIZE_HEIGHT, String.valueOf(size.y));
@@ -512,8 +519,8 @@ public class ImagingComponent extends DefaultComponent implements
                 pictureConversions.size());
 
         for (PictureConversion pictureConversion : pictureConversions) {
-            PictureView pictureView = computeView(fileContent, pictureConversion,
-                    getImageInfo(fileContent), convert);
+            PictureView pictureView = computeView(fileContent,
+                    pictureConversion, getImageInfo(fileContent), convert);
             pictureViews.add(pictureView);
         }
 

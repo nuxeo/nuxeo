@@ -33,6 +33,21 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface ImagingService {
 
     /**
+     * Returns the registered picture conversions.
+     *
+     * @since 7.1
+     */
+    List<PictureConversion> getPictureConversions();
+
+    /**
+     * Returns a {@link org.nuxeo.ecm.platform.picture.api.PictureConversion}
+     * given its {@code id}.
+     *
+     * @since 7.1
+     */
+    PictureConversion getPictureConversion(String id);
+
+    /**
      * Crops an image.
      */
     Blob crop(Blob blob, int x, int y, int width, int height);
