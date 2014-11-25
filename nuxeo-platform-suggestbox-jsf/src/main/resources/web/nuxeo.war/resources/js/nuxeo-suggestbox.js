@@ -9,7 +9,7 @@ nuxeo.suggestbox = (function(m) {
   };
 
   m.suggestedFormatter = function(item) {
-    return '<span><img src="/nuxeo' + item.icon + '" style="smallIcon" />' + item.label + '</span>';
+    return '<span><img src="/nuxeo' + item.icon + '" class="smallIcon" />' + item.label + '</span>';
   };
 
   m.entryHandler = function(item) {
