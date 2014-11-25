@@ -124,9 +124,6 @@
     //display the list
     this.$textarea.show();
 
-    //make sure that list positions matches cell position
-    this.$textarea.offset($(this.TD).offset());
-
     this.$textarea.select2(this.options)
       .on('change', onSelect2Changed.bind(this))
       .on('select2-close', onSelect2Closed.bind(this));
