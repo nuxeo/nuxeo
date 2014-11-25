@@ -26,6 +26,7 @@ import javax.transaction.Transaction;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
@@ -503,6 +504,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     @Test
+    @Ignore("NXP-14866")
     public void testTwoConnections() throws Exception {
         assumeTrue(canUseTwoConnections());
 
