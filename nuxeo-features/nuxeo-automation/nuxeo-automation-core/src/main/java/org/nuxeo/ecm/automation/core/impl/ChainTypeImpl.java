@@ -60,6 +60,13 @@ public class ChainTypeImpl implements OperationType {
     protected String id;
 
     /**
+     * The operation ID Aliases array.
+     *
+     * @since 7.1
+     */
+    protected final String[] aliases;
+
+    /**
      * Chain/Operation Parameters.
      */
     protected OperationDocumentation.Param[] params;
@@ -99,6 +106,7 @@ public class ChainTypeImpl implements OperationType {
         this.operations = chain.getOperations().toArray(
                 new OperationParameters[chain.getOperations().size()]);
         this.id = chain.getId();
+        this.aliases = chain.getAliases();
         this.chainParameters = chain.getChainParameters();
         this.chain = chain;
     }
@@ -109,6 +117,7 @@ public class ChainTypeImpl implements OperationType {
         this.operations = chain.getOperations().toArray(
                 new OperationParameters[chain.getOperations().size()]);
         this.id = chain.getId();
+        this.aliases = chain.getAliases();
         this.chainParameters = chain.getChainParameters();
         this.contribution = contribution;
         this.chain = chain;
@@ -141,6 +150,14 @@ public class ChainTypeImpl implements OperationType {
     @Override
     public String getId() {
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getAliases(){
+        return aliases;
     }
 
     @Override

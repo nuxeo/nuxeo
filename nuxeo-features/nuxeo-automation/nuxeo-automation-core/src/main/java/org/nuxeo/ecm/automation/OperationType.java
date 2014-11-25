@@ -26,6 +26,13 @@ public interface OperationType {
 
     String getId();
 
+    /**
+     * The operation ID Aliases array.
+     *
+     * @since 7.1
+     */
+    String[] getAliases();
+
     Class<?> getType();
 
     Object newInstance(OperationContext ctx, Map<String, Object> args)

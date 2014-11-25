@@ -20,6 +20,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,6 +32,11 @@ public class OperationDocumentation implements
     private static final long serialVersionUID = 1L;
 
     public String id;
+
+    /**
+     * @since 7.1
+     */
+    public String[] aliases;
 
     /**
      * an array of size multiple of 2. Each pair in the array is the input and
@@ -241,6 +247,14 @@ public class OperationDocumentation implements
 
     public Param[] getParams() {
         return params;
+    }
+
+    public String[] getAliases() {
+        return aliases;
+    }
+
+    public void setAliases(String[] aliases) {
+        this.aliases = aliases;
     }
 
     public OperationChainContribution.Operation[] getOperations() {

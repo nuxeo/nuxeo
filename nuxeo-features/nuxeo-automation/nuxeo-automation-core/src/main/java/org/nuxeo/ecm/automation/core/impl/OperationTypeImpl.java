@@ -61,6 +61,13 @@ public class OperationTypeImpl implements OperationType {
     protected String id;
 
     /**
+     * The operation ID Aliases array.
+     *
+     * @since 7.1
+     */
+    protected final String[] aliases;
+
+    /**
      * The operation type
      */
     protected Class<?> type;
@@ -112,6 +119,7 @@ public class OperationTypeImpl implements OperationType {
         if (id.length() == 0) {
             id = type.getName();
         }
+        this.aliases = anno.aliases();
         params = new HashMap<String, Field>();
         methods = new ArrayList<InvokableMethod>();
         injectableFields = new ArrayList<Field>();
@@ -148,6 +156,15 @@ public class OperationTypeImpl implements OperationType {
     @Override
     public String getId() {
         return id;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getAliases() {
+        return aliases;
     }
 
     @Override
@@ -290,6 +307,7 @@ public class OperationTypeImpl implements OperationType {
         doc.since = op.since();
         doc.deprecatedSince = op.deprecatedSince();
         doc.addToStudio = op.addToStudio();
+        doc.setAliases(op.aliases());
         doc.implementationClass = type.getName();
         if (doc.requires.length() == 0) {
             doc.requires = null;

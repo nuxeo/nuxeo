@@ -78,6 +78,13 @@ public class OperationChainContribution {
     protected OperationDocumentation.Param[] params = new
             OperationDocumentation.Param[0];
 
+    /**
+     * @since 7.1
+     */
+    @XNodeList(value = "aliases/alias", type = String[].class,
+            componentType = String.class)
+    protected String[] aliases;
+
     @XObject("operation")
     public static class Operation {
         @XNode("@id")
@@ -94,7 +101,6 @@ public class OperationChainContribution {
         public ArrayList<Param> getParams() {
             return params;
         }
-
     }
 
     @XObject("param")
@@ -146,6 +152,7 @@ public class OperationChainContribution {
         OperationChain chain = new OperationChain(id);
         chain.setDescription(description);
         chain.setPublic(isPublic);
+        chain.setAliases(aliases);
         for (Operation op : ops) {
             OperationParameters params = chain.add(op.id);
             for (Param param : op.params) {
@@ -265,5 +272,9 @@ public class OperationChainContribution {
 
     public String getDescription() {
         return description;
+    }
+
+    public String[] getAliases() {
+        return aliases;
     }
 }

@@ -192,6 +192,13 @@ public class JsonWriter {
         }
         jg.writeStartObject();
         jg.writeStringField("id", op.id);
+        if (op.getAliases() != null && op.getAliases().length > 0) {
+            jg.writeArrayFieldStart("aliases");
+            for (String alias : op.getAliases()) {
+                jg.writeString(alias);
+            }
+            jg.writeEndArray();
+        }
         jg.writeStringField("label", op.label);
         jg.writeStringField("category", op.category);
         jg.writeStringField("requires", op.requires);

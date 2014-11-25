@@ -41,6 +41,11 @@ public class OperationChain implements Serializable {
 
     protected String description;
 
+    /**
+     * since 7.1
+     */
+    protected String[] aliases;
+
     protected boolean isPublic; // whether this chain is visible to clients
 
     public OperationChain(String id) {
@@ -66,12 +71,26 @@ public class OperationChain implements Serializable {
         return id;
     }
 
+    /**
+     * since 7.1
+     */
+    public String[] getAliases() {
+        return aliases;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * since 7.1
+     */
+    public void setAliases(String[] aliases) {
+        this.aliases = aliases;
     }
 
     public boolean isPublic() {

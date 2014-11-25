@@ -61,6 +61,9 @@ public class OperationTypeRegistry extends
     public void contributionUpdated(String id, OperationType contrib,
             OperationType newOrigContrib) {
         operations.put(id, contrib);
+        for (String alias : contrib.getAliases()) {
+            operations.put(alias, contrib);
+        }
         lookup = null;
     }
 

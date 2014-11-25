@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
  * @deprecated Since 6.0, document query operation logic has been moved.
  * This class is not used/registered anymore into the platform as Automation
  * Operation. Replaced by {@link org.nuxeo.ecm.automation.core.operations
- * .document.DocumentQuery}.
+ * .services.query.DocumentPaginatedQuery}.
  */
 @Deprecated
 @Operation(id = Query.ID, category = Constants.CAT_FETCH, label = "Query",

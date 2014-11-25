@@ -25,10 +25,13 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
  *
  * @since 5.9.2
  */
-@Operation(id = ParamNameWithAliasOperation.ID)
+@Operation(id = ParamNameWithAliasOperation.ID, aliases = { "aliasOp1",
+        "aliasOp2" })
 public class ParamNameWithAliasOperation {
 
     public static final String ID = "OperationWithParamNameAlias";
+
+    public static final String ALIAS_OP = "aliasOp1";
 
     public static final String ALIAS1 = "alias1";
 

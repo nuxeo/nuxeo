@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -87,4 +88,37 @@ public class OperationAliasTest {
         assertTrue(result instanceof String);
         assertEquals(HELLO_WORLD, result);
     }
+
+    /**
+     * Call an operation with its alias.
+     *
+     * since 7.1
+     */
+    @Test
+    public void testAliasOnOperation() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("paramName", HELLO_WORLD);
+        Object result = service.run(ctx, ParamNameWithAliasOperation
+                .ALIAS_OP, params);
+        assertNotNull(result);
+    }
+
+    /**
+     * Call a chain with its alias.
+     *
+     * since 7.1
+     */
+    @Test
+    public void testAliasOnChain() throws Exception {
+        // We can call a chain with its alias.
+        OperationContext ctx = new OperationContext(session);
+        Object result = service.run(ctx, "chainAlias2");
+        assertNotNull(result);
+        // And the another chain with its alias containing an operation named
+        // with its alias.
+        result = service.run(ctx, "chainAlias3");
+        assertNotNull(result);
+    }
+
 }
