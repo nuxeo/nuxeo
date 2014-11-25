@@ -110,7 +110,7 @@ public class PictureConversionRegistry extends
      * @throws IllegalStateException if the id is null or empty
      */
     protected void check(PictureConversion pictureConversion) {
-        // Check if the title is null or empty
+        // Check if the id is null or empty
         if (StringUtils.isBlank(pictureConversion.getId())) {
             throw new IllegalStateException(
                     "The 'id' property of a picture conversion mustn't be null or empty ("

@@ -6,8 +6,7 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
-    <operation
-      class="org.nuxeo.ecm.platform.picture.convert.operation.NopBlobOperation" />
+
     <operation
       class="org.nuxeo.ecm.platform.picture.convert.operation.ConverterOperation" />
 

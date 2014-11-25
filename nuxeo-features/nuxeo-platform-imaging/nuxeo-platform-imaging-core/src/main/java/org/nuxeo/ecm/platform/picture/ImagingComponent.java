@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -483,28 +484,24 @@ public class ImagingComponent extends DefaultComponent implements
          * If the chainId is null just use the same blob (wrapped)
          */
         if (chainId == null) {
-            if (log.isErrorEnabled()) {
-                log.error("The picture template ("
-                        + pictureConversion.getId()
-                        + ") chain can't be called because it's 'chainId' property is null. The same image will be used.");
-            }
-
             return new BlobWrapper(blob);
         }
 
-        Blob viewBlob = null;
         try {
-            viewBlob = (Blob) Framework.getService(AutomationService.class).run(
+            Blob viewBlob = (Blob) Framework.getService(AutomationService.class).run(
                     context, chainId, chainParameters);
-
             if (viewBlob == null) {
                 viewBlob = wrapBlob(blob);
             }
+            return viewBlob;
+        } catch (InterruptedException e) {
+            // restore the interrupted status
+            Thread.currentThread().interrupt();
+            // abort
+            throw new RuntimeException("interrupted", e);
         } catch (Exception e) {
-            throw new NuxeoException(e);
+            throw new ClientRuntimeException(e);
         }
-
-        return viewBlob;
     }
 
     @Override
