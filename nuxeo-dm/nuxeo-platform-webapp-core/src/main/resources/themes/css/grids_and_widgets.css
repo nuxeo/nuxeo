@@ -405,15 +405,20 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .infoViewRight .containerSubWidget {
   margin: 0 }
 
-.infoViewRight .infoViewInfoLayout {
+.infoViewRight .infoViewInfoLayout,
+.infoViewRight .widgetPanel.infoViewInfoLayout {
   background-color: "neutral.lighter (__FLAVOR__ background)";
   box-sizing: border-box;
   overflow-y: auto;
-  padding: 5.5em 0 5.5em;
+  padding: 5.5em 0;
   position: absolute;
   top: 0;
   width: 100%;
   z-index: 50; }
+
+.infoViewLeft ~ .infoViewRight div.infoViewInfoLayout {
+  padding-left: 0;
+  padding-right: 0 }
 
 .infoViewRight .infoViewInfoLayout .containerWidgetPanel {
   background-color: #fff;
