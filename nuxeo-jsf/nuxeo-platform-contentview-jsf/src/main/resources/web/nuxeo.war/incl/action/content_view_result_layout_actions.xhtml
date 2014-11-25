@@ -15,24 +15,24 @@ Needed parameters:
   <c:if test="#{contentView.getResultLayouts().size() > 1}">
     <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
       <span class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
+        <c:set var="iconPath"
+          value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
+        <c:set var="title"
+          value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
         <c:if test="#{useAjaxForm}">
           <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
             render="#{ajaxReRender}"
             execute="@this">
-            <c:set var="iconPath"
-              value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
-            <c:set var="title"
-              value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
-            <nxu:graphicImage value="#{iconPath}" title="#{title}" styleClass="tipsyShow tipsyGravitySE" />
+            <nxu:graphicImage value="#{iconPath}"
+              title="#{title}"
+              styleClass="tipsyShow tipsyGravitySE" />
           </a4j:commandLink>
         </c:if>
         <c:if test="#{not useAjaxForm}">
           <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
-            <c:set var="iconPath"
-              value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
-            <c:set var="title"
-              value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
-            <nxu:graphicImage value="#{iconPath}" title="#{title}" styleClass="tipsyShow tipsyGravitySE" />
+            <nxu:graphicImage value="#{iconPath}"
+              title="#{title}"
+              styleClass="tipsyShow tipsyGravitySE" />
           </h:commandLink>
         </c:if>
       </span>
