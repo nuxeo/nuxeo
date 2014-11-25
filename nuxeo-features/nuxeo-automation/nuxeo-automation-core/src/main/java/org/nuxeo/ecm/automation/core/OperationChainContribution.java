@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -18,22 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core;
 
-import static org.nuxeo.ecm.automation.core.Constants.T_BOOLEAN;
-import static org.nuxeo.ecm.automation.core.Constants.T_DATE;
-import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENT;
-import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENTS;
-import static org.nuxeo.ecm.automation.core.Constants.T_FLOAT;
-import static org.nuxeo.ecm.automation.core.Constants.T_INTEGER;
-import static org.nuxeo.ecm.automation.core.Constants.T_LONG;
-import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
-import static org.nuxeo.ecm.automation.core.Constants.T_RESOURCE;
-import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -51,6 +35,22 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.osgi.framework.Bundle;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.nuxeo.ecm.automation.core.Constants.T_BOOLEAN;
+import static org.nuxeo.ecm.automation.core.Constants.T_DATE;
+import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENT;
+import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENTS;
+import static org.nuxeo.ecm.automation.core.Constants.T_FLOAT;
+import static org.nuxeo.ecm.automation.core.Constants.T_INTEGER;
+import static org.nuxeo.ecm.automation.core.Constants.T_LONG;
+import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
+import static org.nuxeo.ecm.automation.core.Constants.T_RESOURCE;
+import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -66,21 +66,25 @@ public class OperationChainContribution {
     @XNode("description")
     protected String description;
 
-    @XNodeList(value = "operation", type = Operation[].class, componentType = Operation.class)
+    @XNodeList(value = "operation", type = Operation[].class,
+            componentType = Operation.class)
     protected Operation[] ops = new Operation[0];
 
     @XNode("public")
     protected boolean isPublic = true;
 
-    @XNodeList(value = "param", type = OperationDocumentation.Param[].class, componentType = OperationDocumentation.Param.class)
-    protected OperationDocumentation.Param[] params = new OperationDocumentation.Param[0];
+    @XNodeList(value = "param", type = OperationDocumentation.Param[].class,
+            componentType = OperationDocumentation.Param.class)
+    protected OperationDocumentation.Param[] params = new
+            OperationDocumentation.Param[0];
 
     @XObject("operation")
     public static class Operation {
         @XNode("@id")
         protected String id;
 
-        @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
+        @XNodeList(value = "param", type = ArrayList.class,
+                componentType = Param.class)
         protected ArrayList<Param> params;
 
         public String getId() {
@@ -109,7 +113,8 @@ public class OperationChainContribution {
         protected String value;
 
         // Optional map for properties type values
-        @XNodeMap(value = "property", key = "@key", type = HashMap.class, componentType = String.class, nullByDefault = true)
+        @XNodeMap(value = "property", key = "@key", type = HashMap.class,
+                componentType = String.class, nullByDefault = true)
         protected Map<String, String> map;
 
         public String getName() {
@@ -193,7 +198,8 @@ public class OperationChainContribution {
                     case 'd':
                         if (T_DOCUMENT.equals(type)) {
                             if (param.value.startsWith(".")) {
-                                val = Scripting.newExpression("Document.resolvePathAsRef(\""
+                                val = Scripting.newExpression("Document" +
+                                        ".resolvePathAsRef(\""
                                         + param.value + "\")");
                             } else {
                                 val = StringToDocRef.createRef(param.value);
@@ -201,7 +207,8 @@ public class OperationChainContribution {
                         } else if (T_DOCUMENTS.equals(type)) {
                             String[] ar = StringUtils.split(param.value, ',',
                                     true);
-                            DocumentRefListImpl result = new DocumentRefListImpl(
+                            DocumentRefListImpl result = new
+                                    DocumentRefListImpl(
                                     ar.length);
                             for (String ref : ar) {
                                 result.add(StringToDocRef.createRef(ref));

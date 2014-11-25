@@ -11,15 +11,15 @@
  */
 package org.nuxeo.ecm.automation;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+
+import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -99,7 +99,8 @@ public class OperationDocumentation implements
         public String widget; // the widget type
 
         // is this useful (?)
-        @XNodeList(value = "value", type = String[].class, componentType = String.class)
+        @XNodeList(value = "value", type = String[].class,
+                componentType = String.class)
         public String[] values; // the default values
 
         // is this useful (?)
