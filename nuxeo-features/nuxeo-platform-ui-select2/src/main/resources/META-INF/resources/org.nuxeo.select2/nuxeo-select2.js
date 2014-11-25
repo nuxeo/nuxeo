@@ -13,9 +13,9 @@
     var markup = "";
     if (entry.displayIcon && entry.type) {
       if (entry.type == "USER_TYPE") {
-        markup += "<img src='" + window.nxContextPath + "/icons/user.png' style='smallIcon' />";
+        markup += "<img src='" + window.nxContextPath + "/icons/user.png' class='smallIcon' />";
       } else if (entry.type == "GROUP_TYPE") {
-        markup += "<img src='" + window.nxContextPath + "/icons/group.png' style='smallIcon' />";
+        markup += "<img src='" + window.nxContextPath + "/icons/group.png' class='smallIcon' />";
       }
     }
     markup += entry.displayLabel;
@@ -29,7 +29,7 @@
     markup += "<tr><td>";
     if (doc.properties && doc.properties['common:icon']) {
       markup += "<img src='" + window.nxContextPath
-          + doc.properties['common:icon'] + "' style='smallIcon' />"
+          + doc.properties['common:icon'] + "' class='smallIcon' />"
     }
     markup += "</td><td>";
     markup += doc.title;
@@ -53,7 +53,7 @@
     var markup = "";
     if (doc.properties && doc.properties['common:icon']) {
       markup += "<img src='" + window.nxContextPath
-          + doc.properties['common:icon'] + "' style='smallIcon' />"
+          + doc.properties['common:icon'] + "' class='smallIcon' />"
     }
     markup += getDocLinkElt(doc);
     markup += warnMessage(doc);
