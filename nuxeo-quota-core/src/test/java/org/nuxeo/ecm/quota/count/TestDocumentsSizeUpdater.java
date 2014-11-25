@@ -78,8 +78,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
 @TransactionalConfig
-// NXP-14444, NXP-14442: disabled because randomly failing
-@Ignore
+@Ignore("NXP-14442, NXP-14444")
 public class TestDocumentsSizeUpdater {
 
     @Inject
