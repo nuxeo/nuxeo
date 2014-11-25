@@ -23,7 +23,10 @@ author: lkemen@nuxeo.com
   border-radius: 2px 4px 4px 2px }
 
 .select2-container a:link,
-.select2-container a:hover {
+.select2-container a:hover,
+.select2-container a.select2-choice,
+.select2-container a.select2-choice:hover,
+.select2-container a.select2-choice .select2-chosen {
  color: "default (__FLAVOR__ color)";
  text-decoration: none;
  -moz-transition: none;
@@ -51,21 +54,35 @@ author: lkemen@nuxeo.com
   vertical-align: top }
 
 .select2-results img {
-  margin: .1em .4em 0 0 }
+  margin: 0.1em 0.4em -0.2em 0;
+  max-height: 14px;
+  width: 14px }
 
 .select2-nx-disabled {
   filter: alpha(opacity=30);
   opacity: .3 }
 
 .select2-choices .select2-search-choice img {
-  margin: 0 .2em -0.3em -0.4em }
+  margin: 0 .3em -0.2em -0.2em;
+  max-height: 14px;
+  width: 14px; }
 
-.select2-choices .detail {
-  display: inline-block;
-  padding-left: 1.4em }
+.select2-search-choice table td {
+  padding: 0 }
+
+.select2-choices .detail,
+.select2-results .detail {
+  display: block;
+  padding: .1em 0 .1em 1.6em }
+
+.select2-results .select2-result-label .detail {
+  padding-left: 2em }
+
+.select2-results .select2-result-label td .detail {
+  padding: 0 }
 
 .select2-choice .select2-chosen img {
-  margin: .4em .4em 0 0 }
+  margin: .4em .4em -0.2em 0 }
 
 .select2-container-active .select2-focused,
 .select2-container-active .select2-focused:focus {
@@ -154,6 +171,7 @@ div.select2-container-disabled span.select2-arrow {
 .s2tagContainerCssClass:hover .select2-choices {
   border-color: "neutral.light (__FLAVOR__ border)" }
 
+.select2-results .s2newTag,
 .s2tagDropdownCssClass .select2-result-label .s2newTag {
   font-weight: bold;
   color: "success.status (__FLAVOR__ color)" }
