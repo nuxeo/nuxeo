@@ -16,6 +16,7 @@ To build and run the tests, simply start the Maven build:
 
 ## Links
 
-- Administration http://doc.nuxeo.com/x/UBY5AQ
-- Technical detail http://doc.nuxeo.com/x/iYElAQ
-- [Jira tikets](https://jira.nuxeo.com/issues/?jql=project%20%3D%20NXP%20AND%20component%20%3D%20Elasticsearch%20AND%20Status%20!%3D%20%22Resolved%22%20ORDER%20BY%20updated%20DESC%2C%20priority%20DESC%2C%20created%20ASC)
+- Administration: http://doc.nuxeo.com/x/UBY5AQ
+- Configuring mapping: http://doc.nuxeo.com/x/WxI5AQ
+- Overview: http://doc.nuxeo.com/x/iYElAQ
+- [Open jira tikets](https://jira.nuxeo.com/issues/?jql=project%20%3D%20NXP%20AND%20component%20%3D%20Elasticsearch%20AND%20Status%20!%3D%20%22Resolved%22%20ORDER%20BY%20updated%20DESC%2C%20priority%20DESC%2C%20created%20ASC)
