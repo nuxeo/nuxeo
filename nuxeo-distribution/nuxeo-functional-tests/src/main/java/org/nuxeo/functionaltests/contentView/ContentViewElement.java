@@ -53,7 +53,7 @@ public class ContentViewElement extends WebFragmentImpl {
 
     public WebElement getActionByTitle(String title) {
         return upperActions.findElement(
-            By.xpath("//img[@title=\"" + title + "\"]"));
+            By.xpath("//img[@alt=\"" + title + "\"]"));
     }
 
     public void switchToResultLayout(ResultLayout layout) {
