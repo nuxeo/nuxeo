@@ -51,9 +51,9 @@
                     <nxu:set var="quotaStats" value="#{node.quotaStats}">
                       <f:subview id="descendantCount" rendered="#{not empty quotaStats}">
                         <span>
-                          (<h:outputText value="#{quotaStats.total}">
+                          <h:outputText value="#{quotaStats.total}" class="chip">
                             <f:convertNumber groupingUsed="true" />
-                          </h:outputText>)
+                          </h:outputText>
                         </span>
                       </f:subview>
                     </nxu:set>
