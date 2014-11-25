@@ -156,8 +156,8 @@ public class EmailNotificationSenderActionsBean extends InputController
         String recipient = prefix + user;
         options.put(NotificationConstants.RECIPIENTS_KEY,
                 new String[] { recipient });
-        options.put("subject", theMailSubject);
-        options.put("content", theMailContent);
+        options.put("mailSubject", theMailSubject);
+        options.put("mailContent", theMailContent);
         options.put("category",
                 DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
 
