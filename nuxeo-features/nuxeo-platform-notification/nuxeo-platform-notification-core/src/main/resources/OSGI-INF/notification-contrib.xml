@@ -59,7 +59,7 @@
     </notification>
 
     <notification name="Email document" channel="email" enabled="true" availableIn="all"
-      autoSubscribed="true" template="emailDocument" subject="${subject}"
+      autoSubscribed="true" template="emailDocument" subject="${mailSubject}"
       label="label.nuxeo.notifications.email.document">
       <event name="emailDocumentSend"/>
     </notification>
