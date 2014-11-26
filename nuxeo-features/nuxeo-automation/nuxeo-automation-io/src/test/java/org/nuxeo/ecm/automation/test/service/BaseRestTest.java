@@ -59,7 +59,7 @@ public class BaseRestTest {
     JsonFactory factory;
 
     protected void assertEqualsJson(String expected, String actual) throws Exception {
-        JSONAssert.assertEquals(expected, actual, true);
+        JSONAssert.assertEquals(expected, actual, false);
     }
 
     /**
