@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.automation.core.trace;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,8 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 public class Call {
 
     protected final String chainId;
+
+    protected final String aliases;
 
     protected final OperationType type;
 
@@ -54,7 +57,8 @@ public class Call {
         this.method = method;
         this.input = (context != null) ? context.getInput() : null;
         this.parameters = parms;
-        this.chainId = (chain != null) ? chain.getId() : "No bound to a chain";
+        this.chainId = (chain != null) ? chain.getId() : "Not bound to a chain";
+        this.aliases = (chain != null) ? Arrays.toString(chain.getAliases()) : null;
     }
 
     public OperationType getType() {
@@ -83,5 +87,9 @@ public class Call {
 
     public String getChainId() {
         return chainId;
+    }
+
+    public String getAliases() {
+        return aliases;
     }
 }

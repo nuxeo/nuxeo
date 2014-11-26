@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -69,6 +70,12 @@ public class TracePrinter {
             }
             sb.append("Name: ");
             sb.append(trace.getChain().getId());
+            if (trace.getChain().getAliases() != null && trace.getChain()
+                    .getAliases().length > 0) {
+                sb.append(System.getProperty("line.separator"));
+                sb.append("Aliases: ");
+                sb.append(Arrays.toString(trace.getChain().getAliases()));
+            }
             sb.append(System.getProperty("line.separator"));
             sb.append("Exception: ");
             sb.append(trace.error.getClass().getSimpleName());
@@ -123,6 +130,11 @@ public class TracePrinter {
             sb.append(System.getProperty("line.separator"));
             sb.append("Chain ID: ");
             sb.append(call.getChainId());
+            if (call.getAliases() != null) {
+                sb.append(System.getProperty("line.separator"));
+                sb.append("Chain Aliases: ");
+                sb.append(call.getAliases());
+            }
             sb.append(System.getProperty("line.separator"));
             sb.append("Class: ");
             sb.append(call.getType().getType().getSimpleName());
@@ -192,6 +204,12 @@ public class TracePrinter {
             }
             sb.append("Name: ");
             sb.append(trace.getChain().getId());
+            if (trace.getChain().getAliases() != null && trace.getChain()
+                    .getAliases().length > 0) {
+                sb.append(System.getProperty("line.separator"));
+                sb.append("Aliases: ");
+                sb.append(Arrays.toString(trace.getChain().getAliases()));
+            }
             sb.append(System.getProperty("line.separator"));
             sb.append("Exception: ");
             sb.append(trace.error.getClass().getSimpleName());
