@@ -151,10 +151,12 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <code>content</code>.
      * <p>
      * Returns <code>true</code> if the document is really updated.
+     * @throws ClientException 
      *
      * @since 7.1
      */
-    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
+    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content)
+            throws ClientException {
         updateDocument(doc, content);
         return true;
     }

@@ -66,7 +66,8 @@ public class NoteImporter extends AbstractFileImporter {
     }
 
     @Override
-    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content) {
+    public boolean updateDocumentIfPossible(DocumentModel doc, Blob content)
+            throws ClientException {
         if (!doc.hasSchema(NOTE_SCHEMA)) {
             log.warn("Schema '" + NOTE_SCHEMA
                     + "' is not available for document " + doc);
