@@ -369,11 +369,12 @@ public class TestFileManagerService {
         assertEquals(1, versions.size());
     }
 
-    private Object getMimeType(DocumentModel doc) {
+    private Object getMimeType(DocumentModel doc) throws ClientException {
         return ((Blob) doc.getProperty("file", "content")).getMimeType();
     }
 
-    private String extractText(DocumentModel doc) throws IOException {
+    private String extractText(DocumentModel doc) throws IOException,
+            ClientException {
         return ((Blob) doc.getProperty("file", "content")).getString();
     }
 
