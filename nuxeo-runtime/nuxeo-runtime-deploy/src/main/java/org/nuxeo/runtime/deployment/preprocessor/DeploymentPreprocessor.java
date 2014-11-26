@@ -23,7 +23,10 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,7 +99,7 @@ public class DeploymentPreprocessor {
         return root;
     }
 
-    public void init() throws Exception {
+    public void init() throws IOException {
         root = getDefaultContainer(dir);
         if (root != null) {
             // run container commands
@@ -104,7 +107,7 @@ public class DeploymentPreprocessor {
         }
     }
 
-    public void init(File metadata, File[] files) throws Exception {
+    public void init(File metadata, File[] files) throws IOException {
         if (metadata == null) {
             root = getDefaultContainer(dir);
         } else {
@@ -117,7 +120,7 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected void init(ContainerDescriptor cd) throws Exception {
+    protected void init(ContainerDescriptor cd) throws IOException {
         cd.context = new CommandContextImpl(cd.directory);
         initContextProperties(cd.context);
         // run container install instructions if any
@@ -150,7 +153,7 @@ public class DeploymentPreprocessor {
     }
 
     protected void processFile(ContainerDescriptor cd, File file)
-            throws Exception {
+            throws IOException {
         String fileName = file.getName();
         FragmentDescriptor fd = null;
         boolean isBundle = false;
@@ -191,7 +194,7 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected String getSymbolicName(File file) throws Exception {
+    protected String getSymbolicName(File file) {
         Manifest mf = JarUtils.getManifest(file);
         if (mf != null) {
             Attributes attrs = mf.getMainAttributes();
@@ -218,13 +221,14 @@ public class DeploymentPreprocessor {
         return name;
     }
 
-    protected void init(ContainerDescriptor cd, File[] files) throws Exception {
+    protected void init(ContainerDescriptor cd, File[] files)
+            throws IOException {
         for (File file : files) {
             processFile(cd, file);
         }
     }
 
-    protected void init(ContainerDescriptor cd, File dir) throws Exception {
+    protected void init(ContainerDescriptor cd, File dir) throws IOException {
         log.info("Scanning directory: " + dir.getName());
         if (!dir.exists()) {
             log.warn("Directory doesn't exist: " + dir.getPath());
@@ -237,7 +241,7 @@ public class DeploymentPreprocessor {
         init(cd, files);
     }
 
-    public void predeploy() throws Exception {
+    public void predeploy() throws IOException {
         if (root != null) {
             predeploy(root);
         }
@@ -304,7 +308,7 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected static void predeploy(ContainerDescriptor cd) throws Exception {
+    protected static void predeploy(ContainerDescriptor cd) throws IOException {
         // run installer and register contributions for each fragment
         List<DependencyTree.Entry<String, FragmentDescriptor>> entries = cd.fragments.getResolvedEntries();
         printInfo(cd.fragments);
@@ -380,8 +384,14 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected FragmentDescriptor getXMLFragment(File file) throws Exception {
-        FragmentDescriptor fd = (FragmentDescriptor) xmap.load(file.toURI().toURL());
+    protected FragmentDescriptor getXMLFragment(File file) throws IOException {
+        URL url;
+        try {
+            url = file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        FragmentDescriptor fd = (FragmentDescriptor) xmap.load(url);
         if (fd != null && fd.name == null) {
             fd.name = file.getName();
         }
@@ -389,9 +399,15 @@ public class DeploymentPreprocessor {
     }
 
     protected void collectXMLFragments(ContainerDescriptor cd, File file)
-            throws Exception {
+            throws IOException {
         String fileName = file.getName();
-        Object[] result = xmap.loadAll(file.toURI().toURL());
+        URL url;
+        try {
+            url = file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        Object[] result = xmap.loadAll(url);
         for (Object entry : result) {
             FragmentDescriptor fd = (FragmentDescriptor) entry;
             assert fd != null;
@@ -423,11 +439,17 @@ public class DeploymentPreprocessor {
     }
 
     protected FragmentDescriptor getDirectoryFragment(File directory)
-            throws Exception {
+            throws IOException {
         FragmentDescriptor fd = null;
         File file = new File(directory.getAbsolutePath() + '/' + FRAGMENT_FILE);
         if (file.isFile()) {
-            fd = (FragmentDescriptor) xmap.load(file.toURI().toURL());
+            URL url;
+            try {
+                url = file.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+            fd = (FragmentDescriptor) xmap.load(url);
         } else {
             return null; // don't need preprocessing
         }
@@ -445,7 +467,7 @@ public class DeploymentPreprocessor {
         return fd;
     }
 
-    protected FragmentDescriptor getJARFragment(File file) throws Exception {
+    protected FragmentDescriptor getJARFragment(File file) throws IOException {
         FragmentDescriptor fd = null;
         JarFile jar = new JarFile(file);
         try {
@@ -534,8 +556,14 @@ public class DeploymentPreprocessor {
      * descriptor.
      */
     protected ContainerDescriptor getContainer(File home, File file)
-            throws Exception {
-        ContainerDescriptor cd = (ContainerDescriptor) xmap.load(file.toURI().toURL());
+            throws IOException {
+        URL url;
+        try {
+            url = file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        ContainerDescriptor cd = (ContainerDescriptor) xmap.load(url);
         if (cd != null) {
             cd.directory = home;
             if (cd.name == null) {
@@ -546,7 +574,7 @@ public class DeploymentPreprocessor {
     }
 
     protected ContainerDescriptor getDefaultContainer(File directory)
-            throws Exception {
+            throws IOException {
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
         if (!file.isFile()) {
             file = new File(directory.getAbsolutePath() + '/'
@@ -586,7 +614,7 @@ public class DeploymentPreprocessor {
      * {@link #CONTAINER_FILE}.
      */
     public static void process(File home, File metadata, File[] files)
-            throws Exception {
+            throws IOException {
         DeploymentPreprocessor processor = new DeploymentPreprocessor(home);
         // initialize
         processor.init(metadata, files);

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -81,7 +81,7 @@ public class TestRuntime extends AbstractRuntimeService {
     }
 
     @Override
-    public synchronized void stop() throws Exception {
+    public synchronized void stop() {
         super.stop();
         if (workingDir != null) {
             FileUtils.deleteTree(workingDir);
@@ -89,7 +89,7 @@ public class TestRuntime extends AbstractRuntimeService {
     }
 
     @Override
-    public void reloadProperties() throws Exception {
+    public void reloadProperties() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 }

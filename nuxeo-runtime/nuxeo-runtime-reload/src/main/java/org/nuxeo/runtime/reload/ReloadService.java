@@ -17,9 +17,11 @@
 package org.nuxeo.runtime.reload;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.service.TimestampedService;
+import org.osgi.framework.BundleException;
 
 /**
  * Service tracking reload related events or commands when installing a package
@@ -50,24 +52,24 @@ public interface ReloadService extends TimestampedService {
      * @since 5.5
      * @see #reloadProperties()
      */
-    void reload() throws Exception;
+    void reload();
 
     /**
      * Reloads the Nuxeo repository configuration
      */
-    void reloadRepository() throws Exception;
+    void reloadRepository();
 
     /**
      * Reloads runtime framework properties
      */
-    void reloadProperties() throws Exception;
+    void reloadProperties() throws IOException;
 
     /**
      * Sends a runtime event with id {@link #RELOAD_SEAM_EVENT_ID}
      *
      * @since 5.5
      */
-    void reloadSeamComponents() throws Exception;
+    void reloadSeamComponents();
 
     /**
      * Sends a runtime event with id {@link #FLUSH_EVENT_ID} so that listeners
@@ -76,11 +78,10 @@ public interface ReloadService extends TimestampedService {
      * Also calls {@link #flushJaasCache()} by default, but not other flush
      * methods as they could alter the running application behaviour.
      *
-     * @throws Exception
      * @see {@link #flushJaasCache()}
      * @since 5.5
      */
-    void flush() throws Exception;
+    void flush();
 
     /**
      * Returns the last time one of the flush commands where called on this
@@ -94,14 +95,14 @@ public interface ReloadService extends TimestampedService {
     /**
      * Sends an event that can trigger reset of JaasCache
      */
-    void flushJaasCache() throws Exception;
+    void flushJaasCache();
 
     /**
      * Sends a runtime event with id {@link #FLUSH_SEAM_EVENT_ID}
      *
      * @since 5.6
      */
-    void flushSeamComponents() throws Exception;
+    void flushSeamComponents();
 
     /**
      * Deploys bundle to the runtime, without reloading resources
@@ -109,7 +110,7 @@ public interface ReloadService extends TimestampedService {
      * @since 5.5
      * @see #deployBundle(File, boolean)
      */
-    String deployBundle(File file) throws Exception;
+    String deployBundle(File file) throws BundleException;
 
     /**
      * Deploys bundle to the runtime, gives possibility to control resources
@@ -117,7 +118,7 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 5.5
      */
-    String deployBundle(File file, boolean reloadResources) throws Exception;
+    String deployBundle(File file, boolean reloadResources) throws BundleException;
 
     /**
      * Undeploys bundle from the runtime, given the bundle resource, gives
@@ -125,23 +126,22 @@ public interface ReloadService extends TimestampedService {
      *
      * @since 5.6
      */
-    void undeployBundle(File file, boolean reloadResources) throws Exception;
+    void undeployBundle(File file, boolean reloadResources) throws BundleException;
 
     /**
      * Undeploys bundle from the runtime, given the bundle filename
      *
      * @since 5.6
      */
-    void undeployBundle(String bundleName) throws Exception;
+    void undeployBundle(String bundleName) throws BundleException;
 
     /**
      * Runs the deployment preprocessor
      *
      * @since 5.6
-     * @throws Exception
      * @See {@link DeploymentPreprocessor}
      */
-    public void runDeploymentPreprocessor() throws Exception;
+    public void runDeploymentPreprocessor() throws IOException;
 
     /**
      * Copies the bundle web resources into the nuxeo WAR directory.
@@ -152,7 +152,7 @@ public interface ReloadService extends TimestampedService {
      *             content than it would at startup.
      */
     @Deprecated
-    void installWebResources(File file) throws Exception;
+    void installWebResources(File file) throws IOException;
 
     /***
      * Returns the OSGI bundle name if given file can be identified as an OSGI

@@ -31,6 +31,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.api.login.LoginService;
@@ -113,21 +114,26 @@ public final class Framework {
     private Framework() {
     }
 
-    public static void initialize(RuntimeService runtimeService)
-            throws Exception {
+    public static void initialize(RuntimeService runtimeService) {
         if (runtime != null) {
-            throw new Exception("Nuxeo Framework was already initialized");
+            throw new RuntimeServiceException(
+                    "Nuxeo Framework was already initialized");
         }
         runtime = runtimeService;
         reloadResourceLoader();
         runtime.start();
     }
 
-    public static void reloadResourceLoader() throws Exception {
+    public static void reloadResourceLoader() {
         File rs = new File(Environment.getDefault().getData(), "resources");
         rs.mkdirs();
-        resourceLoader = new SharedResourceLoader(
-                new URL[] { rs.toURI().toURL() },
+        URL url;
+        try {
+            url = rs.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeServiceException(e);
+        }
+        resourceLoader = new SharedResourceLoader(new URL[] { url },
                 Framework.class.getClassLoader());
     }
 
@@ -137,12 +143,10 @@ public final class Framework {
      * <p>
      * Useful for hot reload of jars.
      *
-     * @throws MalformedURLException
      * @since 5.6
-     * @throws Exception
      */
     public static void reloadResourceLoader(List<URL> urlsToAdd,
-            List<URL> urlsToRemove) throws MalformedURLException {
+            List<URL> urlsToRemove) {
         File rs = new File(Environment.getDefault().getData(), "resources");
         rs.mkdirs();
         URL[] existing = null;
@@ -150,8 +154,13 @@ public final class Framework {
             existing = resourceLoader.getURLs();
         }
         // reinit
-        resourceLoader = new SharedResourceLoader(
-                new URL[] { rs.toURI().toURL() },
+        URL url;
+        try {
+            url = rs.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        resourceLoader = new SharedResourceLoader(new URL[] { url },
                 Framework.class.getClassLoader());
         // add back existing urls unless they should be removed, and add new
         // urls
@@ -169,7 +178,7 @@ public final class Framework {
         }
     }
 
-    public static void shutdown() throws Exception {
+    public static void shutdown() {
         if (runtime != null) {
             runtime.stop();
             runtime = null;

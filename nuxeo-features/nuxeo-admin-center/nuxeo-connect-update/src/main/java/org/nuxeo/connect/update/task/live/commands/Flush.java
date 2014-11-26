@@ -16,6 +16,7 @@
  */
 package org.nuxeo.connect.update.task.live.commands;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
@@ -45,7 +46,7 @@ public class Flush extends FlushPlaceholder {
             Framework.getRuntime().reloadProperties();
             ReloadService deployer = Framework.getLocalService(ReloadService.class);
             deployer.flush();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException("Failed to reload repository", e);
         }
     }

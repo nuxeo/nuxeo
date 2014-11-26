@@ -14,6 +14,7 @@
 
 package org.nuxeo.runtime.model;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.runtime.RuntimeService;
@@ -87,18 +88,16 @@ public interface RuntimeContext {
      * @param url the url of the XML descriptor
      * @return the component registration info or null if registration failed
      *         for some reason
-     * @throws Exception if any error occurs
      */
-    RegistrationInfo deploy(URL url) throws Exception;
+    RegistrationInfo deploy(URL url) throws IOException;
 
     /**
      * Same as {@link #deploy(URL)} but using a {@link StreamRef} as argument.
      *
      * @param ref
      * @return
-     * @throws Exception
      */
-    RegistrationInfo deploy(StreamRef ref) throws Exception;
+    RegistrationInfo deploy(StreamRef ref) throws IOException;
 
     /**
      * Undeploys a component XML descriptor given its URL.
@@ -106,18 +105,16 @@ public interface RuntimeContext {
      * Do nothing if no component was registered for the given URL.
      *
      * @param url the URL of the XML descriptor
-     * @throws Exception if any error occurs
      */
-    void undeploy(URL url) throws Exception;
+    void undeploy(URL url);
 
     /**
      * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream
      * reference.
      *
      * @param ref
-     * @throws Exception
      */
-    void undeploy(StreamRef ref) throws Exception;
+    void undeploy(StreamRef ref);
 
     /**
      * Checks whether the component XML file at given URL was deployed.
@@ -151,9 +148,8 @@ public interface RuntimeContext {
      * @param location the location
      * @return the component registration info or null if registration failed
      *         for some reason
-     * @throws Exception
      */
-    RegistrationInfo deploy(String location) throws Exception;
+    RegistrationInfo deploy(String location);
 
     /**
      * Undeploys the component at the given location if any was deployed.
@@ -161,9 +157,8 @@ public interface RuntimeContext {
      * If the component was not deployed do nothing.
      *
      * @param location the location of the component to undeploy
-     * @throws Exception if any error occurs
      */
-    void undeploy(String location) throws Exception;
+    void undeploy(String location);
 
     /**
      * Checks if the component at the given location is deployed.

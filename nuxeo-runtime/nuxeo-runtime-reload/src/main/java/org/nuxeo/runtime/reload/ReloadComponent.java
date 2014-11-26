@@ -17,10 +17,10 @@
 package org.nuxeo.runtime.reload;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
@@ -30,8 +30,8 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.SharedResourceLoader;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -75,11 +75,15 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reload() throws Exception {
+    public void reload() {
         if (log.isDebugEnabled()) {
             log.debug("Starting reload");
         }
-        reloadProperties();
+        try {
+            reloadProperties();
+        } catch (IOException e) {
+            throw new RuntimeServiceException(e);
+        }
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this,
                 null));
@@ -89,27 +93,27 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reloadProperties() throws Exception {
+    public void reloadProperties() throws IOException {
         log.info("Reload runtime properties");
         Framework.getRuntime().reloadProperties();
     }
 
     @Override
-    public void reloadRepository() throws Exception {
+    public void reloadRepository() {
         log.info("Reload repository");
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, RELOAD_REPOSITORIES_ID, this, null));
     }
 
     @Override
-    public void reloadSeamComponents() throws Exception {
+    public void reloadSeamComponents() {
         log.info("Reload Seam components");
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
-    public void flush() throws Exception {
+    public void flush() {
         if (log.isDebugEnabled()) {
             log.debug("Starting flush");
         }
@@ -124,7 +128,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void flushJaasCache() throws Exception {
+    public void flushJaasCache() {
         log.info("Flush the JAAS cache");
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event("usermanager", "user_changed", this,
@@ -133,7 +137,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void flushSeamComponents() throws Exception {
+    public void flushSeamComponents() {
         log.info("Flush Seam components");
         Framework.getLocalService(EventService.class).sendEvent(
                 new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
@@ -141,13 +145,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public String deployBundle(File file) throws Exception {
+    public String deployBundle(File file) throws BundleException {
         return deployBundle(file, false);
     }
 
     @Override
     public String deployBundle(File file, boolean reloadResourceClasspath)
-            throws MalformedURLException, BundleException {
+            throws BundleException {
         String name = getOSGIBundleName(file);
         if (name == null) {
             log.error(String.format(
@@ -163,7 +167,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 getRuntimeStatus()));
 
         if (reloadResourceClasspath) {
-            URL url = new File(path).toURI().toURL();
+            URL url;
+            try {
+                url = new File(path).toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
             Framework.reloadResourceLoader(Arrays.asList(url), null);
         }
 
@@ -183,7 +192,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     @Override
     public void undeployBundle(File file, boolean reloadResources)
-            throws Exception {
+            throws BundleException {
         String name = getOSGIBundleName(file);
         String path = file.getAbsolutePath();
         if (name == null) {
@@ -196,13 +205,18 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         undeployBundle(name);
 
         if (reloadResources) {
-            URL url = new File(path).toURI().toURL();
+            URL url;
+            try {
+                url = new File(path).toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
             Framework.reloadResourceLoader(null, Arrays.asList(url));
         }
     }
 
     @Override
-    public void undeployBundle(String bundleName) throws Exception {
+    public void undeployBundle(String bundleName) throws BundleException {
         if (bundleName == null) {
             // ignore
             return;
@@ -243,7 +257,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead
      */
     @Deprecated
-    public void installWebResources(File file) throws Exception {
+    public void installWebResources(File file) throws IOException {
         log.info("Install web resources");
         if (file.isDirectory()) {
             File war = new File(file, "web");
@@ -265,26 +279,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    /**
-     * Rebuild the framework resource class loader and add to it the given file
-     * paths.
-     * <p>
-     * The already added paths are removed from the class loader. FIXME: is this
-     * an issue for hot-reloading of multiple jars?
-     */
-    protected static void reloadResourceClassPath(Collection<String> files)
-            throws Exception {
-        Framework.reloadResourceLoader();
-        SharedResourceLoader loader = Framework.getResourceLoader();
-        if (files != null) {
-            for (String path : files) {
-                URL url = new File(path).toURI().toURL();
-                loader.addURL(url);
-            }
-        }
-    }
-
-    public void runDeploymentPreprocessor() throws Exception {
+    public void runDeploymentPreprocessor() throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("Start running deployment preprocessor");
         }

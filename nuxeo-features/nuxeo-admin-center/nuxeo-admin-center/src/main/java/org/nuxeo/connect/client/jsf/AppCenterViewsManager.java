@@ -18,6 +18,7 @@
 
 package org.nuxeo.connect.client.jsf;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
@@ -44,7 +45,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
@@ -66,6 +66,7 @@ import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.admin.setup.SetupWizardActionBean;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadContextKeeper;
+import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
@@ -617,7 +618,7 @@ public class AppCenterViewsManager implements Serializable {
                         StatusMessage.Severity.INFO,
                         translate("label.admin.center.devMode.justDisabled"));
             }
-        } catch (Exception e) {
+        } catch (ConfigurationException | IOException e) {
             log.error(e, e);
             facesMessages.addToControl(
                     feedbackCompId,

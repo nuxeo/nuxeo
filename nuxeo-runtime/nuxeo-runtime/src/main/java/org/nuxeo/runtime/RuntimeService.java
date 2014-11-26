@@ -15,6 +15,7 @@
 package org.nuxeo.runtime;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -46,17 +47,13 @@ public interface RuntimeService {
 
     /**
      * Starts the runtime.
-     *
-     * @throws Exception if any exception occurred during startup
      */
-    void start() throws Exception;
+    void start();
 
     /**
      * Stops the runtime.
-     *
-     * @throws Exception if any exception occurred during shutdown
      */
-    void stop() throws Exception;
+    void stop();
 
     /**
      * Returns true if the runtime is started.
@@ -110,10 +107,8 @@ public interface RuntimeService {
 
     /**
      * Reread all property files loaded at startup.
-     *
-     * @throws Exception
      */
-    void reloadProperties() throws Exception;
+    void reloadProperties() throws IOException;
 
     /**
      * Gets a runtime service property given its name.

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.connect.update.task.live.commands;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
@@ -36,7 +37,7 @@ public class ReloadProperties extends ReloadPropertiesPlaceholder {
             throws PackageException {
         try {
             Framework.getRuntime().reloadProperties();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException("Failed to reload properties", e);
         }
         return new ReloadProperties();

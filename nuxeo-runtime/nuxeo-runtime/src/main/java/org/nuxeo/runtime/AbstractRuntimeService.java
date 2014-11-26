@@ -111,7 +111,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public synchronized void start() throws Exception {
+    public synchronized void start() {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
                 Level threshold = Level.parse(getProperty(
@@ -133,7 +133,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public synchronized void stop() throws Exception {
+    public synchronized void stop() {
         if (!isStarted) {
             return;
         }
@@ -169,10 +169,10 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return isShuttingDown;
     }
 
-    protected void doStart() throws Exception {
+    protected void doStart() {
     }
 
-    protected void doStop() throws Exception {
+    protected void doStop() {
     }
 
     @Override

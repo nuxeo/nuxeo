@@ -17,6 +17,7 @@ package org.nuxeo.runtime.osgi;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -41,6 +42,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
@@ -160,8 +162,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return persistence;
     }
 
-    public synchronized RuntimeContext createContext(Bundle bundle)
-            throws Exception {
+    public synchronized RuntimeContext createContext(Bundle bundle) {
         RuntimeContext ctx = contexts.get(bundle.getSymbolicName());
         if (ctx == null) {
             // workaround to handle fragment bundles
@@ -188,21 +189,25 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     @Override
-    protected void doStart() throws Exception {
+    protected void doStart() {
         bundleContext.addFrameworkListener(this);
-        loadConfig(); // load configuration if any
+        try {
+            loadConfig();
+        } catch (IOException e) {
+            throw new RuntimeServiceException(e);
+        }
+        // load configuration if any
         loadComponents(bundleContext.getBundle(), context);
     }
 
     @Override
-    protected void doStop() throws Exception {
+    protected void doStop() {
         bundleContext.removeFrameworkListener(this);
         super.doStop();
         context.destroy();
     }
 
-    protected void loadComponents(Bundle bundle, RuntimeContext ctx)
-            throws Exception {
+    protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
         String list = getComponentsList(bundle);
         String name = bundle.getSymbolicName();
         log.debug("Bundle: " + name + " components: " + list);
@@ -218,12 +223,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             if (url != null) {
                 try {
                     ctx.deploy(url);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     // just log error to know where is the cause of the
                     // exception
                     log.error("Error deploying resource: " + url);
                     Framework.handleDevError(e);
-                    throw e;
+                    throw new RuntimeServiceException("Cannot deploy: " + url,
+                            e);
                 }
             } else {
                 String message = "Unknown component '" + path
@@ -239,7 +245,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return (String) bundle.getHeaders().get("Nuxeo-Component");
     }
 
-    protected boolean loadConfigurationFromProvider() throws Exception {
+    protected boolean loadConfigurationFromProvider() throws IOException {
         // TODO use a OSGi service for this.
         Iterable<URL> provider = Environment.getDefault().getConfigurationProvider();
         if (provider == null) {
@@ -273,7 +279,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return true;
     }
 
-    protected void loadConfig() throws Exception {
+    protected void loadConfig() throws IOException {
         Environment env = Environment.getDefault();
         if (env != null) {
             log.debug("Configuration: host application: "
@@ -377,7 +383,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     @Override
-    public void reloadProperties() throws Exception {
+    public void reloadProperties() throws IOException {
         File dir = Environment.getDefault().getConfig();
         String[] names = dir.list();
         if (names != null) {

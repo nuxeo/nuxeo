@@ -15,6 +15,7 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
@@ -25,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -43,6 +45,8 @@ import org.osgi.framework.Bundle;
 public class DefaultRuntimeContext implements RuntimeContext {
 
     private static final Log log = LogFactory.getLog(RuntimeContext.class);
+
+    private static final String UTF_8 = "UTF-8";
 
     protected RuntimeService runtime;
 
@@ -90,12 +94,12 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public RegistrationInfo deploy(URL url) throws Exception {
+    public RegistrationInfo deploy(URL url) throws IOException {
         return deploy(new URLStreamRef(url));
     }
 
     @Override
-    public RegistrationInfo deploy(StreamRef ref) throws Exception {
+    public RegistrationInfo deploy(StreamRef ref) throws IOException {
         String name = ref.getId();
         if (deployedFiles.containsKey(name)) {
             return null;
@@ -122,7 +126,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public void undeploy(URL url) throws Exception {
+    public void undeploy(URL url) {
         ComponentName name = deployedFiles.remove(url.toString());
         if (name == null) {
             throw new IllegalArgumentException("not deployed " + url);
@@ -131,7 +135,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public void undeploy(StreamRef ref) throws Exception {
+    public void undeploy(StreamRef ref) {
         ComponentName name = deployedFiles.remove(ref.getId());
         if (name == null) {
             throw new IllegalArgumentException("not deployed " + ref);
@@ -150,16 +154,20 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public RegistrationInfo deploy(String location) throws Exception {
+    public RegistrationInfo deploy(String location) {
         URL url = getLocalResource(location);
         if (url == null) {
             throw new IllegalArgumentException("No local resources was found with this name: " + location);
         }
-        return deploy(url);
+        try {
+            return deploy(url);
+        } catch (IOException e) {
+            throw new RuntimeServiceException("Cannot deploy: " + location, e);
+        }
     }
 
     @Override
-    public void undeploy(String location) throws Exception {
+    public void undeploy(String location) {
         URL url = getLocalResource(location);
         if (url == null) {
             throw new IllegalArgumentException("No local resources was found with this name: " + location);
@@ -195,19 +203,16 @@ public class DefaultRuntimeContext implements RuntimeContext {
     }
 
     public RegistrationInfoImpl createRegistrationInfo(StreamRef ref)
-            throws Exception {
+            throws IOException {
         String source = FileUtils.read(ref.getStream());
         String expanded = Framework.expandVars(source);
-        InputStream in = new ByteArrayInputStream(expanded.getBytes());
-        try {
+        try (InputStream in = new ByteArrayInputStream(expanded.getBytes(UTF_8))) {
             return createRegistrationInfo(in);
-        } finally {
-            in.close();
         }
     }
 
     public RegistrationInfoImpl createRegistrationInfo(InputStream in)
-            throws Exception {
+            throws IOException {
         return reader.read(this, in);
     }
 

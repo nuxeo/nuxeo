@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -34,7 +34,7 @@ public class OSGiRuntimeTestService extends OSGiRuntimeService {
     }
 
     @Override
-    protected void loadComponents(Bundle bundle, RuntimeContext ctx) throws Exception {
+    protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
         if (!(bundle instanceof RootRuntimeBundle)) {
             super.loadComponents(bundle, ctx);
         }

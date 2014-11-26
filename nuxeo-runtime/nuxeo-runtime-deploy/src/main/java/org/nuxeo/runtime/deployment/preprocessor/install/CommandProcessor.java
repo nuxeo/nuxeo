@@ -40,10 +40,8 @@ public interface CommandProcessor {
 
     /**
      * Execute commands.
-     *
-     * @throws Exception
      */
-    void exec(CommandContext ctx) throws Exception;
+    void exec(CommandContext ctx);
 
     void setLogger(Log log);
 

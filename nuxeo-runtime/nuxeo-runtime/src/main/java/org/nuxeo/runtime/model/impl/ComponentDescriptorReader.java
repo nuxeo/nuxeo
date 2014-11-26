@@ -13,6 +13,7 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.common.xmap.Context;
@@ -63,7 +64,8 @@ public class ComponentDescriptorReader {
         xmap.register(RegistrationInfoImpl.class);
     }
 
-    public RegistrationInfoImpl read(RuntimeContext ctx, InputStream in) throws Exception {
+    public RegistrationInfoImpl read(RuntimeContext ctx, InputStream in)
+            throws IOException {
         Object[] result = xmap.loadAll(new XMapContext(ctx), in);
         if (result.length > 0) {
             return (RegistrationInfoImpl) result[0];

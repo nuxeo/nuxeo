@@ -77,16 +77,8 @@ public class SimpleRuntime extends AbstractRuntimeService {
                 + System.identityHashCode(System.class) + '.' + counter;
     }
 
-    public void deploy(URL url) throws Exception {
-        context.deploy(url);
-    }
-
-    public void undeploy(URL url) throws Exception {
-        context.undeploy(url);
-    }
-
     @Override
-    public void reloadProperties() throws Exception {
+    public void reloadProperties() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 }

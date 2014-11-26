@@ -19,6 +19,7 @@ package org.nuxeo.runtime.model.impl;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -26,6 +27,7 @@ import java.io.Writer;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,13 +44,14 @@ import org.w3c.dom.Element;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
+// use by reflection from DevFrameworkBootstrap
 public class ComponentRegistrySerializer {
 
     private final static Log log = LogFactory.getLog(ComponentRegistrySerializer.class);
 
-    public static void writeIndex(File file) throws Exception {
+    public static void writeIndex(File file) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         try {
             writeIndex(writer);
@@ -57,7 +60,7 @@ public class ComponentRegistrySerializer {
         }
     }
 
-    public static void writeIndex(Writer writer) throws Exception {
+    public static void writeIndex(Writer writer) throws IOException {
         ComponentManagerImpl mgr = (ComponentManagerImpl) Framework.getRuntime().getComponentManager();
         for (RegistrationInfo ri : mgr.getRegistrations()) {
             ComponentName name = ri.getName();
@@ -140,10 +143,15 @@ public class ComponentRegistrySerializer {
         return null;
     }
 
-    public static Document toDocument() throws Exception {
+    public static Document toDocument() {
         ComponentManagerImpl mgr = (ComponentManagerImpl) Framework.getRuntime().getComponentManager();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().newDocument();
+        Document doc;
+        try {
+            doc = factory.newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         Element root = doc.createElement("components");
         doc.appendChild(root);
 
@@ -219,21 +227,20 @@ public class ComponentRegistrySerializer {
         return doc;
     }
 
-    public static void toXML(OutputStream out) throws Exception {
+    public static void toXML(OutputStream out) throws IOException {
         toXML(out, "UTF-8");
     }
 
-    public static void toXML(OutputStream out, String encoding)
-            throws Exception {
+    public static void toXML(OutputStream out, String encoding) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(out, encoding);
         toXML(writer, encoding);
     }
 
-    public static void toXML(Writer out) throws Exception {
+    public static void toXML(Writer out) throws IOException {
         toXML(out, "UTF-8");
     }
 
-    public static void toXML(Writer out, String encoding) throws Exception {
+    public static void toXML(Writer out, String encoding) throws IOException {
         Document doc = toDocument();
         OutputFormat format = new OutputFormat(Method.XML, encoding, true);
         format.setIndent(2);
@@ -242,7 +249,7 @@ public class ComponentRegistrySerializer {
         out.flush();
     }
 
-    public static String toXML() throws Exception {
+    public static String toXML() throws IOException {
         StringWriter writer = new StringWriter();
         toXML(writer);
         return writer.toString();
