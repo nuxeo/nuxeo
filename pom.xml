@@ -3226,6 +3226,10 @@
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <!-- required by shindig gadgets at runtime (internal API uses) -->
@@ -3255,6 +3259,10 @@
           <exclusion>
             <groupId>com.google.code.guice</groupId>
             <artifactId>guice</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice-jmx</artifactId>
           </exclusion>
           <!-- ehcache is known as ehcache-core since v2 -->
           <exclusion>
@@ -3611,6 +3619,12 @@
         <version>${shindig.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
+	<exclusions>
+          <exclusion>
+            <groupId>com.google.code.guice</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
