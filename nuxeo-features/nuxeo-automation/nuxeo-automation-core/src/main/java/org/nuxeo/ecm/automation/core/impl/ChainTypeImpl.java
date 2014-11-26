@@ -171,6 +171,7 @@ public class ChainTypeImpl implements OperationType {
         doc.label = id;
         doc.requires = contribution.getRequires();
         doc.category = contribution.getCategory();
+        doc.setAliases(contribution.getAliases());
         OperationChainContribution.Operation[] operations = contribution.getOps();
         doc.operations = operations;
         doc.since = contribution.getSince();

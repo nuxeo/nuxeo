@@ -8,9 +8,9 @@
     <optgroup label="${cat?xml}">
       <#list categories["${cat}"] as item>
         <#if operation?has_content && operation.id = item.id>
-          <option value="${This.path}?id=${item.id}" selected>${item.label}</option>
+            <option value="${This.path}?id=${item.id}" selected>${item.label} - (id:${item.id}<#if item.aliases> - alias:[<#list item.aliases as alias> ${alias} </#list>]</#if>)</option>
         <#else>
-          <option value="${This.path}?id=${item.id}">${item.label}</option>
+            <option value="${This.path}?id=${item.id}">${item.label} - (id:${item.id}<#if item.aliases> - alias:[<#list item.aliases as alias> ${alias} </#list>]</#if>)</option>
         </#if>
       </#list>
     </optgroup>

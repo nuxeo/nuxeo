@@ -13,6 +13,7 @@
     <div><span class="sticker">Operation Id</span> ${operation.id}</div>
     <div><span class="sticker">Operation Class</span> ${operation.implementationClass}</div>
   </#if>
+  <#if operation.aliases><div><span class="sticker">Operation Aliases</span> - alias:[<#list operation.aliases as alias> ${alias} </#list>]</div></#if>
   <#if operation.since?has_content>
     <div><span class="sticker">Available Since</span> ${operation.since}</div>
   </#if>
