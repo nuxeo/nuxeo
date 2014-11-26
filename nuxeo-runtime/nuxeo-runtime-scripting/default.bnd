@@ -1,3 +1,0 @@
--nouses: true
-Export-Package: *	 
-Import-Package: !lib,javax.annotation;version=1.0,javax.resource.*;version=2.0,*javax.transaction.*;version=1.1,org.jboss.remoting,org.nuxeo.runtime.remoting,org.nuxeo.runtime.remoting.transporter,org.nuxeo.runtime,org.nuxeo.runtime.api,*
