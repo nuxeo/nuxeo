@@ -17,7 +17,7 @@
 
 <#if "${nuxeo.work.queuing}" == "redis">
   <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
-    <queuing class="org.nuxeo.ecm.core.work.redis.RedisWorkQueuing"/>
+    <queuing class="org.nuxeo.ecm.core.redis.contribs.RedisWorkQueuing"/>
   </extension>
 </#if>
 </#if>
