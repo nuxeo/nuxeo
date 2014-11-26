@@ -26,10 +26,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import com.google.inject.internal.Preconditions;
-import com.google.inject.name.Named;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -50,6 +46,11 @@ import org.apache.shindig.gadgets.http.HttpRequest;
 import org.apache.shindig.gadgets.http.HttpResponse;
 import org.apache.shindig.gadgets.http.HttpResponseBuilder;
 import org.nuxeo.opensocial.helper.ProxyHelper;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * We have to copy BasicHttpFetcher because we must override the way proxy is
@@ -104,7 +105,7 @@ public class NXHttpFetcher implements HttpFetcher {
     @Inject(optional = true)
     public void setMaxObjectSizeBytes(
             @Named("shindig.http.client.max-object-size-bytes") int maxObjectSizeBytes) {
-        this.maxObjSize = maxObjectSizeBytes;
+        maxObjSize = maxObjectSizeBytes;
     }
 
     /**
@@ -182,7 +183,7 @@ public class NXHttpFetcher implements HttpFetcher {
                 IOUtils.closeQuietly(output);
                 // Exceeded max # of bytes
                 return HttpResponse.badrequest("Exceeded maximum number of bytes - "
-                        + this.maxObjSize);
+                        + maxObjSize);
             }
         }
 
@@ -191,6 +192,7 @@ public class NXHttpFetcher implements HttpFetcher {
     }
 
     /** {@inheritDoc} */
+    @Override
     public HttpResponse fetch(HttpRequest request) {
         HttpClient httpClient = new HttpClient();
         HttpMethod httpMethod;
@@ -225,8 +227,9 @@ public class NXHttpFetcher implements HttpFetcher {
         httpMethod.getParams().setSoTimeout(connectionTimeoutMs);
         httpMethod.setRequestHeader("Connection", "close");
 
-        if (requestCompressedContent)
+        if (requestCompressedContent) {
             httpMethod.setRequestHeader("Accept-Encoding", "gzip, deflate");
+        }
 
         for (Map.Entry<String, List<String>> entry : request.getHeaders().entrySet()) {
             httpMethod.setRequestHeader(entry.getKey(),

@@ -46,6 +46,7 @@ public class SecurityTokenDecoderTest {
 
     public SecurityTokenDecoderTest() throws Exception {
         Injector injector = Guice.createInjector(new Module() {
+            @Override
             public void configure(Binder binder) {
                 binder.bind(ContainerConfig.class).to(FakeContainerConfig.class).in(Scopes.SINGLETON);
             }
