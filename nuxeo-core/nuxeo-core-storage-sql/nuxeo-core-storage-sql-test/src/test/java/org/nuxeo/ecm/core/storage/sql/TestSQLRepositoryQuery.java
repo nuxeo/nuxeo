@@ -2239,7 +2239,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, doc.getId());
 
         // modify and save with version increment
-        doc.setPropertyValue("dc:title", "something");
+        doc.setPropertyValue("dc:title", "universe");
         doc.putContextData(VersioningService.VERSIONING_OPTION,
                 VersioningOption.MAJOR);
         session.saveDocument(doc);
@@ -2254,7 +2254,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         dml = session.query(query);
         assertIdSet(dml, ver.getId());
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = 'something'";
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'universe'";
         dml = session.query(query);
         assertIdSet(dml, doc.getId());
     }
