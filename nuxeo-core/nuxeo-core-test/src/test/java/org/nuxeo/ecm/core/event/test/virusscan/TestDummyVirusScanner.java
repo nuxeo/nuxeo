@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -62,6 +63,7 @@ public class TestDummyVirusScanner {
     }
 
     @Test
+    @Ignore("NXP-12213")
     public void testScanner() throws Exception {
 
         DocumentModel file;
