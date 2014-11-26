@@ -82,18 +82,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     private void applyFilters(ActionContext context, List<Action> actions) {
-        ActionFilterRegistry filterReg = getFilterRegistry();
         Iterator<Action> it = actions.iterator();
         while (it.hasNext()) {
             Action action = it.next();
-            if (!checkFilters(context, action, filterReg)) {
+            if (!checkFilters(context, action)) {
                 it.remove();
             }
         }
     }
 
-    private boolean checkFilters(ActionContext context, Action action,
-            ActionFilterRegistry filterReg) {
+    private boolean checkFilters(ActionContext context, Action action) {
         if (action == null) {
             return false;
         }
@@ -101,30 +99,20 @@ public class ActionService extends DefaultComponent implements ActionManager {
             log.debug(String.format("Checking access for action '%s'...",
                     action.getId()));
         }
-        for (String filterId : action.getFilterIds()) {
-            ActionFilter filter = filterReg.getFilter(filterId);
-            if (filter == null) {
-                continue;
-            }
-            if (!filter.accept(action, context)) {
-                // denying filter found => ignore following filters
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Filter '%s' denied access",
-                            filterId));
-                    log.debug(String.format("Denying access for action '%s'",
-                            action.getId()));
-                }
-                return false;
-            }
+
+        boolean granted = checkFilters(action, action.getFilterIds(), context);
+        if (granted) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Filter '%s' granted access", filterId));
+                log.debug(String.format("Granting access for action '%s'",
+                        action.getId()));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Denying access for action '%s'",
+                        action.getId()));
             }
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Granting access for action '%s'",
-                    action.getId()));
-        }
-        return true;
+        return granted;
     }
 
     @Override
@@ -161,13 +149,12 @@ public class ActionService extends DefaultComponent implements ActionManager {
             boolean hideUnavailableAction) {
         Action action = getActionRegistry().getAction(actionId);
         if (action != null) {
-            ActionFilterRegistry filterReg = getFilterRegistry();
             if (hideUnavailableAction) {
-                if (!checkFilters(context, action, filterReg)) {
+                if (!checkFilters(context, action)) {
                     return null;
                 }
             } else {
-                if (!checkFilters(context, action, filterReg)) {
+                if (!checkFilters(context, action)) {
                     action.setAvailable(false);
                 }
             }
@@ -232,6 +219,34 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return false;
         }
         return filter.accept(null, context);
+    }
+
+    @Override
+    public boolean checkFilters(List<String> filterIds, ActionContext context) {
+        return checkFilters(null, filterIds, context);
+    }
+
+    protected boolean checkFilters(Action action, List<String> filterIds,
+            ActionContext context) {
+        ActionFilterRegistry filterReg = getFilterRegistry();
+        for (String filterId : filterIds) {
+            ActionFilter filter = filterReg.getFilter(filterId);
+            if (filter == null) {
+                continue;
+            }
+            if (!filter.accept(action, context)) {
+                // denying filter found => ignore following filters
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Filter '%s' denied access",
+                            filterId));
+                }
+                return false;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Filter '%s' granted access", filterId));
+            }
+        }
+        return true;
     }
 
     @Override

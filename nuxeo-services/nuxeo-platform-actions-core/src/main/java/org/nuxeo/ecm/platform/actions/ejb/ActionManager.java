@@ -78,6 +78,14 @@ public interface ActionManager extends Serializable {
     boolean checkFilter(String filterId, ActionContext context);
 
     /**
+     * Returns false if given filters evaluation is supposed to deny access when
+     * checking for this filter.
+     *
+     * @since 7.1
+     */
+    boolean checkFilters(List<String> filterIds, ActionContext context);
+
+    /**
      * Gets all actions in a category (filters are NOT evaluated).
      */
     List<Action> getAllActions(String category);

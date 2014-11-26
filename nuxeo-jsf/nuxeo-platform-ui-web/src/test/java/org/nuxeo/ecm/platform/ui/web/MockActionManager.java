@@ -97,4 +97,8 @@ public class MockActionManager implements ActionManager {
         throw new NotImplementedException();
     }
 
+    @Override
+    public boolean checkFilters(List<String> filterIds, ActionContext context) {
+        throw new NotImplementedException();
+    }
 }
