@@ -1,6 +1,7 @@
 <component name="org.nuxeo.ecm.collections.actions">
 
   <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.webapp.seam.debug.action</require>
 
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -77,6 +78,10 @@
       </properties>
     </action>
 
+    <action id="exportViewZipBlobExport">
+      <filter-id>can_zip_export</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -130,6 +135,13 @@
     <filter id="collectionContentFilter">
       <rule grant="true">
         <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="can_zip_export" append="true" >
+      <rule grant="false">
+        <type>Collections</type>
+        <type>Collection</type>
       </rule>
     </filter>
 
