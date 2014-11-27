@@ -67,7 +67,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
             DocumentModel doc, boolean relaxSyncRootConstraint)
             throws ClientException {
-        this(factoryName, null, doc);
+        this(factoryName, null, doc, relaxSyncRootConstraint);
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = null;
         try {
@@ -105,9 +105,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     }
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            FolderItem parentItem, DocumentModel doc) throws ClientException {
+            FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
 
-        super(factoryName, doc.getCoreSession().getPrincipal());
+        super(factoryName, doc.getCoreSession().getPrincipal(),
+                relaxSyncRootConstraint);
 
         // Backing DocumentModel attributes
         repositoryName = doc.getRepositoryName();
