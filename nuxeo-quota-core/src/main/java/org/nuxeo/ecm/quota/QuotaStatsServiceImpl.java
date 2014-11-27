@@ -71,7 +71,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     protected QuotaStatsUpdaterRegistry quotaStatsUpdaterRegistry;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         quotaStatsUpdaterRegistry = new QuotaStatsUpdaterRegistry();
     }
 
@@ -140,8 +140,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (QUOTA_STATS_UPDATERS_EP.equals(extensionPoint)) {
             quotaStatsUpdaterRegistry.addContribution((QuotaStatsUpdaterDescriptor) contribution);
         }
@@ -149,8 +148,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (QUOTA_STATS_UPDATERS_EP.equals(extensionPoint)) {
             quotaStatsUpdaterRegistry.removeContribution((QuotaStatsUpdaterDescriptor) contribution);
         }
