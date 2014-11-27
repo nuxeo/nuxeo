@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.scripting.Expression;
 
 /**
  * @since 5.7.3
@@ -144,7 +145,15 @@ public class TracePrinter {
                     sb.append("Name: ");
                     sb.append(parameter);
                     sb.append(", Value: ");
-                    sb.append(call.getParmeters().get(parameter));
+                    Object value = call.getParmeters().get(parameter);
+                    if(value instanceof Call.ExpressionParameter){
+                        value = String.format("Expr:(id=%s | value=%s)",
+                                ((Call.ExpressionParameter) call.getParmeters
+                                        ().get(parameter)).getParameterId(),
+                                ((Call.ExpressionParameter) call.getParmeters
+                                        ().get(parameter)).getParameterValue());
+                    }
+                    sb.append(value);
                 }
             }
             if (!call.getVariables().isEmpty()) {
@@ -175,7 +184,7 @@ public class TracePrinter {
                 printHeading("end sub chain");
             }
             printLine(sb.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Nuxeo TracePrinter cannot write traces output", e);
         }
     }
