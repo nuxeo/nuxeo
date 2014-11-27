@@ -75,7 +75,8 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
      */
     protected String userName;
 
-    protected AbstractFileSystemItem(String factoryName, Principal principal) {
+    protected AbstractFileSystemItem(String factoryName, Principal principal,
+            boolean relaxSyncRootConstraint) {
         this.factoryName = factoryName;
         this.principal = principal;
         this.userName = principal.getName();

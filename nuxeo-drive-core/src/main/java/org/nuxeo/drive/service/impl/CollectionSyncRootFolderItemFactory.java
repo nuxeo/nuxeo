@@ -111,7 +111,8 @@ public class CollectionSyncRootFolderItemFactory extends
     protected FileSystemItem adaptDocument(DocumentModel doc,
             boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new CollectionSyncRootFolderItem(name, parentItem, doc);
+        return new CollectionSyncRootFolderItem(name, parentItem, doc,
+                relaxSyncRootConstraint);
     }
 
 }

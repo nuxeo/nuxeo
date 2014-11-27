@@ -36,7 +36,13 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
 
     public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem,
             DocumentModel doc) throws ClientException {
-        super(factoryName, parentItem, doc);
+        this(factoryName, parentItem, doc, false);
+    }
+
+    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem,
+            DocumentModel doc, boolean relaxSyncRootConstraint)
+            throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         // A sync root can always be deleted since deletion is implemented as
         // unregistration
         this.canDelete = true;

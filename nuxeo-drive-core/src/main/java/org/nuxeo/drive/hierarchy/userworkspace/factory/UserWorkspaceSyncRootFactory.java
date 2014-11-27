@@ -61,7 +61,8 @@ public class UserWorkspaceSyncRootFactory extends
     protected FileSystemItem adaptDocument(DocumentModel doc,
             boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc);
+        return new DefaultSyncRootFolderItem(name, parentItem, doc,
+                relaxSyncRootConstraint);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
