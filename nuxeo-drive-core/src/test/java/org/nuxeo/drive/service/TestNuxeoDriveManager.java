@@ -152,8 +152,7 @@ public class TestNuxeoDriveManager {
         folder_2_1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces/workspace-2", "folder-2-1",
                 "Folder"));
-        setPermissions(workspace_1, new ACE("members",
-                SecurityConstants.READ));
+        setPermissions(workspace_1, new ACE("members", SecurityConstants.READ));
         setPermissions(workspace_2, new ACE("members",
                 SecurityConstants.READ_WRITE));
 
@@ -199,8 +198,8 @@ public class TestNuxeoDriveManager {
 
     @Test
     public void cacheEquivalence() throws ExecutionException {
-        Cache<String,Object> cache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(
-                10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
+        Cache<String, Object> cache = CacheBuilder.newBuilder().concurrencyLevel(
+                4).maximumSize(10000).expireAfterWrite(1, TimeUnit.MINUTES).build();
         cache.put(new String("pfouh"), "zoo");
         cache.get(new String("pfouh"), new Callable<Object>() {
 
@@ -716,8 +715,7 @@ public class TestNuxeoDriveManager {
         session.save();
     }
 
-    protected void resetPermissions(DocumentModel doc)
-            throws ClientException {
+    protected void resetPermissions(DocumentModel doc) throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         acp.getOrCreateACL(ACL.LOCAL_ACL).clear();
         session.setACP(doc.getRef(), acp, true);
