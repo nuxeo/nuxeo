@@ -522,6 +522,7 @@ public class TestNuxeoDriveManager {
         log.trace("Create a test folder in sync root");
         DocumentModel testFolder = user1Session.createDocument(user1Session.createDocumentModel(
                 workspace_2.getPathAsString(), "testFolder", "Folder"));
+        user1Session.save();
 
         log.trace("Register test folder as a sync root for user2");
         nuxeoDriveManager.registerSynchronizationRoot(
