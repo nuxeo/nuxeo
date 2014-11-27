@@ -63,22 +63,21 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     protected ConcurrentHashMap<String, List<String>> type2Template = null;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         processorRegistry = new TemplateProcessorRegistry();
         contextExtensionRegistry = new ContextFactoryRegistry();
         outputFormatRegistry = new OutputFormatRegistry();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         processorRegistry = null;
         contextExtensionRegistry = null;
         outputFormatRegistry = null;
     }
 
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
         } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
@@ -91,8 +90,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     }
 
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PROCESSOR_XP.equals(extensionPoint)) {
             processorRegistry.removeContribution((TemplateProcessorDescriptor) contribution);
         } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
