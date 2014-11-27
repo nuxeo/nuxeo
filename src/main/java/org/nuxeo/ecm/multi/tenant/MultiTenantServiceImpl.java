@@ -248,7 +248,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         boolean started = false;
         boolean ok = false;
         try {
@@ -281,8 +281,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
             if (configuration != null) {
                 log.warn("Overriding existing multi tenant configuration");
@@ -293,15 +292,14 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
             if (configuration.equals(contribution)) {
                 configuration = null;
             }
         }
     }
-    
+
     @Override
     public List<String> getProhibitedGroups() {
         if (configuration!=null) {
