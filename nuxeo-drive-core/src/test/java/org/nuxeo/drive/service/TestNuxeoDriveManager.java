@@ -193,9 +193,6 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
     }
 
-    @Inject
-    RepositorySettings settings;
-
     @Test
     public void cacheEquivalence() throws ExecutionException {
         Cache<String, Object> cache = CacheBuilder.newBuilder().concurrencyLevel(
@@ -232,7 +229,7 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root paths
         Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(user1Session.getPrincipal());
-        Set<String> rootPaths = synRootMap.get(settings.getName()).paths;
+        Set<String> rootPaths = synRootMap.get(repository.getName()).paths;
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
         assertTrue(rootPaths.contains("/default-domain/workspaces/workspace-2"));
@@ -672,13 +669,13 @@ public class TestNuxeoDriveManager {
         assertEquals(
                 expectedCount,
                 nuxeoDriveManager.getSynchronizationRoots(principal).get(
-                        settings.getName()).refs.size());
+                        repository.getName()).refs.size());
     }
 
     protected void checkRoots(Principal principal, int expectedCount,
             Set<String> expectedRootPaths) throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
-        Set<String> syncRootPaths = syncRoots.get(settings.getName()).paths;
+        Set<String> syncRootPaths = syncRoots.get(repository.getName()).paths;
         assertEquals(expectedCount, syncRootPaths.size());
         for (String syncRootPath : expectedRootPaths) {
             assertTrue(syncRootPaths.contains(syncRootPath));
