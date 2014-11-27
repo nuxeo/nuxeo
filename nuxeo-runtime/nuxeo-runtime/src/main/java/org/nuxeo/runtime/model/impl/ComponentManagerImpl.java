@@ -262,8 +262,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
-    public synchronized void registerExtension(Extension extension)
-            throws Exception {
+    public synchronized void registerExtension(Extension extension) {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfoImpl ri = reg.getComponent(name);
         if (ri != null && ri.component != null) {
@@ -295,8 +294,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
-    public synchronized void unregisterExtension(Extension extension)
-            throws Exception {
+    public synchronized void unregisterExtension(Extension extension) {
         // TODO check if framework is shutting down and in that case do nothing
         if (log.isDebugEnabled()) {
             log.debug("Unregister contributed extension: " + extension);

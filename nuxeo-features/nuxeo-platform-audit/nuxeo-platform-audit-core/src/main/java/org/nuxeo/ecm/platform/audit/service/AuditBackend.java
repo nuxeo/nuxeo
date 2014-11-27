@@ -20,14 +20,14 @@ import org.nuxeo.ecm.platform.audit.api.Logs;
 
 /**
  * Audit Backend SPI
- * 
+ *
  * @author tiry
  *
  */
 public interface AuditBackend extends Logs {
-    
-    void activate(NXAuditEventsService component) throws Exception;
-    
-    void deactivate() throws Exception;
-    
+
+    void activate(NXAuditEventsService component);
+
+    void deactivate();
+
 }

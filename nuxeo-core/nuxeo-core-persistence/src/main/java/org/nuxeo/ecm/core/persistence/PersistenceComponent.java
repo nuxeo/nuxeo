@@ -41,7 +41,7 @@ public class PersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         /*
          * Initialize all the persistence units synchronously at startup,
          * otherwise init may end up being called during the first asynchronous
@@ -58,7 +58,7 @@ public class PersistenceComponent extends DefaultComponent
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if ("hibernate".equals(extensionPoint)) {
             registerHibernateContribution((HibernateConfiguration) contribution, contributor.getName());
         }

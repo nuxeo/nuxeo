@@ -77,21 +77,20 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     private String parentPath = "/task-root";
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         tasksProviders = new HashMap<String, TaskProvider>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         tasksProviders = null;
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(TASK_PROVIDER_XP)) {
             if (contribution instanceof TaskProviderDescriptor) {
                 TaskProviderDescriptor taskProviderDescriptor = (TaskProviderDescriptor) contribution;
@@ -115,8 +114,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(TASK_PROVIDER_XP)) {
             if (contribution instanceof TaskProviderDescriptor) {
                 TaskProviderDescriptor taskProviderDescriptor = (TaskProviderDescriptor) contribution;

@@ -36,20 +36,19 @@ public class ServletRegistryComponent extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         registry = ServletRegistry.getInstance();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         ServletRegistry.dispose();
         registry = null;
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-    throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_SERVLETS.equals(extensionPoint)) {
             ((ServletDescriptor)contribution).setBundle(contributor.getContext().getBundle());
             registry.addServlet((ServletDescriptor)contribution);
@@ -68,8 +67,7 @@ public class ServletRegistryComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-    throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_SERVLETS.equals(extensionPoint)) {
             registry.removeServlet((ServletDescriptor)contribution);
         } else if (XP_FILTERS.equals(extensionPoint)) {

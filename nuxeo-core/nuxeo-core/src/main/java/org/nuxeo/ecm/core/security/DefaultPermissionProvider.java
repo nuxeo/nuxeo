@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 
 /**
@@ -226,8 +227,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public synchronized void registerDescriptor(
-            PermissionDescriptor descriptor) throws Exception {
+    public synchronized void registerDescriptor(PermissionDescriptor descriptor) {
         // check that all included permission have previously been registered
         Set<String> alreadyRegistered = new HashSet<String>();
         for (PermissionDescriptor registeredPerm : registeredPermissions) {
@@ -235,12 +235,10 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
         for (String includePerm : descriptor.getIncludePermissions()) {
             if (!alreadyRegistered.contains(includePerm)) {
-                // TODO: OG: use a specific exception sub class instead of the
-                // base type
-                throw new Exception(
+                throw new NuxeoException(
                         String.format(
                                 "Permission '%s' included by '%s' is not a registered permission",
-                                 includePerm, descriptor.getName()));
+                                includePerm, descriptor.getName()));
             }
         }
         // invalidate merged permission

@@ -113,7 +113,7 @@ public class NotificationService extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         notificationRegistry = new NotificationRegistryImpl();
         notificationVetoRegistry = new NotificationListenerVetoRegistry();
 
@@ -125,7 +125,7 @@ public class NotificationService extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         notificationRegistry.clear();
         notificationVetoRegistry.clear();
         notificationRegistry = null;
@@ -133,7 +133,7 @@ public class NotificationService extends DefaultComponent implements
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         log.info("Registering notification extension");
         String xp = extension.getExtensionPoint();
         if (NOTIFICATIONS_EP.equals(xp)) {
@@ -217,7 +217,7 @@ public class NotificationService extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         String xp = extension.getExtensionPoint();
         if (NOTIFICATIONS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();

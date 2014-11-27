@@ -59,7 +59,7 @@ public class NXAuditEventsService extends DefaultComponent {
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
     private static final String BACKEND_EXT_POINT = "backend";
-    
+
     protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
     protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
@@ -70,18 +70,17 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected final Set<String> eventNames = new HashSet<String>();
 
-    protected AuditBackend backend;    
+    protected AuditBackend backend;
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         backend.deactivate();
         super.deactivate(context);
     }
-        
+
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doRegisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
@@ -99,21 +98,21 @@ public class NXAuditEventsService extends DefaultComponent {
                 backend.deactivate();
             } catch (Exception e) {
                 log.error("Unable to properly deactivate previous backend");
-            }            
+            }
         }
         try {
             backend = desc.newInstance();
         } catch (Exception e ) {
             log.error("Unable to instanciate Backend", e);
             return;
-        }       
+        }
         try {
             backend.activate(this);
         } catch (Exception e) {
             log.error("Unable to init Backend", e);
         }
     }
-    
+
     protected void doRegisterEvent(EventDescriptor desc) {
         String eventName = desc.getName();
         boolean eventEnabled = desc.getEnabled();
@@ -143,8 +142,7 @@ public class NXAuditEventsService extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(EVENT_EXT_POINT)) {
             doUnregisterEvent((EventDescriptor) contribution);
         } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
@@ -188,11 +186,11 @@ public class NXAuditEventsService extends DefaultComponent {
             return adapter.cast(new DocumentHistoryReaderImpl());
         } else {
             if (backend!=null) {
-                return adapter.cast(backend);    
+                return adapter.cast(backend);
             } else {
                 log.error("Can not provide service " + adapter.getCanonicalName() + " since backend is undefined");
                 return null;
-            }            
+            }
         }
     }
 
@@ -207,5 +205,5 @@ public class NXAuditEventsService extends DefaultComponent {
     public AuditBackend getBackend() {
         return backend;
     }
-    
+
 }

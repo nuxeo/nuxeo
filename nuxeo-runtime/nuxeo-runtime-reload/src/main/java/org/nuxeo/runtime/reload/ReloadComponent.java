@@ -63,13 +63,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         bundle = context.getRuntimeContext().getBundle();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         bundle = null;
     }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import javax.management.JMException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -33,7 +34,9 @@ import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.exception.ChainExceptionFilter;
@@ -81,16 +84,14 @@ public class AutomationComponent extends DefaultComponent {
     protected TracerFactory tracerFactory;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         service = new OperationServiceImpl();
         tracerFactory = new TracerFactory();
         handlers = new EventHandlerRegistry(service);
     }
 
-    protected void bindManagement() throws MalformedObjectNameException,
-            NotCompliantMBeanException, InstanceAlreadyExistsException,
-            MBeanRegistrationException {
-        final ObjectName objectName = new ObjectName(
+    protected void bindManagement() throws JMException {
+        ObjectName objectName = new ObjectName(
                 "org.nuxeo.automation:name=tracerfactory");
         MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
         mBeanServer.registerMBean(tracerFactory, objectName);
@@ -109,7 +110,7 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         service = null;
         handlers = null;
         tracerFactory = null;
@@ -117,8 +118,7 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
             List<WidgetDefinition> widgetDefinitionList = new ArrayList<WidgetDefinition>();
@@ -127,15 +127,25 @@ public class AutomationComponent extends DefaultComponent {
                     widgetDefinitionList.add(widgetDescriptor.getWidgetDefinition());
                 }
             }
-            service.putOperation(opc.type, opc.replace,
-                    contributor.getName().toString(), widgetDefinitionList);
+            try {
+                service.putOperation(opc.type, opc.replace,
+                        contributor.getName().toString(), widgetDefinitionList);
+            } catch (OperationException e) {
+                throw new RuntimeException(e);
+            }
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain
-            OperationType docChainType = new ChainTypeImpl(service,
-                    occ.toOperationChain(contributor.getContext().getBundle()),
-                    occ);
-            service.putOperation(docChainType, occ.replace);
+            try {
+                OperationType docChainType = new ChainTypeImpl(
+                        service,
+                        occ.toOperationChain(contributor.getContext().getBundle()),
+                        occ);
+                service.putOperation(docChainType, occ.replace);
+            } catch (OperationException e) {
+                // TODO Auto-generated catch block
+                throw new RuntimeException(e);
+            }
         } else if (XP_CHAIN_EXCEPTION.equals(extensionPoint)) {
             ChainExceptionDescriptor chainExceptionDescriptor = (ChainExceptionDescriptor) contribution;
             ChainException chainException = new ChainExceptionImpl(
@@ -148,8 +158,13 @@ public class AutomationComponent extends DefaultComponent {
             service.putAutomationFilter(chainExceptionFilter);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
-            service.putTypeAdapter(tac.accept, tac.produce,
-                    tac.clazz.newInstance());
+            TypeAdapter adapter;
+            try {
+                adapter = tac.clazz.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+            service.putTypeAdapter(tac.accept, tac.produce, adapter);
         } else if (XP_EVENT_HANDLERS.equals(extensionPoint)) {
             EventHandler eh = (EventHandler) contribution;
             if (eh.isPostCommit()) {
@@ -162,8 +177,7 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             service.removeOperation(((OperationContribution) contribution).type);
         } else if (XP_CHAINS.equals(extensionPoint)) {
@@ -208,12 +222,16 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
-        bindManagement();
+        try {
+            bindManagement();
+        } catch (JMException e) {
+            throw new RuntimeException(e);
+        }
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override

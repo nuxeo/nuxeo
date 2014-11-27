@@ -78,8 +78,7 @@ public class OOoManagerComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             OOoManagerDescriptor desc = (OOoManagerDescriptor) contribution;
             descriptor = desc;
@@ -87,7 +86,7 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         stopOOoManager();
     }
 
@@ -250,7 +249,7 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         log.info("Starting OOo manager");
         Runnable oooStarter = new Runnable() {
             @Override

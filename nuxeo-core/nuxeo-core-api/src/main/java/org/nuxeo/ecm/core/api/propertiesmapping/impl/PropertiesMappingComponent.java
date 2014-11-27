@@ -54,8 +54,7 @@ public class PropertiesMappingComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (MAPPING_EP.equals(extensionPoint)) {
             PropertiesMappingDescriptor desc = (PropertiesMappingDescriptor) contribution;
             mappingsRegistry.addContribution(desc);

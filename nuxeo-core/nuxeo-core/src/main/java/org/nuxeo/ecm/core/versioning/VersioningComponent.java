@@ -52,7 +52,7 @@ public class VersioningComponent extends DefaultComponent implements
     protected boolean recompute;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         contribs = new LinkedList<Class<? extends VersioningService>>();
         versioningRules = new HashMap<String, VersioningRuleDescriptor>();
         defaultVersioningRuleList = new LinkedList<DefaultVersioningRuleDescriptor>();
@@ -61,7 +61,7 @@ public class VersioningComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         contribs.clear();
         versioningRules.clear();
         defaultVersioningRuleList.clear();
@@ -71,7 +71,7 @@ public class VersioningComponent extends DefaultComponent implements
     @Override
     @SuppressWarnings("unchecked")
     public void registerContribution(Object contrib, String xp,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (XP.equals(xp)) {
             if (!(contrib instanceof VersioningServiceDescriptor)) {
                 log.error("Invalid contribution: "
@@ -115,7 +115,7 @@ public class VersioningComponent extends DefaultComponent implements
     @Override
     @SuppressWarnings("unchecked")
     public void unregisterContribution(Object contrib, String xp,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (XP.equals(xp)) {
             if (!(contrib instanceof VersioningServiceDescriptor)) {
                 return;

@@ -69,7 +69,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         if (initializationHandler != null) {
             initializationHandler.uninstall();
         }

@@ -30,7 +30,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Thumbnail service providing 3 kind of factories: by facet, by doctype, and
  * thumbnail default one
- * 
+ *
  * @since 5.7
  */
 public class ThumbnailServiceImpl extends DefaultComponent implements
@@ -48,8 +48,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (THUMBNAILFACTORY_EP.equals(extensionPoint)) {
             ThumbnailFactoryDescriptor desc = (ThumbnailFactoryDescriptor) contribution;
             String docType = desc.getDocType();
@@ -70,8 +69,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     public Set<String> getFactoryByDocTypeNames() {

@@ -55,7 +55,7 @@ public class Properties extends HashMap<String, String> {
         super(props);
     }
 
-    public Properties(String content) throws Exception {
+    public Properties(String content) throws IOException {
         StringReader reader = new StringReader(content);
         loadProperties(reader, this);
     }
@@ -98,14 +98,14 @@ public class Properties extends HashMap<String, String> {
     }
 
     public static Map<String, String> loadProperties(Reader reader)
-            throws Exception {
+            throws IOException {
         Map<String, String> map = new HashMap<String, String>();
         loadProperties(reader, map);
         return map;
     }
 
     public static void loadProperties(Reader reader, Map<String, String> map)
-            throws Exception {
+            throws IOException {
         BufferedReader in = new BufferedReader(reader);
         String line = in.readLine();
         String prevLine = null;
@@ -135,7 +135,7 @@ public class Properties extends HashMap<String, String> {
     }
 
     protected static void setPropertyLine(Map<String, String> map, String line)
-            throws Exception {
+            throws IOException {
         int i = line.indexOf('=');
         if (i == -1) {
             throw new IOException("Invalid property line: " + line);

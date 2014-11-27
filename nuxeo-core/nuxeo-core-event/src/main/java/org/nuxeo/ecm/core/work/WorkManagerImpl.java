@@ -104,8 +104,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (QUEUES_EP.equals(extensionPoint)) {
             workQueueDescriptors.addContribution((WorkQueueDescriptor) contribution);
         } else if (IMPL_EP.equals(extensionPoint)) {
@@ -118,8 +117,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (QUEUES_EP.equals(extensionPoint)) {
             workQueueDescriptors.removeContribution((WorkQueueDescriptor) contribution);
         } else if (IMPL_EP.equals(extensionPoint)) {
@@ -273,7 +271,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         Framework.addListener(new ShutdownListener());
         init();
     }

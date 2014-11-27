@@ -49,9 +49,12 @@ public class ExternalBlobAdapterDescriptor {
         return properties;
     }
 
-    public ExternalBlobAdapter getAdapter() throws InstantiationException,
-            IllegalAccessException {
-        return adapter.newInstance();
+    public ExternalBlobAdapter getAdapter() {
+        try {
+            return adapter.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

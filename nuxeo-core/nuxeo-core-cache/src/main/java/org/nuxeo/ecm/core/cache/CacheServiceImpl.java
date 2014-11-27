@@ -62,7 +62,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override

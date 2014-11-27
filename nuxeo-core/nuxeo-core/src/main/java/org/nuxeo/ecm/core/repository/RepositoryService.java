@@ -65,7 +65,7 @@ public class RepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override

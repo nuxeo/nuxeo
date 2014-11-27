@@ -26,6 +26,7 @@ import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -69,8 +70,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SESSION_FACTORY)) {
             SessionFactoryDescriptor descriptor = (SessionFactoryDescriptor) contribution;
             registerSessionFactory(descriptor);
@@ -85,8 +85,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         // TODO deal with other extension points
         if (extensionPoint.equals(ACTION_PIPES)) {
             MessageActionPipeDescriptor descriptor = (MessageActionPipeDescriptor) contribution;
@@ -94,13 +93,11 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         }
     }
 
-    private void registerSessionFactory(SessionFactoryDescriptor descriptor)
-            throws Exception {
+    private void registerSessionFactory(SessionFactoryDescriptor descriptor) {
         sessionFactories.put(descriptor.getName(), descriptor);
     }
 
-    private void registerActionPipe(MessageActionPipeDescriptor descriptor)
-            throws Exception {
+    private void registerActionPipe(MessageActionPipeDescriptor descriptor) {
         if (!descriptor.getOverride()) {
             MessageActionPipeDescriptor existingDescriptor = actionPipeDescriptorsRegistry.get(descriptor.getName());
             if (existingDescriptor != null) {
@@ -126,12 +123,12 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         System.setProperty("mail.mime.decodefilename", "false");
     }
 
-    public Store getConnectedStore(String name) throws Exception {
+    public Store getConnectedStore(String name) throws MessagingException {
         return getConnectedStore(name, null);
     }
 
     public Store getConnectedStore(String name, Map<String, Object> context)
-            throws Exception {
+            throws MessagingException {
         Properties props = getProperties(name, context);
         Session session = newSession(props);
         Store store = session.getStore();
@@ -139,69 +136,78 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
         return store;
     }
 
-    private Properties getProperties(String name, Map<String, Object> map)
-            throws Exception {
+    private Properties getProperties(String name, Map<String, Object> map) {
         return getFetcher(name).getProperties(map);
     }
 
-    public Transport getConnectedTransport(String name) throws Exception {
+    public Transport getConnectedTransport(String name)
+            throws MessagingException {
         return getConnectedTransport(name, null);
     }
 
     public Transport getConnectedTransport(String name,
-            Map<String, Object> context) throws Exception {
+            Map<String, Object> context) throws MessagingException {
         Properties props = getProperties(name, context);
         Session session = newSession(props);
         Transport transport = session.getTransport();
-        transport.connect(props.getProperty("user"), props.getProperty("password"));
+        transport.connect(props.getProperty("user"),
+                props.getProperty("password"));
         return transport;
     }
 
-    public Session getSession(String name) throws Exception {
+    public Session getSession(String name) {
         return getSession(name, null);
     }
 
-    public Session getSession(String name, Map<String, Object> context)
-            throws Exception {
+    public Session getSession(String name, Map<String, Object> context) {
         Properties props = getProperties(name, context);
         return newSession(props);
     }
 
     public MailBoxActions getMailBoxActions(String factoryName,
-            String folderName) throws Exception {
+            String folderName) throws MessagingException {
         return getMailBoxActions(factoryName, folderName, null);
     }
 
     public MailBoxActions getMailBoxActions(String factoryName,
-            String folderName, Map<String, Object> context) throws Exception {
+            String folderName, Map<String, Object> context)
+            throws MessagingException {
         Store store = getConnectedStore(factoryName, context);
         Folder folder = store.getFolder(folderName);
         return new MailBoxActionsImpl(folder, true);
     }
 
     public void sendMail(String text, String subject, String factory,
-            Address[] recipients) throws Exception {
+            Address[] recipients) {
         sendMail(text, subject, factory, recipients, null);
     }
 
     public void sendMail(String text, String subject, String factory,
-            Address[] recipients, Map<String, Object> context) throws Exception {
+            Address[] recipients, Map<String, Object> context) {
         Session session = getSession(factory, context);
         Message message = new MimeMessage(session);
-        message.setFrom();
-        message.setSubject(subject);
-        message.setRecipients(Message.RecipientType.TO, recipients);
-        message.setText(text);
-        Transport.send(message);
+        try {
+            message.setFrom();
+            message.setSubject(subject);
+            message.setRecipients(Message.RecipientType.TO, recipients);
+            message.setText(text);
+            Transport.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public PropertiesFetcher getFetcher(String name) throws Exception {
+    public PropertiesFetcher getFetcher(String name) {
         PropertiesFetcher fetcher = configuredFetchers.get(name);
         if (fetcher == null) {
             String fetcherName = sessionFactories.get(name).getFetcherName();
             Class<? extends PropertiesFetcher> clazz = fetchers.get(fetcherName);
             SessionFactoryDescriptor descriptor = sessionFactories.get(name);
-            fetcher = clazz.newInstance();
+            try {
+                fetcher = clazz.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
             fetcher.configureFetcher(descriptor.getProperties());
             configuredFetchers.put(name, fetcher);
         }

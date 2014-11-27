@@ -20,6 +20,8 @@
 package org.nuxeo.runtime.jetty;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -41,6 +43,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.xml.sax.SAXException;
 
 /**
  * This component registers and configures an embedded Jetty server.
@@ -57,7 +60,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Third, the root collection is registered. This way all requests not handled
  * by regular wars are directed to the root war, which usually is the webengine
  * war in a nxserver application.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JettyComponent extends DefaultComponent {
@@ -98,7 +101,7 @@ public class JettyComponent extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
 
         // apply bundled configuration
         URL cfg = null;
@@ -106,25 +109,54 @@ public class JettyComponent extends DefaultComponent {
         String cfgName = Framework.getProperty("org.nuxeo.jetty.config");
         if (cfgName != null) {
             if (cfgName.contains(":/")) {
-                cfg = new URL(cfgName);
+                try {
+                    cfg = new URL(cfgName);
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
             } else { // assume a file
                 File file = new File(cfgName);
                 if (file.isFile()) {
-                    cfg = file.toURI().toURL();
+                    try {
+                        cfg = file.toURI().toURL();
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         } else {
             File file = new File(Environment.getDefault().getConfig(),
                     "jetty.xml");
             if (file.isFile()) {
-                cfg = file.toURI().toURL();
+                try {
+                    cfg = file.toURI().toURL();
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         boolean hasConfigFile = false;
         if (cfg != null) {
             hasConfigFile = true;
-            XmlConfiguration configuration = new XmlConfiguration(cfg);
-            server = (Server) configuration.configure();
+            XmlConfiguration configuration;
+            try {
+                configuration = new XmlConfiguration(cfg);
+            } catch (SAXException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                server = (Server) configuration.configure();
+            } catch (Exception e) { // stupid jetty API throws Exception
+                if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                } else {
+                    if (e instanceof InterruptedException) {
+                        // restore interrupted status
+                        Thread.currentThread().interrupt();
+                    }
+                    throw new RuntimeException(e);
+                }
+            }
         } else {
             int p = 8080;
             String port = Environment.getDefault().getProperty("http_port");
@@ -184,16 +216,27 @@ public class JettyComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         ctxMgr = null;
-        server.stop();
+        try {
+            server.stop();
+        } catch (Exception e) { // stupid jetty API throws Exception
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                if (e instanceof InterruptedException) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
+                }
+                throw new RuntimeException(e);
+            }
+        }
         server = null;
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_WEB_APP.equals(extensionPoint)) {
             File home = Environment.getDefault().getHome();
             WebApplication app = (WebApplication) contribution;
@@ -256,8 +299,7 @@ public class JettyComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_WEB_APP.equals(extensionPoint)) {
 
         } else if (XP_FILTER.equals(extensionPoint)) {
@@ -279,8 +321,8 @@ public class JettyComponent extends DefaultComponent {
 
     // let's nuxeo runtime get access to the JNDI context
     // injected through the JettyTransactionalListener
-    protected ClassLoader nuxeoCL; 
-    
+    protected ClassLoader nuxeoCL;
+
     public void setNuxeoClassLoader(ClassLoader cl) {
         nuxeoCL = cl;
     }
@@ -294,14 +336,14 @@ public class JettyComponent extends DefaultComponent {
         }
         return nuxeoCL;
     }
-    
+
     @Override
     public int getApplicationStartedOrder() {
         return -100;
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (server == null) {
             return;
         }

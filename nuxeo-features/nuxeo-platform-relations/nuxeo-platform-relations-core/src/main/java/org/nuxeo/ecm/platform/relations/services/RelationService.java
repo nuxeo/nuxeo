@@ -517,7 +517,7 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         Thread t = new Thread("relation-service-init") {
             @Override
             public void run() {

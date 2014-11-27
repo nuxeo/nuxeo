@@ -41,7 +41,7 @@ public class LocationManagerService extends DefaultComponent {
     private Map<String, RepositoryLocation> locations = new HashMap<String, RepositoryLocation>();
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             register((LocationManagerPluginExtension) contrib);
@@ -68,7 +68,7 @@ public class LocationManagerService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         locations.clear();
         locations = null;
     }

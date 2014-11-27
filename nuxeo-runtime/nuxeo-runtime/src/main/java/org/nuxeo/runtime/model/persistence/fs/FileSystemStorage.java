@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +31,7 @@ import org.nuxeo.runtime.model.persistence.ContributionStorage;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -48,25 +50,35 @@ public class FileSystemStorage implements ContributionStorage {
         root.mkdirs();
     }
 
-    public static synchronized String safeRead(File file) throws IOException {
-        return FileUtils.readFile(file);
+    public static synchronized String safeRead(File file) {
+        try {
+            return FileUtils.readFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static synchronized void safeWrite(File file, String content)
-            throws IOException {
-        FileUtils.writeFile(file, content);
+    public static synchronized void safeWrite(File file, String content) {
+        try {
+            FileUtils.writeFile(file, content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static synchronized boolean safeCreate(File file, String content)
-            throws IOException {
+    public static synchronized boolean safeCreate(File file, String content) {
         if (file.isFile()) {
             return false;
         }
-        FileUtils.writeFile(file, content);
+        try {
+            FileUtils.writeFile(file, content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return true;
     }
 
-    public static synchronized boolean safeRemove(File file) throws IOException {
+    public static synchronized boolean safeRemove(File file) {
         return file.delete();
     }
 
@@ -104,8 +116,7 @@ public class FileSystemStorage implements ContributionStorage {
     }
 
     @Override
-    public Contribution addContribution(Contribution contribution)
-            throws Exception {
+    public Contribution addContribution(Contribution contribution) {
         File file = new File(root, contribution.getName() + ".xml");
         String content = contribution.getContent();
         if (safeCreate(file, content)) {
@@ -141,18 +152,27 @@ public class FileSystemStorage implements ContributionStorage {
     }
 
     @Override
-    public boolean removeContribution(Contribution contrib) throws Exception {
+    public boolean removeContribution(Contribution contrib) {
         return safeRemove(new File(root, contrib.getName() + ".xml"));
     }
 
     @Override
-    public Contribution updateContribution(Contribution contribution)
-            throws Exception {
+    public Contribution updateContribution(Contribution contribution) {
         File file = new File(root, contribution.getName() + ".xml");
         String content = safeRead(file);
-        DocumentBuilder docBuilder = factory.newDocumentBuilder();
-        Document doc = docBuilder.parse(new ByteArrayInputStream(
-                content.getBytes()));
+        DocumentBuilder docBuilder;
+        try {
+            docBuilder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        Document doc;
+        try {
+            doc = docBuilder.parse(new ByteArrayInputStream(
+                    content.getBytes()));
+        } catch (SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
         Element root = doc.getDocumentElement();
         if (contribution.isDisabled()) {
             root.setAttribute("disabled", "true");
@@ -178,7 +198,11 @@ public class FileSystemStorage implements ContributionStorage {
         el.appendChild(doc.createTextNode(description));
         root.appendChild(el);
 
-        safeWrite(file, DOMSerializer.toString(doc));
+        try {
+            safeWrite(file, DOMSerializer.toString(doc));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return getContribution(contribution.getName());
     }
 

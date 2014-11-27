@@ -32,18 +32,18 @@ public class ReloadableComponent extends DefaultComponent implements Reloadable 
     protected List<Extension> extensions = new ArrayList<Extension>();
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         super.registerExtension(extension);
         extensions.add(extension);
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         extensions.remove(extension);
         super.unregisterExtension(extension);
     }
 
-    public void reload(ComponentContext context) throws Exception {
+    public void reload(ComponentContext context) {
         deactivate(context);
         activate(context);
         for (Extension xt : extensions) {

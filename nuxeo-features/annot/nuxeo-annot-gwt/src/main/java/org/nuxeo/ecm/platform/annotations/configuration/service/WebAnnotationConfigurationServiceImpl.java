@@ -67,7 +67,7 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
     private Map<String, String> fieldLabels;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         annotationDefinitionsDescriptors = new HashMap<String, WebAnnotationDefinitionDescriptor>();
         filterDescriptors = new HashMap<String, FilterDescriptor>();
         displayedFields = new HashSet<String>();
@@ -75,7 +75,7 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         annotationDefinitionsDescriptors = null;
         userInfoMapper = null;
         filterDescriptors = null;
@@ -85,8 +85,7 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ANNOTATION_TYPES_EXTENSION_POINT.equals(extensionPoint)) {
             WebAnnotationDefinitionDescriptor descriptor = (WebAnnotationDefinitionDescriptor) contribution;
             if (annotationDefinitionsDescriptors.put(descriptor.getName(),
@@ -96,10 +95,10 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
             }
         } else if (USER_INFO_EXTENSION_POINT.equals(extensionPoint)) {
             UserInfoMapperDescriptor descriptor = (UserInfoMapperDescriptor) contribution;
-            userInfoMapper = descriptor.getKlass().newInstance();
+            userInfoMapper = newInstance(descriptor.getKlass());
         } else if (WEB_PERMISSION_EXTENSION_POINT.equals(extensionPoint)) {
             WebPermissionDescriptor descriptor = (WebPermissionDescriptor) contribution;
-            webPermission = descriptor.getKlass().newInstance();
+            webPermission = newInstance(descriptor.getKlass());
         } else if (FILTERS_EXTENSION_POINT.equals(extensionPoint)) {
             FilterDescriptor descriptor = (FilterDescriptor) contribution;
             if (filterDescriptors.put(descriptor.getName(), descriptor) != null) {
@@ -122,10 +121,17 @@ public class WebAnnotationConfigurationServiceImpl extends DefaultComponent
         }
     }
 
+    protected <T> T newInstance(Class<T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ANNOTATION_TYPES_EXTENSION_POINT.equals(extensionPoint)) {
             WebAnnotationDefinitionDescriptor descriptor = (WebAnnotationDefinitionDescriptor) contribution;
             annotationDefinitionsDescriptors.remove(descriptor.getName());

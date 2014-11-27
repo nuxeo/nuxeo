@@ -65,9 +65,9 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
 /**
  * Abstract class to share code between {@link AuditBackend} implementations
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public abstract class AbstractAuditBackend implements AuditBackend {
 
@@ -76,7 +76,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     protected NXAuditEventsService component;
 
     @Override
-    public void activate(NXAuditEventsService component) throws Exception {
+    public void activate(NXAuditEventsService component) {
         this.component = component;
     }
 

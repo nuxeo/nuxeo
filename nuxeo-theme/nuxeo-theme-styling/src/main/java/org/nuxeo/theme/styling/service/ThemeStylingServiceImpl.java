@@ -16,6 +16,7 @@
  */
 package org.nuxeo.theme.styling.service;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     // Runtime Component API
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         pageReg = new PageRegistry();
         flavorReg = new FlavorRegistry();
@@ -90,8 +91,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof Flavor) {
             Flavor flavor = (Flavor) contribution;
             log.info(String.format("Register flavor '%s'", flavor.getName()));
@@ -125,8 +125,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof Flavor) {
             Flavor flavor = (Flavor) contribution;
             flavorReg.removeContribution(flavor);
@@ -163,11 +162,19 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             pageReg.removeContribution(themePage);
             ThemePage newThemePage = pageReg.getThemePage(themePage.getName());
             if (newThemePage == null) {
-                unRegisterThemePageResources(themePage);
+                try {
+                    unRegisterThemePageResources(themePage);
+                } catch (ThemeException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 if (!Framework.getRuntime().isShuttingDown()) {
                     // reload conf
-                    postRegisterThemePageResources(newThemePage);
+                    try {
+                        postRegisterThemePageResources(newThemePage);
+                    } catch (ThemeException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         } else {
@@ -177,7 +184,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected void registerPage(ThemePage themePage) throws Exception {
+    protected void registerPage(ThemePage themePage) {
         String themePageName = themePage.getName();
         ThemePage existingPage = pageReg.getThemePage(themePageName);
         pageReg.addContribution(themePage);
@@ -188,13 +195,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
             } else {
                 // reload this page
                 ThemePage newPage = pageReg.getThemePage(themePageName);
-                postRegisterThemePageResources(newPage);
+                try {
+                    postRegisterThemePageResources(newPage);
+                } catch (ThemeException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
 
-    protected void registerFlavor(Flavor flavor, RuntimeContext extensionContext)
-            throws Exception {
+    protected void registerFlavor(Flavor flavor, RuntimeContext extensionContext) {
         // set flavor presets files content
         List<FlavorPresets> presets = flavor.getPresets();
         if (presets != null) {
@@ -205,7 +215,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                     log.error(String.format("Could not find resource at '%s'",
                             src));
                 } else {
-                    String content = new String(FileUtils.readBytes(url));
+                    String content;
+                    try {
+                        content = new String(FileUtils.readBytes(url));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     myPreset.setContent(content);
                 }
             }
@@ -343,7 +358,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     }
 
     protected void registerResource(ResourceType resource,
-            RuntimeContext extensionContext) throws Exception {
+            RuntimeContext extensionContext) {
         ResourceType oldResource = resourceReg.getResource(resource.getName());
         if (oldResource != null) {
             // unregister it in case it was there
@@ -368,7 +383,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
     }
 
     protected void registerStyle(SimpleStyle style,
-            RuntimeContext extensionContext) throws Exception {
+            RuntimeContext extensionContext) {
         // load the style content
         String src = style.getSrc();
         if (src == null) {
@@ -380,7 +395,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
         if (url == null) {
             log.error(String.format("Could not find resource at '%s'", src));
         } else {
-            String cssSource = new String(FileUtils.readBytes(url));
+            String cssSource;
+            try {
+                cssSource = new String(FileUtils.readBytes(url));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             style.setContent(cssSource);
         }
         styleReg.addContribution(style);

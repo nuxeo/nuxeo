@@ -36,9 +36,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Contains the Hibernate based (legacy) implementation
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class DefaultAuditBackend extends AbstractAuditBackend implements
         AuditBackend {
@@ -74,7 +74,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public void deactivate() throws Exception {
+    public void deactivate() {
         deactivatePersistenceProvider();
     }
 

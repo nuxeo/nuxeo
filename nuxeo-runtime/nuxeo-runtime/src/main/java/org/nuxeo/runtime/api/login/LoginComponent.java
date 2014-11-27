@@ -66,7 +66,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     private SecurityDomain clientLogin;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         LoginConfiguration.INSTANCE.install(new LoginConfiguration.Provider() {
 
             @Override
@@ -78,7 +78,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         LoginConfiguration.INSTANCE.uninstall();
     }
 

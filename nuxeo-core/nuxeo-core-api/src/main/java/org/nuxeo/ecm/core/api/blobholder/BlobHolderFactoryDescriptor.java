@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * XMap descriptor for contributed factories.
@@ -52,9 +53,12 @@ public class BlobHolderFactoryDescriptor implements Serializable {
         return facet;
     }
 
-    public BlobHolderFactory getFactory() throws InstantiationException,
-            IllegalAccessException {
-        return (BlobHolderFactory) adapterClass.newInstance();
+    public BlobHolderFactory getFactory() {
+        try {
+            return (BlobHolderFactory) adapterClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
     }
 
 }

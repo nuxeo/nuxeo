@@ -59,7 +59,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
 
     protected final HashMap<String,DocumentLoader> loaders =
             new HashMap<String,DocumentLoader>();
-    
+
     public void addSession(String sid, WSRemotingSession session) {
         log.debug("Adding a new Web Service remoting session for username="
                 + session.getUsername());
@@ -94,8 +94,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if ("loaders".equals(extensionPoint)) {
             registerLoader((DocumentLoaderDescriptor)contribution);
         }
@@ -115,7 +114,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
             loader.fillProperties(doc, props, rs);
         }
     }
-    
+
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (DocumentLoader.class.isAssignableFrom(adapter)) {

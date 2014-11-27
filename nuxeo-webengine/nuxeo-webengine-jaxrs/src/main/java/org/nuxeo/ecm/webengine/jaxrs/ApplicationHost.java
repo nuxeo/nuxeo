@@ -89,8 +89,7 @@ public class ApplicationHost extends Application {
         this.rendering = rendering;
     }
 
-    public synchronized void addExtension(ResourceExtension xt)
-            throws Exception {
+    public synchronized void addExtension(ResourceExtension xt) {
         extensions.put(xt.getId(), xt);
         class2Bundles.put(xt.getResourceClass(), xt.getBundle());
         if (rendering != null) {
@@ -98,8 +97,7 @@ public class ApplicationHost extends Application {
         }
     }
 
-    public synchronized void removeExtension(ResourceExtension xt)
-            throws Exception {
+    public synchronized void removeExtension(ResourceExtension xt) {
         extensions.remove(xt.getId());
         class2Bundles.remove(xt.getResourceClass());
         if (rendering != null) {
@@ -140,7 +138,7 @@ public class ApplicationHost extends Application {
         listeners.remove(listener);
     }
 
-    public synchronized void reload() throws Exception {
+    public synchronized void reload() {
         for (ApplicationFragment fragment : apps) {
             fragment.reload();
         }

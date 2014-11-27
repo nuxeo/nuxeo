@@ -51,13 +51,12 @@ public class AnnotationsComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         ExtensionPoint point = Enum.valueOf(ExtensionPoint.class,
                 extensionPoint);
         switch (point) {
         case uriResolver:
-            UriResolver resolver = ((UriResolverDescriptor) contribution).getKlass().newInstance();
+            UriResolver resolver = newInstance(((UriResolverDescriptor) contribution).getKlass());
             configuration.setUriResolver(resolver);
             break;
         case urlPatternFilter:
@@ -68,23 +67,23 @@ public class AnnotationsComponent extends DefaultComponent {
             configuration.setFilter(filter);
             break;
         case metadataMapper:
-            MetadataMapper mapper = ((MetadataMapperDescriptor) contribution).getKlass().newInstance();
+            MetadataMapper mapper = newInstance(((MetadataMapperDescriptor) contribution).getKlass());
             configuration.setMetadataMapper(mapper);
             break;
         case permissionManager:
-            PermissionManager manager = ((PermissionManagerDescriptor) contribution).getKlass().newInstance();
+            PermissionManager manager = newInstance(((PermissionManagerDescriptor) contribution).getKlass());
             configuration.setPermissionManager(manager);
             break;
         case annotabilityManager:
-            AnnotabilityManager annotabilityManager = ((AnnotabilityManagerDescriptor) contribution).getKlass().newInstance();
+            AnnotabilityManager annotabilityManager = newInstance(((AnnotabilityManagerDescriptor) contribution).getKlass());
             configuration.setAnnotabilityManager(annotabilityManager);
             break;
         case eventListener:
             Class<? extends EventListener> listener = ((EventListenerDescriptor) contribution).getListener();
-            configuration.addListener(listener.newInstance());
+            configuration.addListener(newInstance(listener));
             break;
         case annotationIDGenerator:
-            AnnotationIDGenerator generator = ((AnnotationIDGeneratorDescriptor) contribution).getKlass().newInstance();
+            AnnotationIDGenerator generator = newInstance(((AnnotationIDGeneratorDescriptor) contribution).getKlass());
             configuration.setIDGenerator(generator);
             break;
         case permissionMapper:
@@ -93,12 +92,20 @@ public class AnnotationsComponent extends DefaultComponent {
         }
     }
 
-    @Override
-    public void activate(ComponentContext context) throws Exception {
+    protected <T> T newInstance(Class<T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
     }
 
     @SuppressWarnings("unchecked")

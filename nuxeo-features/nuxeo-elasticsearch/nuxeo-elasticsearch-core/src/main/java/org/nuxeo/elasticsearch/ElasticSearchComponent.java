@@ -90,8 +90,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     // Nuxeo Component impl ======================================é=============
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
         case EP_LOCAL:
             ElasticSearchLocalConfig localContrib = (ElasticSearchLocalConfig) contribution;
@@ -141,7 +140,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (! isElasticsearchEnabled()) {
             log.info("Elasticsearch service is disabled");
             return;
@@ -157,7 +156,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         if (esa != null) {
             esa.disconnect();
         }

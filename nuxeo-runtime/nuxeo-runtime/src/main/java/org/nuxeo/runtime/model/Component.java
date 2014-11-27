@@ -32,9 +32,8 @@ public interface Component extends Extensible, TimestampedService {
      * This method is called by the runtime when a component is activated.
      *
      * @param context the runtime context
-     * @throws Exception if an error occurs during activation
      */
-    void activate(ComponentContext context) throws Exception;
+    void activate(ComponentContext context);
 
     /**
      * Deactivates the component.
@@ -42,9 +41,8 @@ public interface Component extends Extensible, TimestampedService {
      * This method is called by the runtime when a component is deactivated.
      *
      * @param context the runtime context
-     * @throws Exception if an error occurs during activation
      */
-    void deactivate(ComponentContext context) throws Exception;
+    void deactivate(ComponentContext context);
 
     /**
      * The component notification order for {@link #applicationStarted}.
@@ -61,9 +59,7 @@ public interface Component extends Extensible, TimestampedService {
     /**
      * Notify the component that Nuxeo Framework finished starting all Nuxeo
      * bundles.
-     *
-     * @throws Exception
      */
-    void applicationStarted(ComponentContext context) throws Exception;
+    void applicationStarted(ComponentContext context);
 
 }

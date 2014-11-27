@@ -51,7 +51,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
     protected DirectoryFactoryMapperRegistry factoriesByDirectoryName;
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (Framework.isTestModeSet()) {
             // when testing, DatabaseHelper init hasn't occurred yet,
             // so keep to lazy initialization
@@ -181,13 +181,13 @@ public class DirectoryServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         factories = new DirectoryFactoryRegistry();
         factoriesByDirectoryName = new DirectoryFactoryMapperRegistry();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         for (DirectoryFactory factory : factories.getFactories()) {
             factory.shutdown();
         }
@@ -196,7 +196,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contrib;
@@ -207,7 +207,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contrib;

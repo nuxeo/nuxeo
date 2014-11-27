@@ -71,7 +71,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         filters = new HashMap<String, Filter>();
         leafFilters = new HashMap<String, Filter>();
@@ -80,7 +80,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         filters = null;
         leafFilters = null;
         sorters = null;
@@ -90,8 +90,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PLUGIN_EXTENSION_POINT.equals(extensionPoint)) {
             TreeManagerPluginDescriptor plugin = (TreeManagerPluginDescriptor) contribution;
             String name = plugin.getName();
@@ -133,8 +132,7 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PLUGIN_EXTENSION_POINT.equals(extensionPoint)) {
             TreeManagerPluginDescriptor plugin = (TreeManagerPluginDescriptor) contribution;
             String name = plugin.getName();

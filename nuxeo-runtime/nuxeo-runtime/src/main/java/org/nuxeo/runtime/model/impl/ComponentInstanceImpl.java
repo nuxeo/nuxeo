@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
 import org.nuxeo.runtime.model.Component;
@@ -51,14 +52,14 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     protected List<OSGiServiceFactory> factories;
 
-    public ComponentInstanceImpl(RegistrationInfoImpl ri) throws Exception {
+    public ComponentInstanceImpl(RegistrationInfoImpl ri) {
         this.ri = ri;
         if (ri.implementation == null) {
             // TODO: should be an extension component
             instance = this;
         } else {
             // TODO: load class only once when creating the registration info
-            instance = this.ri.context.loadClass(this.ri.implementation).newInstance();
+            instance = createInstance();
         }
     }
 
@@ -83,17 +84,25 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
-    public void create() throws Exception {
+    public void create() {
         if (ri.implementation == null) {
             instance = this; // should be an extension component
         } else {
             // TODO: load class only once when creating the reshgitration info
-            instance = ri.context.loadClass(ri.implementation).newInstance();
+            instance = createInstance();
+        }
+    }
+
+    protected Object createInstance() {
+        try {
+            return ri.context.loadClass(ri.implementation).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeServiceException(e);
         }
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         deactivate();
         instance = null;
         ri = null;
@@ -112,7 +121,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     // TODO: cache info about implementation to avoid computing it each time
     @Override
-    public void activate() throws Exception {
+    public void activate() {
         // activate the implementation instance
         try {
             if (instance instanceof Component) {
@@ -134,7 +143,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     // TODO: cache info about implementation to avoid computing it each time
     @Override
-    public void deactivate() throws Exception {
+    public void deactivate() {
         // activate the implementation instance
         try {
             unregisterServices();
@@ -156,7 +165,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     @Override
-    public void reload() throws Exception {
+    public void reload() {
         // activate the implementation instance
         try {
             if (instance instanceof ReloadableComponent) {
@@ -177,7 +186,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     // TODO: cache info about implementation to avoid computing it each time
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         // if this the target extension point is extending another extension
         // point from another component
         // then delegate the registration to the that component component
@@ -218,7 +227,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
     // TODO: cache info about implementation to avoid computing it each time
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         // activate the implementation instance
         if (instance instanceof Component) {
             ((Component) instance).unregisterExtension(extension);
@@ -293,7 +302,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     /**
      * Register provided services as OSGi services
      */
-    public void registerServices() throws Exception {
+    public void registerServices() {
         if (!Framework.isOSGiServiceSupported()) {
             return;
         }
@@ -308,7 +317,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
-    public void unregisterServices() throws Exception {
+    public void unregisterServices() {
         // TODO the reload method is not reloading services. do we want this?
         if (factories != null) {
             for (OSGiServiceFactory factory : factories) {
@@ -331,13 +340,16 @@ public class ComponentInstanceImpl implements ComponentInstance {
 
         protected ServiceRegistration reg;
 
-        public OSGiServiceFactory(String className) throws Exception {
+        public OSGiServiceFactory(String className) {
             this(ri.getContext().getBundle(), className);
         }
 
-        public OSGiServiceFactory(Bundle bundle, String className)
-                throws Exception {
-            clazz = ri.getContext().getBundle().loadClass(className);
+        public OSGiServiceFactory(Bundle bundle, String className) {
+            try {
+                clazz = ri.getContext().getBundle().loadClass(className);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeServiceException(e);
+            }
         }
 
         @Override

@@ -42,13 +42,13 @@ public class MetricComponent extends DefaultComponent {
     protected final MetricRegisteringCallback registeringCB = new  MetricRegisteringCallback(register);
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         doStart();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         doStop();
         super.deactivate(context);
     }

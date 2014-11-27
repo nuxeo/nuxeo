@@ -43,7 +43,7 @@ public class NavTreeService extends DefaultComponent {
     protected NavTreeRegistry registry;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         registry = new NavTreeRegistry();
     }
 
@@ -54,8 +54,7 @@ public class NavTreeService extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.addContribution(contrib);
@@ -69,8 +68,7 @@ public class NavTreeService extends DefaultComponent {
      */
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.removeContribution(contrib);

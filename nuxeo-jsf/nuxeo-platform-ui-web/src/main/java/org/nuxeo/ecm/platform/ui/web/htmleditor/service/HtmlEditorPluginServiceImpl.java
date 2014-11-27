@@ -43,12 +43,12 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements
     private Map<String, HtmlEditorPluginDescriptor> pluginsDescriptors;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         pluginsDescriptors = new HashMap<String, HtmlEditorPluginDescriptor>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         pluginsDescriptors = null;
     }
 

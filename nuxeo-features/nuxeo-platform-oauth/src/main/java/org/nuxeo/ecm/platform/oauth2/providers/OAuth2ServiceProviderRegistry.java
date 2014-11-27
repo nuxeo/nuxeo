@@ -24,6 +24,5 @@ public interface OAuth2ServiceProviderRegistry {
 
     NuxeoOAuth2ServiceProvider addProvider(String serviceName,
             String tokenServerURL, String authorizationServerURL,
-            String clientId, String clientSecret, List<String> scopes)
-            throws Exception;
+            String clientId, String clientSecret, List<String> scopes);
 }

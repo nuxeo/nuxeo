@@ -45,8 +45,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         MockMemoryDirectoryDescriptor desc = (MockMemoryDirectoryDescriptor) contribution;
         String directoryName = desc.name;
         reg.put(directoryName, desc);
@@ -60,8 +59,7 @@ public class MockMemoryDirectoryFactory extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         String directoryName = ((MockMemoryDirectoryDescriptor) contribution).name;
         reg.remove(directoryName);
         try {

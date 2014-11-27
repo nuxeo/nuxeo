@@ -34,8 +34,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ENDPOINT_EP.equals(extensionPoint)) {
             regitry.addContribution((WSEndpointDescriptor) contribution);
         } else {
@@ -45,8 +44,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ENDPOINT_EP.equals(extensionPoint)) {
             WSEndpointDescriptor descriptor = (WSEndpointDescriptor) contribution;
             stopIfExists(descriptor.name);
@@ -55,7 +53,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
 
         for (Endpoint ep : endpoints.values()) {
@@ -65,7 +63,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (!Framework.isTestModeSet()) {
             publishEndpoints();
         }

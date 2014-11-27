@@ -112,7 +112,7 @@ public class FileEventTracker extends DefaultComponent {
             });
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         self = this;
         filesListener.install();
@@ -123,12 +123,12 @@ public class FileEventTracker extends DefaultComponent {
     public int getApplicationStartedOrder() {
     	return Integer.MAX_VALUE;
     }
-    
+
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         resetThreadDelegate();
         Framework.addListener(new RuntimeServiceListener() {
-			
+
 			@Override
 			public void handleEvent(RuntimeServiceEvent event) {
 				if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
@@ -139,9 +139,9 @@ public class FileEventTracker extends DefaultComponent {
 			}
 		});
     }
-    
+
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
     	resetThreadDelegate();
         if (Framework.getService(EventService.class) != null) {
             if (threadsListener.isInstalled()) {
@@ -155,8 +155,7 @@ public class FileEventTracker extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof EnableThreadsTracking) {
             threadsListener.install();
         } else {

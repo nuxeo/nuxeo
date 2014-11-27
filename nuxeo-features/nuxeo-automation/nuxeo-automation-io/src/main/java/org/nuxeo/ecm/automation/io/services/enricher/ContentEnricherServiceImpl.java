@@ -66,8 +66,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (ENRICHER.equals(extensionPoint)) {
             ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
@@ -78,8 +77,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ENRICHER.equals(extensionPoint)) {
             ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
             if (descriptorRegistry.containsKey(cd.name)) {

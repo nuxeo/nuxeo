@@ -34,12 +34,12 @@ public class BinaryManagerService extends DefaultComponent {
     protected Map<String, BinaryManager> registry = new ConcurrentHashMap<String, BinaryManager>();
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         registry.clear();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         registry.clear();
     }
 

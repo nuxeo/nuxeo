@@ -57,8 +57,7 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (ADAPTER_FACTORY_EP.equals(extensionPoint)) {
             AdapterFactoryDescriptor desc = (AdapterFactoryDescriptor) contribution;
@@ -72,17 +71,24 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements
             }
         } else if (PREVIEWED_MIME_TYPE.equals(extensionPoint)) {
             MimeTypePreviewerDescriptor desc = (MimeTypePreviewerDescriptor) contribution;
-            previewerFactory.put(desc.getPattern(), desc.getKlass().newInstance());
+            previewerFactory.put(desc.getPattern(), newInstance(desc.getKlass()));
         } else if (BLOB_POST_PROCESSOR_EP.equals(extensionPoint)) {
             BlobPostProcessorDescriptor desc = (BlobPostProcessorDescriptor) contribution;
-            blobPostProcessors.add(desc.getKlass().newInstance());
+            blobPostProcessors.add(newInstance(desc.getKlass()));
+        }
+    }
+
+    protected <T> T newInstance(Class<T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     // service interface impl

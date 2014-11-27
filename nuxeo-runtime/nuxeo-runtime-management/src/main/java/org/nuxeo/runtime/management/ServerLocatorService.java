@@ -51,8 +51,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(LOCATORS_EXT_KEY)) {
             doRegisterLocator((ServerLocatorDescriptor) contribution);
         }
@@ -60,8 +59,7 @@ public class ServerLocatorService extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(LOCATORS_EXT_KEY)) {
             doUnregisterLocator((ServerLocatorDescriptor) contribution);
         }

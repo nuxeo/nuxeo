@@ -55,18 +55,18 @@ public class UIDGeneratorService extends DefaultComponent {
     private final Map<String, UIDGenerator> generators = new HashMap<String, UIDGenerator>();
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         UIDSequencerImpl.dispose();
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         log.debug("<registerExtension>");
         super.registerExtension(extension);
 
@@ -99,17 +99,20 @@ public class UIDGeneratorService extends DefaultComponent {
         }
     }
 
-    private void registerGenerators(Extension extension, final Object[] contribs)
-            throws InstantiationException, IllegalAccessException,
-            ClassNotFoundException {
+    private void registerGenerators(Extension extension, final Object[] contribs) {
 
         // read the list of generators
         for (Object contrib : contribs) {
             final UIDGeneratorDescriptor generatorDescriptor = (UIDGeneratorDescriptor) contrib;
             final String generatorName = generatorDescriptor.getName();
 
-            final UIDGenerator generator = (UIDGenerator) extension.getContext().loadClass(
-                    generatorDescriptor.getClassName()).newInstance();
+            UIDGenerator generator;
+            try {
+                generator = (UIDGenerator) extension.getContext().loadClass(
+                        generatorDescriptor.getClassName()).newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
 
             final String[] propNames = generatorDescriptor.getPropertyNames();
             if (propNames.length == 0) {
@@ -147,7 +150,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         log.debug("<unregisterExtension>");
         super.unregisterExtension(extension);
     }

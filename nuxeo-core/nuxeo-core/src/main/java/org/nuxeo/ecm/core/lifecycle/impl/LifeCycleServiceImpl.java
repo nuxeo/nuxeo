@@ -154,7 +154,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
      * Register extensions.
      */
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] contributions = extension.getContributions();
         if (contributions != null) {
             String point = extension.getExtensionPoint();
@@ -178,7 +178,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
      * Unregisters an extension.
      */
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         super.unregisterExtension(extension);
         Object[] contributions = extension.getContributions();
         if (contributions != null) {

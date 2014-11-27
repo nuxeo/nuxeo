@@ -58,7 +58,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     protected static Log log = LogFactory.getLog(ComputedGroupsServiceImpl.class);
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         computers = new HashMap<String, GroupComputerDescriptor>();
         computerNames = new ArrayList<String>();
@@ -66,8 +66,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (COMPUTER_EP.equals(extensionPoint)) {
             if (contribution instanceof GroupComputerDescriptor) {
@@ -90,7 +89,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                 }
                 return;
             } else {
-                throw new Exception(
+                throw new RuntimeException(
                         "Waiting GroupComputerDescriptor contribution kind, please look component "
                                 + contributor.getName());
             }
@@ -278,7 +277,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
 
     }

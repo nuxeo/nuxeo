@@ -40,15 +40,14 @@ public class IOComponent extends DefaultComponent {
     private ObjectCodecService codecs;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
         codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_CODECS.equals(extensionPoint)) {
             CodecDescriptor codec = (CodecDescriptor) contribution;
             codecs.addCodec(codec.newInstance());
@@ -57,8 +56,7 @@ public class IOComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_CODECS.equals(extensionPoint)) {
             CodecDescriptor codec = (CodecDescriptor) contribution;
             codecs.removeCodec(codec.newInstance().getJavaType());
@@ -78,7 +76,7 @@ public class IOComponent extends DefaultComponent {
 
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
         codecs.postInit();
     }

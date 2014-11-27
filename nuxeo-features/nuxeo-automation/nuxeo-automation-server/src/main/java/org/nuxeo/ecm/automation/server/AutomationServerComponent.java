@@ -66,7 +66,7 @@ public class AutomationServerComponent extends DefaultComponent implements
     protected List<Class<? extends MessageBodyReader<?>>> readers;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         bindings = new HashMap<String, RestBinding>();
         writers = new ArrayList<>();
         readers = new ArrayList<>();
@@ -76,15 +76,14 @@ public class AutomationServerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         bindings = null;
         me = null;
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             addBinding(binding);
@@ -100,8 +99,7 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             removeBinding(binding);
@@ -120,7 +118,7 @@ public class AutomationServerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
     }
 

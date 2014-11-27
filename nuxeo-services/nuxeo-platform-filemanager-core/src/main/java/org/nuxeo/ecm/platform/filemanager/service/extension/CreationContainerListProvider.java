@@ -71,6 +71,6 @@ public interface CreationContainerListProvider {
      * @return the list of candidate containers
      */
     DocumentModelList getCreationContainerList(CoreSession documentManager,
-            String docType) throws Exception;
+            String docType);
 
 }

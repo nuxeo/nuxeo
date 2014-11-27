@@ -38,14 +38,14 @@ public class PathSegmentComponent extends DefaultComponent implements
     protected boolean recompute;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         contribs = new LinkedList<Class<? extends PathSegmentService>>();
         recompute = true;
         service = null;
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         contribs.clear();
         service = null;
     }
@@ -53,7 +53,7 @@ public class PathSegmentComponent extends DefaultComponent implements
     @Override
     @SuppressWarnings("unchecked")
     public void registerContribution(Object contrib, String xp,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (!XP.equals(xp)) {
             log.error("Unknown extension point " + xp);
             return;
@@ -81,7 +81,7 @@ public class PathSegmentComponent extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contrib, String xp,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (!XP.equals(xp)) {
             return;
         }

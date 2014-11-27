@@ -84,8 +84,7 @@ public class CoreManagementComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(PROBES_EP)) {
             probeRunner.registerProbe((ProbeDescriptor) contribution);
         } else if (extensionPoint.equals(SERVICE_DEF_EP)) {
@@ -102,8 +101,7 @@ public class CoreManagementComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("probes")) {
             probeRunner.unregisterProbe((ProbeDescriptor) contribution);
         }
@@ -114,14 +112,14 @@ public class CoreManagementComponent extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         defaultComponent = this;
         storageManager.install();
         EventStatsHolder.clearStats();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         defaultComponent = null;
         storageManager.uninstall();
         getLocalManager().onNuxeoServerShutdown();

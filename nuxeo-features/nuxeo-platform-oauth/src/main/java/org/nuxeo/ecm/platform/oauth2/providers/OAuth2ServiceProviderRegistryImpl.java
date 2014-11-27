@@ -53,8 +53,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
 
     public NuxeoOAuth2ServiceProvider addProvider(String serviceName,
             String tokenServerURL, String authorizationServerURL,
-            String clientId, String clientSecret, List<String> scopes)
-            throws Exception {
+            String clientId, String clientSecret, List<String> scopes) {
 
         NuxeoOAuth2ServiceProvider provider = new NuxeoOAuth2ServiceProvider(
                 null, serviceName, tokenServerURL, authorizationServerURL,

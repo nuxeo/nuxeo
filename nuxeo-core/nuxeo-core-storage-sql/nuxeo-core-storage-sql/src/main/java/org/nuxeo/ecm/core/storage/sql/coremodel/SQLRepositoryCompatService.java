@@ -47,7 +47,7 @@ public class SQLRepositoryCompatService extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
             removeContribution((RepositoryDescriptor) contrib);
         } else {

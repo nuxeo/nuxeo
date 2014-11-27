@@ -50,19 +50,18 @@ public class ResourceService extends ReloadableComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         registry = new ConcurrentHashMap<String, URL>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         registry = null;
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_RESOURCES.equals(extensionPoint)) {
             addResource((ResourceDescriptor) contribution);
         }
@@ -70,8 +69,7 @@ public class ResourceService extends ReloadableComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_RESOURCES.equals(extensionPoint)) {
             ResourceDescriptor rd = (ResourceDescriptor) contribution;
             ResourceDescriptor last = findLastContributedResource(rd.getName());

@@ -52,13 +52,13 @@ public class EventService extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         topics.clear();
         contributions.clear();
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] descriptors = extension.getContributions();
         if (descriptors.length == 0) {
             return;
@@ -80,7 +80,7 @@ public class EventService extends DefaultComponent {
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         String name = extension.getId();
         synchronized (this) {
             Object[] descriptors = contributions.remove(name);

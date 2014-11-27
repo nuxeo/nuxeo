@@ -157,7 +157,7 @@ public class TypeService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         schemaManager.flushPendingsRegistration();
     }
 

@@ -29,8 +29,12 @@ public class CodecDescriptor {
     @XNode("@class")
     public Class<?> clazz;
 
-    public ObjectCodec<?> newInstance() throws Exception {
-        return (ObjectCodec<?>)clazz.newInstance();
+    public ObjectCodec<?> newInstance() {
+        try {
+            return (ObjectCodec<?>) clazz.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

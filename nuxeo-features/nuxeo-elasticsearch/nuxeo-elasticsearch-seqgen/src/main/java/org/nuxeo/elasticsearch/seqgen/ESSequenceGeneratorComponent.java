@@ -13,7 +13,7 @@
  *
  * Contributors:
  *     Tiry
- * 
+ *
  */
 package org.nuxeo.elasticsearch.seqgen;
 
@@ -26,16 +26,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Implements the {@link SequenceGenerator} service on top of Elasticsearch.
- * 
+ *
  * Since elasticsearch does not seem to support a notion of native sequence, the
  * implementation uses the auto-increment of the version attribute as described
  * in
- * 
+ *
  * http://blogs.perl.org/users/clinton_gormley/2011/10/elasticsearchsequence--
  * -a-blazing-fast-ticket-server.html
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class ESSequenceGeneratorComponent extends DefaultComponent implements
         SequenceGenerator {
@@ -63,7 +63,7 @@ public class ESSequenceGeneratorComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         if (esClient != null) {
             esClient.close();
         }

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.mail.service;
 import java.util.Map;
 
 import javax.mail.Address;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -43,10 +44,10 @@ public interface MailService {
      * context is not used.
      */
     MailBoxActions getMailBoxActions(String factoryName,
-            String folderName) throws Exception;
+            String folderName) throws MessagingException;
 
-    MailBoxActions getMailBoxActions(String factoryName,
-            String folderName, Map<String, Object> context) throws Exception;
+    MailBoxActions getMailBoxActions(String factoryName, String folderName,
+            Map<String, Object> context) throws MessagingException;
 
     /**
      * Gets the pipe of actions for given name
@@ -61,10 +62,10 @@ public interface MailService {
      * used, replacing variables with the ones from this variables.
      */
     void sendMail(String text, String subject, String factory,
-            Address[] recipients) throws Exception;
+            Address[] recipients);
 
     void sendMail(String text, String subject, String factory,
-            Address[] recipients, Map<String, Object> context) throws Exception;
+            Address[] recipients, Map<String, Object> context);
 
     /**
      * Returns a connected store for this factory. The store needs to be closed
@@ -73,10 +74,10 @@ public interface MailService {
      * @param name The name of the factory that provides the properties.
      * @return the store.
      */
-    Store getConnectedStore(String name) throws Exception;
+    Store getConnectedStore(String name) throws MessagingException;
 
     Store getConnectedStore(String name, Map<String, Object> context)
-            throws Exception;
+            throws MessagingException;
 
     /**
      * Returns a connected transport for this factory. The transport needs to be
@@ -85,20 +86,19 @@ public interface MailService {
      * @param name the name of the factory that provides the properties.
      * @return the transport.
      */
-    Transport getConnectedTransport(String name) throws Exception;
+    Transport getConnectedTransport(String name) throws MessagingException;
 
     Transport getConnectedTransport(String name, Map<String, Object> context)
-            throws Exception;
+            throws MessagingException;
 
     /**
      * Returns a session for this factory, using the context to find the session
      * or the default if no context is provided.
      */
-    Session getSession(String name) throws Exception;
+    Session getSession(String name);
 
-    Session getSession(String name, Map<String, Object> context)
-            throws Exception;
+    Session getSession(String name, Map<String, Object> context);
 
-    PropertiesFetcher getFetcher(String name) throws Exception;
+    PropertiesFetcher getFetcher(String name);
 
 }

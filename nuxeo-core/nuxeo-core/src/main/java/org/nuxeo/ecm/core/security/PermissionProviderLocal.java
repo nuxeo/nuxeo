@@ -18,8 +18,7 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 
 public interface PermissionProviderLocal extends PermissionProvider {
 
-    void registerDescriptor(PermissionDescriptor descriptor)
-            throws Exception;
+    void registerDescriptor(PermissionDescriptor descriptor);
 
     void unregisterDescriptor(PermissionDescriptor descriptor);
 

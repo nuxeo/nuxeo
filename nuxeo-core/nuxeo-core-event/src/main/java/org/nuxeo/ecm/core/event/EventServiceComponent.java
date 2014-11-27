@@ -34,16 +34,22 @@ public class EventServiceComponent extends DefaultComponent {
     protected EventServiceImpl service;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         service = new EventServiceImpl();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         if (service != null) {
             String s = Framework.getProperty("org.nuxeo.ecm.core.event.shutdown.timeoutMillis");
             long timeout = s == null ? DEFAULT_SHUTDOWN_TIMEOUT : Long.parseLong(s);
-            service.shutdown(timeout);
+            try {
+                service.shutdown(timeout);
+            } catch (InterruptedException e) {
+                // restore interrupted status
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
             service = null;
         }
     }
@@ -55,8 +61,7 @@ public class EventServiceComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
             EventListenerDescriptor descriptor = (EventListenerDescriptor) contribution;
             descriptor.setRuntimeContext(contributor.getRuntimeContext());
@@ -66,8 +71,7 @@ public class EventServiceComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
             service.removeEventListener((EventListenerDescriptor) contribution);
         }

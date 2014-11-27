@@ -36,9 +36,12 @@ public class TaskProviderDescriptor {
     @XNode("@enabled")
     private Boolean enabled = true;
 
-    public TaskProvider getNewInstance() throws InstantiationException,
-            IllegalAccessException {
-        return taskProvider.newInstance();
+    public TaskProvider getNewInstance() {
+        try {
+            return taskProvider.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getId() {

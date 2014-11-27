@@ -200,8 +200,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
             registerPageProviderDefinition(desc);
@@ -213,8 +212,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             PageProviderDefinition desc = (PageProviderDefinition) contribution;
             unregisterPageProviderDefinition(desc);
@@ -222,7 +220,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
         replacersReg.dumpReplacerMap();
     }

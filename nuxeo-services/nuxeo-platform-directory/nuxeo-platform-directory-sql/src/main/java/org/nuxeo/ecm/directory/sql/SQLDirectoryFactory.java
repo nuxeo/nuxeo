@@ -76,7 +76,7 @@ public class SQLDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {
@@ -93,7 +93,7 @@ public class SQLDirectoryFactory extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         DirectoryServiceImpl dirService = getDirectoryService();
         for (Object contrib : contribs) {

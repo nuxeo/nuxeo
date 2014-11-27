@@ -69,7 +69,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         commandDescriptors = new HashMap<String, CommandLineDescriptor>();
         env = new EnvironmentDescriptor();
         testers = new HashMap<String, CommandTester>();
@@ -78,7 +78,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         commandDescriptors = null;
         env = null;
         testers = null;
@@ -87,8 +87,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (EP_ENV.equals(extensionPoint)) {
             env.merge((EnvironmentDescriptor) contribution);
@@ -133,15 +132,19 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             commandDescriptors.put(name, desc);
         } else if (EP_CMDTESTER.equals(extensionPoint)) {
             CommandTesterDescriptor desc = (CommandTesterDescriptor) contribution;
-            CommandTester tester = (CommandTester) desc.getTesterClass().newInstance();
+            CommandTester tester;
+            try {
+                tester = (CommandTester) desc.getTesterClass().newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
             testers.put(desc.getName(), tester);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     /*

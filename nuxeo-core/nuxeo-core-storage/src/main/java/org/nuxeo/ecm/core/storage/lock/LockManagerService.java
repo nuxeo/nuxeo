@@ -79,12 +79,12 @@ public class LockManagerService extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         registry.clear();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         registry.clear();
     }
 
@@ -100,7 +100,7 @@ public class LockManagerService extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contrib, String xpoint,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (XP_LOCKMANAGER.equals(xpoint)) {
             removeContribution((LockManagerDescriptor) contrib);
         } else {

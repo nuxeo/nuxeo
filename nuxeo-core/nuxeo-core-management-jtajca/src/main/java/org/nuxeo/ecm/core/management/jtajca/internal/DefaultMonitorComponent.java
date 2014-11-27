@@ -95,7 +95,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     // don't use activate, it would be too early
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         uninstall();
         install();
     }
@@ -108,14 +108,14 @@ public class DefaultMonitorComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         uninstall();
         super.deactivate(context);
     }
 
     protected boolean installed;
 
-    protected void install() throws Exception {
+    protected void install() {
         installed = true;
 
         coreSessionMonitor = new DefaultCoreSessionMonitor();
@@ -126,7 +126,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
         try {
             installPoolMonitors();
-        } catch (ClientException cause) {
+        } catch (ClientException | LoginException cause) {
             log.warn("Cannot install storage monitors", cause);
         }
 
@@ -164,7 +164,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         }
     }
 
-    protected void uninstall() throws JMException {
+    protected void uninstall() {
         if (!installed) {
             return;
         }

@@ -51,8 +51,7 @@ public class AjaxProxyComponent extends DefaultComponent implements AjaxProxySer
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PROXY_URL_EP.equals(extensionPoint)) {
             ProxyableURLDescriptor desc = (ProxyableURLDescriptor) contribution;
             registerProxyURL(desc);

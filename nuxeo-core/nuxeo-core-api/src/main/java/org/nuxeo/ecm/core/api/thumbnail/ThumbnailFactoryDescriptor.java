@@ -18,6 +18,7 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * XMap descriptor for contributed thumbnail factories.
@@ -52,9 +53,12 @@ public class ThumbnailFactoryDescriptor implements Serializable {
         return facet;
     }
 
-    public ThumbnailFactory getFactory() throws InstantiationException,
-            IllegalAccessException {
-        return (ThumbnailFactory) factoryClass.newInstance();
+    public ThumbnailFactory getFactory()  {
+        try {
+            return (ThumbnailFactory) factoryClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
     }
 
 }

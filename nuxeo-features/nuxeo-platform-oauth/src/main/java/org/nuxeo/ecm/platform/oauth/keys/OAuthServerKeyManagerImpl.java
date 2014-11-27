@@ -44,7 +44,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
     protected String internalSecret;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         // generate the random secret used between Shindig and Nuxeo
         internalKey = "nuxeo4shindig-" + UUID.randomUUID().toString();
         internalSecret = UUID.randomUUID().toString();
@@ -52,7 +52,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
 
         if (XP_SERVER_KEY.equals(extensionPoint)) {
             serverKeyDescriptor = (ServerKeyDescriptor) contribution;
@@ -61,7 +61,7 @@ public class OAuthServerKeyManagerImpl extends DefaultComponent implements OAuth
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
 
         if (XP_SERVER_KEY.equals(extensionPoint)) {
             serverKeyDescriptor = null;

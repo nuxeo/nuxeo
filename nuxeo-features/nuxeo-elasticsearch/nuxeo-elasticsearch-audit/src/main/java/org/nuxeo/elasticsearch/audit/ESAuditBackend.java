@@ -13,7 +13,7 @@
  *
  * Contributors:
  *     Tiry
- * 
+ *
  */
 package org.nuxeo.elasticsearch.audit;
 
@@ -81,9 +81,9 @@ import com.sun.star.uno.RuntimeException;
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch
  * persistence
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class ESAuditBackend extends AbstractAuditBackend implements
         AuditBackend {
@@ -97,7 +97,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     protected Client esClient = null;
 
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
-    
+
     protected BaseLogEntryProvider provider = null;
 
     protected Client getClient() {
@@ -110,7 +110,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     @Override
-    public void deactivate() throws Exception {
+    public void deactivate() {
         if (esClient != null) {
             esClient.close();
         }
@@ -170,7 +170,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     public SearchRequestBuilder buildQuery(String query, Map<String, Object> params) {
-        if (params != null && params.size() > 0) {            
+        if (params != null && params.size() > 0) {
             query = expandQueryVariables(query, params);
         }
 
@@ -180,8 +180,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements
 
         return builder;
     }
-    
-    public String expandQueryVariables(String query, Object[] params) {        
+
+    public String expandQueryVariables(String query, Object[] params) {
         Map<String, Object> qParams = new HashMap<String, Object>();
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", "\\${param" + i + "}");
@@ -189,18 +189,18 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         }
         return expandQueryVariables(query, qParams);
     }
-    
+
     public String expandQueryVariables(String query, Map<String, Object> params) {
         if (params != null && params.size() > 0) {
             TextTemplate tmpl = new TextTemplate();
             for (String key : params.keySet()) {
                 Object val = params.get(key);
                 if (val==null) {
-                    continue; 
-                } else if (val instanceof Calendar) {                         
+                    continue;
+                } else if (val instanceof Calendar) {
                     tmpl.setVariable(key,ISODateTimeFormat.dateTime().print(
                             new DateTime((Calendar)val)));
-                } else if (val instanceof Date) {                    
+                } else if (val instanceof Date) {
                     tmpl.setVariable(key,ISODateTimeFormat.dateTime().print(
                             new DateTime((Date)val)));
                 } else {
@@ -208,10 +208,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                 }
             }
             query = tmpl.process(query);
-        }       
+        }
         return query;
     }
-    
+
     @Override
     public List<?> nativeQuery(String query, Map<String, Object> params,
             int pageNb, int pageSize) {
@@ -225,7 +225,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         if (pageSize > 0) {
             builder.setSize(pageSize);
         }
-        
+
         SearchResponse searchResponse = builder.execute().actionGet();
         List<LogEntry> entries = new ArrayList<>();
         for (SearchHit hit : searchResponse.getHits()) {
@@ -336,7 +336,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                         "Wrong date range query. Query was " + dateRange, aqe);
             }
         }
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb,   
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb,
                 pageSize);
     }
 
@@ -411,16 +411,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements
     }
 
     protected FilterBuilder buildFilter(PredicateDefinition[] predicates,
-            DocumentModel searchDocumentModel) {        
-        
+            DocumentModel searchDocumentModel) {
+
         if (searchDocumentModel==null) {
             return FilterBuilders.matchAllFilter();
         }
-        
+
         BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
 
         int nbFilters = 0;
-        
+
         for (PredicateDefinition predicate : predicates) {
 
             // extract data from DocumentModel
@@ -448,7 +448,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
             }
 
             nbFilters++;
-            
+
             String op = predicate.getOperator();
             if (op.equalsIgnoreCase("IN")) {
 
@@ -480,16 +480,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                 }
             } else if (">".equals(op)) {
                 filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).gt(val[0]));                
+                        predicate.getParameter()).gt(val[0]));
             } else if (">=".equals(op)) {
                 filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).gte(val[0]));                
+                        predicate.getParameter()).gte(val[0]));
             } else if ("<".equals(op)) {
                 filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).lt(val[0]));                
+                        predicate.getParameter()).lt(val[0]));
             } else if ("<=".equals(op)) {
                 filterBuilder.must(FilterBuilders.rangeFilter(
-                        predicate.getParameter()).lte(val[0]));                
+                        predicate.getParameter()).lte(val[0]));
             } else {
                 filterBuilder.must(FilterBuilders.termFilter(
                         predicate.getParameter(), val[0]));
@@ -538,48 +538,48 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         }
         return false;
     }
-            
-    public String migrate(final int batchSize) throws Exception {
-        
+
+    public String migrate(final int batchSize) {
+
         final AuditBackend sourceBackend = new DefaultAuditBackend();
         sourceBackend.activate(component);
 
         final String MIGRATION_WORK_ID="AuditMigration";
-        
+
         WorkManager wm = Framework.getService(WorkManager.class);
-        
+
         State migrationState = wm.getWorkState(MIGRATION_WORK_ID);
-        if (migrationState!=null) {            
+        if (migrationState!=null) {
             return "Migration already scheduled : " + migrationState.toString();
         }
-        
+
         List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1,20);
-        
+
         final long nbEntriesToMigrate = res.get(0).longValue();
-        
+
         Work migrationWork = new AbstractWork(MIGRATION_WORK_ID) {
-            
+
             @Override
             public String getTitle() {
                 return "Audit migration worker";
             }
-            
+
             @Override
-            public void work() throws Exception {
+            public void work() {
                 TransactionHelper.commitOrRollbackTransaction();
                 try {
-        
+
                     long t0 = System.currentTimeMillis();
                     long nbEntriesMigrated=0;
                     int pageIdx =  0;
-                    
+
                     while (nbEntriesMigrated < nbEntriesToMigrate) {
                         List<LogEntry> entries = (List<LogEntry>)sourceBackend.nativeQuery("from LogEntry log order by log.id asc", pageIdx, batchSize);
-                        
+
                         if (entries.size()==0) {
                             log.warn("Migration ending after " + nbEntriesMigrated + " entries");
                             break;
-                        }                        
+                        }
                         setProgress(new Progress(nbEntriesMigrated, nbEntriesToMigrate));
                         addLogEntries(entries);
                         pageIdx++;
@@ -592,12 +592,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                     }
                 } finally {
                     TransactionHelper.startTransaction();
-                }                
+                }
             }
         };
-                
+
         wm.schedule (migrationWork);
-        
+
         return "Migration work started : " + MIGRATION_WORK_ID;
 
     }

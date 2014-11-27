@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.pictures.tiles.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
@@ -82,7 +85,7 @@ public class PictureTilingComponent extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(PictureTilingComponent.class);
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         defaultTiler = new MagickTiler();
         availableTilers.add(defaultTiler);
         availableTilers.add(new GimpTiler());
@@ -112,7 +115,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         }
     }
 
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         endGC();
     }
 
@@ -277,7 +280,7 @@ public class PictureTilingComponent extends DefaultComponent implements
                     if (inputFile.createNewFile()) {
                         transferBlob(blob, inputFile);
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     String msg = String.format(
                             "Unable to transfer blob to file at '%s', "
                                     + "working directory path: '%s'",
@@ -343,7 +346,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         return tiles;
     }
 
-    protected void transferBlob(Blob blob, File file) throws Exception {
+    protected void transferBlob(Blob blob, File file) throws IOException {
         if (needToConvert(blob)) {
             transferAndConvert(blob, file);
         } else {
@@ -375,11 +378,15 @@ public class PictureTilingComponent extends DefaultComponent implements
         return filename.substring(dotIndex + 1);
     }
 
-    protected void transferAndConvert(Blob blob, File file) throws Exception {
+    protected void transferAndConvert(Blob blob, File file) throws IOException {
         File tmpFile = new File(file.getAbsolutePath() + ".tmp");
         blob.transferTo(tmpFile);
-        ImageConverter.convert(tmpFile.getAbsolutePath(),
-                file.getAbsolutePath());
+        try {
+            ImageConverter.convert(tmpFile.getAbsolutePath(),
+                    file.getAbsolutePath());
+        } catch (CommandNotAvailable | CommandException e) {
+            throw new IOException(e);
+        }
 
         tmpFile.delete();
     }
@@ -451,8 +458,7 @@ public class PictureTilingComponent extends DefaultComponent implements
     // EP management
 
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (ENV_PARAMETERS_EP.equals(extensionPoint)) {
             TilingConfigurationDescriptor desc = (TilingConfigurationDescriptor) contribution;
@@ -468,8 +474,7 @@ public class PictureTilingComponent extends DefaultComponent implements
     }
 
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         // TODO
     }
 

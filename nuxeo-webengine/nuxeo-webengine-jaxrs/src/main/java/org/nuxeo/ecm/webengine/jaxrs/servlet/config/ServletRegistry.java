@@ -17,10 +17,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.ServletHolder;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 
 /**
  * Handle servlet registration from Nuxeo extension points. This class is a
@@ -129,7 +132,7 @@ public class ServletRegistry {
      * with current contributed servlets
      * @param service
      */
-    public synchronized void initHttpService(HttpService service) throws Exception {
+    public synchronized void initHttpService(HttpService service) {
         if (this.service == null) {
             this.service = service;
             installServlets();
@@ -140,7 +143,7 @@ public class ServletRegistry {
         return service;
     }
 
-    public synchronized void addServlet(ServletDescriptor descriptor) throws Exception {
+    public synchronized void addServlet(ServletDescriptor descriptor) {
         servlets.add(descriptor);
         installServlet(descriptor);
     }
@@ -159,7 +162,7 @@ public class ServletRegistry {
         }
     }
 
-    public synchronized void reloadServlet(ServletDescriptor descriptor) throws Exception {
+    public synchronized void reloadServlet(ServletDescriptor descriptor) {
         removeServlet(descriptor);
         addServlet(descriptor);
     }
@@ -201,7 +204,7 @@ public class ServletRegistry {
         }
     }
 
-    private synchronized void installServlets() throws Exception {
+    private synchronized void installServlets() {
         if (service != null) {
             for (ServletDescriptor sd : servlets) {
                 installServlet(sd);
@@ -209,7 +212,7 @@ public class ServletRegistry {
         }
     }
 
-    private void installServlet(ServletDescriptor sd) throws Exception {
+    private void installServlet(ServletDescriptor sd) {
         if (service != null) {
             //ClassRef ref = sd.getClassRef();
             BundleHttpContext ctx = new BundleHttpContext(sd.bundle, sd.resources);
@@ -223,7 +226,11 @@ public class ServletRegistry {
                 params.putAll(sd.getInitParams());
                 params.put(SERVLET_NAME, sd.name);
             }
-            service.registerServlet(sd.path, new ServletHolder(), params, ctx);
+            try {
+                service.registerServlet(sd.path, new ServletHolder(), params, ctx);
+            } catch (ServletException | NamespaceException e) {
+                throw new RuntimeException(e);
+            }
             contexts.put(sd.path, ctx);
         }
     }

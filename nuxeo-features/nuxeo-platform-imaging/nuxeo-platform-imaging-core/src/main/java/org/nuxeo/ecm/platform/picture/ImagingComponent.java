@@ -204,8 +204,7 @@ public class ImagingComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             configurationParameters.putAll(desc.getParameters());
@@ -214,8 +213,7 @@ public class ImagingComponent extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_PARAMETERS_EP.equals(extensionPoint)) {
             ImagingConfigurationDescriptor desc = (ImagingConfigurationDescriptor) contribution;
             for (String configuration : desc.getParameters().keySet()) {

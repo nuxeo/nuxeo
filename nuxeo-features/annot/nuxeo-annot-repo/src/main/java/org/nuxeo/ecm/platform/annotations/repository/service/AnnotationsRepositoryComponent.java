@@ -33,28 +33,27 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class AnnotationsRepositoryComponent extends DefaultComponent {
-    
+
     public static AnnotationsRepositoryComponent instance;
-    
+
     protected AnnotationsRepositoryServiceImpl annotationsRepositoryService;
 
     protected AnnotationsRepositoryConfigurationServiceImpl confImpl;
 
     protected AnnotationsFulltextInjector injector;
-    
+
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         ExtensionPoint point = Enum.valueOf(ExtensionPoint.class,
                 extensionPoint);
         switch (point) {
         case documentAnnotability:
-            DocumentAnnotability annotability = ((DocumentAnnotabilityDescriptor) contribution).getKlass().newInstance();
+            DocumentAnnotability annotability = newInstance(((DocumentAnnotabilityDescriptor) contribution).getKlass());
             annotationsRepositoryService.setDocumentAnnotability(annotability);
             break;
         case documentEventListener:
-            AnnotatedDocumentEventListener listener = ((DocumentEventListenerDescriptor) contribution).getListener().newInstance();
+            AnnotatedDocumentEventListener listener = newInstance(((DocumentEventListenerDescriptor) contribution).getListener());
             String listenerName = ((DocumentEventListenerDescriptor) contribution).getName();
             confImpl.addEventListener(listenerName, listener);
             break;
@@ -63,14 +62,22 @@ public class AnnotationsRepositoryComponent extends DefaultComponent {
             confImpl.addEventId(eventId);
             break;
         case graphManagerEventListener:
-            GraphManagerEventListener graphListener = ((GraphManagerEventListenerDescriptor) contribution).getKlass().newInstance();
+            GraphManagerEventListener graphListener = newInstance(((GraphManagerEventListenerDescriptor) contribution).getKlass());
             confImpl.setGraphManagerEventListener(graphListener);
             break;
         }
     }
 
+    protected <T> T newInstance(Class<T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         instance = this;
         annotationsRepositoryService = new AnnotationsRepositoryServiceImpl();
         confImpl = new AnnotationsRepositoryConfigurationServiceImpl();
@@ -78,7 +85,7 @@ public class AnnotationsRepositoryComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         instance = null;
         annotationsRepositoryService.clear();
         annotationsRepositoryService = null;

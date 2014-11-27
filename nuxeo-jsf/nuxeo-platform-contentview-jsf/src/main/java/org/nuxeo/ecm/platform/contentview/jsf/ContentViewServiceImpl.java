@@ -260,8 +260,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
             contentViewReg.addContribution(desc);
@@ -313,8 +312,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONTENT_VIEW_EP.equals(extensionPoint)) {
             ContentViewDescriptor desc = (ContentViewDescriptor) contribution;
             unregisterPageProvider(desc);

@@ -61,21 +61,20 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         registry = new LinkedHashMap<String, DirectoryUI>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         registry = null;
         super.deactivate(context);
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (!extensionPoint.equals(DIRECTORIES_EP_NAME)) {
             log.warn("Unknown extension point: " + extensionPoint);
             return;
@@ -96,8 +95,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (!extensionPoint.equals(DIRECTORIES_EP_NAME)) {
             log.warn("Unknown extension point: " + extensionPoint);
             return;

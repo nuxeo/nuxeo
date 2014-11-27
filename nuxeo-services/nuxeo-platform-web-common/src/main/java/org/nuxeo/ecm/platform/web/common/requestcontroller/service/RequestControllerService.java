@@ -72,8 +72,7 @@ public class RequestControllerService extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (FILTER_CONFIG_EP.equals(extensionPoint)) {
             FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
             registerFilterConfig(desc);
@@ -106,8 +105,7 @@ public class RequestControllerService extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CORS_CONFIG_EP.equals(extensionPoint)) {
             corsFilterRegistry.removeContribution((NuxeoCorsFilterDescriptor) contribution);
         }

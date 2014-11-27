@@ -236,8 +236,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if ("actions".equals(extensionPoint)) {
             actions.addContribution((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
@@ -254,8 +253,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if ("actions".equals(extensionPoint)) {
             actions.removeContribution((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {

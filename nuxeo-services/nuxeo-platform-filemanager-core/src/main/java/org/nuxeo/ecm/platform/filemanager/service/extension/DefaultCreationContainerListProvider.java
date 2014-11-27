@@ -58,7 +58,7 @@ public class DefaultCreationContainerListProvider extends
 
     @SuppressWarnings("unchecked")
     public DocumentModelList getCreationContainerList(
-            CoreSession documentManager, String docType) throws Exception {
+            CoreSession documentManager, String docType) {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) documentManager);

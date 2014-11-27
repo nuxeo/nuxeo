@@ -45,8 +45,7 @@ public class MetricsServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)
                 && contribution instanceof MetricsDescriptor) {
             log.debug("Registering metrics contribution");
@@ -67,7 +66,7 @@ public class MetricsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (config == null) {
             // Use a default config
             config = new MetricsDescriptor();

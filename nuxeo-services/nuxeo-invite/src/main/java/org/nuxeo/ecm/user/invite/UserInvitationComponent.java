@@ -30,11 +30,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -93,7 +95,6 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     protected String getTargetRepositoryName() {
-
         if (repoName == null) {
             try {
                 RepositoryManager rm = Framework.getService(RepositoryManager.class);
@@ -490,7 +491,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         try {
             rh.getRenderingEngine().render(
                     configuration.getValidationEmailTemplate(), input, writer);
-        } catch (Exception e) {
+        } catch (RenderingException e) {
             throw new ClientException("Error during rendering email", e);
         }
 
@@ -500,7 +501,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         if (!isTestModeSet()) {
             try {
                 generateMail(emailAdress, copyTo, title, body);
-            } catch (Exception e) {
+            } catch (NamingException | MessagingException e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
         } else {
@@ -522,7 +523,7 @@ public class UserInvitationComponent extends DefaultComponent implements
     }
 
     protected void generateMail(String destination, String copy, String title,
-            String content) throws Exception {
+            String content) throws NamingException, MessagingException {
 
         InitialContext ic = new InitialContext();
         Session session = (Session) ic.lookup(getJavaMailJndiName());
@@ -669,7 +670,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         try {
             rh.getRenderingEngine().render(
                     configuration.getSuccessEmailTemplate(), input, writer);
-        } catch (Exception e) {
+        } catch (RenderingException e) {
             throw new ClientException("Error during rendering email", e);
         }
 
@@ -679,7 +680,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         if (!Framework.isTestModeSet()) {
             try {
                 generateMail(emailAdress, null, title, body);
-            } catch (Exception e) {
+            } catch (NamingException | MessagingException e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
         } else {
@@ -691,8 +692,7 @@ public class UserInvitationComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if ("configuration".equals(extensionPoint)) {
             UserRegistrationConfiguration newConfig = (UserRegistrationConfiguration) contribution;
 
@@ -856,7 +856,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         if (!Framework.isTestModeSet()) {
             try {
                 generateMail(emailAdress, null, title, body);
-            } catch (Exception e) {
+            } catch (NamingException | MessagingException e) {
                 throw new ClientException("Error while sending mail : ", e);
             }
         } else {

@@ -89,14 +89,14 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         deactivatePersistenceProvider();
         annotations.clear();
         super.deactivate(context);
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("annotations".equals(extensionPoint)) {
         	pending.add((AnnotationDescriptor) contribution);
         }
@@ -108,7 +108,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
     	Iterator<AnnotationDescriptor> it = pending.iterator();
     	while (it.hasNext()) {
     		registerAnnotations(it.next());
@@ -127,7 +127,7 @@ public class PlacefulServiceImpl extends DefaultComponent implements PlacefulSer
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) throws Exception {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("annotations")) {
             unregisterAnnotations((AnnotationDescriptor) contribution);
         }

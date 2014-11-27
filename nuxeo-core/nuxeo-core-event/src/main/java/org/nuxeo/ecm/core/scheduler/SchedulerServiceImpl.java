@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -63,7 +64,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     protected final ScheduleExtensionRegistry registry = new ScheduleExtensionRegistry();
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         log.debug("Activate");
         bundle = context.getRuntimeContext();
     }
@@ -127,14 +128,18 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         log.debug("Deactivate");
         shutdownScheduler();
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-        setupScheduler(context);
+    public void applicationStarted(ComponentContext context) {
+        try {
+            setupScheduler(context);
+        } catch (IOException | SchedulerException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override

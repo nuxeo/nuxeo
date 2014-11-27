@@ -48,13 +48,12 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         ExtensionPoint ep = Enum.valueOf(ExtensionPoint.class, extensionPoint);
         switch (ep) {
         case exceptionhandler:
             ExceptionHandlerDescriptor ehd = (ExceptionHandlerDescriptor) contribution;
-            exceptionHandler = ehd.getKlass().newInstance();
+            exceptionHandler = newInstance(ehd.getKlass());
             exceptionHandler.setParameters(exceptionHandlerParameters);
             break;
         case errorhandlers:
@@ -66,18 +65,26 @@ public class ExceptionHandlingComponent extends DefaultComponent implements
             break;
         case requestdump:
             RequestDumpDescriptor rdd = (RequestDumpDescriptor) contribution;
-            RequestDumper dumper = rdd.getKlass().newInstance();
+            RequestDumper dumper = newInstance(rdd.getKlass());
             List<String> attributes = rdd.getAttributes();
             dumper.setNotListedAttributes(attributes);
             exceptionHandlerParameters.setRequestDumper(dumper);
             break;
         case listener:
             ListenerDescriptor ld = (ListenerDescriptor) contribution;
-            exceptionHandlerParameters.setListener(ld.getKlass().newInstance());
+            exceptionHandlerParameters.setListener(newInstance(ld.getKlass()));
             break;
         default:
             throw new RuntimeException(
                     "error in exception handling configuration");
+        }
+    }
+
+    protected <T> T newInstance(Class<T> klass) {
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 

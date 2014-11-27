@@ -39,7 +39,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class ConnectClientComponent extends DefaultComponent {
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         NuxeoConnectClient.setCallBackHolder(new NuxeoCallbackHolder());
     }
 

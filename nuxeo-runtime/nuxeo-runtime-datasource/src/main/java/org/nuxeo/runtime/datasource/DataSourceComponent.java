@@ -56,7 +56,7 @@ public class DataSourceComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contrib, String extensionPoint,
-            ComponentInstance component) throws Exception {
+            ComponentInstance component) {
         if (DATASOURCES_XP.equals(extensionPoint)) {
         	if (contrib instanceof DataSourceDescriptor) {
         		addDataSource((DataSourceDescriptor) contrib);
@@ -72,7 +72,7 @@ public class DataSourceComponent extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contrib, String extensionPoint,
-            ComponentInstance component) throws Exception {
+            ComponentInstance component) {
         if (DATASOURCES_XP.equals(extensionPoint)) {
         	if (contrib instanceof DataSourceDescriptor) {
         		removeDataSource((DataSourceDescriptor) contrib);
@@ -92,19 +92,28 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (namingContext != null) {
             return;
         }
         namingContext = NuxeoContainer.getRootContext();
         // allocate datasource sub-contexts
-        Name comp = new CompositeName(DataSourceHelper.getDataSourceJNDIPrefix());
+        Name comp;
+        try {
+            comp = new CompositeName(DataSourceHelper.getDataSourceJNDIPrefix());
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
         Context ctx = namingContext;
         for (int i = 0; i < comp.size(); i++) {
             try {
                 ctx = (Context) ctx.lookup(comp.get(i));
             } catch (NamingException e) {
-                ctx = ctx.createSubcontext(comp.get(i));
+                try {
+                    ctx = ctx.createSubcontext(comp.get(i));
+                } catch (NamingException e1) {
+                    throw new RuntimeException(e1);
+                }
             }
         }
         // bind datasources
@@ -118,7 +127,7 @@ public class DataSourceComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         for (DataSourceLinkDescriptor desc : links.values()) {
             unbindDataSourceLink(desc);
@@ -131,12 +140,12 @@ public class DataSourceComponent extends DefaultComponent {
         namingContext = null;
     }
 
-    protected void addDataSource(DataSourceDescriptor contrib) throws NamingException {
+    protected void addDataSource(DataSourceDescriptor contrib) {
         datasources.put(contrib.getName(), contrib);
         bindDataSource(contrib);
     }
 
-    protected void removeDataSource(DataSourceDescriptor contrib) throws NamingException {
+    protected void removeDataSource(DataSourceDescriptor contrib) {
         unbindDataSource(contrib);
         datasources.remove(contrib.getName());
     }

@@ -30,8 +30,7 @@ public class ClientRegistryImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
         case "clients":
             OAuth2Client client = (OAuth2Client) contribution;

@@ -69,9 +69,12 @@ public class AdapterFactoryDescriptor implements Serializable{
         this.typeName = typeName;
     }
 
-    public PreviewAdapterFactory getNewInstance() throws InstantiationException,
-            IllegalAccessException {
-        return (PreviewAdapterFactory) adapterClass.newInstance();
+    public PreviewAdapterFactory getNewInstance() {
+        try {
+            return (PreviewAdapterFactory) adapterClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

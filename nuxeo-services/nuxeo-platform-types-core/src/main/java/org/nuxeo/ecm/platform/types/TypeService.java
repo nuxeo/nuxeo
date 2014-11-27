@@ -68,8 +68,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("types")) {
             typeRegistry.addContribution((Type) contribution);
         }
@@ -77,8 +76,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals("types")) {
             typeRegistry.removeContribution((Type) contribution);
         }

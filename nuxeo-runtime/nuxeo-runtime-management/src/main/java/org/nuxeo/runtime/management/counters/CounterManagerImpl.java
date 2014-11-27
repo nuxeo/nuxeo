@@ -49,7 +49,7 @@ public class CounterManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         // create the root counter
         SimonManager.getCounter(COUNTER_PREFIX);
         // register call back for history management

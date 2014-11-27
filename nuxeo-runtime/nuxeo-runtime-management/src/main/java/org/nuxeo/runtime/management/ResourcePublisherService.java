@@ -24,8 +24,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import javax.management.modelmbean.RequiredModelMBean;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,8 +74,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SERVICES_EXT_KEY)) {
             resourcesRegistry.doRegisterResource((ServiceDescriptor) contribution);
         } else if (extensionPoint.equals(FACTORIES_EXT_KEY)) {
@@ -85,8 +86,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(SERVICES_EXT_KEY)) {
             resourcesRegistry.doUnregisterResource((ServiceDescriptor) contribution);
         } else if (extensionPoint.equals(FACTORIES_EXT_KEY)) {
@@ -180,13 +180,16 @@ public class ResourcePublisherService extends DefaultComponent implements
         protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
         protected RequiredModelMBean doBind(MBeanServer server,
-                ObjectName name, Object instance, Class<?> clazz)
-                throws Exception {
-            RequiredModelMBean mbean = new RequiredModelMBean();
-            mbean.setManagedResource(instance, "ObjectReference");
-            mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
-            server.registerMBean(mbean, name);
-            return mbean;
+                ObjectName name, Object instance, Class<?> clazz) {
+            try {
+                RequiredModelMBean mbean = new RequiredModelMBean();
+                mbean.setManagedResource(instance, "ObjectReference");
+                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
+                server.registerMBean(mbean, name);
+                return mbean;
+            } catch (JMException | InvalidTargetObjectTypeException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         protected void doBind(Resource resource) {
@@ -391,7 +394,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     protected boolean started  = false;
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         started = true;
         factoriesRegistry.doRegisterResources();
         doBindResources();
@@ -409,7 +412,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         serverLocatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
     }
 
@@ -435,7 +438,7 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     protected void bindForTest(MBeanServer server, ObjectName name,
-            Object instance, Class<?> clazz) throws Exception {
+            Object instance, Class<?> clazz) {
         resourcesRegistry.doBind(server, name, instance, clazz);
     }
 

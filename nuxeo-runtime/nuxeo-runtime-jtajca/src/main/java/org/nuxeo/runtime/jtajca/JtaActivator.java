@@ -11,6 +11,8 @@
  */
 package org.nuxeo.runtime.jtajca;
 
+import javax.naming.NamingException;
+
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -26,13 +28,21 @@ public class JtaActivator extends DefaultComponent {
     public static final String AUTO_ACTIVATION = "null";
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
-        NuxeoContainer.install();
+    public void activate(ComponentContext context) {
+        try {
+            NuxeoContainer.install();
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        NuxeoContainer.uninstall();
+    public void deactivate(ComponentContext context) {
+        try {
+            NuxeoContainer.uninstall();
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

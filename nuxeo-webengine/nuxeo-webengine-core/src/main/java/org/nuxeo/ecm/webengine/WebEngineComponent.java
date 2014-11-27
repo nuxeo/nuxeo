@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,7 +63,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
     private WebEngine engine;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
 
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
@@ -71,7 +73,11 @@ public class WebEngineComponent extends DefaultComponent { // implements
         } else {
             root = new File(Framework.getRuntime().getHome(), "web");
         }
-        root = root.getCanonicalFile();
+        try {
+            root = root.getCanonicalFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         log.info("Using web root: " + root);
 
         engine = new WebEngine(new File(root, "root.war"));
@@ -80,7 +86,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         engine.stop();
         engine = null;
         super.deactivate(context);
@@ -92,12 +98,15 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor) contribution;
-            PermissionService.getInstance().registerGuard(gd.getId(),
-                    gd.getGuard());
+            try {
+                PermissionService.getInstance().registerGuard(gd.getId(),
+                        gd.getGuard());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
             engine.addResourceBinding((ResourceBinding) contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
@@ -121,8 +130,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor) contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());

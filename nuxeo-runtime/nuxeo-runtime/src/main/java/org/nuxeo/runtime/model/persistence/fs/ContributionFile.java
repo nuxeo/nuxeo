@@ -13,7 +13,6 @@ package org.nuxeo.runtime.model.persistence.fs;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -43,12 +42,7 @@ public class ContributionFile extends AbstractContribution {
 
     @Override
     public String getContent() {
-        try {
-            return FileSystemStorage.safeRead(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to get contribution content: "
-                    + name);
-        }
+        return FileSystemStorage.safeRead(file);
     }
 
     @Override

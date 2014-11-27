@@ -11,10 +11,12 @@
  */
 package org.nuxeo.runtime.model.persistence;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -42,14 +44,14 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         this.ctx = context.getRuntimeContext();
         storage = new FileSystemStorage();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         ctx = null;
         storage = null;
@@ -57,53 +59,59 @@ public class ContributionPersistenceComponent extends DefaultComponent
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         // This extension point is a singleton. It supports only one
         // contribution!
         // I am not using a runtime property to specify the implementation class
         // because
         // of possible problems caused by class loaders in real OSGI frameworks.
         ContributionStorageDescriptor c = (ContributionStorageDescriptor) contribution;
-        storage = (ContributionStorage) c.clazz.newInstance();
+        try {
+            storage = (ContributionStorage) c.clazz.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeServiceException(e);
+        }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         storage = null;
     }
 
     @Override
-    public List<Contribution> getContributions() throws Exception {
+    public List<Contribution> getContributions() {
         return storage.getContributions();
     }
 
     @Override
-    public Contribution getContribution(String name) throws Exception {
+    public Contribution getContribution(String name) {
         return storage.getContribution(name);
     }
 
     @Override
-    public Contribution addContribution(Contribution contrib) throws Exception {
+    public Contribution addContribution(Contribution contrib) {
         return storage.addContribution(contrib);
     }
 
     @Override
-    public boolean removeContribution(Contribution contrib) throws Exception {
+    public boolean removeContribution(Contribution contrib) {
         return storage.removeContribution(contrib);
     }
 
     @Override
-    public boolean isInstalled(Contribution contrib) throws Exception {
+    public boolean isInstalled(Contribution contrib) {
         return ctx.isDeployed(contrib);
     }
 
     @Override
-    public synchronized boolean installContribution(Contribution contrib)
-            throws Exception {
-        RegistrationInfo ri = ctx.deploy(contrib);
+    public synchronized boolean installContribution(Contribution contrib) {
+        RegistrationInfo ri;
+        try {
+            ri = ctx.deploy(contrib);
+        } catch (IOException e) {
+            throw new RuntimeServiceException(e);
+        }
         if (ri == null) {
             return false;
         }
@@ -112,25 +120,24 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public boolean uninstallContribution(Contribution contrib) throws Exception {
+    public boolean uninstallContribution(Contribution contrib) {
         boolean ret = isInstalled(contrib);
         ctx.undeploy(contrib);
         return ret;
     }
 
     @Override
-    public Contribution updateContribution(Contribution contribution)
-            throws Exception {
+    public Contribution updateContribution(Contribution contribution) {
         return storage.updateContribution(contribution);
     }
 
     @Override
-    public boolean isPersisted(Contribution contrib) throws Exception {
+    public boolean isPersisted(Contribution contrib) {
         return storage.getContribution(contrib.getName()) != null;
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         for (Contribution c : storage.getContributions()) {
             if (!c.isDisabled()) {
                 installContribution(c);
@@ -139,7 +146,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         for (Contribution c : storage.getContributions()) {
             if (!c.isDisabled()) {
                 uninstallContribution(c);
@@ -148,7 +155,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (storage == null) {
             storage = new FileSystemStorage();
             try {

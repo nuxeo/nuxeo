@@ -100,7 +100,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     protected static final String RELATIVE_ROOT_PATH_KEY = "RelativeRootPath";
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (TransactionHelper.startTransaction()) {
             try {
                 doApplicationStarted();
@@ -130,7 +130,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         liveTrees = new HashMap<String, PublicationTree>();
         treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
         factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
@@ -150,8 +150,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         log.debug("Registry contribution for EP " + extensionPoint);
 
@@ -187,8 +186,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof PublicationTreeDescriptor) {
             treeDescriptors.remove(((PublicationTreeDescriptor)contribution).getName());
         } else if (contribution instanceof PublicationTreeConfigDescriptor) {
@@ -253,7 +251,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     @Override
     public Map<String, String> initRemoteSession(String treeConfigName,
-            Map<String, String> params) throws Exception {
+            Map<String, String> params) {
         CoreSession coreSession = CoreInstance.openCoreSession(null);
         PublicationTree tree = getPublicationTree(treeConfigName, coreSession,
                 params);
@@ -748,7 +746,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         return null;
     }
 
-    protected void registerPendingDescriptors() throws Exception {
+    protected void registerPendingDescriptors() {
         // TODO what to do with multiple repositories?
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         String repositoryName = repositoryManager.getDefaultRepositoryName();

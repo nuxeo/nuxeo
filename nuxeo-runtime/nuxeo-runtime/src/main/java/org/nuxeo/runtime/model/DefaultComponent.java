@@ -28,17 +28,17 @@ public class DefaultComponent implements Component, Adaptable {
     protected Long lastModified;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         setModifiedNow();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         setModifiedNow();
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
             return;
@@ -51,7 +51,7 @@ public class DefaultComponent implements Component, Adaptable {
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
             return;
@@ -64,13 +64,11 @@ public class DefaultComponent implements Component, Adaptable {
     }
 
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     @Override
@@ -84,7 +82,7 @@ public class DefaultComponent implements Component, Adaptable {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         // do nothing by default
     }
 

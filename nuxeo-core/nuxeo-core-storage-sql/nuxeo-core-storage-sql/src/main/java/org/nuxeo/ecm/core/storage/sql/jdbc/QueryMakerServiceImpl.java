@@ -40,8 +40,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP.equals(extensionPoint)) {
             registerQueryMaker((QueryMakerDescriptor) contribution);
         }
@@ -49,8 +48,7 @@ public class QueryMakerServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP.equals(extensionPoint)) {
             unregisterQueryMaker((QueryMakerDescriptor) contribution);
         }

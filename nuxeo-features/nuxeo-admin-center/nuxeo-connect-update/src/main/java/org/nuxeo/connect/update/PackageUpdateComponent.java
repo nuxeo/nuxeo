@@ -16,6 +16,8 @@
  */
 package org.nuxeo.connect.update;
 
+import java.io.IOException;
+
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.live.UpdateServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -37,15 +39,27 @@ public class PackageUpdateComponent extends DefaultComponent {
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         ctx = context.getRuntimeContext();
-        svc = new UpdateServiceImpl();
-        svc.initialize();
+        try {
+            svc = new UpdateServiceImpl();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            svc.initialize();
+        } catch (PackageException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        svc.shutdown();
+    public void deactivate(ComponentContext context) {
+        try {
+            svc.shutdown();
+        } catch (PackageException e) {
+            throw new RuntimeException(e);
+        }
         svc = null;
     }
 

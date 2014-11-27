@@ -61,14 +61,14 @@ public class SecurityService extends DefaultComponent {
     // private SecurityManager securityManager;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         permissionProvider = new DefaultPermissionProvider();
         securityPolicyService = new SecurityPolicyServiceImpl();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         permissionProvider = null;
         securityPolicyService = null;
@@ -76,8 +76,7 @@ public class SecurityService extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionDescriptor) {
             permissionProvider.registerDescriptor((PermissionDescriptor) contribution);
@@ -92,8 +91,7 @@ public class SecurityService extends DefaultComponent {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PERMISSIONS_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionDescriptor) {
             permissionProvider.unregisterDescriptor((PermissionDescriptor) contribution);

@@ -108,7 +108,7 @@ public class ThemeService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         // themes registered as contributions
         for (ThemeDescriptor themeDescriptor : ThemeManager.getThemeDescriptors()) {
             registerTheme(themeDescriptor);

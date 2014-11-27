@@ -79,7 +79,7 @@ public class ApplicationFragment extends Application {
         }
     }
 
-    public synchronized void reload() throws Exception {
+    public synchronized void reload() {
         app = null;
     }
 

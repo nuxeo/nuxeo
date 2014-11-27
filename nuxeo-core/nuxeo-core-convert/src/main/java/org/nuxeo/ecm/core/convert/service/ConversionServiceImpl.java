@@ -66,14 +66,14 @@ public class ConversionServiceImpl extends DefaultComponent implements
     protected Thread gcThread;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         converterDescriptors.clear();
         translationHelper.clear();
         self = this;
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         if (config.isCacheEnabled()) {
             ConversionCacheHolder.deleteCache();
         }
@@ -87,8 +87,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
      */
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (CONVERTER_EP.equals(extensionPoint)) {
             ConverterDescriptor desc = (ConverterDescriptor) contribution;
@@ -104,8 +103,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     /* Component API */
@@ -316,7 +314,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         startGC();
     }
 

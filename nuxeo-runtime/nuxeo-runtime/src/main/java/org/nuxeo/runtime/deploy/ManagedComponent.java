@@ -34,17 +34,17 @@ public class ManagedComponent extends DefaultComponent {
     protected Map<String, ContributionManager> contributionManagers;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         contributionManagers = new HashMap<String, ContributionManager>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         contributionManagers = null;
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
             return;
@@ -69,7 +69,7 @@ public class ManagedComponent extends DefaultComponent {
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
             return;

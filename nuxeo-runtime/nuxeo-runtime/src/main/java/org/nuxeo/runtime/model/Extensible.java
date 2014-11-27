@@ -29,16 +29,14 @@ public interface Extensible {
      * Registers the given extension.
      *
      * @param extension the extension to register
-     * @throws Exception if any error occurs
      */
-    void registerExtension(Extension extension) throws Exception;
+    void registerExtension(Extension extension);
 
     /**
      * Unregisters the given extension.
      *
      * @param extension the extension to unregister
-     * @throws Exception if any error occurs
      */
-    void unregisterExtension(Extension extension) throws Exception;
+    void unregisterExtension(Extension extension);
 
 }

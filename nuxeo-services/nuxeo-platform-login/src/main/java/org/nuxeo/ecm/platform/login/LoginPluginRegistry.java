@@ -130,22 +130,16 @@ public class LoginPluginRegistry extends DefaultComponent {
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         currentLoginPlugin = null;
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         loginPluginStack = new HashMap<String, LoginPlugin>();
         pluginDescriptorStack = new HashMap<String, LoginPluginDescriptor>();
     }
-
-/*    @Override
-    public void deactivate(RuntimeContext context) throws Exception {
-        super.deactivate(context);
-    }
-  */
 
     @Deprecated
     public LoginPlugin getPlugin() {

@@ -284,7 +284,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) {
         if (extension.getExtensionPoint().equals("plugins")) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
@@ -337,7 +337,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) {
         if (extension.getExtensionPoint().equals("plugins")) {
             Object[] contribs = extension.getContributions();
 
@@ -381,7 +381,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void registerFileImporter(FileImporterDescriptor pluginExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         String name = pluginExtension.getName();
         if (name == null) {
             log.error("Cannot register file importer without a name");
@@ -392,9 +392,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         if (fileImporters.containsKey(name)) {
             log.info("Overriding file importer plugin " + name);
             FileImporter oldPlugin = fileImporters.get(name);
-            FileImporter newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(
-                    className).newInstance()
-                    : oldPlugin;
+            FileImporter newPlugin;
+            try {
+                newPlugin = className != null ? (FileImporter) extension.getContext().loadClass(
+                        className).newInstance()
+                        : oldPlugin;
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
             if (pluginExtension.isMerge()) {
                 newPlugin = mergeFileImporters(oldPlugin, newPlugin,
                         pluginExtension);
@@ -405,8 +410,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             fileImporters.put(name, newPlugin);
             log.info("Registered file importer " + name);
         } else if (className != null) {
-            FileImporter plugin = (FileImporter) extension.getContext().loadClass(
-                    className).newInstance();
+            FileImporter plugin;
+            try {
+                plugin = (FileImporter) extension.getContext().loadClass(
+                        className).newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
             plugin = fillImporterWithDescriptor(plugin, pluginExtension);
             fileImporters.put(name, plugin);
             log.info("Registered file importer " + name);
@@ -460,13 +470,18 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private void registerFolderImporter(
             FolderImporterDescriptor folderImporterDescriptor,
-            Extension extension) throws Exception {
+            Extension extension) {
 
         String name = folderImporterDescriptor.getName();
         String className = folderImporterDescriptor.getClassName();
 
-        FolderImporter folderImporter = (FolderImporter) extension.getContext().loadClass(
-                className).newInstance();
+        FolderImporter folderImporter;
+        try {
+            folderImporter = (FolderImporter) extension.getContext().loadClass(
+                    className).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         folderImporter.setName(name);
         folderImporter.setFileManagerService(this);
         folderImporters.add(folderImporter);
@@ -490,14 +505,19 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private void registerCreationContainerListProvider(
             CreationContainerListProviderDescriptor ccListProviderDescriptor,
-            Extension extension) throws Exception {
+            Extension extension) {
 
         String name = ccListProviderDescriptor.getName();
         String[] docTypes = ccListProviderDescriptor.getDocTypes();
         String className = ccListProviderDescriptor.getClassName();
 
-        CreationContainerListProvider provider = (CreationContainerListProvider) extension.getContext().loadClass(
-                className).newInstance();
+        CreationContainerListProvider provider;
+        try {
+            provider = (CreationContainerListProvider) extension.getContext().loadClass(
+                    className).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         provider.setName(name);
         provider.setDocTypes(docTypes);
         if (creationContainerListProviders.contains(provider)) {
@@ -567,7 +587,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModelList getCreationContainers(Principal principal,
-            String docType) throws Exception {
+            String docType) {
         DocumentModelList containers = new DocumentModelListImpl();
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
@@ -580,7 +600,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModelList getCreationContainers(CoreSession documentManager,
-            String docType) throws Exception {
+            String docType) {
         for (CreationContainerListProvider provider : creationContainerListProviders) {
             if (provider.accept(docType)) {
                 return provider.getCreationContainerList(documentManager,

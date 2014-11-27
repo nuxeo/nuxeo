@@ -27,6 +27,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToDocRef;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
@@ -35,6 +36,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.osgi.framework.Bundle;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +151,8 @@ public class OperationChainContribution {
         return id;
     }
 
-    public OperationChain toOperationChain(Bundle bundle) throws Exception {
+    public OperationChain toOperationChain(Bundle bundle)
+            throws OperationException {
         OperationChain chain = new OperationChain(id);
         chain.setDescription(description);
         chain.setPublic(isPublic);
@@ -183,7 +187,11 @@ public class OperationChainContribution {
                             if (param.map != null && !param.map.isEmpty()) {
                                 val = new Properties(param.map);
                             } else {
-                                val = new Properties(param.value);
+                                try {
+                                    val = new Properties(param.value);
+                                } catch (IOException e) {
+                                    throw new OperationException(e);
+                                }
                             }
                         }
                         break;
@@ -233,7 +241,11 @@ public class OperationChainContribution {
                     case 'r':
                         if (T_RESOURCE.equals(type)) {
                             if (param.value.contains(":/")) { // a real URL
-                                val = new URL(param.value);
+                                try {
+                                    val = new URL(param.value);
+                                } catch (MalformedURLException e) {
+                                    throw new OperationException(e);
+                                }
                             } else { // try with class loader
                                 val = bundle.getEntry(param.value);
                             }

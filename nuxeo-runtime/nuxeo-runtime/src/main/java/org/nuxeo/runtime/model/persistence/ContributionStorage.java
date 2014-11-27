@@ -19,14 +19,14 @@ import java.util.List;
  */
 public interface ContributionStorage {
 
-    Contribution addContribution(Contribution contribution) throws Exception;
+    Contribution addContribution(Contribution contribution);
 
-    Contribution getContribution(String name) throws Exception;
+    Contribution getContribution(String name);
 
-    List<Contribution> getContributions() throws Exception;
+    List<Contribution> getContributions();
 
-    boolean removeContribution(Contribution name) throws Exception;
+    boolean removeContribution(Contribution name);
 
-    Contribution updateContribution(Contribution contribution) throws Exception;
+    Contribution updateContribution(Contribution contribution);
 
 }

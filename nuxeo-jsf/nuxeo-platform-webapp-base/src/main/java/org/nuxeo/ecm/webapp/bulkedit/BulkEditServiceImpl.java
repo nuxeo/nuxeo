@@ -111,8 +111,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (VERSIONING_EP.equals(extensionPoint)) {
             VersioningDescriptor desc = (VersioningDescriptor) contribution;
             String defaultVer = desc.getDefaultVersioningOption();
@@ -131,8 +130,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (VERSIONING_EP.equals(extensionPoint)) {
             defaultVersioningOption = DEFAULT_VERSIONING_OPTION;
         }

@@ -73,8 +73,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof RedisPoolDescriptor) {
             registry.addContribution((RedisPoolDescriptor) contribution);
         } else {
@@ -84,7 +83,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (config == null || config.disabled) {
             return;
         }
@@ -118,7 +117,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         return executor.execute(new RedisCallable<Long>() {
 
             @Override
-            public Long call(Jedis jedis) throws Exception {
+            public Long call(Jedis jedis) {
                 List<String> keys = Arrays.asList(pattern);
                 List<String> args = Arrays.asList();
                 return (Long) jedis.evalsha(delsha, keys, args);
@@ -138,7 +137,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         return executor.execute(new RedisCallable<String>() {
 
             @Override
-            public String call(Jedis jedis) throws Exception {
+            public String call(Jedis jedis) {
                 return jedis.scriptLoad(builder.toString());
             }
         });
