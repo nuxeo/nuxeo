@@ -292,8 +292,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test", change.getRepositoryId());
             assertEquals("deleted", change.getEventId());
             assertEquals(doc1.getId(), change.getDocUuid());
-            assertEquals("defaultFileSystemItemFactory#test#" + doc1.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + doc1.getId(), change.getFileSystemItemId());
 
             // Restore a deleted document and move a document in a newly
             // synchronized root
@@ -339,8 +338,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test", change.getRepositoryId());
             assertEquals("deleted", change.getEventId());
             assertEquals(doc3.getId(), change.getDocUuid());
-            assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + doc3.getId(), change.getFileSystemItemId());
 
             // Create a doc and copy it from a sync root to another one
             docToCopy = session.createDocumentModel("/folder1", "docToCopy",
@@ -521,8 +519,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+            assertEquals("test#" + folder2.getId(),
                     change.getFileSystemItemId());
             assertEquals("folder2", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission
@@ -531,8 +528,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(1);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals(subFolder.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultFileSystemItemFactory#test#" + subFolder.getId(),
+            assertEquals("test#" + subFolder.getId(),
                     change.getFileSystemItemId());
             assertEquals("subFolder", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission
@@ -805,8 +801,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
             assertEquals("deleted", fsItemChange.getEventId());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+            assertEquals("test#" + folder1.getId(),
                     fsItemChange.getFileSystemItemId());
 
             // Register back the root, it's activity is again detected by the
@@ -856,8 +851,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
             assertEquals("deleted", fsItemChange.getEventId());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+            assertEquals("test#" + folder1.getId(),
                     fsItemChange.getFileSystemItemId());
 
         } finally {
@@ -941,8 +935,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(0);
             assertEquals("deleted", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+            assertEquals("test#" + folder2.getId(),
                     change.getFileSystemItemId());
             assertEquals("folder2", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since unregistered
@@ -951,8 +944,7 @@ public class TestAuditFileSystemChangeFinder {
             change = changes.get(1);
             assertEquals("deleted", change.getEventId());
             assertEquals(folder1.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+            assertEquals("test#" + folder1.getId(),
                     change.getFileSystemItemId());
             assertEquals("folder1", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since unregistered
