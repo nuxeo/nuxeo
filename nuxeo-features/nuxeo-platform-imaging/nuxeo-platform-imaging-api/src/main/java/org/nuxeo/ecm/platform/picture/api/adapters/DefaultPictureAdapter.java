@@ -122,28 +122,25 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
             throws IOException, ClientException {
         ImagingService imagingService = getImagingService();
-        List<PictureView> pictureViews = null;
+        List<PictureView> pictureViews;
 
         if (pictureConversions != null) {
-            List<PictureConversion> templates = new ArrayList<PictureConversion>(
+            List<PictureConversion> conversions = new ArrayList<PictureConversion>(
                     pictureConversions.size());
             for (Map<String, Object> template : pictureConversions) {
-                templates.add(new PictureConversion(
+                conversions.add(new PictureConversion(
                         (String) template.get("title"),
                         (String) template.get("description"),
                         (String) template.get("tag"), 0));
             }
 
-            pictureViews = imagingService.computeViewsFor(blob, templates,
+            pictureViews = imagingService.computeViewsFor(blob, conversions,
                     imageInfo, false);
         } else {
-            // TODO - Call service here - call with false for convert params
-            // FIXED: make this method call using the passed blob and not the
-            // instance filecontent
-            pictureViews = imagingService.computeViewFor(blob, false);
+            pictureViews = imagingService.computeViewFor(doc, blob, false);
         }
 
-        addPictureViews(pictureViews);
+        addPictureViews(pictureViews, true);
     }
 
     @Override

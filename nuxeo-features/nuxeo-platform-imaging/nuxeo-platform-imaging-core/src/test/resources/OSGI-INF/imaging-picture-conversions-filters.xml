@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.picture.ImagingComponent.test.config">
+
+  <extension target="org.nuxeo.ecm.platform.picture.ImagingComponent"
+    point="pictureConversions">
+
+    <pictureConversion id="smallConversion" maxSize="200">
+      <filters>
+        <filter-id>smallConversion</filter-id>
+      </filters>
+    </pictureConversion>
+
+    <pictureConversion id="anotherSmallConversion" maxSize="200">
+      <filters>
+        <filter-id>smallConversion</filter-id>
+        <filter-id>unauthorized</filter-id>
+      </filters>
+    </pictureConversion>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="smallConversion">
+      <rule grant="true">
+        <condition>#{currentDocument.dc.source == "Small"}</condition>
+      </rule>
+    </filter>
+
+    <filter id="unauthorized">
+      <rule grant="false">
+        <condition>#{currentDocument.dc.rights == "Unauthorized"}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

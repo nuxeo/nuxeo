@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author Max Stepanov
@@ -229,7 +230,7 @@ public interface ImagingService {
      *
      * @since 7.1
      */
-    List<PictureView> computeViewFor(Blob fileContent, boolean b)
+    List<PictureView> computeViewFor(DocumentModel doc, Blob blob, boolean convert)
             throws ClientException, IOException;
 
 }

@@ -136,5 +136,10 @@ public class PictureConversionRegistry extends
         if (maxSize != null) {
             dest.setMaxSize(maxSize);
         }
+
+        List<String> newFilterIds = new ArrayList<>();
+        newFilterIds.addAll(dest.getFilterIds());
+        newFilterIds.addAll(source.getFilterIds());
+        dest.setFilterIds(newFilterIds);
     }
 }

@@ -17,9 +17,13 @@
 
 package org.nuxeo.ecm.platform.picture.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -55,6 +59,9 @@ public class PictureConversion implements Comparable<PictureConversion> {
 
     @XNode("@maxSize")
     protected Integer maxSize;
+
+    @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
+    protected List<String> filterIds;
 
     public PictureConversion() {
         super();
@@ -119,6 +126,10 @@ public class PictureConversion implements Comparable<PictureConversion> {
         return maxSize;
     }
 
+    public List<String> getFilterIds() {
+        return filterIds;
+    }
+
     public void setOrder(Integer order) {
         this.order = order;
     }
@@ -147,6 +158,10 @@ public class PictureConversion implements Comparable<PictureConversion> {
         this.maxSize = maxSize;
     }
 
+    public void setFilterIds(List<String> filterIds) {
+        this.filterIds = filterIds;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -173,6 +188,10 @@ public class PictureConversion implements Comparable<PictureConversion> {
         clone.chainId = chainId;
         clone.enabled = enabled;
         clone.isDefault = isDefault;
+        if (filterIds != null) {
+            clone.filterIds = new ArrayList<>();
+            clone.filterIds.addAll(filterIds);
+        }
         return clone;
     }
 
@@ -180,6 +199,7 @@ public class PictureConversion implements Comparable<PictureConversion> {
     public String toString() {
         return String.format(
                 "PictureConversion [id=%s, description=%s, tag=%s, maxSize=%d, order=%d, chainId=%s, enabled=%s, default=%s]",
-                id, description, tag, maxSize, order, chainId, enabled, isDefault);
+                id, description, tag, maxSize, order, chainId, enabled,
+                isDefault);
     }
 }

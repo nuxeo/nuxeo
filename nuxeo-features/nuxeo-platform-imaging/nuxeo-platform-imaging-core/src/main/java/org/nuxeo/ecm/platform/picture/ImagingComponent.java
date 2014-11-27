@@ -37,19 +37,25 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ELActionContext;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -512,19 +518,39 @@ public class ImagingComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<PictureView> computeViewFor(Blob fileContent, boolean convert)
-            throws ClientException, IOException {
-        List<PictureConversion> pictureConversions = pictureConversionRegistry.getPictureConversions();
-        List<PictureView> pictureViews = new ArrayList<PictureView>(
+    public List<PictureView> computeViewFor(DocumentModel doc, Blob blob,
+            boolean convert) throws ClientException, IOException {
+        List<PictureConversion> pictureConversions = getPictureConversions();
+        List<PictureView> pictureViews = new ArrayList<>(
                 pictureConversions.size());
 
         for (PictureConversion pictureConversion : pictureConversions) {
-            PictureView pictureView = computeView(fileContent,
-                    pictureConversion, getImageInfo(fileContent), convert);
-            pictureViews.add(pictureView);
+            if (canApplyPictureConversion(pictureConversion, doc)) {
+                PictureView pictureView = computeView(blob, pictureConversion,
+                        getImageInfo(blob), convert);
+                pictureViews.add(pictureView);
+            }
         }
 
         return pictureViews;
+    }
+
+    protected boolean canApplyPictureConversion(
+            PictureConversion pictureConversion, DocumentModel doc) {
+        if (pictureConversion.isDefault()) {
+            return true;
+        }
+
+        ActionManager actionService = Framework.getService(ActionManager.class);
+        return actionService.checkFilters(pictureConversion.getFilterIds(),
+                createActionContext(doc));
+    }
+
+    protected ActionContext createActionContext(DocumentModel doc) {
+        ActionContext actionContext = new ELActionContext(
+                new ExpressionContext(), new ExpressionFactoryImpl());
+        actionContext.setCurrentDocument(doc);
+        return actionContext;
     }
 
     protected PictureView computeViewWithoutConversion(Blob blob,

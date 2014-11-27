@@ -336,7 +336,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected void clearViews() throws ClientException {
-        List<Map<String, Object>> viewsList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> viewsList = new ArrayList<>();
         doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
     }
 
@@ -357,9 +357,9 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                         maxsize, filename, width, height, depth, fileContent);
             }
         } else {
-            List<PictureView> pictureViews = getImagingService().computeViewFor(
+            List<PictureView> pictureViews = getImagingService().computeViewFor(doc,
                     fileContent, true);
-            addPictureViews(pictureViews);
+            addPictureViews(pictureViews, true);
         }
     }
 
@@ -387,14 +387,13 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     /**
      * Attach new picture views with the document
      *
-     * @param pictureViews
-     *
-     * @see AbstractPictureAdapter#addViews(List, String, String)
-     * @see DefaultPictureAdapter#preFillPictureViews(Blob, List, ImageInfo)
-     *
      * @since 7.1
      */
-    protected void addPictureViews(List<PictureView> pictureViews) {
+    protected void addPictureViews(List<PictureView> pictureViews, boolean clearPictureViews) {
+        if (clearPictureViews) {
+            clearViews();
+        }
+
         List<Map<String, Serializable>> views = getPictureViews();
 
         for (PictureView pictureView : pictureViews) {
@@ -411,28 +410,16 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     /**
-     * Safely get the picture views attached with the document.
-     *
-     * <br/>
-     * <br/>
-     *
-     * If the property {@link AbstractPictureAdapter#VIEWS_PROPERTY} is null
-     * then a <b>new {@link ArrayList} is created</b>.
-     *
-     * <br/>
-     * <br/>
-     *
-     * <b>This method never return null</b>
+     * Returns the picture views attached to the document if present, an empty list otherwise.
      *
      * @since 7.1
      */
     @SuppressWarnings("unchecked")
-    private List<Map<String, Serializable>> getPictureViews() {
+    protected List<Map<String, Serializable>> getPictureViews() {
         List<Map<String, Serializable>> views = (List<Map<String, Serializable>>) doc.getPropertyValue(VIEWS_PROPERTY);
         if (views == null) {
-            views = new ArrayList<Map<String, Serializable>>();
+            views = new ArrayList<>();
         }
-
         return views;
     }
 
@@ -444,7 +431,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
      */
     protected void addPictureView(PictureView view) {
         List<Map<String, Serializable>> views = getPictureViews();
-
         views.add(view.asMap());
         doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
     }

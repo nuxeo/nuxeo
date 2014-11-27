@@ -17,24 +17,32 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureConversion;
+import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
@@ -45,7 +53,15 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@Deploy({ TestPictureConversions.PICTURE_CORE })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core",
+        "org.nuxeo.ecm.actions",
+        "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.convert" })
+@LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")
 public class TestPictureConversions {
 
     public static final String PICTURE_CORE = "org.nuxeo.ecm.platform.picture.core";
@@ -54,14 +70,19 @@ public class TestPictureConversions {
 
     private static final String PICTURE_CONVERSIONS_OVERRIDE_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-override.xml";
 
+    private static final String PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-filters.xml";
+
     protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList(
             "Small", "Medium", "Original", "Thumbnail", "OriginalJpeg");
 
     @Inject
-    protected RuntimeHarness runtimeHarness;
+    protected CoreSession session;
 
     @Inject
     protected ImagingService imagingService;
+
+    @Inject
+    protected RuntimeHarness runtimeHarness;
 
     @Test
     public void iHaveTheDefaultPictureConversionsRegistered() {
@@ -70,7 +91,15 @@ public class TestPictureConversions {
 
     protected void checkDefaultPictureConversionsPresence() {
         List<String> pictureConversionIds = getPictureConversionIds();
-        assertTrue(pictureConversionIds.containsAll(DEFAULT_PICTURE_CONVERSIONS));
+        org.junit.Assert.assertTrue(pictureConversionIds.containsAll(DEFAULT_PICTURE_CONVERSIONS));
+    }
+
+    protected List<String> getPictureConversionIds() {
+        List<String> ids = new ArrayList<>();
+        for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
+            ids.add(pictureConversion.getId());
+        }
+        return ids;
     }
 
     @Test
@@ -115,14 +144,14 @@ public class TestPictureConversions {
             switch (pictureConversion.getId()) {
             case "Small":
                 assertEquals(50, (int) pictureConversion.getMaxSize());
-                Assert.assertTrue(pictureConversion.getDescription().contains(
+                assertTrue(pictureConversion.getDescription().contains(
                         "override"));
                 break;
             case "Thumbnail":
                 assertEquals(320, (int) pictureConversion.getMaxSize());
                 break;
             case "Medium":
-                Assert.assertTrue(pictureConversion.getDescription().contains(
+                assertTrue(pictureConversion.getDescription().contains(
                         "override"));
                 break;
             }
@@ -165,12 +194,43 @@ public class TestPictureConversions {
         undeployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
     }
 
-    protected List<String> getPictureConversionIds() {
-        List<String> ids = new ArrayList<>();
-        for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
-            ids.add(pictureConversion.getId());
-        }
-        return ids;
+    @Test
+    public void shouldFilterPictureConversions() throws Exception {
+        deployContrib(PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION);
+
+        DocumentModel picture = session.createDocumentModel("/", "picture",
+                "Picture");
+        Blob blob = new FileBlob(
+                FileUtils.getResourceFileFromContext("images/test.jpg"));
+        blob.setFilename("MyTest.jpg");
+        blob.setMimeType("image/jpeg");
+        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture = session.createDocument(picture);
+
+        MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        assertEquals(5, multiviewPicture.getViews().length);
+
+        // trigger 2 new conversions
+        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture.setPropertyValue("dc:source", "Small");
+        picture = session.saveDocument(picture);
+
+        multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        assertEquals(7, multiviewPicture.getViews().length);
+        assertNotNull(multiviewPicture.getView("smallConversion"));
+        assertNotNull(multiviewPicture.getView("anotherSmallConversion"));
+
+        // block the 'anotherSmallConversion' conversion
+        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture.setPropertyValue("dc:rights", "Unauthorized");
+        picture = session.saveDocument(picture);
+
+        multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        assertEquals(6, multiviewPicture.getViews().length);
+        assertNotNull(multiviewPicture.getView("smallConversion"));
+        assertNull(multiviewPicture.getView("anotherSmallConversion"));
+
+        undeployContrib(PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION);
     }
 
     private void deployContrib(String component) throws Exception {
