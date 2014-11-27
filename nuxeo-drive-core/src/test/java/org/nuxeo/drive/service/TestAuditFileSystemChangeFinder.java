@@ -475,7 +475,6 @@ public class TestAuditFileSystemChangeFinder {
         try {
             // No sync roots
             changes = getChanges();
-            System.out.println(changes.size());
             assertTrue(changes.isEmpty());
 
             // Create a folder in a sync root
