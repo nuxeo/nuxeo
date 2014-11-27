@@ -103,8 +103,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_PLATFORMS.equals(extensionPoint)) {
             TargetPlatformDescriptor desc = (TargetPlatformDescriptor) contribution;
             log.info(String.format("Register target platform '%s'",
@@ -123,8 +122,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (XP_PLATFORMS.equals(extensionPoint)) {
             TargetPlatformDescriptor desc = (TargetPlatformDescriptor) contribution;
             log.info(String.format("Unregister target platform '%s'",
