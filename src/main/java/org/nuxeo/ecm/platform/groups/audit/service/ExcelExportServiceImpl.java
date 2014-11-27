@@ -29,7 +29,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Excel Export service generating Excel report file
- * 
+ *
  * @since 5.7
  */
 public class ExcelExportServiceImpl extends DefaultComponent implements
@@ -43,8 +43,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (EXCEL_EXPORT_EP.equals(extensionPoint)) {
             ExcelExportServiceDescriptor desc = (ExcelExportServiceDescriptor) contribution;
             exportExcelRegistry.put(desc.getName(), desc);
@@ -55,8 +54,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     /**
