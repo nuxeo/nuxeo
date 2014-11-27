@@ -241,9 +241,6 @@ public abstract class AbstractTest {
         profile.setPreference("browser.sessionstore.max_tabs_undo", 4);
         profile.setPreference("browser.sessionstore.interval", 1800000);
 
-        // do not load images
-        profile.setPreference("permissions.default.image", 2);
-
         // disable unresponsive script alerts
         profile.setPreference("dom.max_script_run_time", 0);
         profile.setPreference("dom.max_chrome_script_run_time", 0);
