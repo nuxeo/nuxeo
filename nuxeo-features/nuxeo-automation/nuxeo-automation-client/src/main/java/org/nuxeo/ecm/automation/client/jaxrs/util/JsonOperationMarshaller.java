@@ -53,6 +53,8 @@ public class JsonOperationMarshaller {
                 op.signature = readStringArray(jp);
             } else if ("params".equals(key)) {
                 readParams(jp, op);
+            } else {
+                jp.skipChildren();
             }
             tok = jp.nextToken();
         }
