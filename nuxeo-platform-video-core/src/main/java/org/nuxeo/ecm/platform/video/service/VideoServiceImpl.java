@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -68,18 +67,24 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         videoConversions = new VideoConversionContributionHandler();
         automaticVideoConversions = new AutomaticVideoConversionContributionHandler();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         if (workManager != null && workManager.isStarted()) {
-            workManager.shutdownQueue(
-                    workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION),
-                    10, TimeUnit.SECONDS);
+            try {
+                workManager.shutdownQueue(
+                        workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION),
+                        10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                // restore interrupted status
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
         }
         videoConversions = null;
         automaticVideoConversions = null;
@@ -87,8 +92,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
             videoConversions.addContribution((VideoConversion) contribution);
         } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
@@ -98,8 +102,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
             videoConversions.removeContribution((VideoConversion) contribution);
         } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
