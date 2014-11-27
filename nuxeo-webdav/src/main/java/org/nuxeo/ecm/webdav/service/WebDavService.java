@@ -48,12 +48,15 @@ public class WebDavService extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (BACKEND_FACTORY_XP.equals(extensionPoint)) {
             BackendFactoryDescriptor desc = (BackendFactoryDescriptor) contribution;
             Class<?> factoryClass = desc.getFactoryClass();
-            backendFactory = (BackendFactory) factoryClass.newInstance();
+            try {
+                backendFactory = (BackendFactory) factoryClass.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
