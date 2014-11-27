@@ -404,15 +404,20 @@ public class ImagingComponent extends DefaultComponent implements
         if (originalJpegBlob == null) {
             originalJpegBlob = wrapBlob(blob);
         }
-        String viewFilename = computeViewFilename(filename,
-                JPEG_CONVERSATION_FORMAT);
-        viewFilename = title + "_" + viewFilename;
+        String viewFilename = String.format("%s_%s.%s", title,
+                FilenameUtils.getBaseName(blob.getFilename()),
+                FilenameUtils.getExtension(JPEG_CONVERSATION_FORMAT));
         map.put(PictureView.FIELD_FILENAME, viewFilename);
         originalJpegBlob.setFilename(viewFilename);
         map.put(PictureView.FIELD_CONTENT, (Serializable) originalJpegBlob);
         return new PictureViewImpl(map);
     }
 
+    /**
+     * @deprecated since 7.1. We now use the original Blob base name + the
+     *             computed Blob filename extension.
+     */
+    @Deprecated
     protected String computeViewFilename(String filename, String format) {
         int index = filename.lastIndexOf(".");
         if (index == -1) {
@@ -453,20 +458,9 @@ public class ImagingComponent extends DefaultComponent implements
         Blob viewBlob = callPictureConversionChain(blob, pictureConversion,
                 imageInfo, size, conversionFormat);
 
-        String viewFilename;
-
-        /*
-         * Update the blob extension filename only if the picture template
-         * hasn't the 'Original' title which is the template that should not
-         * touch the blob.
-         */
-        if (!title.equals("Original")) {
-            viewFilename = title + "_"
-                    + computeViewFilename(blob.getFilename(), conversionFormat);
-        } else {
-            viewFilename = title + "_" + blob.getFilename();
-        }
-
+        String viewFilename = String.format("%s_%s.%s", title,
+                FilenameUtils.getBaseName(blob.getFilename()),
+                FilenameUtils.getExtension(viewBlob.getFilename()));
         viewBlob.setFilename(viewFilename);
         pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
         pictureViewMap.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);

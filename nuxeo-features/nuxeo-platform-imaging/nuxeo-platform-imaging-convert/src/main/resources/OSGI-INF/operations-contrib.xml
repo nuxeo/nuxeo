@@ -15,6 +15,7 @@
     <operation class="org.nuxeo.ecm.platform.picture.convert.operation.CreatePicture" />
 
     <operation class="org.nuxeo.ecm.platform.picture.convert.operation.GetPictureView" />
+
   </extension>
 
   <extension point="chains"
@@ -25,5 +26,6 @@
         <param name="converter" type="string">pictureResize</param>
       </operation>
     </chain>
+
   </extension>
 </component>
