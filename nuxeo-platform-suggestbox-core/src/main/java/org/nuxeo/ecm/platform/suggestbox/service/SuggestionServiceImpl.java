@@ -102,7 +102,7 @@ public class SuggestionServiceImpl extends DefaultComponent implements
     // Nuxeo Runtime Component API
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         suggesters = new SuggesterRegistry();
         suggesterGroups = new SuggesterGroupRegistry();
@@ -110,13 +110,16 @@ public class SuggestionServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof SuggesterDescriptor) {
             SuggesterDescriptor suggesterDescriptor = (SuggesterDescriptor) contribution;
             log.info(String.format("Registering suggester '%s'",
                     suggesterDescriptor.getName()));
-            suggesterDescriptor.setRuntimeContext(contributor.getRuntimeContext());
+            try {
+                suggesterDescriptor.setRuntimeContext(contributor.getRuntimeContext());
+            } catch (ComponentInitializationException e) {
+                throw new RuntimeException(e);
+            }
             suggesters.addContribution(suggesterDescriptor);
         } else if (contribution instanceof SuggesterGroupDescriptor) {
             SuggesterGroupDescriptor suggesterGroupDescriptor = (SuggesterGroupDescriptor) contribution;
@@ -133,8 +136,7 @@ public class SuggestionServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof SuggesterDescriptor) {
             SuggesterDescriptor suggesterDescriptor = (SuggesterDescriptor) contribution;
             log.info(String.format("Unregistering suggester '%s'",
