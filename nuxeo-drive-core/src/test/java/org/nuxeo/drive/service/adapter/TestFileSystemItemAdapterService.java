@@ -321,6 +321,15 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Content of the custom document's blob.",
                 fileFsItemBlob.getString());
 
+        // -------------------------------------------------------------------
+        // Check #getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+        // boolean relaxSyncRootConstraint)
+        // -------------------------------------------------------------------
+        fsItem = fileSystemItemAdapterService.getFileSystemItem(custom, false,
+                true);
+        assertNotNull(fsItem);
+        assertEquals("test#" + custom.getId(), fsItem.getId());
+
         // ------------------------------------------------------
         // Check #getFileSystemItem(DocumentModel doc, FolderItem parentItem)
         // ------------------------------------------------------

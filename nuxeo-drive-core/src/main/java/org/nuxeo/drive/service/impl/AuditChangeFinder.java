@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
+import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemChange;
@@ -466,7 +467,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             return null;
         }
         if (expectedFileSystemItemId != null
-                && !expectedFileSystemItemId.equals(fsItem.getId())) {
+                && !fsItem.getId().endsWith(
+                        AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR
+                                + expectedFileSystemItemId)) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Id %s of FileSystemItem adapted from document %s doesn't match expected FileSystemItem id %s, returning null.",

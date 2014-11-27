@@ -97,6 +97,9 @@ public class TestNuxeoDriveManager {
     NuxeoDriveManager nuxeoDriveManager;
 
     @Inject
+    FileSystemItemAdapterService fileSystemItemAdapterService;
+
+    @Inject
     DirectoryService directoryService;
 
     @Inject
@@ -619,6 +622,41 @@ public class TestNuxeoDriveManager {
                 locallyEditedCollection, session);
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(
                 session.getPrincipal(), locallyEditedCollection));
+    }
+
+    @Test
+    public void testOtherUsersSyncRootFSItemId() {
+        log.trace("Register a workspace as a sync root for user1");
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), workspace_2, user1Session);
+
+        log.trace("Create a test folder in sync root");
+        DocumentModel testFolder = user1Session.createDocument(user1Session.createDocumentModel(
+                workspace_2.getPathAsString(), "testFolder", "Folder"));
+
+        log.trace("Register test folder as a sync root for user2");
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user2Session.getPrincipal(), testFolder, user2Session);
+
+        log.trace("Check FileSystemItem id for user1");
+        assertEquals(
+                "defaultFileSystemItemFactory#test#" + testFolder.getId(),
+                fileSystemItemAdapterService.getFileSystemItem(testFolder).getId());
+        log.trace("Check FileSystemItem id for user2");
+        DocumentModel testFolderUser2 = user2Session.getDocument(testFolder.getRef());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory#test#"
+                        + testFolderUser2.getId(),
+                fileSystemItemAdapterService.getFileSystemItem(testFolderUser2).getId());
+
+        log.trace("Check FileSystemItem id for user1 relaxing sync root constraint");
+        String fsItemIdUser1 = fileSystemItemAdapterService.getFileSystemItem(
+                testFolder, false, true).getId();
+        assertEquals("test#" + testFolder.getId(), fsItemIdUser1);
+        log.trace("Check FileSystemItem id for user2 relaxing sync root constraint");
+        String fsItemIdUser2 = fileSystemItemAdapterService.getFileSystemItem(
+                testFolderUser2, false, true).getId();
+        assertEquals(fsItemIdUser1, fsItemIdUser2);
     }
 
     protected DocumentModel doc(String path) throws ClientException {

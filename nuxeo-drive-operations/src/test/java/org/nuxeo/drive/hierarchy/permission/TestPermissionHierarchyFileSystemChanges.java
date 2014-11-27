@@ -99,8 +99,6 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     private static final String SYNC_ROOT_ID_PREFIX = "permissionSyncRootFactory#test#";
 
-    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
-
     private static final String CONTENT_PREFIX = "The content of file ";
 
     @Inject
@@ -402,8 +400,7 @@ public class TestPermissionHierarchyFileSystemChanges {
 
             FileSystemItemChange change = changes.get(0);
             assertEquals("securityUpdated", change.getEventId());
-            assertEquals(
-                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + user1File2.getId(),
+            assertEquals("test#" + user1File2.getId(),
                     change.getFileSystemItemId());
             assertEquals("user1File2.txt", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since parent is not
@@ -411,7 +408,7 @@ public class TestPermissionHierarchyFileSystemChanges {
 
             change = changes.get(1);
             assertEquals("securityUpdated", change.getEventId());
-            assertEquals(SYNC_ROOT_ID_PREFIX + user1Folder2.getId(),
+            assertEquals("test#" + user1Folder2.getId(),
                     change.getFileSystemItemId());
             assertEquals("user1Folder2", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission

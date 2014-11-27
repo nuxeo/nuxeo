@@ -80,7 +80,16 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
         this.factoryName = factoryName;
         this.principal = principal;
         this.userName = principal.getName();
-        this.id = this.factoryName + FILE_SYSTEM_ITEM_ID_SEPARATOR;
+        if (relaxSyncRootConstraint) {
+            // Don't include factory name in id as in this case the document can
+            // be adapted by different factories depending on the principal.
+            // Typically a document that is a sync root for a user but a
+            // subfolder of a sync root for another one.
+            // See https://jira.nuxeo.com/browse/NXP-16038
+            this.id = StringUtils.EMPTY;
+        } else {
+            this.id = this.factoryName + FILE_SYSTEM_ITEM_ID_SEPARATOR;
+        }
     }
 
     protected AbstractFileSystemItem() {
