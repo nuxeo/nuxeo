@@ -97,12 +97,16 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     /*--------------------- FileSystemItem ---------------------*/
+    @Override
     public abstract void rename(String name) throws ClientException;
 
+    @Override
     public abstract void delete() throws ClientException;
 
+    @Override
     public abstract boolean canMove(FolderItem dest) throws ClientException;
 
+    @Override
     public abstract FileSystemItem move(FolderItem dest) throws ClientException;
 
     @Override
