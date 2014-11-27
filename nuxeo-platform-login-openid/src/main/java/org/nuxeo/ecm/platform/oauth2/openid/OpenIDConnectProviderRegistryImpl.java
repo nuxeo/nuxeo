@@ -57,8 +57,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             OpenIDConnectProviderDescriptor provider = (OpenIDConnectProviderDescriptor) contribution;
 
@@ -99,16 +98,22 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
         return providers.get(name);
     }
 
-    protected void registerPendingProviders() throws Exception {
+    protected void registerPendingProviders() {
         for (OpenIDConnectProviderDescriptor provider : pendingProviders.getContribs()) {
             registerOpenIdProvider(provider);
         }
     }
 
     protected void registerOpenIdProvider(
-            OpenIDConnectProviderDescriptor provider) throws Exception {
+            OpenIDConnectProviderDescriptor provider) {
 
         OAuth2ServiceProviderRegistry oauth2ProviderRegistry = getOAuth2ServiceProviderRegistry();
+        RedirectUriResolver redirectUriResolver;
+        try {
+            redirectUriResolver = provider.getRedirectUriResolver().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
 
         if (oauth2ProviderRegistry != null) {
 
@@ -133,7 +138,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
                             provider.getUserInfoClass(),
                             provider.getIcon(),
                             provider.isEnabled(),
-                            provider.getRedirectUriResolver().newInstance(),
+                            redirectUriResolver,
                             provider.getUserResolverClass()));
 
             // contribute icon and link to the Login Screen
@@ -150,7 +155,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
                         provider.getUserInfoClass(),
                         provider.getIcon(),
                         provider.isEnabled(),
-                        provider.getRedirectUriResolver().newInstance(),
+                        redirectUriResolver,
                         provider.getUserResolverClass()));
             } else {
                 log.error("Can not register OAuth Provider since OAuth Registry is not available");
@@ -160,7 +165,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
         registerPendingProviders();
     }

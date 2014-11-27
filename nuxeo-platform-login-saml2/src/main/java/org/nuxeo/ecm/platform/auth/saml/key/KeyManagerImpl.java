@@ -59,16 +59,19 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws SecurityException {
+            String extensionPoint, ComponentInstance contributor) {
         config = (KeyDescriptor) contribution;
         setup();
     }
 
-    private void setup() throws SecurityException {
+    private void setup() {
         if (config != null) {
-            keyStore = getKeyStore(config.getKeystoreFilePath(),
-                    config.getKeystorePassword());
+            try {
+                keyStore = getKeyStore(config.getKeystoreFilePath(),
+                        config.getKeystorePassword());
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            }
             credentialResolver = new KeyStoreCredentialResolver(keyStore,
                     config.getPasswords());
         } else {
@@ -103,8 +106,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws SecurityException {
+            String extensionPoint, ComponentInstance contributor) {
         config = null;
         setup();
     }
