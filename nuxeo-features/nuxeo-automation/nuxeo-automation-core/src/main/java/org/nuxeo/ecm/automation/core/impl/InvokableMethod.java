@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.core.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -154,12 +155,20 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
             if (t instanceof OperationException) {
                 throw (OperationException) t;
             } else {
-                throw new OperationException("Failed to invoke operation "
-                        + op.getId(), t);
+                String exceptionMessage = "Failed to invoke operation " + op.getId();
+                if (op.getAliases() != null && op.getAliases().length > 0) {
+                    exceptionMessage += " with aliases " + Arrays.toString(op
+                            .getAliases());
+                }
+                throw new OperationException(exceptionMessage, t);
             }
         } catch (Throwable t) {
-            throw new OperationException("Failed to invoke operation "
-                    + op.getId(), t);
+            String exceptionMessage = "Failed to invoke operation " + op.getId();
+            if (op.getAliases() != null && op.getAliases().length > 0) {
+                exceptionMessage += " with aliases " + Arrays.toString(op
+                        .getAliases());
+            }
+            throw new OperationException(exceptionMessage, t);
         }
     }
 
