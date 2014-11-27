@@ -41,12 +41,12 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
     protected AllowedAssetTypeRegistry allowedAssetTypeRegistry;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         allowedAssetTypeRegistry = new AllowedAssetTypeRegistry();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         allowedAssetTypeRegistry = null;
     }
 
@@ -71,8 +71,7 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ASSET_LIBRARY_EP.equals(extensionPoint)) {
             assetLibrary = (AssetLibrary) contribution;
         } else if (ALLOWED_ASSET_TYPES_EP.equals(extensionPoint)) {
@@ -82,8 +81,7 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (ASSET_LIBRARY_EP.equals(extensionPoint)) {
             assetLibrary = null;
         } else if (ALLOWED_ASSET_TYPES_EP.equals(extensionPoint)) {
