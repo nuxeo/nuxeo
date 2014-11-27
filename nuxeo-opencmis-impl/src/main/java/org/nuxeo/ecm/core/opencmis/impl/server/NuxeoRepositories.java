@@ -36,12 +36,12 @@ public class NuxeoRepositories extends DefaultComponent {
     protected Map<String, NuxeoRepository> repositories;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         repositories = new ConcurrentHashMap<String, NuxeoRepository>();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         repositories = null;
     }
 
