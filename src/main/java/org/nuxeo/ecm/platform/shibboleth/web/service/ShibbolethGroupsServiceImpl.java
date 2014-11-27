@@ -33,7 +33,7 @@ public class ShibbolethGroupsServiceImpl extends DefaultComponent
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) throws Exception {
+            ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             config = (ShibbolethGroupsConfig) contribution;
         }
