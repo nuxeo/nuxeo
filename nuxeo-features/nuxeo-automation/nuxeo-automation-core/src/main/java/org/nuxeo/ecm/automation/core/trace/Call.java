@@ -23,14 +23,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.core.scripting.Expression;
 
 /**
  * @since 5.7.3
  */
 public class Call {
+
+    private static final Log log = LogFactory.getLog(Call.class);
 
     protected final String chainId;
 
@@ -52,13 +57,56 @@ public class Call {
             OperationType type, InvokableMethod method,
             Map<String, Object> parms) {
         this.type = type;
-        this.variables = (context != null) ? new HashMap<String, Object>(
+        this.variables = (context != null) ? new HashMap<>(
                 context) : null;
         this.method = method;
         this.input = (context != null) ? context.getInput() : null;
-        this.parameters = parms;
+        this.parameters = new HashMap<>();
+        if (parms != null) {
+            for (String paramId : parms.keySet()) {
+                Object paramValue = parms.get(paramId);
+                if (paramValue instanceof Expression) {
+                    try {
+                        ExpressionParameter expressionParameter = new
+                                ExpressionParameter(paramId,
+                                ((Expression) paramValue).eval(context));
+                        this.parameters.put(paramId, expressionParameter);
+                    } catch (Exception e) {
+                        log.warn("Cannot evaluate mvel expression for parameter: " +
+
+                                paramId, e);
+                    }
+                } else {
+                    this.parameters.put(paramId, paramValue);
+                }
+            }
+        }
         this.chainId = (chain != null) ? chain.getId() : "Not bound to a chain";
         this.aliases = (chain != null) ? Arrays.toString(chain.getAliases()) : null;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public class ExpressionParameter {
+
+        protected final String parameterId;
+
+        protected final Object parameterValue;
+
+        public ExpressionParameter(String parameterId, Object parameterValue) {
+            this.parameterId = parameterId;
+            this.parameterValue = parameterValue;
+        }
+
+        public Object getParameterValue() {
+            return parameterValue;
+        }
+
+        public String getParameterId() {
+
+            return parameterId;
+        }
     }
 
     public OperationType getType() {
@@ -92,4 +140,5 @@ public class Call {
     public String getAliases() {
         return aliases;
     }
+
 }

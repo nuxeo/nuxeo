@@ -156,4 +156,15 @@ public class CanTraceChainsTest {
         List<Call> calls = trace.getCalls();
         assertEquals(1, calls.size());
     }
+
+    @Test
+    public void testTraceMvelExpression() throws Exception {
+        context.setInput(src);
+        service.run(context, "testChainTrace");
+        Trace trace = factory.getTrace("testChainTrace");
+        assertEquals("chain.doc", ((Call.ExpressionParameter)trace.getCalls().get(2).getParmeters().get
+                ("name")).getParameterValue());
+        assertEquals("name", ((Call.ExpressionParameter)trace.getCalls().get(2).getParmeters().get
+                ("name")).getParameterId());
+    }
 }
