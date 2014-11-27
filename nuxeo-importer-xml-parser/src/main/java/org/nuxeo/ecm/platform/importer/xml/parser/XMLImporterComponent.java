@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,7 @@ public class XMLImporterComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if ("documentMapping".equals(extensionPoint)) {
             docConfigs.add((DocConfigDescriptor) contribution);
         } else if ("attributeMapping".equals(extensionPoint)) {
@@ -69,19 +69,19 @@ public class XMLImporterComponent extends DefaultComponent implements
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile)
-            throws Exception {
+            throws IOException {
         return importDocuments(root, xmlFile, null);
     }
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root,
-            InputStream xmlStream) throws Exception {
+            InputStream xmlStream) throws IOException {
         return importDocuments(root, xmlStream, null);
     }
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, File source,
-            Map<String, Object> mvelContext) throws Exception {
+            Map<String, Object> mvelContext) throws IOException {
         XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
                 getRegistry(), mvelContext);
         return importer.parse(source);
@@ -90,7 +90,7 @@ public class XMLImporterComponent extends DefaultComponent implements
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root,
             InputStream xmlStream, Map<String, Object> mvelContext)
-            throws Exception {
+            throws IOException {
         XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
                 getRegistry(), mvelContext);
         return importer.parse(xmlStream);

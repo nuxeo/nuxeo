@@ -41,8 +41,7 @@ public class DefaultImporterComponent extends DefaultComponent {
     @SuppressWarnings("unchecked")
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (IMPORTER_CONFIGURATION_XP.equals(extensionPoint)) {
 
             ImporterConfigurationDescriptor descriptor = (ImporterConfigurationDescriptor) contribution;
@@ -78,19 +77,23 @@ public class DefaultImporterComponent extends DefaultComponent {
             if (logClass == null) {
                 log.info("No specific ImporterLogger configured for this importer");
             } else {
-                importerService.setImporterLogger(logClass.newInstance());
+                try {
+                    importerService.setImporterLogger(logClass.newInstance());
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
         }
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         importerService = new DefaultImporterServiceImpl();
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         importerService = null;
     }
 

@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +22,9 @@ public interface XMLImporterService {
      * @param root target container {@link DocumentModel}
      * @param source source file, can be XML or Zip with XML index
      * @return
-     * @throws Exception
      */
     public List<DocumentModel> importDocuments(DocumentModel root, File source)
-            throws Exception;
+            throws IOException;
 
     /**
      * Imports {@link DocumentModel} in Nuxeo from an XML Stream.
@@ -32,10 +32,9 @@ public interface XMLImporterService {
      * @param root target container {@link DocumentModel}
      * @param xmlStream stream source for Xml contnt
      * @return
-     * @throws Exception
      */
     public List<DocumentModel> importDocuments(DocumentModel root,
-            InputStream xmlStream) throws Exception;
+            InputStream xmlStream) throws IOException;
 
     /**
      * Same as {@link #importDocuments(DocumentModel, File)} with map
@@ -45,10 +44,9 @@ public interface XMLImporterService {
      * @param source source file, can be XML or Zip with XML index
      * @param mvelContext Context added each time a mvel expression is resolved
      * @return
-     * @throws Exception
      */
     public List<DocumentModel> importDocuments(DocumentModel root, File source,
-            Map<String, Object> mvelContext) throws Exception;
+            Map<String, Object> mvelContext) throws IOException;
 
     /**
      * Same as {@link #importDocuments(DocumentModel, InputStream)} with map
@@ -58,10 +56,9 @@ public interface XMLImporterService {
      * @param xmlStream stream source for Xml contnt
      * @param mvelContext Context added each time a mvel expression is resolved
      * @return
-     * @throws Exception
      */
     public List<DocumentModel> importDocuments(DocumentModel root,
             InputStream xmlStream, Map<String, Object> mvelContext)
-            throws Exception;
+            throws IOException;
 
 }

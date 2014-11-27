@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,16 +34,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.Text;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
-
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -159,15 +162,19 @@ public class XMLImporterServiceImpl {
 
     private AutomationService automationService;
 
-    public List<DocumentModel> parse(InputStream is) throws Exception {
+    public List<DocumentModel> parse(InputStream is) throws IOException {
         mvelCtx.put("source", is);
-
-        Document doc = new SAXReader().read(is);
-        workingDirectory = null;
-        return parse(doc);
+        try {
+            Document doc;
+            doc = new SAXReader().read(is);
+            workingDirectory = null;
+            return parse(doc);
+        } catch (DocumentException e) {
+            throw new IOException(e);
+        }
     }
 
-    public List<DocumentModel> parse(File file) throws Exception {
+    public List<DocumentModel> parse(File file) throws IOException {
         mvelCtx.put("source", file);
 
         Document doc = null;
@@ -194,7 +201,7 @@ public class XMLImporterServiceImpl {
         return parse(doc);
     }
 
-    public List<DocumentModel> parse(Document doc) throws Exception {
+    public List<DocumentModel> parse(Document doc) {
         Element root = doc.getRootElement();
         elToDoc = new HashMap<>();
         mvelCtx.put("xml", doc);
@@ -241,7 +248,7 @@ public class XMLImporterServiceImpl {
     }
 
     protected void processDocAttributes(DocumentModel doc, Element el,
-            AttributeConfigDescriptor conf) throws Exception {
+            AttributeConfigDescriptor conf) {
         String targetDocProperty = conf.getTargetDocProperty();
 
         if (log.isDebugEnabled()) {
@@ -442,8 +449,7 @@ public class XMLImporterServiceImpl {
         }
     }
 
-    protected void createNewDocument(Element el, DocConfigDescriptor conf)
-            throws Exception {
+    protected void createNewDocument(Element el, DocConfigDescriptor conf) {
         DocumentModel doc = session.createDocumentModel(conf.getDocType());
 
         String path = resolvePath(el, conf.getParent());
@@ -474,14 +480,14 @@ public class XMLImporterServiceImpl {
         try {
             doc = session.createDocument(doc);
         } catch (Exception e) {
-            throw new Exception(String.format(MSG_CREATION, path, name,
+            throw new RuntimeException(String.format(MSG_CREATION, path, name,
                     el.getUniquePath(), conf.toString()), e);
         }
         pushInStack(doc);
         elToDoc.put(el, doc);
     }
 
-    protected void process(Element el) throws Exception {
+    protected void process(Element el) {
         DocConfigDescriptor createConf = getDocCreationConfig(el);
         if (createConf != null) {
             createNewDocument(el, createConf);
@@ -502,7 +508,19 @@ public class XMLImporterServiceImpl {
                     OperationContext ctx = new OperationContext(session,
                             mvelCtx);
                     ctx.setInput(doc);
-                    getAutomationService().run(ctx, chain);
+                    try {
+                        getAutomationService().run(ctx, chain);
+                    } catch (Exception e) {
+                        if (e instanceof RuntimeException) {
+                            throw (RuntimeException) e;
+                        } else {
+                            if (e instanceof InterruptedException) {
+                                // reset interrupted status
+                                Thread.currentThread().interrupt();
+                            }
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             }
 

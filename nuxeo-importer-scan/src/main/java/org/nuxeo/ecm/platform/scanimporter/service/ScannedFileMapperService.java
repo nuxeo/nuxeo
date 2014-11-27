@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.scanimporter.service;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -29,7 +30,7 @@ import java.io.File;
  */
 public interface ScannedFileMapperService {
 
-    ScanFileBlobHolder parseMetaData(File xmlFile) throws Exception;
+    ScanFileBlobHolder parseMetaData(File xmlFile) throws IOException;
 
     String getTargetContainerType();
 

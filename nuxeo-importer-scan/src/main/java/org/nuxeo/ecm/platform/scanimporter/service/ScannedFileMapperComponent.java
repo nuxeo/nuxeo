@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.platform.scanimporter.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +30,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
+import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.nuxeo.common.utils.FileUtils;
@@ -63,8 +67,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (MAPPING_EP.equals(extensionPoint)) {
             mappingDesc = (ScanFileMappingDescriptor) contribution;
@@ -74,7 +77,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
     }
 
     @Override
-    public ScanFileBlobHolder parseMetaData(File xmlFile) throws Exception {
+    public ScanFileBlobHolder parseMetaData(File xmlFile) throws IOException {
 
         Map<String, Serializable> data = new HashMap<String, Serializable>();
 
@@ -84,12 +87,22 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
 
         String xmlData = FileUtils.readFile(xmlFile);
 
-        Document xmlDoc = DocumentHelper.parseText(xmlData);
+        Document xmlDoc;
+        try {
+            xmlDoc = DocumentHelper.parseText(xmlData);
+        } catch (DocumentException e) {
+            throw new IOException(e);
+        }
 
         for (ScanFileFieldMapping fieldMap : mappingDesc.getFieldMappings()) {
 
-            XPath xpath = new Dom4jXPath(fieldMap.getSourceXPath());
-            List<?> nodes = xpath.selectNodes(xmlDoc);
+            List<?> nodes;
+            try {
+                XPath xpath = new Dom4jXPath(fieldMap.getSourceXPath());
+                nodes = xpath.selectNodes(xmlDoc);
+            } catch (JaxenException e) {
+                throw new IOException(e);
+            }
             if (nodes.size() == 1) {
                 DefaultElement elem = (DefaultElement) nodes.get(0);
                 String value = null;
@@ -110,7 +123,11 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
                     data.put(target, Double.parseDouble(value));
                     continue;
                 } else if ("date".equalsIgnoreCase(fieldMap.getTargetType())) {
-                    data.put(target, fieldMap.getDateFormat().parse(value));
+                    try {
+                        data.put(target, fieldMap.getDateFormat().parse(value));
+                    } catch (ParseException e) {
+                        throw new IOException(e);
+                    }
                     continue;
                 } else if ("boolean".equalsIgnoreCase(fieldMap.getTargetType())) {
                     data.put(target, Boolean.parseBoolean(value));
@@ -128,8 +145,13 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
         List<Blob> blobs = new ArrayList<Blob>();
 
         for (ScanFileBlobMapping blobMap : mappingDesc.getBlobMappings()) {
-            XPath xpath = new Dom4jXPath(blobMap.getSourceXPath());
-            List<?> nodes = xpath.selectNodes(xmlDoc);
+            List<?> nodes;
+            try {
+                XPath xpath = new Dom4jXPath(blobMap.getSourceXPath());
+                nodes = xpath.selectNodes(xmlDoc);
+            } catch (JaxenException e) {
+                throw new IOException(e);
+            }
             for (Object node : nodes) {
                 DefaultElement elem = (DefaultElement) node;
                 String filePath = elem.attributeValue(blobMap.getSourcePathAttribute());
