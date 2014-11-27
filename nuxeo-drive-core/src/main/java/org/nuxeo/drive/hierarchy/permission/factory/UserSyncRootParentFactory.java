@@ -98,7 +98,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
             boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
         return new UserSyncRootParentFolderItem(getName(), doc, parentItem,
-                folderName);
+                folderName, relaxSyncRootConstraint);
     }
 
     /*------------------- FileSystemItemFactory ------------------- */

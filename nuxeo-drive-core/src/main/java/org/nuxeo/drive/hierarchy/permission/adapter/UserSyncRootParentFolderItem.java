@@ -53,7 +53,13 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc,
             FolderItem parentItem, String folderName) throws ClientException {
-        super(factoryName, parentItem, doc);
+        this(factoryName, doc, parentItem, folderName, false);
+    }
+
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc,
+            FolderItem parentItem, String folderName,
+            boolean relaxSyncRootConstraint) throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         name = folderName;
         canRename = false;
         canDelete = false;

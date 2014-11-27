@@ -42,7 +42,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
     public AbstractVirtualFolderItem(String factoryName, Principal principal,
             String parentId, String parentPath, String folderName)
             throws ClientException {
-        super(factoryName, principal);
+        super(factoryName, principal, false);
         this.parentId = parentId;
         name = folderName;
         folder = true;

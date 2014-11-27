@@ -49,7 +49,13 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem
 
     public CollectionSyncRootFolderItem(String factoryName,
             FolderItem parentItem, DocumentModel doc) throws ClientException {
-        super(factoryName, parentItem, doc);
+        this(factoryName, parentItem, doc, false);
+    }
+
+    public CollectionSyncRootFolderItem(String factoryName,
+            FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
     }
 
     protected CollectionSyncRootFolderItem() {
