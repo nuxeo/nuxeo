@@ -48,15 +48,14 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
     // Runtime Component API
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         iconsReg = new StyleGuideIconRegistry();
     }
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof IconDescriptor) {
             IconDescriptor icon = (IconDescriptor) contribution;
             log.info(String.format("Register icon '%s'", icon.getPath()));
@@ -67,8 +66,7 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof IconDescriptor) {
             IconDescriptor icon = (IconDescriptor) contribution;
             log.info(String.format("Unregister icon '%s'", icon.getPath()));
