@@ -514,7 +514,7 @@ public class TestNuxeoDriveManager {
     }
 
     @Test
-    public void testOtherUsersSyncRootFSItemId() {
+    public void testOtherUsersSyncRootFSItemId() throws ClientException {
         log.trace("Register a workspace as a sync root for user1");
         nuxeoDriveManager.registerSynchronizationRoot(
                 user1Session.getPrincipal(), workspace_2, user1Session);
