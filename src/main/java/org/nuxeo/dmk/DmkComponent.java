@@ -18,11 +18,13 @@ package org.nuxeo.dmk;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import javax.management.JMException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -33,7 +35,6 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -57,64 +58,75 @@ public class DmkComponent extends DefaultComponent {
 
     protected final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
-    protected HtmlAdaptorServer newAdaptor(DmkProtocol config)
-            throws MalformedObjectNameException,
-            InstanceAlreadyExistsException, MBeanRegistrationException,
-            NotCompliantMBeanException {
+    protected HtmlAdaptorServer newAdaptor(DmkProtocol config) {
         HtmlAdaptorServer adaptor = new HtmlAdaptorServer();
         adaptor.addUserAuthenticationInfo(new AuthInfo(config.user,
                 config.password));
         adaptor.setPort(config.port);
-        ObjectName name = new ObjectName(
-                "org.nuxeo:type=jmx-adaptor,format=html");
-        mbs.registerMBean(adaptor, name);
+        try {
+            ObjectName name = new ObjectName(
+                    "org.nuxeo:type=jmx-adaptor,format=html");
+            mbs.registerMBean(adaptor, name);
+        } catch (JMException e) {
+            throw new RuntimeException(e);
+        }
         return adaptor;
     }
 
-    protected void destroyAdaptor(HtmlAdaptorServer adaptor)
-            throws MalformedObjectNameException, MBeanRegistrationException,
-            InstanceNotFoundException {
-        ObjectName name = new ObjectName(
-                "org.nuxeo:type=jmx-adaptor,format=html");
-        mbs.unregisterMBean(name);
+    protected void destroyAdaptor(HtmlAdaptorServer adaptor) {
+        try {
+            ObjectName name = new ObjectName(
+                    "org.nuxeo:type=jmx-adaptor,format=html");
+            mbs.unregisterMBean(name);
+        } catch (JMException e) {
+            throw new RuntimeException(e);
+        }
         if (!adaptor.isActive()) {
             return;
         }
         adaptor.stop();
     }
 
-    protected JDMKServerConnector newConnector(DmkProtocol config)
-            throws IOException, MalformedObjectNameException,
-            InstanceAlreadyExistsException, MBeanRegistrationException,
-            NotCompliantMBeanException {
-        String protocol = "jdmk-".concat(config.name);
-        JMXServiceURL httpURL = new JMXServiceURL(protocol, null, config.port);
-        JDMKServerConnector connector = (JDMKServerConnector) JMXConnectorServerFactory.newJMXConnectorServer(
-                httpURL, null, mbs);
-        GenericHttpConnectorServer server = (GenericHttpConnectorServer) connector.getWrapped();
-        server.addUserAuthenticationInfo(new AuthInfo(config.user,
-                config.password));
-        ObjectName name = new ObjectName(
-                "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
-        mbs.registerMBean(connector, name);
-        return connector;
+    protected JDMKServerConnector newConnector(DmkProtocol config) {
+        try {
+            String protocol = "jdmk-".concat(config.name);
+            JMXServiceURL httpURL = new JMXServiceURL(protocol, null,
+                    config.port);
+            JDMKServerConnector connector = (JDMKServerConnector) JMXConnectorServerFactory.newJMXConnectorServer(
+                    httpURL, null, mbs);
+            GenericHttpConnectorServer server = (GenericHttpConnectorServer) connector.getWrapped();
+            server.addUserAuthenticationInfo(new AuthInfo(config.user,
+                    config.password));
+            ObjectName name = new ObjectName(
+                    "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
+            mbs.registerMBean(connector, name);
+            return connector;
+        } catch (JMException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    protected void destroyConnector(JDMKServerConnector connector)
-            throws MalformedObjectNameException, MBeanRegistrationException,
-            InstanceNotFoundException, IOException {
+    protected void destroyConnector(JDMKServerConnector connector) {
         String protocol = connector.getAddress().getProtocol();
-        ObjectName name = new ObjectName(
-                "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
-        mbs.unregisterMBean(name);
+        try {
+            ObjectName name = new ObjectName(
+                    "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
+            mbs.unregisterMBean(name);
+        } catch (JMException e) {
+            throw new RuntimeException(e);
+        }
         if (!connector.isActive()) {
             return;
         }
-        connector.stop();
+        try {
+            connector.stop();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deactivate(ComponentContext arg0) throws Exception {
+    public void deactivate(ComponentContext arg0) {
         if (htmlAdaptor != null) {
             try {
                 destroyAdaptor(htmlAdaptor);
@@ -144,8 +156,7 @@ public class DmkComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if ("protocols".equals(extensionPoint)) {
             DmkProtocol protocol = (DmkProtocol) contribution;
             configs.put(protocol.name, protocol);
@@ -153,7 +164,7 @@ public class DmkComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         if (configs.containsKey("html")) {
             htmlAdaptor = newAdaptor(configs.get("html"));
             log.info("JMX HTML adaptor available at port 8081 (not active, to be started in JMX console)");
