@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +79,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core" })
 public class TestNuxeoDriveManager {
 
+    private static final Log log = LogFactory.getLog(TestNuxeoDriveManager.class);
+
     @Inject
     CoreSession session;
 
@@ -85,6 +89,9 @@ public class TestNuxeoDriveManager {
 
     @Inject
     NuxeoDriveManager nuxeoDriveManager;
+
+    @Inject
+    FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
     DirectoryService directoryService;
@@ -504,6 +511,41 @@ public class TestNuxeoDriveManager {
         assertEquals(2, syncRootrefs.size());
         assertTrue(syncRootrefs.contains(folder.getRef()));
         assertTrue(syncRootrefs.contains(folder1.getRef()));
+    }
+
+    @Test
+    public void testOtherUsersSyncRootFSItemId() {
+        log.trace("Register a workspace as a sync root for user1");
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), workspace_2, user1Session);
+
+        log.trace("Create a test folder in sync root");
+        DocumentModel testFolder = user1Session.createDocument(user1Session.createDocumentModel(
+                workspace_2.getPathAsString(), "testFolder", "Folder"));
+
+        log.trace("Register test folder as a sync root for user2");
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user2Session.getPrincipal(), testFolder, user2Session);
+
+        log.trace("Check FileSystemItem id for user1");
+        assertEquals(
+                "defaultFileSystemItemFactory#test#" + testFolder.getId(),
+                fileSystemItemAdapterService.getFileSystemItem(testFolder).getId());
+        log.trace("Check FileSystemItem id for user2");
+        DocumentModel testFolderUser2 = user2Session.getDocument(testFolder.getRef());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory#test#"
+                        + testFolderUser2.getId(),
+                fileSystemItemAdapterService.getFileSystemItem(testFolderUser2).getId());
+
+        log.trace("Check FileSystemItem id for user1 relaxing sync root constraint");
+        String fsItemIdUser1 = fileSystemItemAdapterService.getFileSystemItem(
+                testFolder, false, true).getId();
+        assertEquals("test#" + testFolder.getId(), fsItemIdUser1);
+        log.trace("Check FileSystemItem id for user2 relaxing sync root constraint");
+        String fsItemIdUser2 = fileSystemItemAdapterService.getFileSystemItem(
+                testFolderUser2, false, true).getId();
+        assertEquals(fsItemIdUser1, fsItemIdUser2);
     }
 
     protected DocumentModel doc(String path) throws ClientException {
