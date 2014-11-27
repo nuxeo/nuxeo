@@ -64,7 +64,13 @@ public class DocumentBackedFolderItem extends
 
     public DocumentBackedFolderItem(String factoryName, FolderItem parentItem,
             DocumentModel doc) throws ClientException {
-        super(factoryName, parentItem, doc);
+        this(factoryName, parentItem, doc, false);
+    }
+
+    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem,
+            DocumentModel doc, boolean relaxSyncRootConstraint)
+            throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         initialize(doc);
     }
 

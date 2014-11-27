@@ -158,7 +158,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         // Doc is either Folderish
         if (doc.isFolder()) {
             if (forceParentItem) {
-                return new DocumentBackedFolderItem(name, parentItem, doc);
+                return new DocumentBackedFolderItem(name, parentItem, doc,
+                        relaxSyncRootConstraint);
             } else {
                 return new DocumentBackedFolderItem(name, doc,
                         relaxSyncRootConstraint);
@@ -167,7 +168,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         // or a BlobHolder with a blob
         else {
             if (forceParentItem) {
-                return new DocumentBackedFileItem(this, parentItem, doc);
+                return new DocumentBackedFileItem(this, parentItem, doc,
+                        relaxSyncRootConstraint);
             } else {
                 return new DocumentBackedFileItem(this, doc,
                         relaxSyncRootConstraint);

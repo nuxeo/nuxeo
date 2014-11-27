@@ -127,7 +127,8 @@ public class PermissionSyncRootFactory extends
     protected FileSystemItem adaptDocument(DocumentModel doc,
             boolean forceParentId, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc);
+        return new DefaultSyncRootFolderItem(name, parentItem, doc,
+                relaxSyncRootConstraint);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/

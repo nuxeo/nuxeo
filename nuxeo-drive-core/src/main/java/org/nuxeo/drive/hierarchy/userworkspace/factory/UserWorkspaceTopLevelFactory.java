@@ -99,7 +99,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
             boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
         return new UserWorkspaceTopLevelFolderItem(getName(), doc, folderName,
-                syncRootParentFactoryName);
+                syncRootParentFactoryName, relaxSyncRootConstraint);
     }
 
     /*---------------------- VirtualFolderItemFactory ---------------*/

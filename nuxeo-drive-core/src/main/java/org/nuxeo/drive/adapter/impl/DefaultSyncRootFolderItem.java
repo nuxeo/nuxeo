@@ -37,7 +37,13 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
 
     public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem,
             DocumentModel doc) throws ClientException {
-        super(factoryName, parentItem, doc);
+        this(factoryName, parentItem, doc, false);
+    }
+
+    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem,
+            DocumentModel doc, boolean relaxSyncRootConstraint)
+            throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         // A sync root can be renamed if the current user has the
         // WriteProperties permission on it
         this.canRename = doc.getCoreSession().hasPermission(doc.getRef(),
