@@ -48,8 +48,7 @@ public class LayoutDemoService extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             registerWidgetType(contribution);
         }
@@ -57,8 +56,7 @@ public class LayoutDemoService extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             unregisterWidgetType(contribution);
         }
