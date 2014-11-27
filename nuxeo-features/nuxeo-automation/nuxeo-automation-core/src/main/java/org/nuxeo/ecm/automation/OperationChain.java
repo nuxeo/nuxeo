@@ -42,7 +42,7 @@ public class OperationChain implements Serializable {
     protected String description;
 
     /**
-     * since 7.1
+     * @since 7.1
      */
     protected String[] aliases;
 
@@ -72,7 +72,7 @@ public class OperationChain implements Serializable {
     }
 
     /**
-     * since 7.1
+     * @since 7.1
      */
     public String[] getAliases() {
         return aliases;
@@ -87,7 +87,7 @@ public class OperationChain implements Serializable {
     }
 
     /**
-     * since 7.1
+     * @since 7.1
      */
     public void setAliases(String[] aliases) {
         this.aliases = aliases;

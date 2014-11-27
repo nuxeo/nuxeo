@@ -152,9 +152,6 @@ public class ChainTypeImpl implements OperationType {
         return id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getAliases(){
         return aliases;

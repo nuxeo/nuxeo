@@ -92,7 +92,7 @@ public class OperationAliasTest {
     /**
      * Call an operation with its alias.
      *
-     * since 7.1
+     * @since 7.1
      */
     @Test
     public void testAliasOnOperation() throws Exception {
@@ -107,7 +107,7 @@ public class OperationAliasTest {
     /**
      * Call a chain with its alias.
      *
-     * since 7.1
+     * @since 7.1
      */
     @Test
     public void testAliasOnChain() throws Exception {

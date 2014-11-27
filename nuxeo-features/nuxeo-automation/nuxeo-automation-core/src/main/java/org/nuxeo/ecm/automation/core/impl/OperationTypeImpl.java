@@ -159,9 +159,6 @@ public class OperationTypeImpl implements OperationType {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String[] getAliases() {
         return aliases;
