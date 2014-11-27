@@ -114,7 +114,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         fileSystemItemFactoryRegistry = null;
         topLevelFolderItemFactoryRegistry = null;
@@ -127,9 +127,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * Sorts the contributed factories according to their order.
      */
     @Override
-    public void applicationStarted(ComponentContext context)
-            throws InstantiationException, IllegalAccessException,
-            ClientException {
+    public void applicationStarted(ComponentContext context) {
         setActiveFactories();
     }
 
@@ -263,8 +261,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void setActiveFactories() throws InstantiationException,
-            IllegalAccessException, ClientException {
+    protected void setActiveFactories() {
         topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }

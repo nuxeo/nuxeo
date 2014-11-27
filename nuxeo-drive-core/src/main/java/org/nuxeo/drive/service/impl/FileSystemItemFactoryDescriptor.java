@@ -111,9 +111,13 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         parameters.put(name, value);
     }
 
-    public FileSystemItemFactory getFactory() throws InstantiationException,
-            IllegalAccessException, ClientException {
-        FileSystemItemFactory factory = factoryClass.newInstance();
+    public FileSystemItemFactory getFactory() {
+        FileSystemItemFactory factory;
+        try {
+            factory = factoryClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         factory.setName(name);
         factory.handleParameters(parameters);
         return factory;

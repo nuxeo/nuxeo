@@ -139,8 +139,7 @@ public class FileSystemItemFactoryRegistry extends
     }
 
     protected List<FileSystemItemFactoryWrapper> getOrderedActiveFactories(
-            Set<String> activeFactories) throws InstantiationException,
-            IllegalAccessException, ClientException {
+            Set<String> activeFactories) {
         List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
         List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
                 factoryDescriptors.values());

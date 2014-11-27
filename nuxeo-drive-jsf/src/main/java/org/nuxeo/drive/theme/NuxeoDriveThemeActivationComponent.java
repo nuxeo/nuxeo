@@ -32,7 +32,7 @@ public class NuxeoDriveThemeActivationComponent extends DefaultComponent {
     protected RegistrationInfo themeInfo;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         if (isSDKContainer()) {
             return; // skip them contribution deployment, breaks JSF hot reload
         }
@@ -40,7 +40,7 @@ public class NuxeoDriveThemeActivationComponent extends DefaultComponent {
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         if (themeInfo == null) {
             return;
         }
