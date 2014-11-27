@@ -150,8 +150,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (DIFF_DEFAULT_DISPLAY_EXTENSION_POINT.equals(extensionPoint)) {
             if (contribution instanceof DiffExcludedFieldsDescriptor) {

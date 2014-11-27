@@ -70,9 +70,12 @@ public class ContentDiffAdapterFactoryDescriptor implements Serializable {
         this.typeName = typeName;
     }
 
-    public ContentDiffAdapterFactory getNewInstance()
-            throws InstantiationException, IllegalAccessException {
-        return (ContentDiffAdapterFactory) adapterClass.newInstance();
+    public ContentDiffAdapterFactory getNewInstance() {
+        try {
+            return (ContentDiffAdapterFactory) adapterClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

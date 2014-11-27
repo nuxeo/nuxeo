@@ -51,8 +51,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         if (ADAPTER_FACTORY_EP.equals(extensionPoint)) {
             ContentDiffAdapterFactoryDescriptor desc = (ContentDiffAdapterFactoryDescriptor) contribution;
@@ -66,15 +65,18 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent
             }
         } else if (MIME_TYPE_CONTENT_DIFFER_EP.equals(extensionPoint)) {
             MimeTypeContentDifferDescriptor desc = (MimeTypeContentDifferDescriptor) contribution;
-            contentDifferFactory.put(desc.getPattern(),
-                    desc.getKlass().newInstance());
+            try {
+                contentDifferFactory.put(desc.getPattern(),
+                        desc.getKlass().newInstance());
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
     }
 
     // Service interface impl
