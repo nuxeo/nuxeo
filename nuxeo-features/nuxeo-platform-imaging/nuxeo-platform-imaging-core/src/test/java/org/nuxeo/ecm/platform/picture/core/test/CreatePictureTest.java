@@ -10,9 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -20,7 +18,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.picture.convert.operation.CreatePicture;
@@ -95,7 +92,8 @@ public class CreatePictureTest {
         params.put("properties", properties);
         params.put("pictureTemplates", templates);
 
-        DocumentModel picture = (DocumentModel) service.run(ctx, CreatePicture.ID, params);
+        DocumentModel picture = (DocumentModel) service.run(ctx,
+                CreatePicture.ID, params);
         assertNotNull(picture);
 
         MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);

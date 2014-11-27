@@ -48,7 +48,8 @@ public interface PictureResourceAdapter {
      * Fill this Picture views using the given {@code pictureConversions} and
      * {@code blob} to compute the picture views.
      * <p>
-     * The {@code blob} is converted to fit the defined {@code pictureConversions}.
+     * The {@code blob} is converted to fit the defined
+     * {@code pictureConversions}.
      *
      * @since 5.7
      */
@@ -75,8 +76,8 @@ public interface PictureResourceAdapter {
             throws IOException, ClientException;
 
     /**
-     * Pre-fill this Picture views using the given {@code pictureConversions} and
-     * {@code blob}.
+     * Pre-fill this Picture views using the given {@code pictureConversions}
+     * and {@code blob}.
      * <p>
      * The {@code blob} is not converted and just stored as the Blob of the
      * picture views.

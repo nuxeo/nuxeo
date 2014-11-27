@@ -357,8 +357,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                         maxsize, filename, width, height, depth, fileContent);
             }
         } else {
-            List<PictureView> pictureViews = getImagingService().computeViewFor(doc,
-                    fileContent, true);
+            List<PictureView> pictureViews = getImagingService().computeViewFor(
+                    doc, fileContent, true);
             addPictureViews(pictureViews, true);
         }
     }
@@ -389,7 +389,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
      *
      * @since 7.1
      */
-    protected void addPictureViews(List<PictureView> pictureViews, boolean clearPictureViews) {
+    protected void addPictureViews(List<PictureView> pictureViews,
+            boolean clearPictureViews) {
         if (clearPictureViews) {
             clearViews();
         }
@@ -410,7 +411,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     /**
-     * Returns the picture views attached to the document if present, an empty list otherwise.
+     * Returns the picture views attached to the document if present, an empty
+     * list otherwise.
      *
      * @since 7.1
      */

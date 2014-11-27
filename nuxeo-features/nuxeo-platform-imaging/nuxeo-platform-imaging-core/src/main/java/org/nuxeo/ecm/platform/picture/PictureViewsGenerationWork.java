@@ -3,9 +3,7 @@ package org.nuxeo.ecm.platform.picture;
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;

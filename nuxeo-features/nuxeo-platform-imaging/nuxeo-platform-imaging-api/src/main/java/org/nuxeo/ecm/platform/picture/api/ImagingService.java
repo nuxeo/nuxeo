@@ -230,7 +230,7 @@ public interface ImagingService {
      *
      * @since 7.1
      */
-    List<PictureView> computeViewFor(DocumentModel doc, Blob blob, boolean convert)
-            throws ClientException, IOException;
+    List<PictureView> computeViewFor(DocumentModel doc, Blob blob,
+            boolean convert) throws ClientException, IOException;
 
 }
