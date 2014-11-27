@@ -44,7 +44,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Default implementation of {@link RenditionService}.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -60,13 +60,13 @@ public class RenditionServiceImpl extends DefaultComponent implements
     protected Map<String, RenditionDefinition> renditionDefinitions;
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         renditionDefinitions = new HashMap<String, RenditionDefinition>();
         super.activate(context);
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         renditionDefinitions = null;
         super.deactivate(context);
     }
@@ -167,8 +167,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
             registerRendition((RenditionDefinition) contribution);
         }
@@ -231,8 +230,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
             unregisterRendition((RenditionDefinition) contribution);
         }
@@ -264,7 +262,7 @@ public class RenditionServiceImpl extends DefaultComponent implements
         if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
             throw new RenditionException("Rendition " + renditionName + " not available for this doc " + doc.getId());
         }
-        
+
         DocumentModel stored = null;
         try {
             if (!doc.isCheckedOut()) {
