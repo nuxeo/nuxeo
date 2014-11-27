@@ -347,8 +347,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof CUserDescriptor) {
             CUserDescriptor desc = (CUserDescriptor) contribution;
             countryCode = desc.getCountryCode();

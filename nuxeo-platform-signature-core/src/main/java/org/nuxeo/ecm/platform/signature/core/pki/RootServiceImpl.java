@@ -37,7 +37,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
+ *
  */
 public class RootServiceImpl extends DefaultComponent implements RootService {
 
@@ -58,7 +58,7 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
     private static final String KEYSTORE_TYPE = "JKS";
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         config = new ArrayList<RootDescriptor>();
     }
 
