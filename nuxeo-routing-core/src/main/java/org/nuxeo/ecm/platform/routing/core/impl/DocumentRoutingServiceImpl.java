@@ -142,8 +142,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (CHAINS_TO_TYPE_XP.equals(extensionPoint)) {
             ChainToTypeMappingDescriptor desc = (ChainToTypeMappingDescriptor) contribution;
             typeToChain.put(desc.getDocumentType(), desc.getChainId());
@@ -153,7 +152,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                     desc.getUndoChainIdFromDone());
         } else if (PERSISTER_XP.equals(extensionPoint)) {
             PersisterDescriptor des = (PersisterDescriptor) contribution;
-            persister = des.getKlass().newInstance();
+            try {
+                persister = des.getKlass().newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         } else if (ROUTE_MODELS_IMPORTER_XP.equals(extensionPoint)) {
             RouteModelResourceType res = (RouteModelResourceType) contribution;
             registerRouteResource(res, contributor.getRuntimeContext());
@@ -162,8 +165,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof RouteModelResourceType) {
             routeResourcesRegistry.removeContribution((RouteModelResourceType) contribution);
         }
@@ -764,7 +766,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) throws Exception {
+    public void activate(ComponentContext context) {
         super.activate(context);
         modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(
                 10, TimeUnit.MINUTES).build();
@@ -773,7 +775,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deactivate(ComponentContext context) throws Exception {
+    public void deactivate(ComponentContext context) {
         super.deactivate(context);
         if (repositoryInitializationHandler != null) {
             repositoryInitializationHandler.uninstall();
