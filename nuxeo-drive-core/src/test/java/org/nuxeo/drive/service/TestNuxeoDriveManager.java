@@ -530,19 +530,19 @@ public class TestNuxeoDriveManager {
 
         log.trace("Check FileSystemItem id for user1");
         assertEquals(
-                "defaultFileSystemItemFactory#test#" + testFolder.getId(),
+                "defaultFileSystemItemFactory#default#" + testFolder.getId(),
                 fileSystemItemAdapterService.getFileSystemItem(testFolder).getId());
         log.trace("Check FileSystemItem id for user2");
         DocumentModel testFolderUser2 = user2Session.getDocument(testFolder.getRef());
         assertEquals(
-                "defaultSyncRootFolderItemFactory#test#"
+                "defaultSyncRootFolderItemFactory#default#"
                         + testFolderUser2.getId(),
                 fileSystemItemAdapterService.getFileSystemItem(testFolderUser2).getId());
 
         log.trace("Check FileSystemItem id for user1 relaxing sync root constraint");
         String fsItemIdUser1 = fileSystemItemAdapterService.getFileSystemItem(
                 testFolder, false, true).getId();
-        assertEquals("test#" + testFolder.getId(), fsItemIdUser1);
+        assertEquals("default#" + testFolder.getId(), fsItemIdUser1);
         log.trace("Check FileSystemItem id for user2 relaxing sync root constraint");
         String fsItemIdUser2 = fileSystemItemAdapterService.getFileSystemItem(
                 testFolderUser2, false, true).getId();
