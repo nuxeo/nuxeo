@@ -1355,6 +1355,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+	<type>test-jar</type>
+	<scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
         <artifactId>nuxeo-elasticsearch-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
