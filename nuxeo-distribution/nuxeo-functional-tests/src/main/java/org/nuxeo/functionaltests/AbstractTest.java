@@ -54,6 +54,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -68,6 +70,7 @@ import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -571,7 +574,7 @@ public abstract class AbstractTest {
 
     protected static void stopProxy() throws Exception {
         if (proxyServer != null) {
-            String target = System.getProperty("nuxeo.log.dir");
+            String target = System.getProperty(Environment.NUXEO_LOG_DIR);
             File harFile;
             if (target == null) {
                 harFile = new File(HAR_NAME);

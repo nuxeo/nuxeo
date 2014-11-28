@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.config;
@@ -43,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
+
 import org.nuxeo.launcher.commons.text.TextTemplate;
 
 import freemarker.template.TemplateException;
@@ -140,7 +140,7 @@ public abstract class ServerConfigurator {
 
         deleteTemplateFiles();
         // add included templates directories
-        List<String> newFilesList = new ArrayList<String>();
+        List<String> newFilesList = new ArrayList<>();
         for (File includedTemplate : generator.getIncludedTemplates()) {
             File[] listFiles = includedTemplate.listFiles(filter);
             if (listFiles != null) {
@@ -183,7 +183,6 @@ public abstract class ServerConfigurator {
      * @throws IOException
      * @throws ConfigurationException
      */
-    @SuppressWarnings("resource")
     private void deleteTemplateFiles() throws IOException,
             ConfigurationException {
         File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
@@ -599,12 +598,14 @@ public abstract class ServerConfigurator {
      */
     public Properties filterSystemProperties(Properties properties) {
         Properties dumpedProperties = new Properties();
-        for (Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
+        for (@SuppressWarnings("unchecked")
+        Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
             String key = propertyNames.nextElement();
             dumpedProperties.setProperty(key, properties.getProperty(key));
         }
         // Remove System properties except Nuxeo's System properties
-        for (Enumeration<String> propertyNames = (Enumeration<String>) System.getProperties().propertyNames(); propertyNames.hasMoreElements();) {
+        for (@SuppressWarnings("unchecked")
+        Enumeration<String> propertyNames = (Enumeration<String>) System.getProperties().propertyNames(); propertyNames.hasMoreElements();) {
             String key = propertyNames.nextElement();
             if (!NUXEO_SYSTEM_PROPERTIES.contains(key)) {
                 dumpedProperties.remove(key);

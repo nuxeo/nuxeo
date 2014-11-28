@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,6 @@
  *     Thierry Delprat
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.admin.setup;
@@ -40,7 +39,6 @@ import javax.faces.component.UIInput;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 import javax.naming.AuthenticationException;
@@ -57,6 +55,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
@@ -85,8 +85,8 @@ public class SetupWizardActionBean implements Serializable {
      * user
      */
     private static final String[] managedKeyParameters = {
-            "nuxeo.bind.address", "nuxeo.url", "nuxeo.data.dir",
-            "nuxeo.log.dir", "org.nuxeo.ecm.product.name",
+            "nuxeo.bind.address", "nuxeo.url", Environment.NUXEO_DATA_DIR,
+            Environment.NUXEO_LOG_DIR, "org.nuxeo.ecm.product.name",
             "org.nuxeo.ecm.product.version", "nuxeo.conf",
             PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
             "nuxeo.db.password", "nuxeo.db.host", "nuxeo.db.port",
@@ -274,7 +274,7 @@ public class SetupWizardActionBean implements Serializable {
             if (entry.getValue() instanceof Boolean) {
                 entry.setValue(((Boolean) entry.getValue()).toString());
             }
-            if(entry.getValue() instanceof BigDecimal){
+            if (entry.getValue() instanceof BigDecimal) {
                 entry.setValue(entry.getValue().toString());
             }
         }
@@ -516,7 +516,8 @@ public class SetupWizardActionBean implements Serializable {
         }
 
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                ComponentUtils.translate(context, "error.ldap.network.none"), null);
+                ComponentUtils.translate(context, "error.ldap.network.none"),
+                null);
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
@@ -529,8 +530,7 @@ public class SetupWizardActionBean implements Serializable {
         String ldapBinddnId = (String) attributes.get("ldapBindDn");
         String ldapBindpwdId = (String) attributes.get("ldapBindPwd");
 
-        if (ldapUrlId == null || ldapBinddnId == null
-                || ldapBindpwdId == null) {
+        if (ldapUrlId == null || ldapBinddnId == null || ldapBindpwdId == null) {
             log.error("Cannot validate LDAP parameters: missing inputIds");
             return;
         }
@@ -538,7 +538,8 @@ public class SetupWizardActionBean implements Serializable {
         UIInput ldapUrlComp = (UIInput) component.findComponent(ldapUrlId);
         UIInput ldapBinddnComp = (UIInput) component.findComponent(ldapBinddnId);
         UIInput ldapBindpwdComp = (UIInput) component.findComponent(ldapBindpwdId);
-        if (ldapUrlComp == null || ldapBinddnComp == null || ldapBindpwdComp == null) {
+        if (ldapUrlComp == null || ldapBinddnComp == null
+                || ldapBindpwdComp == null) {
             log.error("Cannot validate LDAP inputs: not found");
             return;
         }
@@ -550,7 +551,8 @@ public class SetupWizardActionBean implements Serializable {
         String errorLabel = null;
         Exception error = null;
         try {
-            setupConfigGenerator.checkLdapConnection(ldapUrl, ldapBindDn, ldapBindPwd, true);
+            setupConfigGenerator.checkLdapConnection(ldapUrl, ldapBindDn,
+                    ldapBindPwd, true);
         } catch (NamingException e) {
             if (e instanceof AuthenticationException) {
                 errorLabel = ERROR_LDAP_AUTHENTICATION;
@@ -572,6 +574,5 @@ public class SetupWizardActionBean implements Serializable {
         message.setSeverity(FacesMessage.SEVERITY_INFO);
         context.addMessage(component.getClientId(context), message);
     }
-
 
 }
