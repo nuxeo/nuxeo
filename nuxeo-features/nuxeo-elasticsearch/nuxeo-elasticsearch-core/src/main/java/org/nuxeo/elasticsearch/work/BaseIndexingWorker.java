@@ -26,36 +26,36 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Abstract class for sharing code between ElasticSearch related workers
- *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * Abstract class for sharing the worker state
  *
  */
-public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
+public abstract class BaseIndexingWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected final IndexingCommand cmd;
+    private static final AtomicInteger activeWorker = new AtomicInteger(0);
 
-    protected final String path;
+    public static int getRunningWorkers() {
+        return activeWorker.get();
+    }
 
-    public AbstractIndexingWorker(IndexingCommand cmd) {
-        super();
-        this.cmd = cmd;
-        path = cmd.getTargetDocument().getPathAsString();
-        cmd.disconnect();
+    public BaseIndexingWorker() {
+        activeWorker.incrementAndGet();
     }
 
     @Override
-    public void doWork() throws Exception {
-            CoreSession session = initSession(repositoryName);
-            ElasticSearchIndexing esi = Framework
-                    .getLocalService(ElasticSearchIndexing.class);
-            cmd.refresh(session);
-            doIndexingWork(esi, cmd);
+    public String getCategory() {
+        return "elasticSearchIndexing";
     }
 
-    protected abstract void doIndexingWork(ElasticSearchIndexing esi,
-            IndexingCommand cmd) throws Exception;
+    @Override
+    public void work() throws Exception {
+        try {
+            doWork();
+        } finally {
+            activeWorker.decrementAndGet();
+        }
+    }
 
+    protected abstract void doWork() throws Exception;
 }

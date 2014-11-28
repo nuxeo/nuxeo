@@ -22,7 +22,7 @@
   <div>An indexing command is an Elasticsearch operation that can insert, update or delete one or many Nuxeo documents.</div>
   <pre class="bubbleBox">
 Indexing command running: <h:outputText value="#{esAdmin.runningCommands}"/>
-Indexing command pending: <h:outputText value="#{esAdmin.pendingCommands}"/>
+Indexing command or job pending: <h:outputText value="#{esAdmin.pendingCommands}"/>
 Number of command processed since Nuxeo instance startup: <h:outputText value="#{esAdmin.totalCommandProcessed}"/>
   </pre>
 
@@ -31,6 +31,13 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
   <pre class="bubbleBox">
     <h:outputText
       value="#{esAdmin.indexingRates}"/>
+  </pre>
+
+  <h3>Bulk indexing rates</h3>
+  <div class="detail">Exponentially-weighted moving average rate of indexing last 1, 5 and 15 minutes in bulk commands/s.</div>
+  <pre class="bubbleBox">
+    <h:outputText
+      value="#{esAdmin.bulkIndexingRates}"/>
   </pre>
 
   <h3>Elasticsearch documents</h3>

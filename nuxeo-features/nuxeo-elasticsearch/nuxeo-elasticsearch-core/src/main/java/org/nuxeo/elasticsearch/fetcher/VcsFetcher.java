@@ -105,7 +105,7 @@ public class VcsFetcher extends Fetcher {
     private List<DocumentModel> fetchFromVcs(final List<String> ids,
             CoreSession session) throws ClientException {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
+        sb.append("SELECT * FROM Document, Relation WHERE ecm:uuid IN (");
         for (int i = 0; i < ids.size(); i++) {
             sb.append(NXQL.escapeString(ids.get(i)));
             if (i < ids.size() - 1) {

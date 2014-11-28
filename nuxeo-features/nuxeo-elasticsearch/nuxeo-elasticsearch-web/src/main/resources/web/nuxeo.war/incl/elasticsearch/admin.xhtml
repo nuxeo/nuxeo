@@ -7,13 +7,43 @@
   class="hostInfos">
 
   <h3> Index Operations </h3>
+  <div class="detail">Indexing operations are done asynchronously.
+    When they are terminated the status "No indexing in progress"
+    is displayed in the Info tab.
+
+    To remove suprious documents, you need to drop the index first and
+    re-index all the repository.
+  </div>
 
   <h:form id="esAdmin">
-     Rebuild index for the whole repository: <h:commandButton action="#{esAdmin.startReindex}" value="ReIndex"/>
-     <br/><br/>
-     Rebuild Index from the root document id : <h:inputText name="j_docid" value="#{esAdmin.rootId}" size="36"/><h:commandButton action="#{esAdmin.startReindexFrom}" value="ReIndex"/>
-     <br/><br/>
-     Flush Index : <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
+
+    <h4>Re-index using a NXQL query</h4>
+    <div class="detail">Use this to re-index documents that match a NXQL query.
+      The default query match all the documents and can be used to re-index all the repository
+      except the Relations. Relations can be indexed with SELECT * From Relation.</div>
+    <div class="bubbleBox">
+      NXQL query:
+      <h:inputText name="j_nxql" value="#{esAdmin.nxql}"/>
+      <h:commandButton action="#{esAdmin.startReindex}" value="Re-index"/>
+    </div>
+
+    <h4>Re-index from a root document</h4>
+    <div class="detail">Use this to reindex a document and its children. The default id is the
+      Root repository node, it will not reindex Version and Relation and it is much slower
+      than re-indexing using a NXQL query.
+    </div>
+    <div class="bubbleBox">
+      Document id:
+      <h:inputText name="j_docid" value="#{esAdmin.rootId}"/>
+      <h:commandButton action="#{esAdmin.startReindexFrom}" value="Re-index"/>
+    </div>
+    <h4>Flush Elasticsearch index</h4>
+
+    <div class="detail">Use this to make sure Elasticsearch flush index to disk.</div>
+    <div class="bubbleBox">
+      <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
+    </div>
+
   </h:form>
 
 </div>
