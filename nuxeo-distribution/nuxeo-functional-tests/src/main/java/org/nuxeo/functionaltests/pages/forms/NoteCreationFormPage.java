@@ -41,7 +41,7 @@ public class NoteCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
         if (defineNote) {
             RichEditorElement editor = new RichEditorElement(driver,
-                    "document_create:nxl_note:nxw_note");
+                    "document_create:nxl_note:nxw_note_editor");
             editor.insertContent(noteContent);
         }
 

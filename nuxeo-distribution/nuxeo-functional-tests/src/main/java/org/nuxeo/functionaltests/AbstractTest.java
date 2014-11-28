@@ -184,7 +184,7 @@ public abstract class AbstractTest {
 
     public static final String SYSPROP_CHROME_DRIVER_PATH = "webdriver.chrome.driver";
 
-    protected static RemoteWebDriver driver;
+    public static RemoteWebDriver driver;
 
     protected static File tmp_firebug_xpi;
 

@@ -86,7 +86,7 @@ public class ITNoteDocumentTest extends AbstractTest {
 
         // Get the editor and define the content
         RichEditorElement editor = new RichEditorElement(driver,
-                "document_create:nxl_note:nxw_note");
+                "document_create:nxl_note:nxw_note_editor");
         editor.clickBoldButton();
         editor.insertContent(CONTENT_NOTE);
         editor.clickBoldButton();
@@ -128,7 +128,7 @@ public class ITNoteDocumentTest extends AbstractTest {
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();
         RichEditorElement editor = new RichEditorElement(driver,
-                "document_edit:nxl_note:nxw_note");
+                "document_edit:nxl_note:nxw_note_editor");
         editor.insertContent(CONTENT_NOTE_EDITED);
         editTab.save();
 

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
@@ -73,6 +74,17 @@ public class Select2WidgetElement extends WebFragmentImpl {
     private static final int SELECT2_LOADING_TIMEOUT = 20;
 
     private boolean mutliple = false;
+
+    /**
+     * Constructor.
+     *
+     * @param driver the driver
+     * @param id the id of the widget
+     * @since 7.1
+     */
+    public Select2WidgetElement(WebDriver driver, String id) {
+        this(driver, driver.findElement(By.id(id)));
+    }
 
     /**
      * Constructor.
@@ -173,6 +185,13 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.7.3
      */
     public void selectValue(final String value) {
+        selectValue(value, false);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public void selectValue(final String value, final boolean wait4A4J) {
         clickOnSelect2Field();
 
         WebElement suggestInput = getSuggestInput();
@@ -193,7 +212,14 @@ public class Select2WidgetElement extends WebFragmentImpl {
         }
 
         WebElement suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
+        AjaxRequestManager arm = new AjaxRequestManager(driver);;
+        if (wait4A4J) {
+            arm.watchAjaxRequests();
+        }
         suggestion.click();
+        if (wait4A4J) {
+            arm.waitForAjaxRequests();
+        }
     }
 
     /**
