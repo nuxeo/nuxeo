@@ -119,7 +119,7 @@ public class IndexingCommand implements Serializable {
 
     public void refresh(CoreSession session) throws ClientException {
         IdRef idref = new IdRef(uid);
-        if (session.exists(idref)) {
+        if ((uid != null) && (session.exists(idref))) {
             targetDocument = session.getDocument(idref);
         } else {
             // Doc was deleted : no way we can fetch it

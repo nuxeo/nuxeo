@@ -63,5 +63,8 @@ final public class ElasticSearchConstants {
 
     public static final String ES_ENABLED_PROPERTY = "elasticsearch.enabled";
     public static final String FETCH_DOC_FROM_ES_PROPERTY = "elasticsearch.fetchDocFromEs";
+    public static final String REINDEX_BUCKET_READ_PROPERTY = "elasticsearch.reindex.bucketReadSize";
+    public static final String REINDEX_BUCKET_WRITE_PROPERTY = "elasticsearch.reindex.bucketWriteSize";
+
 }
 
