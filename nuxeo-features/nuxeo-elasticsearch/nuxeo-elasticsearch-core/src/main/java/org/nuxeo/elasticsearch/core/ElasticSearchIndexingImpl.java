@@ -42,11 +42,14 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.jboss.seam.annotations.RaiseEvent;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -101,6 +104,22 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         esa.totalCommandProcessed.addAndGet(nbCommands);
     }
 
+    @Override
+    public void reindex(String nxql) {
+        if (nxql == null || nxql.isEmpty()) {
+            throw new IllegalArgumentException("Expecting an nxql query");
+        }
+        log.warn("Re-indexing using: " + nxql);
+        esa.totalCommandRunning.incrementAndGet();
+        try {
+            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(nxql);
+            WorkManager wm = Framework.getLocalService(WorkManager.class);
+            wm.schedule(worker);
+        } finally {
+            esa.totalCommandRunning.decrementAndGet();
+        }
+    }
+
     void processBulkDeleteCommands(List<IndexingCommand> cmds) {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
@@ -125,7 +144,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 continue;
             }
             if (log.isTraceEnabled()) {
-                log.trace("Sending bulk indexing request to Elasticsearch: " + cmd);
+                log.trace("Sending bulk indexing request to Elasticsearch: "
+                        + cmd);
             }
             if (cmd.getTargetDocument() == null) {
                 log.warn("Skipping cmd because targetDocument is null " + cmd);
@@ -136,7 +156,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 bulkRequest.add(idxRequest);
             } catch (ClientException e) {
                 log.error("Fail to create indexing request for cmd: " + cmd, e);
-                continue;
             }
         }
         if (bulkRequest.numberOfActions() > 0) {

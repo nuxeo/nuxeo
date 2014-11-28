@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.api;
 
 import java.util.List;
 
+import org.hibernate.bytecode.javassist.BulkAccessor;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
@@ -64,5 +65,12 @@ public interface ElasticSearchIndexing {
      * @since 5.9.3
      */
     void indexNow(List<IndexingCommand> cmds) throws ClientException;
+
+    /**
+     * Reindex documents matching the NXQL query,
+     *
+     * @since 7.1
+     */
+    void reindex(String nxql);
 
 }

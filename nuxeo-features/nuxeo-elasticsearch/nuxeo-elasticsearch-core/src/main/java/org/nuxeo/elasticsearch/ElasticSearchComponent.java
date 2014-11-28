@@ -50,6 +50,7 @@ import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticsearchServiceImpl;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.elasticsearch.work.BaseIndexingWorker;
 import org.nuxeo.elasticsearch.work.ChildrenIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -225,7 +226,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public int getPendingCommands() {
         return pendingCommands.size()
-                + ChildrenIndexingWorker.getRunningWorkers();
+                + BaseIndexingWorker.getRunningWorkers();
     }
 
     @Override
@@ -338,6 +339,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         markCommandInProgress(cmds);
         esi.indexNow(cmds);
+    }
+
+    @Override
+    public void reindex(String nxql) {
+        esi.reindex(nxql);
     }
 
     // ES Search ===============================================================

@@ -31,6 +31,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -57,6 +58,8 @@ public class ElasticSearchManager {
     private static final Log log = LogFactory
             .getLog(ElasticSearchManager.class);
 
+    private static final String DEFAULT_NXQL_QUERY = "SELECT ecm:uuid FROM Document";
+
     @In(create = true)
     protected ElasticSearchAdmin esa;
 
@@ -70,7 +73,11 @@ public class ElasticSearchManager {
 
     protected Timer indexTimer;
 
+    protected Timer bulkIndexTimer;
+
     private String rootId;
+
+    private String nxql = DEFAULT_NXQL_QUERY;
 
     public String getNodesInfo() {
         NodesInfoResponse nodesInfo = esa.getClient().admin().cluster()
@@ -91,20 +98,17 @@ public class ElasticSearchManager {
     }
 
     public void startReindex() throws Exception {
-        log.warn("Start re-indexing repository");
-        IndexingCommand cmd = new IndexingCommand(
-                documentManager.getRootDocument(), false, true);
-        esi.scheduleIndexing(cmd);
+        log.warn(String.format("Start re-indexing NXQL: %s",
+                getNxql()));
+        esi.reindex(getNxql());
     }
 
     public void startReindexFrom() throws Exception {
-        if (rootId == null) {
-            startReindex();
-            return;
-        }
-        log.warn(String.format("Start re-indexing from %s repository", rootId));
+        DocumentModel doc = documentManager.getDocument(new IdRef(rootId));
+        log.warn(String.format("Start re-indexing from root document: %s, %s",
+                doc.getId(), doc));
         IndexingCommand cmd = new IndexingCommand(
-                documentManager.getDocument(new IdRef(rootId)), false, true);
+                doc, false, true);
         esi.scheduleIndexing(cmd);
     }
 
@@ -181,11 +185,36 @@ public class ElasticSearchManager {
                 indexTimer.getFifteenMinuteRate());
     }
 
+    public String getBulkIndexingRates() {
+        if (bulkIndexTimer == null) {
+            MetricRegistry registry = SharedMetricRegistries
+                    .getOrCreate(MetricsService.class.getName());
+            bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo",
+                    "elasticsearch", "service", "bulkIndex"));
+
+        }
+        return String.format("%.2f, %.2f, %.2f",
+                bulkIndexTimer.getOneMinuteRate(),
+                bulkIndexTimer.getFiveMinuteRate(),
+                bulkIndexTimer.getFifteenMinuteRate());
+    }
+
     public String getRootId() {
+        if (rootId == null) {
+            rootId = documentManager.getRootDocument().getId();
+        }
         return rootId;
     }
 
     public void setRootId(String rootId) {
         this.rootId = rootId;
+    }
+
+    public String getNxql() {
+        return nxql;
+    }
+
+    public void setNxql(String nxql) {
+        this.nxql = nxql;
     }
 }
