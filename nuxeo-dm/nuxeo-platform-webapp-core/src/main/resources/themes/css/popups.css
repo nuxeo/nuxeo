@@ -99,20 +99,19 @@ author: lkemen@nuxeo.com
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   display: none;
   left: 26%;
-  padding: 0 1em .5em;
+  padding: 0;
   position: absolute;
   width: 670px;
   z-index: 10000 }
 
 .genericPopUp .closePopUpHeader {
-  border-width: 2px;
-  border-style: none none dotted;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  color: "black (__FLAVOR__ color)";
-  font-size: 1.1em;
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-bottom: 1px solid #e7e7e7;
+  color: "title.major (__FLAVOR__ color)";
   font-weight: bold;
-  padding: .5em 0;
-  text-align: right }
+  font-size: .9em;
+  margin: 0;
+  padding: 1em 1.7em }
 
 .genericPopUp .closePopUpHeader .closePopUp {
   color: "gray.medium (__FLAVOR__ color)";
@@ -130,11 +129,11 @@ author: lkemen@nuxeo.com
   padding: 1em }
 
 .genericPopUp .buttonsGadget {
-  border-width: 2px;
-  border-style: dotted none none;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  margin: .5em 0 0;
-  padding: .5em 0 0 }
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-top: 1px solid #e7e7e7;
+  font-size: 1em;
+  margin: 0;
+  padding: 1em 1.8em .5em }
 
 .genericPopUp .dr-tree td,
 .genericPopUp .rich-tree td {
