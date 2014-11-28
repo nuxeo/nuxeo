@@ -13,6 +13,8 @@
 package org.nuxeo.ecm.automation.core.operations.services;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.el.lang.FunctionMapperImpl;
 import org.jboss.seam.el.EL;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -21,6 +23,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents
@@ -72,6 +75,8 @@ public class DocumentPageProviderOperation {
     public static final String ASC = "ASC";
 
     public static final String DESC = "DESC";
+
+    private static final Log log = LogFactory.getLog(DocumentPageProviderOperation.class);
 
     @Context
     protected OperationContext context;
@@ -227,9 +232,27 @@ public class DocumentPageProviderOperation {
             targetPageSize = pageSize.longValue();
         }
 
-        SimpleDocumentModel searchDocumentModel = null;
+        DocumentModel searchDocumentModel = null;
         if (namedParameters != null && !namedParameters.isEmpty()) {
-            searchDocumentModel = new SimpleDocumentModel();
+            // Setup the search document model
+            if (providerName != null) {
+                PageProviderDefinition pageProviderDefinition =
+                        pps.getPageProviderDefinition(providerName);
+                if (pageProviderDefinition != null) {
+                    String searchDocType = pageProviderDefinition.getSearchDocumentType();
+                    if (searchDocType != null) {
+                        searchDocumentModel = session.createDocumentModel(searchDocType);
+                        DocumentHelper.setJSONProperties(null,
+                                searchDocumentModel, namedParameters);
+                    }
+                } else {
+                    log.error("No page provider definition found for " + providerName);
+                }
+            }
+            // Setup the named parameters map
+            if (searchDocumentModel == null ) {
+                searchDocumentModel = new SimpleDocumentModel();
+            }
             searchDocumentModel.putContextData(PageProviderServiceImpl
                             .NAMED_PARAMETERS,
                     namedParameters);

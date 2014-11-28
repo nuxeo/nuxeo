@@ -17,6 +17,9 @@
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents
         .PaginableDocumentModelListImpl;
@@ -30,6 +33,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -41,6 +45,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -76,6 +81,8 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+
+    private static final Log log = LogFactory.getLog(QueryObject.class);
 
     protected EnumMap<QueryParams, String> queryParametersMap;
 
@@ -173,9 +180,32 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                 (Serializable) ctx.getCoreSession());
 
         // Named parameter management
-        SimpleDocumentModel searchDocumentModel = null;
+        DocumentModel searchDocumentModel = null;
         if (!namedParameters.isEmpty()) {
-            searchDocumentModel = new SimpleDocumentModel();
+            // Setup the search document model
+            if (providerName != null) {
+                PageProviderDefinition pageProviderDefinition =
+                        pageProviderService.getPageProviderDefinition(providerName);
+                if (pageProviderDefinition != null) {
+                    String searchDocType = pageProviderDefinition.getSearchDocumentType();
+                    if (searchDocType != null) {
+                        searchDocumentModel = ctx.getCoreSession()
+                                .createDocumentModel(searchDocType);
+                        try {
+                            DocumentHelper.setJSONProperties(null,
+                                    searchDocumentModel, namedParameters);
+                        } catch (IOException e) {
+                            throw WebException.wrap(e);
+                        }
+                    }
+                } else {
+                    log.error("No page provider definition found for " + providerName);
+                }
+            }
+            // Setup the named parameters map
+            if (searchDocumentModel == null ) {
+                searchDocumentModel = new SimpleDocumentModel();
+            }
             searchDocumentModel.putContextData(PageProviderServiceImpl
                             .NAMED_PARAMETERS,
                     namedParameters);
