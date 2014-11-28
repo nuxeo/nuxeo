@@ -16,6 +16,8 @@
  */
 package org.nuxeo.functionaltests.forms;
 
+import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -43,7 +45,10 @@ public class ListWidgetElement extends AbstractWidgetElement {
     public void addNewElement() {
         String wid = getWidgetId();
         WebElement addElement = getSubElement(wid + "_add");
+        AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
+        arm.watchAjaxRequests();
         addElement.click();
+        arm.watchAjaxRequests();
     }
 
     public void removeElement(int index) {
