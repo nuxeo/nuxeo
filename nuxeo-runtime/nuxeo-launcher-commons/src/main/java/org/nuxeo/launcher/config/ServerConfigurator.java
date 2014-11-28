@@ -311,15 +311,20 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Initialize logs
+     * Initialize logs. This is called before
+     * {@link ConfigurationGenerator#init()} so the {@link #logDir} field is not
+     * yet initialized
      *
      * @since 5.4.2
      */
     public void initLogs() {
         File logFile = getLogConfFile();
         try {
-            System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
-                    getLogDir().getPath());
+            String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
+            if (logDirectory == null) {
+                System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
+                        getLogDir().getPath());
+            }
             if (logFile == null || !logFile.exists()) {
                 System.out.println("No logs configuration, will setup a basic one.");
                 BasicConfigurator.configure();
