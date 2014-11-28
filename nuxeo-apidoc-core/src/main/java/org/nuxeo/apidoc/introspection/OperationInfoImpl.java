@@ -65,6 +65,11 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
     }
 
     @Override
+    public String[] getAliases() {
+        return op.getAliases();
+    }
+
+    @Override
     public String getDescription() {
         return op.getDescription();
     }

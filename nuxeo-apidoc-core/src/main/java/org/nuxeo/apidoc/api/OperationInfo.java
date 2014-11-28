@@ -32,6 +32,8 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
 
     String PROP_NAME = "nxop:name";
 
+    String PROP_ALIASES = "nxop:aliases";
+
     String PROP_VERSION = "nxop:version";
 
     String PROP_DESCRIPTION = "nxop:description";
@@ -73,6 +75,8 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
      * {@link #ARTIFACT_PREFIX})
      */
     String getName();
+
+    String[] getAliases();
 
     String getUrl();
 

@@ -56,6 +56,18 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return safeGet(PROP_NAME);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public String[] getAliases() {
+        try {
+            return ((List<String>) doc.getPropertyValue(PROP_ALIASES))
+                    .toArray(new String[0]);
+        } catch (Exception e) {
+            log.error("Unable to get signature field", e);
+        }
+        return null;
+    }
+
     @Override
     public String getVersion() {
         return safeGet(PROP_VERSION);
@@ -154,6 +166,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
         doc.setPropertyValue("dc:title", oi.getName());
         doc.setPropertyValue(PROP_NAME, oi.getName());
+        doc.setPropertyValue(PROP_ALIASES, oi.getAliases());
         doc.setPropertyValue(PROP_VERSION, oi.getVersion());
         doc.setPropertyValue(PROP_DESCRIPTION, oi.getDescription());
         doc.setPropertyValue(PROP_SIGNATURE, oi.getSignature());

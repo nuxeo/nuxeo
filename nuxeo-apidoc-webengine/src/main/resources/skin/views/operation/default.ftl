@@ -18,6 +18,7 @@ ${nxItem.description}
 <h2>General information</h2>
 <table class="listTable">
   <tr><th> Operation id: </th><td> ${nxItem.name?html} </td></tr>
+  <#if nxItem.aliases> <tr><th> Aliases: </th><td>[<#list nxItem.aliases as alias> ${alias} </#list>]</td></tr></#if>
   <tr><th> Category: </th><td> ${nxItem.category?html} </td></tr>
   <tr><th> Label: </th><td> ${nxItem.label?html} </td></tr>
   <tr><th> Requires: </th><td> ${nxItem.requires} </td></tr>

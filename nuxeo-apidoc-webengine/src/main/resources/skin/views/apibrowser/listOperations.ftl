@@ -20,6 +20,7 @@
     <th>Category</th>
     <th>Label</th>
     <th>Id</th>
+    <th>Aliases</th>
     <th>Requires</th>
     <th>Since</th>
   </tr>
@@ -31,6 +32,7 @@
     <td><span class="sticker">${operation.category?html}</span></td>
     <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.label?html}</a></td>
     <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.name?html}</a></td>
+      <td><#if operation.aliases>[<#list operation.aliases as alias> ${alias} </#list>]</#if></td>
     <td><span class="sticker">${operation.requires}</span></td>
     <td><span class="sticker">${operation.since}</span></td>
   </tr>
