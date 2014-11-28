@@ -102,6 +102,7 @@ public class DataSourceFromUrl implements DataSource {
                 } catch (InterruptedException ie) {
                     // restore interrupted status
                     Thread.currentThread().interrupt();
+                    throw new RuntimeException(ie);
                 }
             }
         }

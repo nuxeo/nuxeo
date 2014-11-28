@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.deployment.preprocessor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +137,7 @@ public class FragmentDescriptor {
     public void setInstallCommands(DocumentFragment df) {
         try {
             install = DOMCommandsParser.parse(df);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to set install commands");
         }
     }
@@ -145,7 +146,7 @@ public class FragmentDescriptor {
     public void setUninstallCommands(DocumentFragment df) {
         try {
             uninstall = DOMCommandsParser.parse(df);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to set uninstall commands");
         }
     }

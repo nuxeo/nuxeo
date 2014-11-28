@@ -79,7 +79,7 @@ public abstract class CompositeContribution extends ExtensibleContribution {
     }
 
     @Override
-    protected ExtensibleContribution getMergedContribution() throws Exception {
+    protected ExtensibleContribution getMergedContribution() {
         CompositeContribution root = getRootComposite();
         ExtensibleContribution mc = root.baseContribution != null
                 ? root.baseContribution.getMergedContribution()

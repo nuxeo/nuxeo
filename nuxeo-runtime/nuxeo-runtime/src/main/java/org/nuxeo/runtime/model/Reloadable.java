@@ -25,8 +25,7 @@ public interface Reloadable {
      * Reload the component registries and services.
      *
      * @param context
-     * @throws Exception
      */
-    void reload(ComponentContext context) throws Exception;
+    void reload(ComponentContext context);
 
 }

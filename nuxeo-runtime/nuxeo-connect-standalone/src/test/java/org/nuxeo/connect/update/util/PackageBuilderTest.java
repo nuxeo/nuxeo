@@ -56,7 +56,7 @@ public class PackageBuilderTest extends PackageTestCase {
             PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(
                     xml.getBytes()));
             // System.out.println(pdef);
-        } catch (Exception e) {
+        } catch (IOException e) {
             fail("Could not create package definition");
         }
 

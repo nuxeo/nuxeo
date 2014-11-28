@@ -28,6 +28,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.ContributionStorage;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -110,7 +111,8 @@ public class FileSystemStorage implements ContributionStorage {
             } else {
                 contrib.setDescription("");
             }
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | SAXException | IOException
+                | DOMException e) {
             log.error("Failed to read contribution metadata", e);
         }
     }

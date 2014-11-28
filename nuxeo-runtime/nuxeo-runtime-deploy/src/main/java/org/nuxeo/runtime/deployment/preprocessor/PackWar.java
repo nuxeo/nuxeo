@@ -49,6 +49,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.runtime.deployment.NuxeoStarter;
@@ -144,7 +145,8 @@ public class PackWar {
         this.zip = zip;
     }
 
-    public void execute(String command) throws Exception {
+    public void execute(String command) throws ConfigurationException,
+            IOException {
         boolean preprocessing = COMMAND_PREPROCESSING.equals(command)
                 || StringUtils.isBlank(command);
         boolean packaging = COMMAND_PACKAGING.equals(command)
@@ -161,12 +163,13 @@ public class PackWar {
         }
     }
 
-    protected void executePreprocessing() throws Exception {
+    protected void executePreprocessing() throws ConfigurationException,
+            IOException {
         runTemplatePreprocessor();
         runDeploymentPreprocessor();
     }
 
-    protected void runTemplatePreprocessor() throws Exception {
+    protected void runTemplatePreprocessor() throws ConfigurationException {
         if (System.getProperty(Environment.NUXEO_HOME) == null) {
             System.setProperty(Environment.NUXEO_HOME, tomcat.getAbsolutePath());
         }
@@ -179,7 +182,7 @@ public class PackWar {
         tomcatConfigurator = ((TomcatConfigurator) cg.getServerConfigurator());
     }
 
-    protected void runDeploymentPreprocessor() throws Exception {
+    protected void runDeploymentPreprocessor() throws IOException {
         DeploymentPreprocessor processor = new DeploymentPreprocessor(nxserver);
         processor.init();
         processor.predeploy();
@@ -548,7 +551,7 @@ public class PackWar {
         log.info("Packing nuxeo WAR at " + nxserver + " into " + zip);
         try {
             new PackWar(nxserver, zip).execute(command);
-        } catch (Exception e) {
+        } catch (ConfigurationException | IOException e) {
             fail("Pack failed", e);
         }
     }

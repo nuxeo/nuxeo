@@ -34,9 +34,8 @@ public interface Authenticator {
      * @param name
      * @param password
      * @return the authenticated principal if authentication succeded otherwise null
-     * @throws Exception - if an exception occurs
      */
-    public Principal authenticate(String name, String password) throws Exception;
+    public Principal authenticate(String name, String password);
 
     /**
      * Check the password for the given username.
@@ -45,8 +44,7 @@ public interface Authenticator {
      * @param name the username
      * @param password the password to check
      * @return true is valid, false otherwise
-     * @throws Exception - if an exception occurs
      */
-    public boolean checkUsernamePassword(String name, String password) throws Exception;
+    public boolean checkUsernamePassword(String name, String password);
 
 }

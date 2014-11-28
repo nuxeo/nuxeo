@@ -38,6 +38,7 @@ import org.mortbay.jetty.webapp.WebXmlConfiguration;
 import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.server.WebApplication;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -146,16 +147,8 @@ public class JettyComponent extends DefaultComponent {
             }
             try {
                 server = (Server) configuration.configure();
-            } catch (Exception e) { // stupid jetty API throws Exception
-                if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                } else {
-                    if (e instanceof InterruptedException) {
-                        // restore interrupted status
-                        Thread.currentThread().interrupt();
-                    }
-                    throw new RuntimeException(e);
-                }
+            } catch (Exception e) { // stupid Jetty API throws Exception
+                throw ExceptionUtils.runtimeException(e);
             }
         } else {
             int p = 8080;
@@ -220,16 +213,8 @@ public class JettyComponent extends DefaultComponent {
         ctxMgr = null;
         try {
             server.stop();
-        } catch (Exception e) { // stupid jetty API throws Exception
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                if (e instanceof InterruptedException) {
-                    // restore interrupted status
-                    Thread.currentThread().interrupt();
-                }
-                throw new RuntimeException(e);
-            }
+        } catch (Exception e) { // stupid Jetty API throws Exception
+            throw ExceptionUtils.runtimeException(e);
         }
         server = null;
     }
@@ -348,17 +333,15 @@ public class JettyComponent extends DefaultComponent {
             return;
         }
         ctxMgr.applyLifecycleListeners();
+        Thread t = Thread.currentThread();
+        ClassLoader oldcl = t.getContextClassLoader();
+        t.setContextClassLoader(getClass().getClassLoader());
         try {
-            Thread t = Thread.currentThread();
-            ClassLoader oldcl = t.getContextClassLoader();
-            t.setContextClassLoader(getClass().getClassLoader());
-            try {
-                server.start();
-            } finally {
-                t.setContextClassLoader(getClassLoader(oldcl));
-            }
-        } catch (Exception e) {
-            logger.error("Failed to start Jetty server", e);
+            server.start();
+        } catch (Exception e) { // stupid Jetty API throws Exception
+            throw ExceptionUtils.runtimeException(e);
+        } finally {
+            t.setContextClassLoader(getClassLoader(oldcl));
         }
     }
 

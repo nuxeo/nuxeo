@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeService;
@@ -109,13 +110,9 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public synchronized void shutdown() {
         ShutdownTask.shutdown(this);
-        try {
-            listeners = null;
-            reg.destroy();
-            reg = null;
-        } catch (Exception e) {
-            log.error("Failed to shutdown registry manager");
-        }
+        listeners = null;
+        reg.destroy();
+        reg = null;
     }
 
     @Override
@@ -171,7 +168,10 @@ public class ComponentManagerImpl implements ComponentManager {
                         + ". Waiting for: "
                         + reg.getMissingDependencies(ri.getName()));
             }
-        } catch (Throwable e) {
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            // except for interruptions, don't raise this exception,
+            // we want to isolate component errors from other components
             String msg = "Failed to register component: " + name;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
@@ -190,7 +190,8 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             log.info("Unregistering component: " + name);
             reg.removeComponent(name);
-        } catch (Throwable e) {
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
             log.error("Failed to unregister component: " + name, e);
         }
     }
@@ -215,12 +216,8 @@ public class ComponentManagerImpl implements ComponentManager {
         synchronized(this) {
 	    if (ri != null && !ri.isActivated()) {
 		if (ri.isResolved()) {
-		    try {
 			ri.activate();
 			return ri.getComponent();
-		    } catch (Exception e) {
-			log.error("Failed to get service: " + serviceClass + ", " + e.getMessage());
-		    }
 		} else {
 		    // Hack to avoid messages during TypeService activation
 		    if (!serviceClass.getSimpleName().equals("TypeProvider")) {
@@ -324,12 +321,8 @@ public class ComponentManagerImpl implements ComponentManager {
     public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {
         ExtensionPointImpl xp = ri.getExtensionPoint(xt.getExtensionPoint());
         if (xp != null && xp.contributions != null) {
-            try {
-                Object[] contribs = xp.loadContributions(ri, xt);
-                xt.setContributions(contribs);
-            } catch (Exception e) {
-                log.error("Failed to create contribution objects", e);
-            }
+            Object[] contribs = xp.loadContributions(ri, xt);
+            xt.setContributions(contribs);
         }
     }
 

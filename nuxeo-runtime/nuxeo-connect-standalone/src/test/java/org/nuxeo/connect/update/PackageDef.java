@@ -123,7 +123,7 @@ public abstract class PackageDef {
         }
         try {
             task.run(new HashMap<String, String>());
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error(e, e);
             task.rollback();
         }
@@ -140,7 +140,7 @@ public abstract class PackageDef {
         }
         try {
             task.run(new HashMap<String, String>());
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error(e, e);
             task.rollback();
         }

@@ -98,13 +98,9 @@ public abstract class AbstractCommand implements Command {
     public void validate(Task task, ValidationStatus status)
             throws PackageException {
         if (fail != null) {
-            try {
-                if (new Guard(fail).evaluate(guardVars)) {
-                    status.addError("Guard failed for command " + getId()
-                            + ": " + fail);
-                }
-            } catch (Exception e) {
-                throw new PackageException("Ignore guard failed: ", e);
+            if (new Guard(fail).evaluate(guardVars)) {
+                status.addError("Guard failed for command " + getId() + ": "
+                        + fail);
             }
         }
         doValidate(task, status);
@@ -134,11 +130,7 @@ public abstract class AbstractCommand implements Command {
 
     public boolean ignore() throws PackageException {
         if (ignore != null) {
-            try {
-                return new Guard(ignore).evaluate(guardVars);
-            } catch (Exception e) {
-                throw new PackageException("Ignore guard failed: ", e);
-            }
+            return new Guard(ignore).evaluate(guardVars);
         }
         return false;
     }

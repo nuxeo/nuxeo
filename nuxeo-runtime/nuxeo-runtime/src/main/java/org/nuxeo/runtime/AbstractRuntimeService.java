@@ -259,21 +259,13 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected void startExtensions() {
         for (RuntimeExtension ext : extensions) {
-            try {
-                ext.start();
-            } catch (Exception e) {
-                log.error("Failed to start runtime extension", e);
-            }
+            ext.start();
         }
     }
 
     protected void stopExtensions() {
         for (RuntimeExtension ext : extensions) {
-            try {
-                ext.stop();
-            } catch (Exception e) {
-                log.error("Failed to start runtime extension", e);
-            }
+            ext.stop();
         }
     }
 

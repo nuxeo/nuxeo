@@ -25,6 +25,7 @@ import javax.security.auth.spi.LoginModule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -62,8 +63,12 @@ public class SystemLoginModule implements LoginModule {
         CredentialsCallback cb = new CredentialsCallback();
         try {
             callbackHandler.handle(new Callback[] {cb});
-        } catch (Exception e) {
-            throw new LoginException("System login failed - callback failed");
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            LoginException ee = new LoginException(
+                    "System login failed - callback failed");
+            ee.initCause(e);
+            throw ee;
         }
         Object credential = cb.getCredentials();
         if (LoginComponent.isSystemLogin(credential)) {

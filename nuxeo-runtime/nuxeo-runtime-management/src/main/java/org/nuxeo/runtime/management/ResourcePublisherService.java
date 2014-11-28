@@ -105,7 +105,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             Class<? extends ResourceFactory> factoryClass = descriptor.getFactoryClass();
             try {
                 factory = factoryClass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new ManagementRuntimeException("Cannot create factory "
                         + factoryClass, e);
             }
@@ -180,16 +180,13 @@ public class ResourcePublisherService extends DefaultComponent implements
         protected final ModelMBeanInfoFactory mbeanInfoFactory = new ModelMBeanInfoFactory();
 
         protected RequiredModelMBean doBind(MBeanServer server,
-                ObjectName name, Object instance, Class<?> clazz) {
-            try {
-                RequiredModelMBean mbean = new RequiredModelMBean();
-                mbean.setManagedResource(instance, "ObjectReference");
-                mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
-                server.registerMBean(mbean, name);
-                return mbean;
-            } catch (JMException | InvalidTargetObjectTypeException e) {
-                throw new RuntimeException(e);
-            }
+                ObjectName name, Object instance, Class<?> clazz)
+                throws JMException, InvalidTargetObjectTypeException {
+            RequiredModelMBean mbean = new RequiredModelMBean();
+            mbean.setManagedResource(instance, "ObjectReference");
+            mbean.setModelMBeanInfo(mbeanInfoFactory.getModelMBeanInfo(clazz));
+            server.registerMBean(mbean, name);
+            return mbean;
         }
 
         protected void doBind(Resource resource) {
@@ -206,7 +203,7 @@ public class ResourcePublisherService extends DefaultComponent implements
                 if (ResourcePublisherService.log.isDebugEnabled()) {
                     ResourcePublisherService.log.debug("bound " + resource);
                 }
-            } catch (Exception e) {
+            } catch (JMException | InvalidTargetObjectTypeException e) {
                 ResourcePublisherService.log.error("Cannot bind " + resource, e);
             }
         }
@@ -218,7 +215,7 @@ public class ResourcePublisherService extends DefaultComponent implements
             try {
                 MBeanServer server = serverLocatorService.lookupServer(resource.managementName);
                 server.unregisterMBean(resource.managementName);
-            } catch (Exception e) {
+            } catch (JMException e) {
                 throw ManagementRuntimeException.wrap("Cannot unbind "
                         + resource, e);
             } finally {
@@ -266,13 +263,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
         protected <T> T doResolveService(Class<T> resourceClass,
                 ServiceDescriptor descriptor) {
-            T service;
-            try {
-                service = Framework.getService(resourceClass);
-            } catch (Exception e) {
-                throw ManagementRuntimeException.wrap(
-                        "Cannot locate resource using " + resourceClass, e);
-            }
+            T service = Framework.getService(resourceClass);
             if (service == null) {
                 throw new ManagementRuntimeException(
                         "Cannot locate resource using " + resourceClass);
@@ -438,7 +429,8 @@ public class ResourcePublisherService extends DefaultComponent implements
     }
 
     protected void bindForTest(MBeanServer server, ObjectName name,
-            Object instance, Class<?> clazz) {
+            Object instance, Class<?> clazz) throws JMException,
+            InvalidTargetObjectTypeException {
         resourcesRegistry.doBind(server, name, instance, clazz);
     }
 

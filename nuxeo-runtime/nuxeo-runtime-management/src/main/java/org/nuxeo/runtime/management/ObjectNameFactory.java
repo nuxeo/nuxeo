@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.management.JMException;
 import javax.management.ObjectName;
 
 import org.nuxeo.runtime.model.ComponentName;
@@ -177,7 +178,7 @@ public class ObjectNameFactory {
         String qualifiedName = getQualifiedName(name);
         try {
             return new ObjectName(qualifiedName);
-        } catch (Exception e) {
+        } catch (JMException e) {
             throw ManagementRuntimeException.wrap(name + " is not correct", e);
         }
     }
@@ -186,7 +187,7 @@ public class ObjectNameFactory {
         String qualifiedName = getQualifiedName(name) + "," + avas;
         try {
             return new ObjectName(qualifiedName);
-        } catch (Exception e) {
+        } catch (JMException e) {
             throw ManagementRuntimeException.wrap(name + " is not correct", e);
         }
     }

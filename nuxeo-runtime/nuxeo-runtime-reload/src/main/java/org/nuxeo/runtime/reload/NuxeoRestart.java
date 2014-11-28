@@ -18,6 +18,7 @@ package org.nuxeo.runtime.reload;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoRestart {
 
-    public static void restart() throws Exception {
+    public static void restart() throws IOException {
         List<String> cmd = new ArrayList<String>();
         String javaHome = System.getProperty("java.home");
         File java = new File(new File(javaHome), "bin/java").getCanonicalFile();
@@ -121,6 +122,7 @@ public class NuxeoRestart {
         System.arraycopy(args, 0, newArgs, 0, newArgs.length);
         File lock = new File(args[args.length - 1]);
         File script = new File(args[0]);
+        boolean ok = false;
         try {
             // wait for the lock file to be removed
             while (lock.isFile()) {
@@ -133,8 +135,11 @@ public class NuxeoRestart {
                     new String[] { "JAVA_HOME="
                             + System.getProperty("java.home") },
                     script.getParentFile());
-        } catch (Throwable e) {
-            System.exit(2);
+            ok = true;
+        } finally {
+            if (!ok) {
+                System.exit(2);
+            }
         }
     }
 

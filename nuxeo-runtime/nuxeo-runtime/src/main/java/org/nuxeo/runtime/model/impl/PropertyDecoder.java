@@ -43,7 +43,7 @@ public abstract class PropertyDecoder {
         PropertyDecoder decoder = decoders.get(type);
         try {
             return decoder == null ? value : decoder.decode(value);
-        } catch (Throwable t) {
+        } catch (IllegalArgumentException t) {
             log.error(t);
             return null;
         }

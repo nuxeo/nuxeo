@@ -97,7 +97,8 @@ public class PackZip {
         }
     }
 
-    protected void executePreprocessing() throws ConfigurationException {
+    protected void executePreprocessing() throws ConfigurationException,
+            IOException {
         // configure from templates
         new ConfigurationGenerator().run();
         // run preprocessor
@@ -135,7 +136,7 @@ public class PackZip {
         }
     }
 
-    protected void runPreprocessor() {
+    protected void runPreprocessor() throws IOException {
         DeploymentPreprocessor.main(new String[] { nuxeoEar.getAbsolutePath() });
     }
 

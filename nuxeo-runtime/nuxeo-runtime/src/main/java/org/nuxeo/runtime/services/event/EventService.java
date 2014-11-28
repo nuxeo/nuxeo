@@ -67,12 +67,8 @@ public class EventService extends DefaultComponent {
         synchronized (this) {
             for (Object desc : descriptors) {
                 ListenerDescriptor lDesc = (ListenerDescriptor) desc;
-                try {
-                    for (String topic : lDesc.topics) {
-                        addListener(topic, lDesc.listener);
-                    }
-                } catch (Exception e) {
-                    log.error(e, e);
+                for (String topic : lDesc.topics) {
+                    addListener(topic, lDesc.listener);
                 }
             }
             contributions.put(name, descriptors);

@@ -106,7 +106,7 @@ public interface RuntimeContext {
      *
      * @param url the URL of the XML descriptor
      */
-    void undeploy(URL url);
+    void undeploy(URL url) throws IOException;
 
     /**
      * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream
@@ -114,7 +114,7 @@ public interface RuntimeContext {
      *
      * @param ref
      */
-    void undeploy(StreamRef ref);
+    void undeploy(StreamRef ref) throws IOException;
 
     /**
      * Checks whether the component XML file at given URL was deployed.

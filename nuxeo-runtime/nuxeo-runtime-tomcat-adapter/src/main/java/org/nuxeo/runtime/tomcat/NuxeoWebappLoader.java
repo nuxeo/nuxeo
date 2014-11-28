@@ -38,12 +38,12 @@ public class NuxeoWebappLoader extends WebappLoader {
 
     protected File baseDir; // the baseDir from the Context (which is private..)
 
-    protected void overwriteWar() throws Exception {
+    protected void overwriteWar() {
         //File baseDir = getBaseDir();
         // remove all files
     }
 
-    public File getBaseDir() throws Exception {
+    public File getBaseDir() throws ReflectiveOperationException {
         if (baseDir == null) {
             Container container = getContainer();
             Method method = StandardContext.class.getDeclaredMethod("getBasePath");

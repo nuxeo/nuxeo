@@ -47,30 +47,23 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
 
     /**
      * Activates the implementation instance.
-     *
-     * @throws Exception if any error occurs during activation
      */
-    void activate() throws Exception;
+    void activate();
 
     /**
      * Deactivates the implementation instance.
-     *
-     * @throws Exception if any error occurs during deactivation
      */
-    void deactivate() throws Exception;
+    void deactivate();
 
     /**
      * Destroys this instance.
-     *
-     * @throws Exception if any error occurs
      */
-    void destroy() throws Exception;
+    void destroy();
 
     /**
      * Reload the component. All the extensions and registries are reloaded.
-     * @throws Exception
      */
-    void reload() throws Exception;
+    void reload();
 
     /**
      * Gets the list of provided services, or null if no service is provided.

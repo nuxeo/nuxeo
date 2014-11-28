@@ -21,6 +21,8 @@ import java.util.Map;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.parser.ParseException;
+import org.nuxeo.common.utils.ExceptionUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,12 +34,18 @@ public class Guard {
 
     protected Expression expr;
 
-    public Guard(String expr) throws Exception {
+    public Guard(String expr) {
         this.value = expr;
-        this.expr = ExpressionFactory.createExpression(expr);
+        try {
+            this.expr = ExpressionFactory.createExpression(expr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) { // stupid JEXL API throws Exception
+            throw ExceptionUtils.runtimeException(e);
+        }
     }
 
-    public boolean evaluate(final Map<String, Object> map) throws Exception {
+    public boolean evaluate(final Map<String, Object> map) {
         map.put("Version", new VersionHelper());
         map.put("Platform", new PlatformHelper());
         JexlContext ctx = new JexlContext() {
@@ -51,7 +59,11 @@ public class Guard {
                 return map;
             }
         };
-        return (Boolean) expr.evaluate(ctx);
+        try {
+            return (Boolean) expr.evaluate(ctx);
+        } catch (Exception e) { // stupid JEXL API throws Exception
+            throw ExceptionUtils.runtimeException(e);
+        }
     }
 
 }

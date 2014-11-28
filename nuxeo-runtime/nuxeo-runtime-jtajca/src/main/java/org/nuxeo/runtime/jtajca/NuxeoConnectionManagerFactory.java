@@ -35,7 +35,7 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
 
     @Override
     public Object getObjectInstance(Object obj, Name objName, Context nameCtx,
-            Hashtable<?, ?> env) throws Exception {
+            Hashtable<?, ?> env) {
         Reference ref = (Reference) obj;
         if (!ConnectionManager.class.getName().equals(ref.getClassName())) {
             return null;
@@ -59,7 +59,7 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
             String content = (String) addr.getContent();
             try {
                 BeanUtils.setProperty(config, type, content);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error(String.format(
                         "NuxeoConnectionManagerFactory cannot set %s = %s",
                         type, content));
@@ -76,7 +76,7 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
             String value = (String) addr.getContent();
             try {
                 BeanUtils.setProperty(config, name, value);
-            } catch (Exception cause) {
+            } catch (ReflectiveOperationException cause) {
                 errors.addSuppressed(cause);
             }
         }

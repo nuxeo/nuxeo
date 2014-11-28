@@ -113,7 +113,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         return home;
     }
 
-    public void initialize() throws Exception {
+    public void initialize() throws ReflectiveOperationException, IOException {
         startTime = System.currentTimeMillis();
         List<File> bundleFiles = buildClassPath();
         frameworkLoaderClass = getClassLoader().loadClass(
@@ -123,7 +123,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
     }
 
-    public void start() throws Exception {
+    public void start() throws ReflectiveOperationException, IOException {
         if (frameworkLoaderClass == null) {
             throw new IllegalStateException(
                     "Framework Loader was not initialized. Call initialize() method first");
@@ -133,7 +133,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         printStartedMessage();
     }
 
-    public void stop() throws Exception {
+    public void stop() throws ReflectiveOperationException {
         if (frameworkLoaderClass == null) {
             throw new IllegalStateException(
                     "Framework Loader was not initialized. Call initialize() method first");
@@ -142,7 +142,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         stop.invoke(null);
     }
 
-    public String installBundle(File f) throws Exception {
+    public String installBundle(File f) throws ReflectiveOperationException {
         if (frameworkLoaderClass == null) {
             throw new IllegalStateException(
                     "Framework Loader was not initialized. Call initialize() method first");
@@ -151,7 +151,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         return (String) install.invoke(null, f);
     }
 
-    public void uninstallBundle(String name) throws Exception {
+    public void uninstallBundle(String name) throws ReflectiveOperationException {
         if (frameworkLoaderClass == null) {
             throw new IllegalStateException(
                     "Framework Loader was not initialized. Call initialize() method first");

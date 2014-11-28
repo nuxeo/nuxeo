@@ -17,8 +17,10 @@
 package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 
+import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -121,10 +123,7 @@ public class NuxeoLauncher implements LifecycleListener {
                     server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
                 }
             }
-        } catch (InterruptedException e) {
-            // restore interrupted state
-            Thread.currentThread().interrupt();
-        } catch (Exception e) {
+        } catch (IOException| JMException | ReflectiveOperationException e) {
             log.error("Failed to handle event: " + type, e);
         }
     }
@@ -142,7 +141,7 @@ public class NuxeoLauncher implements LifecycleListener {
             try {
                 File baseDir = loader.getBaseDir();
                 return new File(baseDir, home);
-            } catch (Throwable t) {
+            } catch (ReflectiveOperationException e) {
                 return null;
             }
         }

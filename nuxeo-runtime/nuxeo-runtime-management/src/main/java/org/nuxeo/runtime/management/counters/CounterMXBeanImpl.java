@@ -39,7 +39,7 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
         CounterSample sample = sample();
         return sample.toString();
     }
-    
+
     protected void doFillMap(CounterSample sample, Map<String,Serializable> map, Class<?> clazz) {
         if (clazz == null) {
             return;
@@ -51,13 +51,13 @@ public class CounterMXBeanImpl extends org.javasimon.jmx.CounterMXBeanImpl imple
             try {
                 f.setAccessible(true);
                 map.put(f.getName(), (Serializable)f.get(sample));
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
         }
         doFillMap(sample, map, clazz.getSuperclass());
     }
-    
+
     public Map<String,Serializable> sampleAsMap() {
         HashMap<String,Serializable> map = new HashMap<String,Serializable>();
         CounterSample sample = sample();

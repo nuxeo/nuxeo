@@ -51,7 +51,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     }
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         log.info("Starting Runtime Activator");
         instance = this;
         this.context = context;
@@ -81,7 +81,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         log.info("Stopping Runtime Activator");
         instance = null;
         pkgAdmin = null;
@@ -112,7 +112,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
      * @param ref
      * @return
      */
-    public Class<?> loadClass(String ref) throws Exception {
+    public Class<?> loadClass(String ref) throws ReflectiveOperationException {
         int i = ref.indexOf(':');
         if (i == -1) {
             return Class.forName(ref);
@@ -120,19 +120,22 @@ public class OSGiRuntimeActivator implements BundleActivator {
         return loadClass(ref.substring(0, i), ref.substring(i+1));
     }
 
-    public Class<?> loadClass(String bundleName, String className) throws Exception {
+    public Class<?> loadClass(String bundleName, String className)
+            throws ReflectiveOperationException {
         Bundle bundle = getBundle(bundleName);
         if (bundle == null) {
-            throw new ClassNotFoundException("No bundle found with name: "+bundleName+". Unable to load class "+className);
+            throw new ClassNotFoundException("No bundle found with name: "
+                    + bundleName + ". Unable to load class " + className);
         }
         return bundle.loadClass(className);
     }
 
-    public Object newInstance(String ref) throws Exception {
+    public Object newInstance(String ref) throws ReflectiveOperationException {
         return loadClass(ref).newInstance();
     }
 
-    public Object newInstance(String bundleName, String className) throws Exception {
+    public Object newInstance(String bundleName, String className)
+            throws ReflectiveOperationException {
         return loadClass(bundleName, className).newInstance();
     }
 

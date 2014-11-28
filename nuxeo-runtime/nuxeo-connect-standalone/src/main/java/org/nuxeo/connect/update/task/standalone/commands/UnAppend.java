@@ -21,6 +21,7 @@ package org.nuxeo.connect.update.task.standalone.commands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -131,7 +132,7 @@ public class UnAppend extends AbstractCommand {
             return new Append(bak, fromFile);
         } catch (PackageException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException(e);
         }
     }

@@ -128,9 +128,9 @@ public class ModelMBeanIntrospector {
                 doCollectMgmtIfaces(ifaces, iface);
             }
         }
-        doCollectMgmtIfaces(ifaces, clazz.getSuperclass());        
+        doCollectMgmtIfaces(ifaces, clazz.getSuperclass());
     }
-    
+
     protected void doCollectIfaces(Set<Class<?>> ifaces, Class<?> clazz) {
         if (clazz == null) {
             return;
@@ -237,51 +237,4 @@ public class ModelMBeanIntrospector {
         return matcher.group(2);
     }
 
-//    protected void doFixAttribute(Class<?> inspected, String operationName)
-//            throws Exception {
-//        String methodSuffix = doExtractMethodSuffix(operationName);
-//        String attributeName = methodSuffix.substring(0, 1).toLowerCase()
-//                + methodSuffix.substring(1);
-//
-//        if (attributesInfo.containsKey(attributeName)) {
-//            return;
-//        }
-//
-//        Method reader = null;
-//        Method writter = null;
-//        for (Method method : inspected.getMethods()) {
-//            Matcher matcher = attributePattern.matcher(method.getName());
-//            if (!matcher.matches()) {
-//                continue;
-//            }
-//            if (!matcher.group(2).equals(methodSuffix)) {
-//                continue;
-//            }
-//            String prefix = matcher.group(1);
-//            if (prefix.equals("is")) {
-//                if (reader == null) {
-//                    reader = method;
-//                }
-//            } else if (prefix.equals("get")) {
-//                reader = method;
-//            } else if (prefix.equals("set")) {
-//                writter = method;
-//            }
-//        }
-//
-//         Descriptor descriptor = getDescriptor(null, null, attributeName,
-//         null,
-//         null, "attribute");
-//         if (reader != null) {
-//         descriptor.setField("getMethod", reader.getName());
-//         }
-//         if (writter != null) {
-//         descriptor.setField("setMethod", writter.getName());
-//         }
-//
-//
-//
-//         attributesInfo.put(attributeName, new ModelMBeanAttributeInfo(
-//         attributeName, attributeName, reader, writter));
-//    }
 }

@@ -57,10 +57,8 @@ public class LoginModuleWrapper implements LoginModule {
                 delegate = (LoginModule)clazz.newInstance();
             } catch (NullPointerException e) {
                 throw new RuntimeException("Should be a bug: No DELEGATE_CLASS_KEY found in login module options", e);
-            } catch (ClassCastException e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Invalid login module class: "+options.get(DELEGATE_CLASS_KEY)+". Should implement LoginModule.", e);
-            } catch (Exception e) {
-                throw new RuntimeException("Cannot instantiate login module: "+options.get(DELEGATE_CLASS_KEY), e);
             }
         }
     }

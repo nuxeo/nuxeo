@@ -39,6 +39,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
+import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
 import org.apache.commons.logging.Log;
@@ -60,6 +61,7 @@ import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -221,12 +223,14 @@ public class NuxeoContainer {
             for (ConnectionManagerWrapper cm : connectionManagers.values()) {
                 try {
                     cm.dispose();
-                } catch (Exception cause) {
+                } catch (Exception cause) { // deals with interrupt below
+                    ExceptionUtils.checkInterrupt(cause);
                     errors.addSuppressed(cause);
                 }
             }
             if (errors.getSuppressed().length > 0) {
                 log.error("Cannot shutdown some pools", errors);
+                throw errors;
             }
         } finally {
             log.trace("Uninstalling nuxeo container", installContext);
@@ -407,7 +411,7 @@ public class NuxeoContainer {
     }
 
     protected static synchronized TransactionManager initTransactionManager(
-            TransactionManagerConfiguration config) throws NamingException {
+            TransactionManagerConfiguration config) {
         TransactionManagerImpl impl = createTransactionManager(config);
         tm = impl;
         tmRecoverable = impl;
@@ -439,7 +443,7 @@ public class NuxeoContainer {
     }
 
     public static synchronized void disposeConnectionManager(
-            ConnectionManager mgr) throws Exception {
+            ConnectionManager mgr) {
         ConnectionManagerWrapper wrapper = (ConnectionManagerWrapper) mgr;
         for (NuxeoContainerListener listener : listeners) {
             listener.handleConnectionManagerDispose(wrapper.config.getName(),
@@ -448,8 +452,7 @@ public class NuxeoContainer {
         ((ConnectionManagerWrapper) mgr).dispose();
     }
 
-    public static synchronized void resetConnectionManager(String name)
-            throws Exception {
+    public static synchronized void resetConnectionManager(String name) {
         ConnectionManagerWrapper wrapper = connectionManagers.get(name);
         wrapper.reset();
         for (NuxeoContainerListener listener : listeners) {
@@ -458,12 +461,14 @@ public class NuxeoContainer {
     }
 
     // called by reflection from RepositoryReloader
-    public static synchronized void resetConnectionManager() throws Exception {
-        Exception errors = new Exception("Cannot reset connection managers");
+    public static synchronized void resetConnectionManager() {
+        RuntimeException errors = new RuntimeException(
+                "Cannot reset connection managers");
         for (String name : connectionManagers.keySet()) {
             try {
                 resetConnectionManager(name);
-            } catch (Exception cause) {
+            } catch (Exception cause) { // deals with interrupt below
+                ExceptionUtils.checkInterrupt(cause);
                 errors.addSuppressed(cause);
             }
         }
@@ -482,8 +487,10 @@ public class NuxeoContainer {
             try {
                 resolved = NamingManager.getObjectInstance(resolved,
                         new CompositeName(name), rootContext, null);
-            } catch (Exception e) {
-                throw new RuntimeException("Cannot get access to " + name, e);
+            } catch (NamingException e) {
+                throw e;
+            } catch (Exception e) { // stupid JNDI API throws Exception
+                throw ExceptionUtils.runtimeException(e);
             }
         }
         return type.cast(resolved);
@@ -527,7 +534,7 @@ public class NuxeoContainer {
         }
         try {
             return new TransactionManagerImpl(config.transactionTimeoutSeconds);
-        } catch (Exception e) {
+        } catch (XAException e) {
             // failed in recovery somewhere
             throw new RuntimeException(e.toString(), e);
         }
@@ -924,14 +931,22 @@ public class NuxeoContainer {
                     connectionRequestInfo);
         }
 
-        public void reset() throws Exception {
-            cm.doStop();
+        public void reset() {
+            try {
+                cm.doStop();
+            } catch (Exception e) { // stupid Geronimo API throws Exception
+                throw ExceptionUtils.runtimeException(e);
+            }
             cm = createConnectionManager(coordinator, config);
         }
 
-        public void dispose() throws Exception {
+        public void dispose() {
             NuxeoContainer.connectionManagers.remove(config.getName());
-            cm.doStop();
+            try {
+                cm.doStop();
+            } catch (Exception e) { // stupid Geronimo API throws Exception
+                throw ExceptionUtils.runtimeException(e);
+            }
         }
 
         public NuxeoConnectionManagerConfiguration getConfiguration() {

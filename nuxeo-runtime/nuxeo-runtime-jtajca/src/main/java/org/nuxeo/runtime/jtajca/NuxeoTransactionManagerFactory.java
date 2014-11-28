@@ -36,7 +36,7 @@ public class NuxeoTransactionManagerFactory implements ObjectFactory {
 
     @Override
     public Object getObjectInstance(Object obj, Name objName, Context nameCtx,
-            Hashtable<?, ?> env) throws Exception {
+            Hashtable<?, ?> env) {
         Reference ref = (Reference) obj;
         if (!TransactionManager.class.getName().equals(ref.getClassName())) {
             return null;
@@ -52,7 +52,7 @@ public class NuxeoTransactionManagerFactory implements ObjectFactory {
             String value = (String) addr.getContent();
             try {
                 BeanUtils.setProperty(config, name, value);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error(String.format(
                         "NuxeoTransactionManagerFactory cannot set %s = %s",
                         name, value));

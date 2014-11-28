@@ -65,7 +65,7 @@ public class ConfigurationDescriptorImpl {
                     Class cl = Thread.currentThread().getContextClassLoader().loadClass(klass);
                     xmap.register(cl);
                     config = xmap.load(element);
-                } catch (Exception e) {
+                } catch (ClassNotFoundException e) {
                     config = NULL;
                     log.error(e, e);
                 }

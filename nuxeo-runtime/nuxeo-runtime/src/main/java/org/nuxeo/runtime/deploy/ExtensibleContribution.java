@@ -78,7 +78,7 @@ public abstract class ExtensibleContribution extends Contribution {
         return baseContribution == null;
     }
 
-    protected ExtensibleContribution getMergedContribution() throws Exception {
+    protected ExtensibleContribution getMergedContribution() {
         if (baseContribution == null) {
             return clone();
         }
@@ -90,12 +90,12 @@ public abstract class ExtensibleContribution extends Contribution {
     }
 
     @Override
-    public void install(ManagedComponent comp) throws Exception {
+    public void install(ManagedComponent comp) {
         install(comp, getMergedContribution());
     }
 
     @Override
-    public void uninstall(ManagedComponent comp) throws Exception {
+    public void uninstall(ManagedComponent comp) {
         uninstall(comp, getMergedContribution());
     }
 
@@ -103,18 +103,20 @@ public abstract class ExtensibleContribution extends Contribution {
      * perform a deep clone to void sharing collection elements between clones
      */
     @Override
-    public ExtensibleContribution clone() throws CloneNotSupportedException {
+    public ExtensibleContribution clone() {
+        ExtensibleContribution clone;
         try {
-            ExtensibleContribution clone = getClass().newInstance();
-            copyOver(clone);
-            clone.contributionId = contributionId;
-            clone.baseContributionId = baseContributionId;
-            return clone;
-        } catch (Exception e) {
-            log.error(e);
-            throw new CloneNotSupportedException(
-                    "Failed to instantiate the contribution class. Contribution classes must have a trivial constructor");
+            clone = getClass().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(
+                    "Failed to instantiate the contribution class. "
+                            + "Contribution classes must have a trivial constructor",
+                    e);
         }
+        copyOver(clone);
+        clone.contributionId = contributionId;
+        clone.baseContributionId = baseContributionId;
+        return clone;
     }
 
 }

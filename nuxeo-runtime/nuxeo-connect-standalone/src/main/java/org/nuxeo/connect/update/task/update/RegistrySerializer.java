@@ -18,7 +18,6 @@ package org.nuxeo.connect.update.task.update;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -28,6 +27,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.connect.update.PackageException;
@@ -35,6 +35,7 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -70,23 +71,15 @@ public class RegistrySerializer extends XmlWriter {
      *
      * @param file
      * @return The Nuxeo packages registry described by the given file
-     * @throws PackageException
-     * @throws FileNotFoundException
      */
     public static Map<String, Entry> load(File file) throws PackageException,
-            FileNotFoundException {
+            IOException {
         RegistrySerializer serializer = new RegistrySerializer();
         return serializer.read(file);
     }
 
-    /**
-     * @param file
-     * @return
-     * @throws PackageException
-     * @throws FileNotFoundException
-     */
     protected Map<String, Entry> read(File file) throws PackageException,
-            FileNotFoundException {
+            IOException {
         FileInputStream in = new FileInputStream(file);
         try {
             HashMap<String, Entry> registry = new HashMap<String, Entry>();
@@ -95,10 +88,8 @@ public class RegistrySerializer extends XmlWriter {
             Document document = builder.parse(in);
             read(document.getDocumentElement(), registry);
             return registry;
-        } catch (PackageException e) {
-            throw e;
-        } catch (Throwable e) {
-            throw new PackageException("Failed to load file update registry", e);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(in);
         }

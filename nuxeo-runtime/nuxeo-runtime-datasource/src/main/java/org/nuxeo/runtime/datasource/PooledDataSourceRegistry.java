@@ -35,7 +35,7 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
     }
 
     public interface PooledDataSource extends DataSource {
-        void dispose() throws Exception;
+        void dispose();
 
         Connection getConnection(boolean noSharing) throws SQLException;
     }
@@ -45,7 +45,7 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
     protected final PooledDataSourceFactory poolFactory = new org.nuxeo.runtime.datasource.geronimo.PooledDataSourceFactory();
 
     public DataSource getOrCreatePool(Object obj, Name objectName,
-            Context nameCtx, Hashtable<?, ?> env) throws Exception {
+            Context nameCtx, Hashtable<?, ?> env) {
         final Reference ref = (Reference)obj;
         String dsName = (String)ref.get("name").getContent();
         DataSource ds = pools.get(dsName);
@@ -56,7 +56,7 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
     }
 
     protected DataSource createPool(String dsName, Reference ref, Name objectName,
-            Context nameCtx, Hashtable<?, ?> env) throws Exception {
+            Context nameCtx, Hashtable<?, ?> env) {
         PooledDataSource ds;
         try {
             readLock().lock();
@@ -73,7 +73,7 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         return ds;
     }
 
-    protected void clearPool(String name) throws Exception {
+    protected void clearPool(String name) {
         PooledDataSource ds = pools.remove(name);
         if (ds != null) {
             ds.dispose();

@@ -39,7 +39,7 @@ public class OSGIRuntimeTestActivator extends OSGiRuntimeActivator {
     private static final Log log = LogFactory.getLog(OSGIRuntimeTestActivator.class);
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         log.info("Starting Runtime Activator");
         // create the runtime
         runtime = new OSGiRuntimeService(context);

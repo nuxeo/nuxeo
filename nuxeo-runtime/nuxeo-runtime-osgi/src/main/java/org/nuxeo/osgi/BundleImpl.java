@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.jar.Manifest;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.osgi.util.CompoundEnumeration;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
@@ -297,15 +298,15 @@ public class BundleImpl implements Bundle {
     public void start() throws BundleException {
         try {
             setStarting();
-            getActivator().start(context); // stupid API throws Exception
+            getActivator().start(context);
             setStarted();
-        } catch (InterruptedException e) {
-            // restore interrupted status
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (Exception e) { // InterruptedException caught above
+        } catch (BundleException e) {
             throw new BundleException("Failed to start bundle at: " + file
                     + " with activator: " + getActivatorClassName(), e);
+        } catch (Exception e) { // stupid OSGi API throws Exception
+            RuntimeException re = ExceptionUtils.runtimeException(e);
+            throw new BundleException("Failed to start bundle at: " + file
+                    + " with activator: " + getActivatorClassName(), re);
         }
     }
 
@@ -313,31 +314,31 @@ public class BundleImpl implements Bundle {
     public void stop() throws BundleException {
         try {
             setStopping();
-            getActivator().stop(context); // stupid API throws Exception
+            getActivator().stop(context);
             setStopped();
-        } catch (InterruptedException e) {
-            // restore interrupted status
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (Exception e) { // InterruptedException caught above
+        } catch (BundleException e) {
             throw new BundleException("Failed to stop activator: "
                     + getActivatorClassName(), e);
+        } catch (Exception e) { // stupid OSGi API throws Exception
+            RuntimeException re = ExceptionUtils.runtimeException(e);
+            throw new BundleException("Failed to stop activator: "
+                    + getActivatorClassName(), re);
         }
     }
 
     public void shutdown() throws BundleException {
         try {
             state = STOPPING;
-            getActivator().stop(context); // stupid API throws Exception
+            getActivator().stop(context);
             lastModified = System.currentTimeMillis();
             state = UNINSTALLED;
-        } catch (InterruptedException e) {
-            // restore interrupted status
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (Exception e) { // InterruptedException caught above
+        } catch (BundleException e) {
             throw new BundleException("Failed to stop activator: "
                     + getActivatorClassName(), e);
+        } catch (Exception e) { // stupid OSGi API throws Exception
+            RuntimeException re = ExceptionUtils.runtimeException(e);
+            throw new BundleException("Failed to stop activator: "
+                    + getActivatorClassName(), re);
         }
     }
 

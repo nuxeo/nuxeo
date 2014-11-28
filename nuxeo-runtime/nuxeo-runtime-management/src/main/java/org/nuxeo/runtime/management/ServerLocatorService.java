@@ -21,6 +21,7 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,14 +122,14 @@ public class ServerLocatorService extends DefaultComponent implements
         } catch (IOException e) {
             try {
                 LocateRegistry.createRegistry(descriptor.rmiPort);
-            } catch (Exception e2) {
+            } catch (RemoteException e2) {
                 throw new ManagementRuntimeException(
                         "Cannot start RMI connector for "
                                 + descriptor.domainName, e);
             }
             try {
                 connector.start();
-            } catch (Exception e2) {
+            } catch (IOException e2) {
                 throw new ManagementRuntimeException(
                         "Cannot start RMI connector for "
                                 + descriptor.domainName, e2);

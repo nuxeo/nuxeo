@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -20,6 +20,9 @@
  */
 
 package org.nuxeo.common.utils;
+
+import java.io.InterruptedIOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Provides utility methods for manipulating and examining
@@ -57,6 +60,85 @@ public final class ExceptionUtils {
         }
 
         return cause;
+    }
+
+    /**
+     * Throws a {@link RuntimeException} if the passed exception is an
+     * {@link InterruptedException} or {@link InterruptedIOException}, or if the
+     * current thread is marked interrupted.
+     *
+     * @param e the exception to check
+     * @throws RuntimeException if there was an interrupt
+     *
+     * @since 7.1
+     */
+    public static void checkInterrupt(Exception e) {
+        if (e instanceof InterruptedException
+                || e instanceof InterruptedIOException) {
+            // reset interrupted status
+            Thread.currentThread().interrupt();
+            // continue interrupt
+            throw new RuntimeException(e);
+        }
+        if (Thread.currentThread().isInterrupted()) {
+            // if an InterruptedException occurred earlier but was wrapped,
+            // continue interrupt
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Unwraps the exception if it's an {@link InvocationTargetException}.
+     * <p>
+     * Also deals with interrupts by immediately throwing an exception.
+     *
+     * @param e the exception to unwrap
+     * @return the unwrapped exception
+     * @throws RuntimeException if there was an interrupt
+     *
+     * @since 7.1
+     */
+    public static Exception unwrapInvoke(Exception e) {
+        if (e instanceof InvocationTargetException) {
+            Throwable cause = e.getCause();
+            if (cause instanceof Error) {
+                // Error, throw immediately
+                throw (Error) cause;
+            } else if (cause instanceof Exception) {
+                e = (Exception) cause;
+            } else {
+                // Throwable direct subclass?!
+                e = new RuntimeException(cause);
+            }
+        }
+        checkInterrupt(e);
+        return e;
+    }
+
+    /**
+     * Wraps the exception into a {@link RuntimeException}, if needed, for
+     * re-throw.
+     * <p>
+     * Deals with {@link InvocationTargetException},
+     * {@link InterruptedException} and {@link InterruptedIOException}.
+     *
+     * @param e the exception to wrap
+     * @return a {@link RuntimeException}
+     * @throws RuntimeException if there was an interrupt
+     *
+     * @since 7.1
+     */
+    public static RuntimeException runtimeException(Exception e) {
+        e = unwrapInvoke(e);
+        if (e instanceof RuntimeException) {
+            return (RuntimeException) e;
+        } else {
+            return new RuntimeException(e);
+        }
     }
 
 }

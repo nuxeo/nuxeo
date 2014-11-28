@@ -622,7 +622,7 @@ public class DeploymentPreprocessor {
         processor.predeploy();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File root;
         if (args.length > 0) {
             root = new File(args[0]);
@@ -631,15 +631,10 @@ public class DeploymentPreprocessor {
         }
         System.out.println("Preprocessing: " + root);
         DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
-        try {
-            // initialize
-            processor.init();
-            // and predeploy
-            processor.predeploy();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+        // initialize
+        processor.init();
+        // and predeploy
+        processor.predeploy();
         System.out.println("Done.");
     }
 

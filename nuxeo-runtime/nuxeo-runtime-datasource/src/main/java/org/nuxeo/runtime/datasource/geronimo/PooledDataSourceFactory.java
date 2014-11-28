@@ -44,7 +44,7 @@ public class PooledDataSourceFactory implements
         }
 
         @Override
-        public void dispose() throws Exception {
+        public void dispose() {
             wrapper.dispose();
         }
 
@@ -69,10 +69,16 @@ public class PooledDataSourceFactory implements
 
     @Override
     public Object getObjectInstance(Object obj, Name name, Context ctx,
-            Hashtable<?, ?> environment) throws Exception {
+            Hashtable<?, ?> environment) {
         Reference ref = (Reference) obj;
-        ManagedConnectionFactory mcf = createFactory(ref, ctx);
-        ConnectionManagerWrapper cm = createManager(ref, ctx);
+        ManagedConnectionFactory mcf;
+        ConnectionManagerWrapper cm;
+        try {
+            mcf = createFactory(ref, ctx);
+            cm = createManager(ref, ctx);
+        } catch (ResourceException | NamingException e) {
+            throw new RuntimeException(e);
+        }
         return new DataSource(mcf, cm);
     }
 

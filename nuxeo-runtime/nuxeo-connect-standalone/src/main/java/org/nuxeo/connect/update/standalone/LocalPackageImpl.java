@@ -107,7 +107,7 @@ public class LocalPackageImpl implements LocalPackage {
             throw new PackageException(
                     "Invalid package - no package.xml file found in package "
                             + file.getName());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException(
                     "Failed to load package.xml descriptor for package "
                             + file.getName(), e);
@@ -157,7 +157,7 @@ public class LocalPackageImpl implements LocalPackage {
         if (file.isFile()) {
             try {
                 return FileUtils.readFile(file);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new PackageException(
                         "Failed to read license.txt file for package: "
                                 + getId());
@@ -274,7 +274,7 @@ public class LocalPackageImpl implements LocalPackage {
         try {
             task = (Task) data.loadClass(tdef.getType()).getConstructor(
                     PackageUpdateService.class).newInstance(service);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new PackageException("Could not instantiate custom task "
                     + tdef.getType() + " for package " + getId(), e);
         }
@@ -287,7 +287,7 @@ public class LocalPackageImpl implements LocalPackage {
         if (def.getValidator() != null) {
             try {
                 return (Validator) data.loadClass(def.getValidator()).getConstructor().newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new PackageException(
                         "Could not instantiate custom validator "
                                 + def.getValidator() + " for package "
@@ -306,7 +306,7 @@ public class LocalPackageImpl implements LocalPackage {
                 FormsDefinition forms = (FormsDefinition) StandaloneUpdateService.getXmap().load(
                         in);
                 return forms.getForms();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new PackageException("Failed to load forms file: " + file);
             } finally {
                 if (in != null) {
@@ -341,7 +341,7 @@ public class LocalPackageImpl implements LocalPackage {
         if (file.isFile()) {
             try {
                 return FileUtils.readFile(file);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new PackageException(
                         "Failed to read license.txt file for package: "
                                 + getId());

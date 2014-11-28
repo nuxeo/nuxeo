@@ -115,7 +115,7 @@ public class ComponentRegistry {
      * @return true if the component was resolved, false if the component is
      *         pending
      */
-    public boolean addComponent(RegistrationInfoImpl ri) throws Exception {
+    public boolean addComponent(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         Set<ComponentName> al = ri.getAliases();
         String aliasInfo = al.isEmpty() ? "" : ", aliases=" + al;
@@ -133,8 +133,7 @@ public class ComponentRegistry {
         return false;
     }
 
-    public RegistrationInfoImpl removeComponent(ComponentName name)
-            throws Exception {
+    public RegistrationInfoImpl removeComponent(ComponentName name) {
         RegistrationInfoImpl ri = components.remove(name);
         if (ri != null) {
             try {
@@ -175,7 +174,7 @@ public class ComponentRegistry {
         return pendings.map;
     }
 
-    protected void resolveComponent(RegistrationInfoImpl ri) throws Exception {
+    protected void resolveComponent(RegistrationInfoImpl ri) {
         ComponentName riName = ri.getName();
         Set<ComponentName> names = new HashSet<ComponentName>();
         names.add(riName);
@@ -206,7 +205,7 @@ public class ComponentRegistry {
         }
     }
 
-    protected void unresolveComponent(RegistrationInfoImpl ri) throws Exception {
+    protected void unresolveComponent(RegistrationInfoImpl ri) {
         Set<ComponentName> reqs = ri.getRequiredComponents();
         ComponentName name = ri.getName();
         ri.unresolve();

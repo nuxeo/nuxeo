@@ -16,6 +16,7 @@ package org.nuxeo.runtime.deploy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,8 +66,9 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         contrib.resolve(this);
         try {
             contrib.install(component);
-        } catch (Exception e) {
-            log.error(e);
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            log.error(e, e);
         }
     }
 
@@ -75,8 +77,9 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         Contribution contrib = entry.get();
         try {
             contrib.uninstall(component);
-        } catch (Exception e) {
-            log.error(e);
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            log.error(e, e);
         }
         contrib.unresolve(this);
     }

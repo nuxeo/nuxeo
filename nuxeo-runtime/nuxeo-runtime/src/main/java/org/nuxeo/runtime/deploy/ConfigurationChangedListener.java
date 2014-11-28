@@ -19,6 +19,6 @@ package org.nuxeo.runtime.deploy;
  */
 public interface ConfigurationChangedListener {
 
-    void configurationChanged(ConfigurationDeployer.Entry entry) throws Exception;
+    void configurationChanged(ConfigurationDeployer.Entry entry);
 
 }

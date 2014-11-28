@@ -15,6 +15,7 @@
 package org.nuxeo.runtime.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -46,7 +47,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
         try {
             workingDir = File.createTempFile("NXTestFramework", generateId());
             workingDir.delete();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e, e);
         }
     }

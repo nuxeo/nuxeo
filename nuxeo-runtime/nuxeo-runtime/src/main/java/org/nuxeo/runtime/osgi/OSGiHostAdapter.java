@@ -31,7 +31,7 @@ public abstract class OSGiHostAdapter {
         return instance;
     }
 
-    public abstract Object invoke(Object ... args) throws Exception;
+    public abstract Object invoke(Object ... args);
 
     public abstract Object getProperty(String key);
 

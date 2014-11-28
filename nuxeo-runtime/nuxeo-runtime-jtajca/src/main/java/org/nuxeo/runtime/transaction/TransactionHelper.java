@@ -18,6 +18,10 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.naming.NamingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.InvalidTransactionException;
+import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -116,7 +120,7 @@ public class TransactionHelper {
     public static boolean isTransactionActive() {
         try {
             return lookupUserTransaction().getStatus() == Status.STATUS_ACTIVE;
-        } catch (Exception e) {
+        } catch (NamingException | SystemException e) {
             return false;
         }
     }
@@ -127,7 +131,7 @@ public class TransactionHelper {
     public static boolean isTransactionMarkedRollback() {
         try {
             return lookupUserTransaction().getStatus() == Status.STATUS_MARKED_ROLLBACK;
-        } catch (Exception e) {
+        } catch (NamingException | SystemException e) {
             return false;
         }
     }
@@ -140,7 +144,7 @@ public class TransactionHelper {
             int status = lookupUserTransaction().getStatus();
             return status == Status.STATUS_ACTIVE
                     || status == Status.STATUS_MARKED_ROLLBACK;
-        } catch (Exception e) {
+        } catch (NamingException | SystemException e) {
             return false;
         }
     }
@@ -195,7 +199,7 @@ public class TransactionHelper {
             }
             ut.begin();
             return true;
-        } catch (Exception e) {
+        } catch (NotSupportedException | SystemException e) {
             log.error("Unable to start transaction", e);
         }
         return false;
@@ -220,7 +224,7 @@ public class TransactionHelper {
             }
             tm.begin();
             return tx;
-        } catch (Exception e) {
+        } catch (NotSupportedException | SystemException e) {
             throw new TransactionRuntimeException("Cannot suspend tx", e);
         }
     }
@@ -236,7 +240,7 @@ public class TransactionHelper {
                 tx = tm.suspend();
             }
             return tx;
-        } catch (Exception e) {
+        } catch (SystemException e) {
             throw new TransactionRuntimeException("Cannot suspend tx", e);
         }
     }
@@ -259,7 +263,9 @@ public class TransactionHelper {
             if (tx != null) {
                 tm.resume(tx);
             }
-        } catch (Exception e) {
+        } catch (SystemException | RollbackException | HeuristicMixedException
+                | HeuristicRollbackException | InvalidTransactionException
+                | IllegalStateException | SecurityException e) {
             throw new TransactionRuntimeException("Cannot resume tx", e);
         }
     }
@@ -327,7 +333,9 @@ public class TransactionHelper {
                             + status);
                 }
             }
-        } catch (Exception e) {
+        } catch (SystemException | RollbackException | HeuristicMixedException
+                | HeuristicRollbackException | IllegalStateException
+                | SecurityException e) {
             String msg = "Unable to commit/rollback  " + ut;
             if (e instanceof RollbackException
                     && "Unable to commit: transaction marked for rollback".equals(e.getMessage())) {
@@ -398,7 +406,7 @@ public class TransactionHelper {
         try {
             ut.setRollbackOnly();
             return true;
-        } catch (Exception cause) {
+        } catch (IllegalStateException | SystemException cause) {
             log.error("Could not mark transaction as rollback only", cause);
         }
         return false;

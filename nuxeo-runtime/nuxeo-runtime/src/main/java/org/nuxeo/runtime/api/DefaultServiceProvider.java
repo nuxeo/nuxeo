@@ -17,9 +17,6 @@ package org.nuxeo.runtime.api;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * A service provider.
  * <p>
@@ -32,8 +29,6 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DefaultServiceProvider implements ServiceProvider {
-
-    private static final Log log = LogFactory.getLog(DefaultServiceProvider.class);
 
     private static ServiceProvider provider;
 
@@ -88,8 +83,8 @@ public class DefaultServiceProvider implements ServiceProvider {
             if (service == null) {
                 try {
                     service = type.newInstance();
-                } catch (Exception e) {
-                    log.error(e, e);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
                 }
             }
             return service;

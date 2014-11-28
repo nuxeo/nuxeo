@@ -80,29 +80,23 @@ public class FileChangeNotifier {
     protected void fireNotification(FileEntry entry) {
         long tm = System.currentTimeMillis();
         for (Object listener : listeners.getListeners()) {
-            try {
-                ((FileChangeListener) listener).fileChanged(entry, tm);
-            } catch (Throwable t) {
-                log.error("Error while to notifying file change for: "+entry.file, t);
-            }
+            ((FileChangeListener) listener).fileChanged(entry, tm);
         }
     }
 
     class WatchTask extends TimerTask {
         @Override
         public void run() {
-            try {
-                // make a copy to avoid concurrent modifs if a listener is unwatching a file
-                FileEntry[] entries = files.values().toArray(new FileEntry[files.size()]);
-                for (FileEntry entry : entries) {
-                    long lastModified = entry.file.lastModified();
-                    if ( entry.lastModified < lastModified) {
-                        fireNotification(entry);
-                        entry.lastModified = lastModified;
-                    }
+            // make a copy to avoid concurrent modifs if a listener is
+            // unwatching a file
+            FileEntry[] entries = files.values().toArray(
+                    new FileEntry[files.size()]);
+            for (FileEntry entry : entries) {
+                long lastModified = entry.file.lastModified();
+                if (entry.lastModified < lastModified) {
+                    fireNotification(entry);
+                    entry.lastModified = lastModified;
                 }
-            } catch (Throwable t) {
-                log.error("Error while to notifying file change", t);
             }
         }
     }

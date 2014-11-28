@@ -17,12 +17,12 @@
 package org.nuxeo.connect.update.task.standalone.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
-
 import org.nuxeo.common.utils.FileRef;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
@@ -99,7 +99,7 @@ public class Delete extends AbstractCommand {
             } else {
                 return null;
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException(
                     "Failed to create backup when deleting: " + file.getName(),
                     e);

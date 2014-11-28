@@ -49,14 +49,14 @@ public enum J2EEContainerDescriptor {
                 Class.forName("com.sun.enterprise.glassfish.bootstrap.AbstractMain");
                 log.info("Detected GlassFish host");
                 return GF3;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException e) {
                 log.debug("Autodetect : not a glassfish host");
             }
             try {
                 Class.forName("org.mortbay.jetty.webapp.WebAppContext");
                 log.info("Detected Jetty host");
                 return JETTY;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException e) {
                 log.debug("Autodetect : not a jetty host");
             }
             return null; // unknown host

@@ -27,10 +27,9 @@ public abstract class Contribution implements Cloneable {
     protected Extension extension;
     protected String contributionId;
 
-    public abstract void install(ManagedComponent comp, Contribution contrib) throws Exception;
+    public abstract void install(ManagedComponent comp, Contribution contrib);
 
-    public abstract void uninstall(ManagedComponent comp, Contribution contrib) throws Exception;
-
+    public abstract void uninstall(ManagedComponent comp, Contribution contrib);
 
     public String getContributionId() {
         return contributionId;
@@ -40,11 +39,11 @@ public abstract class Contribution implements Cloneable {
         this.contributionId = contributionId;
     }
 
-    public void install(ManagedComponent comp) throws Exception {
+    public void install(ManagedComponent comp) {
         install(comp, this);
     }
 
-    public void uninstall(ManagedComponent comp) throws Exception {
+    public void uninstall(ManagedComponent comp) {
         uninstall(comp, this);
     }
 

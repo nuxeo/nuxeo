@@ -157,7 +157,8 @@ public class ExtensionImpl implements Extension {
         }
     }
 
-    public static ExtensionImpl fromXML(RuntimeContext context, String xml) throws Exception {
+    public static ExtensionImpl fromXML(RuntimeContext context, String xml)
+            throws IOException {
         return reader.read(context, new ByteArrayInputStream(xml.getBytes()));
     }
 

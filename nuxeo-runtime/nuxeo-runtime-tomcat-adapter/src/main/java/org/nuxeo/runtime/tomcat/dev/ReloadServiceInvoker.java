@@ -58,7 +58,7 @@ public class ReloadServiceInvoker {
 
     protected Method reloadSeam;
 
-    public ReloadServiceInvoker(ClassLoader cl) throws Exception {
+    public ReloadServiceInvoker(ClassLoader cl) throws ReflectiveOperationException {
         Class<?> frameworkClass = cl.loadClass("org.nuxeo.runtime.api.Framework");
         Class<?> reloadServiceClass = cl.loadClass("org.nuxeo.runtime.reload.ReloadService");
         Method getLocalService = frameworkClass.getDeclaredMethod(
@@ -81,7 +81,8 @@ public class ReloadServiceInvoker {
                 "reloadSeamComponents", new Class<?>[0]);
     }
 
-    public void hotDeployBundles(DevBundle[] bundles) throws Exception {
+    public void hotDeployBundles(DevBundle[] bundles)
+            throws ReflectiveOperationException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(
@@ -112,7 +113,8 @@ public class ReloadServiceInvoker {
         }
     }
 
-    public void hotUndeployBundles(DevBundle[] bundles) throws Exception {
+    public void hotUndeployBundles(DevBundle[] bundles)
+            throws ReflectiveOperationException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(
@@ -139,19 +141,19 @@ public class ReloadServiceInvoker {
         }
     }
 
-    protected void flush() throws Exception {
+    protected void flush() throws ReflectiveOperationException {
         flush.invoke(reloadService);
     }
 
-    protected void reload() throws Exception {
+    protected void reload() throws ReflectiveOperationException {
         reload.invoke(reloadService);
     }
 
-    protected void reloadSeam() throws Exception {
+    protected void reloadSeam() throws ReflectiveOperationException {
         reloadSeam.invoke(reloadService);
     }
 
-    protected void runDeploymentPreprocessor() throws Exception {
+    protected void runDeploymentPreprocessor() throws ReflectiveOperationException {
         runDeploymentPreprocessor.invoke(reloadService);
     }
 

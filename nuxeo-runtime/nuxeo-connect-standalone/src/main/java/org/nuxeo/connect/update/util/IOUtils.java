@@ -18,7 +18,9 @@ package org.nuxeo.connect.update.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -37,7 +39,7 @@ public class IOUtils {
      *
      * @return the name of the backup file.
      */
-    public static File backup(LocalPackage pkg, File file) throws Exception {
+    public static File backup(LocalPackage pkg, File file) throws IOException {
         file = file.getCanonicalFile();
         String md5 = createMd5(file.getAbsolutePath());
         File bak = pkg.getData().getEntry(LocalPackage.BACKUP_DIR);
@@ -48,15 +50,15 @@ public class IOUtils {
         return bakFile;
     }
 
-    public static String createMd5(String text) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("MD5");
+    public static String createMd5(String text) throws IOException {
+        MessageDigest digest = getMD5Digest();
         digest.update(text.getBytes());
         byte[] hash = digest.digest();
         return md5ToHex(hash);
     }
 
-    public static String createMd5(File file) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("MD5");
+    public static String createMd5(File file) throws IOException {
+        MessageDigest digest = getMD5Digest();
         FileInputStream in = new FileInputStream(file);
         try{
             byte[] bytes = new byte[64 * 1024];
@@ -71,6 +73,14 @@ public class IOUtils {
             return md5ToHex(hash);
         }finally{
             in.close();
+        }
+    }
+
+    protected static MessageDigest getMD5Digest() throws IOException {
+        try {
+            return MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IOException(e);
         }
     }
 

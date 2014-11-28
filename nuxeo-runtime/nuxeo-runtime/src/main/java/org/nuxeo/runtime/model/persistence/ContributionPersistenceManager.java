@@ -22,19 +22,19 @@ public interface ContributionPersistenceManager {
     /**
      * Gets a list with all persisted contributions.
      */
-    List<Contribution> getContributions() throws Exception;
+    List<Contribution> getContributions();
 
     /**
      * Gets a contribution given its name.
      */
-    Contribution getContribution(String name) throws Exception;
+    Contribution getContribution(String name);
 
     /**
      * Persists a new contribution. The contribution will not be installed. You
      * need to explicitly call {@link #installContribution(Contribution)} to
      * install the contribution.
      */
-    Contribution addContribution(Contribution contrib) throws Exception;
+    Contribution addContribution(Contribution contrib);
 
     /**
      * Removes a persisted contribution given its name. The contribution will not
@@ -44,7 +44,7 @@ public interface ContributionPersistenceManager {
      * @return true if the contribution was removed, false if the contribution
      *         was not found in persistence.
      */
-    boolean removeContribution(Contribution contrib) throws Exception;
+    boolean removeContribution(Contribution contrib);
 
     /**
      * Installs the contribution given its name. Return true if contribution
@@ -52,14 +52,14 @@ public interface ContributionPersistenceManager {
      * <p>
      * To be able to install a contribution you need to persist it first.
      */
-    boolean installContribution(Contribution contrib) throws Exception;
+    boolean installContribution(Contribution contrib);
 
     /**
      * Uninstalls a contribution given is name. If not already installed return
      * false otherwise return true. The contribution persisted state is not
      * modified by this operation.
      */
-    boolean uninstallContribution(Contribution contrib) throws Exception;
+    boolean uninstallContribution(Contribution contrib);
 
     /**
      * Updates in the storage the given contribution modifications.
@@ -69,27 +69,27 @@ public interface ContributionPersistenceManager {
      * <p>
      * Return back the contribution object.
      */
-    Contribution updateContribution(Contribution contribution) throws Exception;
+    Contribution updateContribution(Contribution contribution);
 
     /**
      * Checks whether a contribution is currently installed.
      */
-    boolean isInstalled(Contribution contrib) throws Exception;
+    boolean isInstalled(Contribution contrib);
 
     /**
      * Checks whether a contribution is currently persisted.
      */
-    boolean isPersisted(Contribution contrib) throws Exception;
+    boolean isPersisted(Contribution contrib);
 
     /**
      * Starts the service. This will install all persisted contributions that are
      * marked as auto-install. See {@link Contribution#isDisabled()}
      */
-    void start() throws Exception;
+    void start();
 
     /**
      * Stops the service. This will uninstall all installed contributions.
      */
-    void stop() throws Exception;
+    void stop();
 
 }

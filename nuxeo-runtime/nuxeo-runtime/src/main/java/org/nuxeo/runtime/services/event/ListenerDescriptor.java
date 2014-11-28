@@ -42,7 +42,7 @@ public class ListenerDescriptor {
     public void setListener(Class<EventListener> listenerClass) {
         try {
             listener = listenerClass.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error(e);
             listener = NULL_LISTENER;
         }

@@ -37,9 +37,9 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * This valve is enabled only in SDK profile (i.e. dev mode). It will intercept
  * any call to '/sdk' under the context path (i.e. /nuxeo/sdk)
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DevValve extends ValveBase {
 
@@ -90,7 +90,7 @@ public class DevValve extends ValveBase {
                 Writer out = resp.getWriter();
                 sendFile(file, out);
                 out.flush();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 resp.setStatus(500);
                 log.error("Failed to send file: " + file, e);
             }

@@ -42,6 +42,6 @@ public interface FileChangeListener {
      *      This value can be used as a notification ID by listeners to avoid
      *      multiple processing for notification that will send multiple events
      */
-    void fileChanged(FileChangeNotifier.FileEntry entry, long now) throws Exception;
+    void fileChanged(FileChangeNotifier.FileEntry entry, long now);
 
 }

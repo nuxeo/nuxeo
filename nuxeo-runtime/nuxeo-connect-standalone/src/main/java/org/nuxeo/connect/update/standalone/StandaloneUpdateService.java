@@ -220,7 +220,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         if (type != null) {
             try {
                 return type.getConstructor().newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new PackageException("Failed to load command " + id, e);
             }
         }
@@ -261,7 +261,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
             return loadPackage(mfStream);
         } catch (PackageException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException(
                     "Failed to load package definition from zip file: " + file,
                     e);
@@ -285,7 +285,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
             return loadPackage(in);
         } catch (PackageException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException(
                     "Failed to load XML package definition from file: " + file,
                     e);
@@ -306,7 +306,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
             throws PackageException {
         try {
             return (PackageDefinition) xmap.load(in);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException(
                     "Failed to parse XML package definition", e);
         }

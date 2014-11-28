@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -39,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * A command based task.
@@ -189,7 +191,7 @@ public abstract class CommandsTask extends AbstractTask {
                     if (cmd == null) { // may be the name of an embedded class
                         try {
                             cmd = (Command) pkg.getData().loadClass(id).getConstructor().newInstance();
-                        } catch (Throwable t) {
+                        } catch (ReflectiveOperationException t) {
                             throw new PackageException("Unknown command: " + id);
                         }
                     }
@@ -198,7 +200,7 @@ public abstract class CommandsTask extends AbstractTask {
                 }
                 node = node.getNextSibling();
             }
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new PackageException("Failed to read commands", e);
         }
     }

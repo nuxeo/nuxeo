@@ -14,8 +14,6 @@ package org.nuxeo.runtime.model.persistence;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -30,8 +28,6 @@ import org.nuxeo.runtime.model.persistence.fs.FileSystemStorage;
  */
 public class ContributionPersistenceComponent extends DefaultComponent
         implements ContributionPersistenceManager {
-
-    private static final Log log = LogFactory.getLog(ContributionPersistenceComponent.class);
 
     public static final String STORAGE_XP = "storage";
 
@@ -122,7 +118,11 @@ public class ContributionPersistenceComponent extends DefaultComponent
     @Override
     public boolean uninstallContribution(Contribution contrib) {
         boolean ret = isInstalled(contrib);
-        ctx.undeploy(contrib);
+        try {
+            ctx.undeploy(contrib);
+        } catch (IOException e) {
+            throw new RuntimeServiceException(e);
+        }
         return ret;
     }
 
@@ -158,11 +158,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
     public void applicationStarted(ComponentContext context) {
         if (storage == null) {
             storage = new FileSystemStorage();
-            try {
-                start();
-            } catch (Exception e) {
-                log.error("Failed to start contribution persistence service", e);
-            }
+            start();
         }
     }
 }

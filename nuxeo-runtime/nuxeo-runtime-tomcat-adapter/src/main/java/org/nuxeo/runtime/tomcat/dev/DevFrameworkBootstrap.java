@@ -65,7 +65,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() throws ReflectiveOperationException, IOException {
         // check if we have dev. bundles or libs to deploy and add them to the
         // classpath
         preloadDevBundles();
@@ -92,11 +92,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             bundlesCheck.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    try {
-                        loadDevBundles();
-                    } catch (Throwable t) {
-                        log.error("Error running dev mode timer", t);
-                    }
+                    loadDevBundles();
                 }
             }, 2000, 2000);
         }
@@ -108,7 +104,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() throws ReflectiveOperationException {
         if (bundlesCheck != null) {
             bundlesCheck.cancel();
             bundlesCheck = null;
@@ -139,7 +135,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         installNewClassLoader(devBundles);
     }
 
-    protected void postloadDevBundles() throws Exception {
+    protected void postloadDevBundles() throws ReflectiveOperationException {
         if (devBundles != null) {
             reloadServiceInvoker.hotDeployBundles(devBundles);
         }
@@ -155,7 +151,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         try {
             reloadDevBundles(DevBundle.parseDevBundleLines(new FileInputStream(
                     devBundlesFile)));
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | IOException e) {
             log.error("Failed to deploy dev bundles", e);
         }
     }
@@ -173,7 +169,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     }
 
     protected synchronized void reloadDevBundles(DevBundle[] bundles)
-            throws Exception {
+            throws ReflectiveOperationException {
 
         if (devBundles != null) { // clear last context
             try {
@@ -250,7 +246,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
                     "org.nuxeo.runtime.model.impl.ComponentRegistrySerializer").getMethod(
                     "writeIndex", File.class);
             m.invoke(null, file);
-        } catch (Throwable t) {
+        } catch (ReflectiveOperationException t) {
             // ignore
         }
     }

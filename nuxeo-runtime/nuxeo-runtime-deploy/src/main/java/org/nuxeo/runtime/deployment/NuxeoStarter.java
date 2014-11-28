@@ -28,6 +28,7 @@ import static org.nuxeo.common.Environment.TOMCAT_HOST;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.loader.FrameworkLoader;
+import org.osgi.framework.BundleException;
 
 /**
  * This is called at WAR startup and starts the Nuxeo OSGi runtime and registers
@@ -92,9 +94,7 @@ public class NuxeoStarter implements ServletContextListener {
             Double duration = (finishedTime - startTime) / 1000.0;
             log.info(String.format("Nuxeo framework started in %.1f sec.",
                     duration));
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (IOException | BundleException e) {
             throw new RuntimeException(e);
         }
     }
@@ -103,14 +103,13 @@ public class NuxeoStarter implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent event) {
         try {
             stop();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (BundleException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected void start(ServletContextEvent event) throws Exception {
+    protected void start(ServletContextEvent event) throws IOException,
+            BundleException {
         ServletContext servletContext = event.getServletContext();
         findBundles(servletContext);
         findEnv(servletContext);
@@ -121,11 +120,12 @@ public class NuxeoStarter implements ServletContextListener {
         FrameworkLoader.start();
     }
 
-    protected void stop() throws Exception {
+    protected void stop() throws BundleException {
         FrameworkLoader.stop();
     }
 
-    protected void findBundles(ServletContext servletContext) throws Exception {
+    protected void findBundles(ServletContext servletContext)
+            throws IOException {
         InputStream bundlesListStream = servletContext.getResourceAsStream("/WEB-INF/"
                 + NUXEO_BUNDLES_LIST);
         if (bundlesListStream != null) {

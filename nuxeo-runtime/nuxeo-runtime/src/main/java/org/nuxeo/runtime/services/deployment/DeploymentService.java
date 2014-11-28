@@ -15,7 +15,9 @@
 package org.nuxeo.runtime.services.deployment;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -83,7 +85,7 @@ public class DeploymentService extends DefaultComponent {
                     if (root.isFile()) {
                         root = root.getParentFile();
                     }
-                } catch (Exception e) {
+                } catch (URISyntaxException e) {
                     log.error("Failed to locate bundle at " + location);
                 }
 
@@ -101,7 +103,7 @@ public class DeploymentService extends DefaultComponent {
                         deployment.urls = new ArrayList<URL>();
                         ctx.deploy(url);
                         deployment.urls.add(url);
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         log.error("Failed to deploy: " + file, e);
                     }
                 }
@@ -121,7 +123,7 @@ public class DeploymentService extends DefaultComponent {
                         try {
                             log.info("Undeploying external component: " + url);
                             contributor.getContext().undeploy(url);
-                        } catch (Exception e) {
+                        } catch (IOException e) {
                             log.error("Failed to undeploy: " + url, e);
                         }
                     }

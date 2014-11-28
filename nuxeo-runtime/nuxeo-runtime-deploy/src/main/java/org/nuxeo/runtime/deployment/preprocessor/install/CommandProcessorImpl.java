@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.deployment.preprocessor.install;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class CommandProcessorImpl implements CommandProcessor {
                 }
                 cmd.exec(ctx);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e, e);
         }
     }

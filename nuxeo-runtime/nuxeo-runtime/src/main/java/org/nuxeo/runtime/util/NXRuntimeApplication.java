@@ -14,6 +14,7 @@
 package org.nuxeo.runtime.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -48,23 +49,18 @@ public abstract class NXRuntimeApplication {
     }
 
     public void start(String[] args) {
-        try {
-            initialize(args);
-            run();
-            shutdown();
-        } catch (Throwable t) {
-            log.error(t);
-            System.exit(1);
-        }
+        initialize(args);
+        run();
+        shutdown();
     }
 
-    public void initialize(String[] args) throws Exception {
+    public void initialize(String[] args) {
         runtime = new SimpleRuntime(home);
         Framework.initialize(runtime);
         deployAll();
     }
 
-    public  void shutdown() throws Exception {
+    public  void shutdown() {
         Framework.shutdown();
     }
 
@@ -77,8 +73,8 @@ public abstract class NXRuntimeApplication {
         }
         try {
             Framework.getRuntime().getContext().deploy(url);
-        } catch (Exception e) {
-            log.error(e);
+        } catch (IOException e) {
+            log.error(e, e);
         }
     }
 
@@ -87,8 +83,8 @@ public abstract class NXRuntimeApplication {
         assert url != null;
         try {
             Framework.getRuntime().getContext().undeploy(url);
-        } catch (Exception e) {
-            log.error(e);
+        } catch (IOException e) {
+            log.error(e, e);
         }
     }
 
@@ -101,6 +97,6 @@ public abstract class NXRuntimeApplication {
         deploy("EventService.xml");
     }
 
-    protected abstract void run() throws Exception;
+    protected abstract void run();
 
 }

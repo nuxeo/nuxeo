@@ -130,15 +130,10 @@ public class DataSourceDescriptor {
             implements ObjectFactory {
 
         @Override
-        public Object getObjectInstance(
-                Object obj, Name name,
-                Context nameCtx,
-                Hashtable<?, ?> env)
-                throws Exception {
-            return Framework.getLocalService(
-                    PooledDataSourceRegistry.class).getOrCreatePool(
-                    obj, name, nameCtx,
-                    env);
+        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
+                Hashtable<?, ?> env) {
+            return Framework.getService(PooledDataSourceRegistry.class).getOrCreatePool(
+                    obj, name, nameCtx, env);
         }
 
     }
@@ -214,20 +209,12 @@ public class DataSourceDescriptor {
                 poolReference);
     }
 
-    public void unbindSelf(
-            Context naming)
-            throws NamingException {
+    public void unbindSelf(Context naming) throws NamingException {
         try {
             final PooledDataSourceRegistry registry = Framework.getLocalService(PooledDataSourceRegistry.class);
             if (registry != null) {
                 registry.clearPool(getName());
             }
-        } catch (Exception cause) {
-            NamingException error = new NamingException(
-                    "Cannot clear pooled datasource "
-                            + getName());
-            error.initCause(cause);
-            throw error;
         } finally {
             try {
                 if (xaReference != null) {

@@ -936,6 +936,7 @@ public class ConnectionHelper {
                 } catch (InterruptedException ie) {
                     // restore interrupted status
                     Thread.currentThread().interrupt();
+                    throw new RuntimeException(ie);
                 }
             }
         }

@@ -127,7 +127,7 @@ public class ContextManager {
             ServletContextListener listener;
             try {
                 listener = desc.clazz.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Cannot add life cycle listener " + desc.name, e);
                 continue;
             }

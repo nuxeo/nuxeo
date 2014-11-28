@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
@@ -32,6 +34,7 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Manage persistent components.
@@ -95,7 +98,7 @@ public class ComponentPersistence {
         return root;
     }
 
-    public final RuntimeContext getContext(String symbolicName) throws Exception {
+    public final RuntimeContext getContext(String symbolicName) {
         if (symbolicName == null) {
             return sysrc;
         }
@@ -106,12 +109,12 @@ public class ComponentPersistence {
         return runtime.createContext(bundle);
     }
 
-    protected void deploy(RuntimeContext rc, File file) throws Exception {
-        RegistrationInfoImpl ri = (RegistrationInfoImpl)rc.deploy(file.toURI().toURL());
+    protected void deploy(RuntimeContext rc, File file) throws IOException {
+        RegistrationInfoImpl ri = (RegistrationInfoImpl) rc.deploy(file.toURI().toURL());
         ri.isPersistent = true;
     }
 
-    public void loadPersistedComponents() throws Exception {
+    public void loadPersistedComponents() throws IOException {
         File[] files = root.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -127,7 +130,8 @@ public class ComponentPersistence {
         }
     }
 
-    public void loadPersistedComponents(RuntimeContext rc, File root) throws Exception {
+    public void loadPersistedComponents(RuntimeContext rc, File root)
+            throws IOException {
         File[] files = root.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -138,7 +142,7 @@ public class ComponentPersistence {
         }
     }
 
-    public void loadPersistedComponent(File file) throws Exception {
+    public void loadPersistedComponent(File file) throws IOException {
         file = file.getCanonicalFile();
         if (file.isFile() && file.getName().endsWith(".xml")) {
             File parent = file.getParentFile();
@@ -160,23 +164,28 @@ public class ComponentPersistence {
         throw new IllegalArgumentException("Invalid component file location or bundle not found");
     }
 
-    public Document loadXml(File file) throws Exception {
+    public Document loadXml(File file) throws IOException {
         byte[] bytes = safeReadFile(file);
         return loadXml(new ByteArrayInputStream(bytes));
     }
 
-    public static Document loadXml(InputStream in) throws Exception {
+    public static Document loadXml(InputStream in) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(in);
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.parse(in);
+        } catch (SAXException | IOException | ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void createComponent(byte[] bytes) throws Exception {
+    public void createComponent(byte[] bytes) throws IOException {
         createComponent(bytes, true);
     }
 
-    public synchronized void createComponent(byte[] bytes, boolean isPersistent) throws Exception {
+    public synchronized void createComponent(byte[] bytes, boolean isPersistent)
+            throws IOException {
         Document doc = loadXml(new ByteArrayInputStream(bytes));
         Element root = doc.getDocumentElement();
         String name = root.getAttribute("name");
@@ -199,8 +208,9 @@ public class ComponentPersistence {
         rc.deploy(file.toURI().toURL());
     }
 
-    public synchronized boolean removeComponent(String compName) throws Exception {
-        String path = compName +".xml";
+    public synchronized boolean removeComponent(String compName)
+            throws IOException {
+        String path = compName + ".xml";
         File file = new File(root, path);
         if (!file.isFile()) {
             return false;

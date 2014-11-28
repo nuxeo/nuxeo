@@ -78,7 +78,8 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
         return null;
     }
 
-    public Object[] loadContributions(RegistrationInfo owner, Extension extension) throws Exception {
+    public Object[] loadContributions(RegistrationInfo owner,
+            Extension extension) {
         Object[] contribs = extension.getContributions();
         if (contribs != null) {
             // contributions already computed - this should e an overloaded (extended) extension point

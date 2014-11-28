@@ -38,7 +38,7 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
                 addURL = clazz.getDeclaredMethod("addURL", URL.class);
             } catch (NoSuchMethodException e) {
                 clazz = clazz.getSuperclass();
-            } catch (Exception e) {
+            } catch (SecurityException e) {
                 throw new IllegalArgumentException(
                         "Failed to adapt class loader: " + cl.getClass(), e);
             }
@@ -55,7 +55,7 @@ public class MutableClassLoaderDelegate implements MutableClassLoader {
     public void addURL(URL url) {
         try {
             addURL.invoke(cl, url);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Failed to add URL to class loader: "
                     + url, e);
         }

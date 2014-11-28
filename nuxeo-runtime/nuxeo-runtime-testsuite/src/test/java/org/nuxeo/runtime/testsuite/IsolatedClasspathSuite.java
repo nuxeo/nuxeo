@@ -46,7 +46,9 @@ public class IsolatedClasspathSuite extends ClasspathSuite {
             } catch (InterruptedException cause) {
                 LogFactory.getLog(FeaturesRunner.class).error(
                         "Interrupted shudown", cause);
+                // restore interrupted status
                 Thread.currentThread().interrupt();
+                throw new RuntimeException(cause);
             }
         }
     }

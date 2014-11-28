@@ -24,6 +24,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +43,7 @@ public class AuthenticationLoginModule implements LoginModule {
     protected Principal principal;
 
 
-    public Principal authenticate(String[] login) throws Exception {
+    public Principal authenticate(String[] login) {
         return Framework.getService(Authenticator.class).authenticate(login[0], login[1]);
     }
 
@@ -83,8 +84,12 @@ public class AuthenticationLoginModule implements LoginModule {
         String[] login = retrieveLogin();
         try {
             principal = authenticate(login);
-        } catch (Exception e) {
-            throw new LoginException("Authentication failed for "+login[0]);
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            LoginException ee = new LoginException("Authentication failed for "
+                    + login[0]);
+            ee.initCause(e);
+            throw ee;
         }
         if (principal == null) {
             throw new LoginException("Authentication failed for "+login[0]);

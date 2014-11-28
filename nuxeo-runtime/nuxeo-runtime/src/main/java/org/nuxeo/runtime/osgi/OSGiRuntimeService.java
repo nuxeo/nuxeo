@@ -17,10 +17,10 @@ package org.nuxeo.runtime.osgi;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
@@ -347,7 +348,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                                 + name);
                         try {
                             context.deploy(file.toURI().toURL());
-                        } catch (Exception e) {
+                        } catch (IOException e) {
                             throw new IllegalArgumentException(
                                     "Cannot load config from " + file, e);
                         }
@@ -498,7 +499,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         for (RegistrationInfo ri : ris) {
             try {
                 ri.notifyApplicationStarted();
-            } catch (Exception e) {
+            } catch (Exception e) { // deals with interrupt below
+                ExceptionUtils.checkInterrupt(e);
                 log.error("Failed to notify component '" + ri.getName()
                         + "' on application started", e);
             }
@@ -527,7 +529,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
         try {
             persistence.loadPersistedComponents();
-        } catch (Exception e) {
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
             log.error("Failed to load persisted components", e);
         }
         // deploy a fake component that is marking the end of startup
@@ -608,7 +611,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             Field fileField = entry.getClass().getDeclaredField("file");
             fileField.setAccessible(true);
             return (File) fileField.get(entry);
-        } catch (Throwable e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Cannot access to eclipse bundle system files of "
                     + bundle.getSymbolicName());
             return null;
@@ -628,20 +631,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
                 file = FileUtils.urlToFile(location);
-            } catch (Exception e) {
+            } catch (MalformedURLException e) {
                 log.error("getBundleFile: Unable to create " + " for bundle: "
                         + name + " as URI: " + location);
                 return null;
             }
         } else { // may be a file path - this happens when using
             // JarFileBundle (for ex. in nxshell)
-            try {
-                file = new File(location);
-            } catch (Exception e) {
-                log.error("getBundleFile: Unable to create " + " for bundle: "
-                        + name + " as file: " + location);
-                return null;
-            }
+            file = new File(location);
         }
         if (file != null && file.exists()) {
             log.debug("getBundleFile: " + name + " bound to file: " + file);

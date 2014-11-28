@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -194,10 +195,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     /**
      * Reload the underlying component if reload is supported
-     *
-     * @throws Exception
      */
-    public synchronized void reload() throws Exception {
+    public synchronized void reload() {
         if (component != null) {
             component.reload();
         }
@@ -282,7 +281,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentEvent.COMPONENT_REGISTERED, this));
     }
 
-    synchronized void unregister() throws Exception {
+    synchronized void unregister() {
         if (state == UNREGISTERED) {
             return;
         }
@@ -295,10 +294,11 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         destroy();
     }
 
-    protected ComponentInstance createComponentInstance() throws Exception {
+    protected ComponentInstance createComponentInstance() {
         try {
             return new ComponentInstanceImpl(this);
-        } catch (Exception e) {
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
             String msg = "Failed to instantiate component: " + implementation;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
@@ -308,7 +308,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    public synchronized void restart() throws Exception {
+    public synchronized void restart() {
         deactivate();
         activate();
     }
@@ -326,13 +326,14 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     @Override
-    public void notifyApplicationStarted() throws Exception {
+    public void notifyApplicationStarted() {
         if (component != null) {
             Object ci = component.getInstance();
             if (ci instanceof Component) {
                 try {
                     ((Component) ci).applicationStarted(component);
-                } catch (Exception e) {
+                } catch (Exception e) { // deals with interrupt below
+                    ExceptionUtils.checkInterrupt(e);
                     log.error(
                             "Component notification of application started failed.",
                             e);
@@ -342,7 +343,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    public synchronized void activate() throws Exception {
+    public synchronized void activate() {
         if (state != RESOLVED) {
             return;
         }
@@ -368,7 +369,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 xt.setComponent(component);
                 try {
                     manager.registerExtension(xt);
-                } catch (Exception e) {
+                } catch (Exception e) { // deals with interrupt below
+                    ExceptionUtils.checkInterrupt(e);
                     String msg = "Failed to register extension to: "
                             + xt.getTargetComponent() + ", xpoint: "
                             + xt.getExtensionPoint() + " in component: "
@@ -389,7 +391,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentManagerImpl.loadContributions(this, xt);
                 try {
                     component.registerExtension(xt);
-                } catch (Exception e) {
+                } catch (Exception e) { // deals with interrupt below
+                    ExceptionUtils.checkInterrupt(e);
                     String msg = "Failed to register extension to: "
                             + xt.getTargetComponent() + ", xpoint: "
                             + xt.getExtensionPoint() + " in component: "
@@ -403,7 +406,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    public synchronized void deactivate() throws Exception {
+    public synchronized void deactivate() {
         if (state != ACTIVATED) {
             return;
         }
@@ -417,7 +420,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             for (Extension xt : extensions) {
                 try {
                     manager.unregisterExtension(xt);
-                } catch (Exception e) {
+                } catch (Exception e) { // deals with interrupt below
+                    ExceptionUtils.checkInterrupt(e);
                     log.error(
                             "Failed to unregister extension. Contributor: "
                                     + xt.getComponent() + " to "
@@ -437,7 +441,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 ComponentEvent.COMPONENT_DEACTIVATED, this));
     }
 
-    public synchronized void resolve() throws Exception {
+    public synchronized void resolve() {
         if (state != REGISTERED) {
             return;
         }
@@ -452,7 +456,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         activate();
     }
 
-    public synchronized void unresolve() throws Exception {
+    public synchronized void unresolve() {
         if (state == REGISTERED || state == UNREGISTERED) {
             return;
         }

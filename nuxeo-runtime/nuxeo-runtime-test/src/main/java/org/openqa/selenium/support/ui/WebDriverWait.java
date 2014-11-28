@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  */
 
@@ -107,6 +107,7 @@ public class WebDriverWait implements Wait<WebDriver> {
     try {
       Thread.sleep(sleepTimeOut);
     } catch (InterruptedException e) {
+      // restore interrupted status
       Thread.currentThread().interrupt();
       throw new WebDriverException(e);
     }

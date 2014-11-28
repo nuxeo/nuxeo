@@ -261,7 +261,7 @@ public class Copy extends AbstractCommand {
             }
             // get the md5 of the copied file.
             dstmd5 = IOUtils.createMd5(dst);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException("Failed to copy " + fileToCopy, e);
         }
         if (bak == null) { // no file was replaced
@@ -339,7 +339,7 @@ public class Copy extends AbstractCommand {
                     status.addError("MD5 check failed. File: " + tofile
                             + " has changed since its backup");
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new PackageException(e);
             }
         }

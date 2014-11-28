@@ -12,6 +12,7 @@
 package org.nuxeo.runtime.model.persistence;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.common.xmap.XMap;
@@ -67,8 +69,7 @@ public class ContributionBuilder extends AbstractContribution {
         this.disabled = isDisabled;
     }
 
-    public void addXmlExtension(String target, String point, String content)
-            throws Exception {
+    public void addXmlExtension(String target, String point, String content) {
         StringBuilder buf = new StringBuilder(1024);
         buf.append(
                 "<extension target=\"" + target + "\" point=\"" + point
@@ -76,16 +77,19 @@ public class ContributionBuilder extends AbstractContribution {
         extensions.add(buf.toString());
     }
 
-    public void addExtension(String target, String point, Object... contribs)
-            throws Exception {
+    public void addExtension(String target, String point, Object... contribs) {
         if (contribs != null && contribs.length > 0) {
             addExtension(target, point, Arrays.asList(contribs));
         }
     }
 
-    public void addExtension(String target, String point, List<Object> contribs)
-            throws Exception {
-        DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+    public void addExtension(String target, String point, List<Object> contribs) {
+        DocumentBuilder docBuilder;
+        try {
+            docBuilder = dbfac.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
         Document doc = docBuilder.newDocument();
         // create root element
         Element root = doc.createElement("extension");
@@ -98,7 +102,11 @@ public class ContributionBuilder extends AbstractContribution {
             xmap.register(contrib.getClass());
             xmap.toXML(contrib, root);
         }
-        extensions.add(DOMSerializer.toStringOmitXml(root));
+        try {
+            extensions.add(DOMSerializer.toStringOmitXml(root));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

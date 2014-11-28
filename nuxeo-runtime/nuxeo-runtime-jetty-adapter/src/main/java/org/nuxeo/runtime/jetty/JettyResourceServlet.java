@@ -85,8 +85,6 @@ public class JettyResourceServlet extends HttpServlet {
                 out.write(buffer, 0, read);
                 out.flush();
             }
-        } catch (Exception e) {
-            throw new ServletException(e);
         } finally {
             if (resp != null) {
                 resp.flushBuffer();

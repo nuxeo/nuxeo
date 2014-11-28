@@ -19,7 +19,6 @@ package org.nuxeo.runtime.management.jvm;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.management.LockInfo;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
@@ -160,8 +159,7 @@ public class ThreadDeadlocksDetector {
 
     }
 
-     public File dump(long[] lockedIds)
-            throws UnsupportedEncodingException, IOException {
+    public File dump(long[] lockedIds) throws IOException {
         File file = File.createTempFile("tcheck-", ".tdump");
         FileOutputStream os = new FileOutputStream(file);
         ThreadInfo[] infos = mgmt.dumpAllThreads(true, true);
@@ -208,7 +206,7 @@ public class ThreadDeadlocksDetector {
             File dumpFile;
             try {
                 dumpFile = dump(ids);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Cannot dump threads", e);
                 dumpFile = new File("/dev/null");
             }

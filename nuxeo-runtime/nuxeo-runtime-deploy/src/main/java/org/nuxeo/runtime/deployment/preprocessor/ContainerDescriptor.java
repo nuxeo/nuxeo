@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +80,7 @@ public class ContainerDescriptor {
     public void setInstallCommands(DocumentFragment df) {
         try {
             install = DOMCommandsParser.parse(df);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to set install commands");
         }
     }
@@ -88,7 +89,7 @@ public class ContainerDescriptor {
     public void setUninstallCommands(DocumentFragment df) {
         try {
             uninstall = DOMCommandsParser.parse(df);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to set uninstall commands");
         }
     }

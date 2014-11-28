@@ -208,8 +208,6 @@ public interface RegistrationInfo extends Serializable {
 
     /**
      * Notify the component instance that the Nuxeo application started
-     *
-     * @throws Exception
      */
-    void notifyApplicationStarted() throws Exception;
+    void notifyApplicationStarted();
 }

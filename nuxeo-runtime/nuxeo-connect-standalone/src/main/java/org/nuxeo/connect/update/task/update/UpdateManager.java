@@ -421,7 +421,7 @@ public class UpdateManager {
             // FileUtils.writeFile(new
             // File(dst.getAbsolutePath().concat(".md5")),
             // md5);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             throw new PackageException("Failed to backup file: " + path, e);
         }
     }
@@ -441,15 +441,6 @@ public class UpdateManager {
     protected File getBackup(String path) {
         return new File(backupRoot, path);
     }
-
-    // protected String getBackupMd5(String path) {
-    // File file = new File(backupRoot, path.concat(".md5"));
-    // try {
-    // return FileUtils.readFile(file);
-    // } catch (Exception e) {
-    // return "";
-    // }
-    // }
 
     protected File getTargetFile(String path) {
         return new File(serverRoot, path);

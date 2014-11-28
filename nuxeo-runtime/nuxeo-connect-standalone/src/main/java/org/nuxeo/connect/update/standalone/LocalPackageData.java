@@ -83,7 +83,7 @@ public class LocalPackageData implements PackageData {
     public Class<?> loadClass(String name) throws PackageException {
         try {
             return loader.loadClass(name);
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             throw new PackageException("Failed to load class " + name
                     + " from package: " + root.getName());
         }

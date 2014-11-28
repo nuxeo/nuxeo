@@ -16,6 +16,7 @@ import java.util.Hashtable;
 
 import javax.naming.Context;
 import javax.naming.Name;
+import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 import javax.transaction.UserTransaction;
@@ -29,14 +30,18 @@ public class NuxeoUserTransactionFactory implements ObjectFactory {
 
     @Override
     public Object getObjectInstance(Object obj, Name objName, Context nameCtx,
-            Hashtable<?, ?> env) throws Exception {
+            Hashtable<?, ?> env) {
         Reference ref = (Reference) obj;
         if (!UserTransaction.class.getName().equals(ref.getClassName())) {
             return null;
         }
         if (NuxeoContainer.tm == null) {
             // initialize tx manager through the factory
-            NuxeoContainer.installTransactionManager();
+            try {
+                NuxeoContainer.installTransactionManager();
+            } catch (NamingException e) {
+                throw new RuntimeException(e);
+            }
         }
         return NuxeoContainer.ut;
     }

@@ -14,6 +14,7 @@ package org.nuxeo.runtime.model.persistence.fs;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.nuxeo.runtime.model.persistence.AbstractContribution;
@@ -35,7 +36,7 @@ public class ContributionFile extends AbstractContribution {
     public URL asURL() {
         try {
             return file.toURI().toURL();
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }

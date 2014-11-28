@@ -14,6 +14,7 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
@@ -68,15 +70,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
         switch (ri.state) {
         case RegistrationInfo.RESOLVED:
             // if not already activated activate it now
-            try {
-                ri.activate();
-                return instance;
-            } catch (Exception e) {
-                log.error(e);
-                // fatal error if development mode - exit
-                Framework.handleDevError(e);
-            }
-            return null;
+            ri.activate();
+            return instance;
         case RegistrationInfo.ACTIVATED:
             return instance;
         default:
@@ -135,9 +130,11 @@ public class ComponentInstanceImpl implements ComponentInstance {
             registerServices();
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
-        } catch (Exception e) {
-            log.error("Failed to activate component: " + getName(), e);
-            Framework.handleDevError(e);
+        } catch (SecurityException | IllegalAccessException
+                | InvocationTargetException e) {
+            Exception ee = ExceptionUtils.unwrapInvoke(e);
+            log.error("Failed to activate component: " + getName(), ee);
+            Framework.handleDevError(ee);
         }
     }
 
@@ -158,9 +155,11 @@ public class ComponentInstanceImpl implements ComponentInstance {
             }
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
-        } catch (Exception e) {
-            log.error("Failed to deactivate component: " + getName(), e);
-            Framework.handleDevError(e);
+        } catch (SecurityException | IllegalAccessException
+                | InvocationTargetException e) {
+            Exception ee = ExceptionUtils.unwrapInvoke(e);
+            log.error("Failed to deactivate component: " + getName(), ee);
+            Framework.handleDevError(ee);
         }
     }
 
@@ -178,9 +177,10 @@ public class ComponentInstanceImpl implements ComponentInstance {
             }
         } catch (NoSuchMethodException e) {
             // ignore this exception since the reload method is not mandatory
-        } catch (Exception e) {
-            log.error("Failed to reload component: " + getName(), e);
-            Framework.handleDevError(e);
+        } catch (ReflectiveOperationException e) {
+            Exception ee = ExceptionUtils.unwrapInvoke(e);
+            log.error("Failed to reload component: " + getName(), ee);
+            Framework.handleDevError(ee);
         }
     }
 
@@ -218,9 +218,10 @@ public class ComponentInstanceImpl implements ComponentInstance {
                         "registerExtension", Extension.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, extension);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 // no such method
-                Framework.handleDevError(e);
+                Exception ee = ExceptionUtils.unwrapInvoke(e);
+                Framework.handleDevError(ee);
             }
         }
     }
@@ -238,9 +239,10 @@ public class ComponentInstanceImpl implements ComponentInstance {
                         "unregisterExtension", Extension.class);
                 meth.setAccessible(true);
                 meth.invoke(instance, extension);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 // no such method
-                Framework.handleDevError(e);
+                Exception ee = ExceptionUtils.unwrapInvoke(e);
+                Framework.handleDevError(ee);
             }
         }
     }

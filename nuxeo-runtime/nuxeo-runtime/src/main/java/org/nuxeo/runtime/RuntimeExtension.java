@@ -28,18 +28,14 @@ public interface RuntimeExtension {
      * Starts the runtime extension.
      * <p>
      * The current runtime is available as <code>Runtime.getRuntime()</code>.
-     *
-     * @throws Exception
      */
-    void start() throws Exception;
+    void start();
 
     /**
      * Stops the runtime extension.
      * <p>
      * The current runtime is available as <code>Runtime.getRuntime()</code>.
-     *
-     * @throws Exception
      */
-    void stop() throws Exception;
+    void stop();
 
 }

@@ -36,7 +36,7 @@ public class javaURLContextFactory implements ObjectFactory {
 
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-            Hashtable<?, ?> environment) throws Exception {
+            Hashtable<?, ?> environment) {
         if (obj != null || name != null || nameCtx != null) {
             throw new UnsupportedOperationException(
                     "This is case is not handled yet (see https://jira.nuxeo.com/browse/NXP-10331).");

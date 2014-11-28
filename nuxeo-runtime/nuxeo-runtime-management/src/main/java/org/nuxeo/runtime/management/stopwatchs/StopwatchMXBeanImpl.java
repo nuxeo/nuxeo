@@ -50,13 +50,13 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
             try {
                 f.setAccessible(true);
                 map.put(f.getName(), (Serializable)f.get(sample));
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
         }
         doFillMap(sample, map, clazz.getSuperclass());
     }
-        
+
     @Override
     public Map<String, Serializable> sampleAsMap() {
         Map<String,Serializable> map = new HashMap<String,Serializable>();
@@ -65,5 +65,5 @@ public class StopwatchMXBeanImpl extends org.javasimon.jmx.StopwatchMXBeanImpl i
         return map;
     }
 
-	
+
 }

@@ -222,8 +222,8 @@ public abstract class AbstractTask implements Task {
             } finally {
                 out.close();
             }
-        } catch (Throwable t) {
-            throw new PackageException("Failed to save install parameters", t);
+        } catch (IOException e) {
+            throw new PackageException("Failed to save install parameters", e);
         }
     }
 
@@ -242,12 +242,12 @@ public abstract class AbstractTask implements Task {
                     Task utask = oldpkg.getUninstallTask();
                     try {
                         utask.run(new HashMap<String, String>());
-                    } catch (Throwable t) {
+                    } catch (PackageException e) {
                         utask.rollback();
                         throw new PackageException("Failed to uninstall: "
                                 + oldpkg.getId()
                                 + ". Cannot continue installation of "
-                                + pkg.getId(), t);
+                                + pkg.getId(), e);
                     }
                 }
             }
