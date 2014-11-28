@@ -40,6 +40,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nuxeo.launcher.commons.text.TextTemplate;
 
@@ -279,17 +280,27 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Initialize logs
+     * Initialize logs. This is called before
+     * {@link ConfigurationGenerator#init()} so the {@link #logDir} field is not
+     * yet initialized
      *
      * @since 5.4.2
      */
     public void initLogs() {
         File logFile = getLogConfFile();
         try {
-            System.out.println("Try to configure logs with " + logFile);
-            System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
-                    getLogDir().getPath());
-            DOMConfigurator.configure(logFile.toURI().toURL());
+            String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
+            if (logDirectory == null) {
+                System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
+                        getLogDir().getPath());
+            }
+            if (logFile == null || !logFile.exists()) {
+                System.out.println("No logs configuration, will setup a basic one.");
+                BasicConfigurator.configure();
+            } else {
+                System.out.println("Try to configure logs with " + logFile);
+                DOMConfigurator.configure(logFile.toURI().toURL());
+            }
             log.info("Logs successfully configured.");
         } catch (MalformedURLException e) {
             log.error("Could not initialize logs with " + logFile, e);
