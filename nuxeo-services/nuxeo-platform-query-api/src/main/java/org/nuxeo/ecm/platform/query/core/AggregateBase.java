@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -139,6 +140,7 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
         this.extendedBuckets = null;
     }
 
+    @JsonIgnore
     public DocumentModel getSearchDocument() {
         return searchDocument;
     }
