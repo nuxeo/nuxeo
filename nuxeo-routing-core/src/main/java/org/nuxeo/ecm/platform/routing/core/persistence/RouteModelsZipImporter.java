@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -52,8 +50,6 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 public class RouteModelsZipImporter extends ExportedZipImporter {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Log log = LogFactory.getLog(RouteModelsZipImporter.class);
 
     @Override
     public DocumentModel create(CoreSession session, Blob content, String path,
@@ -102,17 +98,6 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             pipe.setReader(reader);
             pipe.setWriter(writer);
             pipe.run();
-        } catch (IllegalArgumentException e) {
-            log.error("Can not import route model", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted", e);
-        } catch (RuntimeException e) {
-            log.error("Can not import route model", e);
-            throw e;
-        } catch (Exception e) {
-            log.error("Can not import route model", e);
-            throw new RuntimeException(e);
         } finally {
             reader.close();
             writer.close();
