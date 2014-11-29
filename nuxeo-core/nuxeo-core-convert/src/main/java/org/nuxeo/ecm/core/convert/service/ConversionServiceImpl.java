@@ -136,12 +136,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
             ConverterDescriptor existing = self.converterDescriptors.get(desc.getConverterName());
             desc = existing.merge(desc);
         }
-        try {
-            desc.initConverter();
-        } catch (Exception e) {
-            log.error("Unable to init converter " + desc.getConverterName(), e);
-            return;
-        }
+        desc.initConverter();
         self.translationHelper.addConverter(desc);
         self.converterDescriptors.put(desc.getConverterName(), desc);
     }

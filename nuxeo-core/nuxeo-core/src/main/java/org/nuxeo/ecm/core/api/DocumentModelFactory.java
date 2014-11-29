@@ -293,7 +293,7 @@ public class DocumentModelFactory {
      */
     public static DocumentModelRefresh refreshDocumentModel(Document doc,
             int flags, String[] schemas) throws DocumentException,
-            LifeCycleException, Exception {
+            LifeCycleException {
         DocumentModelRefresh refresh = new DocumentModelRefresh();
 
         refresh.instanceFacets = new HashSet<String>(

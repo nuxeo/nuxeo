@@ -14,6 +14,7 @@
 
 package org.nuxeo.ecm.core.io.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             DocumentTranslationMap map = pipe.run();
             coreSession.save();
             return map;
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ImportDocumentException(e);
         } finally {
             if (reader != null) {
@@ -91,7 +92,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             customDocWriter.close();
 
             return map;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ImportDocumentException(e);
         } finally {
             if (reader != null) {
@@ -130,7 +131,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
                 }
                 return DocumentTranslationMapImpl.merge(maps);
             }
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ExportDocumentException(e);
         } finally {
             if (reader != null) {
@@ -163,7 +164,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             }
 
             return DocumentTranslationMapImpl.merge(maps);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ExportDocumentException(e);
         } finally {
             // reader will be closed by caller
@@ -189,7 +190,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             // writer.close();
 
             return map;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ImportDocumentException(e);
         }
     }

@@ -50,7 +50,7 @@ public class EventListenerList {
         enabledSyncPostCommitListenersDescriptors = null;
     }
 
-    public void add(EventListenerDescriptor descriptor) throws Exception {
+    public void add(EventListenerDescriptor descriptor) {
 
         flushCache();
         // merge if necessary

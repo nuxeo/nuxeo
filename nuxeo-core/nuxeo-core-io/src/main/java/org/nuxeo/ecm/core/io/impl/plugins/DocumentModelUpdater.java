@@ -68,7 +68,7 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
         String id = xdoc.getId();
         try {
             doc = session.getDocument(new IdRef(id));
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Cannot update document. No such document: "
                     + id);
             return null;

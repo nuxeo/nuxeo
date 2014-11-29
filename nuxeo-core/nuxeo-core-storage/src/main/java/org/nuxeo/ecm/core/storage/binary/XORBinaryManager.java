@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * A simple binary manager that "hides" binaries on the filesystem by scrambling
@@ -40,7 +41,7 @@ public class XORBinaryManager extends LocalBinaryManager {
         }
         try {
             pattern = key.getBytes("UTF-8");
-        } catch (Exception e) {
+        } catch (UnsupportedEncodingException e) {
             // cannot happen
             pattern = new byte[] { 'U' };
         }

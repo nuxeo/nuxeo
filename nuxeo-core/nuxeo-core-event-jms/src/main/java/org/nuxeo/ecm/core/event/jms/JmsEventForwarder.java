@@ -77,7 +77,7 @@ public class JmsEventForwarder implements PostCommitEventListener {
             nuxeoMessagePublisher.send(jmsMessage);
             log.debug("Event bundle " + message.getEventBundleName() + " forwarded to JMS topic");
 
-        } catch (Exception e) {
+        } catch (NamingException | JMSException e) {
             log.error("Error during JMS forwarding", e);
         } finally {
             if (nuxeoTopicSession != null) {

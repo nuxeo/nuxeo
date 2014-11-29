@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.convert.cache;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.convert.api.ConversionException;
 
 /**
  * Cachable implementation of the {@link SimpleBlobHolder}.
@@ -50,25 +50,19 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     public void load(String path) {
         blobs = new ArrayList<Blob>();
         File base = new File(path);
-        try {
-            if (base.isDirectory()) {
-                addDirectoryToList(base, "");
-            } else {
-                File file = new File(path);
-                Blob mainBlob = new FileBlob(file);
-                mainBlob.setFilename(file.getName());
-                blobs.add(mainBlob);
-            }
-
-            orderIndexPageFirst(blobs);
-        } catch (Exception e) {
-            throw new RuntimeException("Blob loading from cache failed",
-                    e.getCause());
+        if (base.isDirectory()) {
+            addDirectoryToList(base, "");
+        } else {
+            File file = new File(path);
+            Blob mainBlob = new FileBlob(file);
+            mainBlob.setFilename(file.getName());
+            blobs.add(mainBlob);
         }
+
+        orderIndexPageFirst(blobs);
     }
 
-    public void addDirectoryToList(File directory, String prefix)
-            throws ConversionException {
+    public void addDirectoryToList(File directory, String prefix) {
         File[] directoryContent = directory.listFiles();
         for (File file : directoryContent) {
             if (file.isDirectory()) {
@@ -89,7 +83,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
     }
 
     @Override
-    public String persist(String basePath) throws Exception {
+    public String persist(String basePath) throws IOException {
         if (blobs == null || blobs.isEmpty()) {
             return null;
         }
@@ -112,7 +106,7 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
 
     /**
      * Rearrange blobs to have smallest index.html page as the first blob.
-     * 
+     *
      * @since 5.7.1
      */
     protected void orderIndexPageFirst(List<Blob> blobs) {

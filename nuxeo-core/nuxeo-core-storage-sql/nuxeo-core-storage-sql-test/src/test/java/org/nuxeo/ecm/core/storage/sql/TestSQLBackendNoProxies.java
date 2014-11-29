@@ -105,10 +105,8 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
             fail("Proxy-only query should be denied");
         } catch (Exception e) {
             String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Invalid query"));
-            String msg2 = e.getCause().getMessage();
-            assertTrue(msg2,
-                    msg2.contains("Proxies are disabled by configuration"));
+            assertTrue(msg,
+                    msg.contains("Proxies are disabled by configuration"));
         }
     }
 

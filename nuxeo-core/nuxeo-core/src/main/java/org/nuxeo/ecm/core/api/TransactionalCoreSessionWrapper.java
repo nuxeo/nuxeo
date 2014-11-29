@@ -21,10 +21,12 @@ import java.lang.reflect.Proxy;
 import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.api.J2EEContainerDescriptor;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -122,37 +124,32 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
                 }
             } catch (NamingException e) {
                 // no transaction manager, ignore
-            } catch (Exception e) {
+            } catch (SystemException e) {
                 log.error("Error on transaction synchronizer registration", e);
             }
             checkTxActiveRequired(method);
         }
         try {
             return method.invoke(session, args);
-        } catch (Throwable t) {
-            if (t instanceof InvocationTargetException) {
-                Throwable tt = ((InvocationTargetException) t).getTargetException();
-                if (tt != null) {
-                    t = tt;
-                }
-            }
+        } catch (InvocationTargetException e) {
+            Exception ee = ExceptionUtils.unwrapInvoke(e);
             if (TransactionHelper.isTransactionActive()
-                    && needsRollback(method, t)) {
+                    && needsRollback(method, ee)) {
                 TransactionHelper.setTransactionRollbackOnly();
-                if (!(t instanceof ConcurrentUpdateException)) {
+                if (!(ee instanceof ConcurrentUpdateException)) {
                     // don't log a WARN for ConcurrentUpdateException
                     // because often this will be retried by the Work framework
                     // log is still available at DEBUG level
                     log.warn("Setting transaction ROLLBACK ONLY due to exception"
-                            + " (check DEBUG logs for stacktrace): " + t);
+                            + " (check DEBUG logs for stacktrace): " + ee);
                 }
                 if (log.isDebugEnabled()) {
                     log.debug(
                             "Setting transaction ROLLBACK ONLY due to exception: "
-                                    + t, t);
+                                    + ee, ee);
                 }
             }
-            throw t;
+            throw ee;
         }
     }
 
@@ -174,7 +171,7 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         Transaction current = null;
         try {
             current = TransactionHelper.lookupTransactionManager().getTransaction();
-        } catch (Exception e) {
+        } catch (NamingException | SystemException e) {
             throw new RuntimeException("no tx", e);
         }
         Transaction main = threadBound.get();

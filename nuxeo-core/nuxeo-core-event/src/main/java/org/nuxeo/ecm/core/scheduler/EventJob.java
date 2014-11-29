@@ -17,9 +17,11 @@
 package org.nuxeo.ecm.core.scheduler;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -57,7 +59,7 @@ public class EventJob implements Job {
         Thread.currentThread().setContextClassLoader(nuxeoCL);
         try {
             execute(dataMap);
-        } catch (Exception e) {
+        } catch (LoginException | ClientException e) {
             String eventId = dataMap.getString("eventId");
             log.error("Error while processing scheduled event id: " + eventId,
                     e);
@@ -67,7 +69,8 @@ public class EventJob implements Job {
     }
 
     @SuppressWarnings("unchecked")
-    protected void execute(JobDataMap dataMap) throws Exception {
+    protected void execute(JobDataMap dataMap) throws LoginException,
+            ClientException {
         String eventId = dataMap.getString("eventId");
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");

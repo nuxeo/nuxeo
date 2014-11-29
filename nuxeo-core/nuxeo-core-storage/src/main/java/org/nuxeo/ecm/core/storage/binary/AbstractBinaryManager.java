@@ -60,12 +60,8 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         if (configFile.exists()) {
             XMap xmap = new XMap();
             xmap.register(BinaryManagerRootDescriptor.class);
-            try {
-                desc = (BinaryManagerRootDescriptor) xmap.load(new FileInputStream(
-                        configFile));
-            } catch (Exception e) {
-                throw (IOException) new IOException().initCause(e);
-            }
+            desc = (BinaryManagerRootDescriptor) xmap.load(new FileInputStream(
+                    configFile));
         } else {
             desc = new BinaryManagerRootDescriptor();
             // TODO fetch from repo descriptor

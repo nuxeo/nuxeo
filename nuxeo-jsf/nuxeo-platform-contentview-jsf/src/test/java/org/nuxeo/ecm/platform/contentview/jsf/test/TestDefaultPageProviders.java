@@ -576,7 +576,6 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertEquals(
                 "Failed to execute query: NXQL: SELECT dc:title FROM Document "
                         + "WHERE ecm:parentId = ORDER BY dc:title: "
-                        + "org.nuxeo.ecm.core.query.QueryParseException: "
                         + "Syntax error: Invalid token <ORDER BY> "
                         + "at offset 51 in query: SELECT dc:title FROM "
                         + "Document WHERE ecm:parentId = ORDER BY dc:title",

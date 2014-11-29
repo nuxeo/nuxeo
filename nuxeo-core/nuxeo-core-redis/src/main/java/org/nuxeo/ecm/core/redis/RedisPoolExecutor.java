@@ -33,12 +33,6 @@ public class RedisPoolExecutor implements RedisExecutor {
         } catch (JedisConnectionException cause) {
             brokenResource = true;
             throw cause;
-        } catch (Exception cause) {
-            if (cause instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            throw new RuntimeException(
-                    "Caught error in redis invoke, wrapping it", cause);
         } finally {
             if (brokenResource) {
                 pool.returnBrokenResource(jedis);

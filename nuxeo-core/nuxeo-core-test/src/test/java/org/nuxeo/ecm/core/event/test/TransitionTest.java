@@ -99,7 +99,7 @@ public class TransitionTest implements EventListener {
             }
 
             @Override
-            public void initListener() throws Exception {
+            public void initListener() {
 
             }
 

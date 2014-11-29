@@ -127,23 +127,17 @@ public abstract class UnrestrictedSessionRunner {
                     // save base session state for unrestricted one
                     baseSession.save();
                 }
-                try {
-                    session = CoreInstance.openCoreSession(repositoryName);
-                    if (loginContext == null && Framework.isTestModeSet()) {
-                        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-                        if (principal instanceof SystemPrincipal) {
-                            // we are in a test that is not using authentication
-                            // =>
-                            // we're not stacking the originating user in the
-                            // authentication stack
-                            // so we're setting manually now
-                            principal.setOriginatingUser(originatingUsername);
-                        }
+                session = CoreInstance.openCoreSession(repositoryName);
+                if (loginContext == null && Framework.isTestModeSet()) {
+                    NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                    if (principal instanceof SystemPrincipal) {
+                        // we are in a test that is not using authentication
+                        // =>
+                        // we're not stacking the originating user in the
+                        // authentication stack
+                        // so we're setting manually now
+                        principal.setOriginatingUser(originatingUsername);
                     }
-                } catch (ClientException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new ClientException(e);
                 }
                 try {
                     run();
@@ -154,8 +148,6 @@ public abstract class UnrestrictedSessionRunner {
                             session.save();
                         }
                         session.close();
-                    } catch (Exception e) {
-                        throw new ClientException(e);
                     } finally {
                         if (baseSession != null
                                 && !baseSession.isStateSharedByAllThreadSessions()) {

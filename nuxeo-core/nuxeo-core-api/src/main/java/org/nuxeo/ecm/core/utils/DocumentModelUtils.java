@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
@@ -75,7 +76,7 @@ public final class DocumentModelUtils {
             String schemaName = getSchemaName(propertyName);
             String fieldName = getFieldName(propertyName);
             return doc.getProperty(schemaName, fieldName);
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             log.warn("Error trying to get property " + propertyName + ". "
                     + e.getMessage());
             if (log.isDebugEnabled()) {
@@ -96,7 +97,7 @@ public final class DocumentModelUtils {
             String propertyPath) {
         try {
             return doc.getPropertyValue(propertyPath);
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             return null;
         }
     }
@@ -115,11 +116,8 @@ public final class DocumentModelUtils {
         }
         String prefix = s[0];
         Schema schema = null;
-        try {
-            SchemaManager tm = Framework.getService(SchemaManager.class);
-            schema = tm.getSchemaFromPrefix(prefix);
-        } catch (Exception e) {
-        }
+        SchemaManager tm = Framework.getService(SchemaManager.class);
+        schema = tm.getSchemaFromPrefix(prefix);
         if (schema == null) {
             // fall back on prefix as it may be the schema name
             return prefix;

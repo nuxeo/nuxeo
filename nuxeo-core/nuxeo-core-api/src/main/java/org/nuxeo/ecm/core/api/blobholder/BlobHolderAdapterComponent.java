@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
@@ -156,8 +157,8 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
                     // mt = null;
                 }
                 return new DocumentStringBlobHolder(doc, "note:note", mt);
-            } catch (Exception e) {
-                log.error(e);
+            } catch (ClientException e) {
+                log.error(e, e);
             }
         }
         return null;

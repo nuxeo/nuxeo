@@ -102,7 +102,7 @@ public class DialectOracle extends Dialect {
 
         protected final Method m_oracleSQLError;
 
-        public XAErrorLogger() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+        public XAErrorLogger() throws ReflectiveOperationException {
              oracleXAExceptionClass = Thread.currentThread().getContextClassLoader().loadClass(
                     "oracle.jdbc.xa.OracleXAException");
              m_xaError = oracleXAExceptionClass.getMethod("getXAError",
@@ -115,7 +115,7 @@ public class DialectOracle extends Dialect {
                     "getOracleSQLError", new Class[] {});
         }
 
-        public void log(XAException e) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        public void log(XAException e) throws ReflectiveOperationException {
             int xaError = ((Integer)m_xaError.invoke(e)).intValue();
             String xaErrorMessage = (String)m_xaErrorMessage.invoke(xaError);
             int oracleError = ((Integer)m_oracleError.invoke(e)).intValue();
@@ -166,11 +166,9 @@ public class DialectOracle extends Dialect {
     protected XAErrorLogger newXAErrorLogger() throws StorageException {
         try {
             return new XAErrorLogger();
-        } catch (ClassNotFoundException e) {
+        } catch (ReflectiveOperationException e) {
             log.warn("Cannot initialize xa error loggger", e);
             return null;
-        } catch (Exception e) {
-            throw new StorageException("Cannot introspect oracle driver classes", e);
         }
     }
 
@@ -187,7 +185,7 @@ public class DialectOracle extends Dialect {
         } catch (ClassNotFoundException e) {
             // query syntax unit test run without Oracle JDBC driver
             return;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException(e.toString(), e);
         }
     }
@@ -703,14 +701,14 @@ public class DialectOracle extends Dialect {
         default:
             throw new AssertionError("Unknown type: " + type);
         }
+        connection = ConnectionHelper.unwrap(connection);
         try {
-            connection = ConnectionHelper.unwrap(connection);
             Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
                     typeName, connection);
             return (Array) arrayConstructor.newInstance(arrayDescriptor,
                     connection, elements);
-        } catch (Exception e) {
-            throw new SQLException(e.getMessage(), e);
+        } catch (ReflectiveOperationException e) {
+            throw new SQLException(e);
         }
     }
 
@@ -801,7 +799,7 @@ public class DialectOracle extends Dialect {
                     return errorCode;
                 }
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             // ignore
         }
         if (t instanceof SQLException) {
@@ -813,10 +811,12 @@ public class DialectOracle extends Dialect {
     @Override
     public boolean isConnectionClosedException(Throwable t) {
         if (t instanceof XAException) {
-            try {
-                xaErrorLogger.log((XAException)t);
-            } catch (Exception e) {
-                log.error("Cannot introspect oracle error ", t);
+            if (xaErrorLogger != null) {
+                try {
+                    xaErrorLogger.log((XAException) t);
+                } catch (ReflectiveOperationException e) {
+                    log.error("Cannot introspect oracle error ", e);
+                }
             }
             return false;
         }

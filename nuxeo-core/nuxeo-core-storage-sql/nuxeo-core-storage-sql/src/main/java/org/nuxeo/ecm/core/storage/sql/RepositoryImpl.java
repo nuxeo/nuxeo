@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
@@ -108,11 +109,7 @@ public class RepositoryImpl implements Repository {
         eventPropagator = new InvalidationsPropagator("event-" + this);
         repositoryEventQueue = new InvalidationsQueue("repo-"
                 + repositoryDescriptor.name);
-        try {
-            eventService = Framework.getService(EventService.class);
-        } catch (Exception e) {
-            throw new StorageException(e);
-        }
+        eventService = Framework.getService(EventService.class);
 
         String className = repositoryDescriptor.fulltextParser;
         if (StringUtils.isBlank(className)) {
@@ -198,7 +195,7 @@ public class RepositoryImpl implements Repository {
             BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
             bms.addBinaryManager(repositoryDescriptor.name, binaryManager);
             return binaryManager;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | IOException e) {
             throw new StorageException(e);
         }
     }
@@ -214,7 +211,7 @@ public class RepositoryImpl implements Repository {
             return backend;
         } catch (StorageException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException(e);
         }
     }
@@ -231,7 +228,7 @@ public class RepositoryImpl implements Repository {
                     eventPropagator, repositoryEventQueue,
                     repositoryDescriptor.cachingMapperProperties);
             return cachingMapper;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException(e);
         }
     }

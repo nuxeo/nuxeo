@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.management.statuses;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -24,12 +25,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Instance identifier (mainly imported from connect client : TechnicalInstanceIdentifier)
- * 
+ *
  * @author matic
  *
  */
@@ -41,7 +43,7 @@ public class NuxeoInstanceIdentifierHelper {
 
     protected static String serverInstanceName;
 
-    public static String generateHardwareUID() throws Exception {
+    public static String generateHardwareUID() throws IOException {
         String hwUID = "";
 
         String javaVersion = System.getProperty("java.version");
@@ -56,11 +58,16 @@ public class NuxeoInstanceIdentifierHelper {
                 Method[] methods = ni.getClass().getMethods();
                 for (Method method : methods) {
                     if (method.getName().equalsIgnoreCase("getHardwareAddress")) {
-                        byte[] hwAddr = (byte[]) method.invoke(ni);
-                        if (hwAddr != null) {
-                            hwUID = hwUID + "-" + Base64.encodeBytes(hwAddr);
+                        try {
+                            byte[] hwAddr = (byte[]) method.invoke(ni);
+                            if (hwAddr != null) {
+                                hwUID = hwUID + "-"
+                                        + Base64.encodeBytes(hwAddr);
+                            }
+                            break;
+                        } catch (ReflectiveOperationException e) {
+                            throw ExceptionUtils.runtimeException(e);
                         }
-                        break;
                     }
                 }
             } else {
@@ -75,23 +82,23 @@ public class NuxeoInstanceIdentifierHelper {
         return hwUID;
     }
 
-    public static String summarize(String value) throws NoSuchAlgorithmException {
-            byte[] digest;
-                digest = MessageDigest.getInstance(HASH_METHOD).digest(
-                        value.getBytes());
-            BigInteger sum = new BigInteger(digest);
-            return sum.toString(16);
+    public static String summarize(String value)
+            throws NoSuchAlgorithmException {
+        byte[] digest = MessageDigest.getInstance(HASH_METHOD).digest(
+                value.getBytes());
+        BigInteger sum = new BigInteger(digest);
+        return sum.toString(16);
     }
-    
+
     public static String newServerInstanceName() {
 
-        String osName = System.getProperty("os.name"); 
-        
+        String osName = System.getProperty("os.name");
+
         String hwInfo;
         try {
             hwInfo = generateHardwareUID();
             hwInfo = summarize(hwInfo);
-        } catch (Exception e1) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             hwInfo = "***";
         }
 

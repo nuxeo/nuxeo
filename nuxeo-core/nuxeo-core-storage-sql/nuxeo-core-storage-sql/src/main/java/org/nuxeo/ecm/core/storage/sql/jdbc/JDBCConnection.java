@@ -216,8 +216,7 @@ public class JDBCConnection {
                 } finally {
                     connection.close();
                 }
-            } catch (Exception e) {
-                // ignore, including UndeclaredThrowableException
+            } catch (SQLException e) {
                 checkConnectionValid = true;
             } finally {
                 connection = null;
@@ -263,7 +262,7 @@ public class JDBCConnection {
             try {
                 st = connection.createStatement();
                 st.execute(dialect.getValidationQuery());
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 if (dialect.isConnectionClosedException(e)) {
                     resetConnection();
                 } else {
@@ -273,7 +272,7 @@ public class JDBCConnection {
                 if (st != null) {
                     try {
                         st.close();
-                    } catch (Exception e) {
+                    } catch (SQLException e) {
                         // ignore
                     }
                 }
@@ -286,37 +285,29 @@ public class JDBCConnection {
     /**
      * Checks the SQL error we got and determine if the low level connection has
      * to be reset.
-     * <p>
-     * Called with a generic Exception and not just SQLException because the
-     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
-     * InvocationTargetException / UndeclaredThrowableException.
      *
-     * @param t the error
+     * @param e the exception
      */
-    protected void checkConnectionReset(Throwable t) throws StorageException {
-        checkConnectionReset(t, false);
+    protected void checkConnectionReset(SQLException e) throws StorageException {
+        checkConnectionReset(e, false);
     }
 
     /**
      * Checks the SQL error we got and determine if the low level connection has
      * to be reset.
-     * <p>
-     * Called with a generic Exception and not just SQLException because the
-     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
-     * InvocationTargetException / UndeclaredThrowableException.
      *
-     * @param t the error
+     * @param e the exception
      * @param throwIfReset {@code true} if a {@link ConnectionResetException}
      *            should be thrown when the connection is reset
      * @since 5.6
      */
-    protected void checkConnectionReset(Throwable t, boolean throwIfReset)
+    protected void checkConnectionReset(SQLException e, boolean throwIfReset)
             throws StorageException, ConnectionResetException {
         if (connection == null
-                || dialect.isConnectionClosedException(t)) {
+                || dialect.isConnectionClosedException(e)) {
             resetConnection();
             if (throwIfReset) {
-                throw new ConnectionResetException(t);
+                throw new ConnectionResetException(e);
             }
         }
     }
@@ -339,18 +330,14 @@ public class JDBCConnection {
     /**
      * Checks the SQL error we got and determine if a concurrent update
      * happened. Throws if that's the case.
-     * <p>
-     * Called with a generic Exception and not just SQLException because the
-     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
-     * InvocationTargetException / UndeclaredThrowableException.
      *
-     * @param t the exception
+     * @param e the exception
      * @since 5.8
      */
-    protected void checkConcurrentUpdate(Throwable t)
+    protected void checkConcurrentUpdate(Throwable e)
             throws ConcurrentUpdateStorageException {
-        if (dialect.isConcurrentUpdateException(t)) {
-            throw new ConcurrentUpdateStorageException(t);
+        if (dialect.isConcurrentUpdateException(e)) {
+            throw new ConcurrentUpdateStorageException(e);
         }
     }
 

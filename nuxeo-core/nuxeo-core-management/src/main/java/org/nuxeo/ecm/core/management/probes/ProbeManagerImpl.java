@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
@@ -136,7 +137,7 @@ public class ProbeManagerImpl implements ProbeManager {
         Probe probe;
         try {
             probe = probeClass.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new ManagementRuntimeException(
                     "Cannot create management probe for " + descriptor);
         }
@@ -167,6 +168,7 @@ public class ProbeManagerImpl implements ProbeManager {
         if (!probe.isEnabled()) {
             return;
         }
+        boolean ok = false;
         try {
             ProbeInfoImpl probeInfoImpl = (ProbeInfoImpl) probe;
             Thread currentThread = Thread.currentThread();
@@ -186,10 +188,12 @@ public class ProbeManagerImpl implements ProbeManager {
                     probeInfoImpl.failureCount += 1;
                     probeInfoImpl.lastFailureDate = probeInfoImpl.lastRunnedDate;
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) { // deals with interrupt below
+                ExceptionUtils.checkInterrupt(e);
                 probeInfoImpl.failureCount += 1;
                 probeInfoImpl.lastFailureDate = new Date();
                 probeInfoImpl.lastFailureStatus = ProbeStatus.newError(e);
+                // then swallow exception
             } finally {
                 probeInfoImpl.lastDuration = doGetDuration(
                         probeInfoImpl.lastRunnedDate, new Date());
@@ -203,9 +207,12 @@ public class ProbeManagerImpl implements ProbeManager {
                 failed.remove(probe);
                 succeed.add(probe);
             }
-        } catch (Throwable e) {
-            succeed.remove(probe);
-            failed.add(probe);
+            ok = true;
+        } finally {
+            if (!ok) {
+                succeed.remove(probe);
+                failed.add(probe);
+            }
         }
     }
 

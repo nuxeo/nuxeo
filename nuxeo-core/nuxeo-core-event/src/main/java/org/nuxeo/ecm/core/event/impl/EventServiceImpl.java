@@ -30,6 +30,7 @@ import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -168,35 +169,14 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
 
     @Override
     public void addEventListener(EventListenerDescriptor listener) {
-        try {
-            listenerDescriptors.add(listener);
-            log.debug("Registered event listener: " + listener.getName());
-        } catch (Exception e) {
-            log.error(
-                    "Failed to register event listener: " + listener.getName(),
-                    e);
-        }
+        listenerDescriptors.add(listener);
+        log.debug("Registered event listener: " + listener.getName());
     }
 
     @Override
     public void removeEventListener(EventListenerDescriptor listener) {
-        try {
-            listenerDescriptors.removeDescriptor(listener);
-            log.debug("Unregistered event listener: " + listener.getName());
-        } catch (Exception e) {
-            log.error(
-                    "Failed to unregister event listener: "
-                            + listener.getName(), e);
-        }
-    }
-
-    protected EventStats getEventStats() {
-        try {
-            return Framework.getService(EventStats.class);
-        } catch (Exception e) {
-            log.warn("Failed to lookup event stats service", e);
-        }
-        return null;
+        listenerDescriptors.removeDescriptor(listener);
+        log.debug("Unregistered event listener: " + listener.getName());
     }
 
     @Override
@@ -209,64 +189,55 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
     public void fireEvent(Event event) throws ClientException {
 
         String ename = event.getName();
-        EventStats stats = getEventStats();
+        EventStats stats = Framework.getService(EventStats.class);
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledInlineListenersDescriptors()) {
-            if (desc.acceptEvent(ename)) {
-                Throwable rollbackException = null;
-                try {
-                    long t0 = System.currentTimeMillis();
-                    desc.asEventListener().handleEvent(event);
-                    if (stats != null) {
-                        stats.logSyncExec(desc, System.currentTimeMillis() - t0);
+            if (!desc.acceptEvent(ename)) {
+                continue;
+            }
+            try {
+                long t0 = System.currentTimeMillis();
+                desc.asEventListener().handleEvent(event);
+                if (stats != null) {
+                    stats.logSyncExec(desc, System.currentTimeMillis() - t0);
+                }
+                if (event.isCanceled()) {
+                    // break loop
+                    return;
+                }
+            } catch (Exception e) { // deals with interrupt below
+                ExceptionUtils.checkInterrupt(e);
+                // get message
+                String message = "Exception during " + desc.getName()
+                        + " sync listener execution, ";
+                if (event.isBubbleException()) {
+                    message += "other listeners will be ignored";
+                } else if (event.isMarkedForRollBack()) {
+                    message += "transaction will be rolled back";
+                    if (event.getRollbackMessage() != null) {
+                        message += " (" + event.getRollbackMessage() + ")";
                     }
-                } catch (Throwable t) {
-                    String message;
-                    if (event.isBubbleException() || event.isMarkedForRollBack()) {
-                        message = "Error during "
-                                + desc.getName()
-                                + " sync listener execution, transaction will be rolled back";
-                        rollbackException = t;
-                    } else {
-                        message = "Error during "
-                                + desc.getName()
-                                + " sync listener execution, transaction won't be rolled back "
-                                + "since event.markRollBack() was not called by the Listener";
+                } else {
+                    message += "continuing to run other listeners";
+                }
+                // log
+                if (e instanceof RecoverableClientException) {
+                    log.info(message + "\n" + e.getMessage());
+                    log.debug(message, e);
+                } else {
+                    log.error(message, e);
+                }
+                // rethrow or swallow
+                if (event.isBubbleException()) {
+                    throw ExceptionUtils.runtimeException(e);
+                } else if (event.isMarkedForRollBack()) {
+                    if (event.getRollbackException() != null) {
+                        e = event.getRollbackException();
                     }
-                    if (t instanceof RecoverableClientException) {
-                        log.info(message + "\n" + t.getMessage());
-                        log.debug(message, t);
-                    } else {
-                        log.error(message, t);
-                    }
-                } finally {
-                    if (event.isBubbleException()) {
-                        if (rollbackException instanceof RuntimeException) {
-                            throw (RuntimeException) rollbackException;
-                        } else {
-                            throw new RuntimeException(rollbackException);
-                        }
-                    } else if (event.isMarkedForRollBack()) {
-
-                        String message = "Exception during " + desc.getName()
-                                + " sync listener execution, rolling back";
-                        if (event.getRollbackMessage() != null) {
-                            message = message + " ("
-                                    + event.getRollbackMessage() + ")";
-                        }
-                        if (event.getRollbackException() != null) {
-                            rollbackException = event.getRollbackException();
-                        }
-
-                        if (rollbackException != null) {
-                            throw new RuntimeException(message,
-                                    rollbackException);
-                        } else {
-                            throw new RuntimeException(message);
-                        }
-                    }
-                    if (event.isCanceled()) {
-                        return;
-                    }
+                    // when marked for rollback, throw a generic
+                    // RuntimeException to make sure nobody catches it
+                    throw new RuntimeException(message, e);
+                } else {
+                    // swallow exception
                 }
             }
         }

@@ -90,7 +90,7 @@ public class RedisCache extends AbstractCache {
         return executor.execute(new RedisCallable<Serializable>() {
 
             @Override
-            public Serializable call(Jedis jedis) throws Exception {
+            public Serializable call(Jedis jedis) throws IOException {
                 return deserializeValue(jedis.get(bytes(formatKey(key))));
             }
         });
@@ -111,7 +111,7 @@ public class RedisCache extends AbstractCache {
         executor.execute(new RedisCallable<Void>() {
 
             @Override
-            public Void call(Jedis jedis) throws Exception {
+            public Void call(Jedis jedis) {
                 jedis.del(new String[] { formatKey(key)});
                 return null;
             }
@@ -129,7 +129,7 @@ public class RedisCache extends AbstractCache {
         executor.execute(new RedisCallable<Void>() {
 
             @Override
-            public Void call(Jedis jedis) throws Exception {
+            public Void call(Jedis jedis) throws IOException {
                 byte[] bkey = bytes(formatKey(key));
                 jedis.set(bkey, serializeValue(value));
                 // Redis set in second ttl but descriptor set as mn

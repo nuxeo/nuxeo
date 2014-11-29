@@ -47,6 +47,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -375,7 +376,7 @@ public class H2Fulltext {
                 Collector collector = new ResultSetCollector(rs, reader, type);
                 searcher.search(query, collector);
             }
-        } catch (Exception e) {
+        } catch (SQLException | ParseException | IOException e) {
             throw convertException(e);
         }
         return rs;
@@ -460,7 +461,7 @@ public class H2Fulltext {
                 Class<?> klass = Class.forName(analyzerName);
                 Constructor<?> constructor = klass.getConstructor(Version.class);
                 analyzer = (Analyzer) constructor.newInstance(LUCENE_VERSION);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new SQLException(e.toString());
             }
             analyzers.put(analyzerName, analyzer);
@@ -800,11 +801,12 @@ public class H2Fulltext {
             if (indexWriter != null) {
                 try {
                     // DEBUG
-                    lastIndexWriterClose = new Exception("debug stack trace");
+                    lastIndexWriterClose = new RuntimeException(
+                            "debug stack trace");
                     lastIndexWriterCloseThread = Thread.currentThread().getName();
                     indexWriter.close();
                     indexWriter = null;
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw convertException(e);
                 } finally {
                     indexWriters.remove(indexName);

@@ -31,7 +31,7 @@ public class DocumentStoreHandlerDescriptor {
     public void setClass(Class<? extends DocumentStoreHandler> clazz) {
         try {
             handler = clazz.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot instantiate "
                     + clazz.getCanonicalName(), e);
         }

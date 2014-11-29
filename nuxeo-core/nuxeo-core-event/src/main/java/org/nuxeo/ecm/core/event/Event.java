@@ -149,7 +149,7 @@ public interface Event extends Serializable {
      * @param exception associated Exception that explains the Rollback if any
      * @since 5.6
      */
-    void markRollBack(String message, Throwable exception);
+    void markRollBack(String message, Exception exception);
 
     /**
      * Checks whether the event was marked for RollBack
@@ -165,7 +165,7 @@ public interface Event extends Serializable {
      *
      * @since 5.6
      */
-    Throwable getRollbackException();
+    Exception getRollbackException();
 
     /**
      * Returns the message associated to the RollBack if any

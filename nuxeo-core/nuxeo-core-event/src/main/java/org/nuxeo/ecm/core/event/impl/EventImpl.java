@@ -31,7 +31,7 @@ public class EventImpl implements Event {
 
     protected int flags;
 
-    protected Throwable rollbackException;
+    protected Exception rollbackException;
 
     protected String rollbackMessage;
 
@@ -81,7 +81,7 @@ public class EventImpl implements Event {
     }
 
     @Override
-    public void markRollBack(String message, Throwable exception) {
+    public void markRollBack(String message, Exception exception) {
         markRollBack();
         if (message == null && exception != null) {
             message = exception.getMessage();
@@ -177,7 +177,7 @@ public class EventImpl implements Event {
     }
 
     @Override
-    public Throwable getRollbackException() {
+    public Exception getRollbackException() {
         return rollbackException;
     }
 

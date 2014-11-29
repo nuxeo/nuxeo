@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.script.Bindings;
@@ -49,7 +50,7 @@ public abstract class Script {
         return scripting;
     }
 
-    public static Script newScript(String location) throws Exception {
+    public static Script newScript(String location) throws IOException {
         if (location.indexOf(':') > -1) {
             return newScript(new URL(location));
         } else {
@@ -57,7 +58,7 @@ public abstract class Script {
         }
     }
 
-    public static Script newScript(URL location) throws Exception {
+    public static Script newScript(URL location) throws IOException {
         String proto = location.getProtocol();
         if (proto.equals("jar")) {
             String path = location.getPath();
@@ -67,12 +68,24 @@ public abstract class Script {
             }
             path = path.substring(0, p);
             if (path.startsWith("file:")) {
-                return new JARFileScript(new File(new URI(path)), location);
+                URI uri;
+                try {
+                    uri = new URI(path);
+                } catch (URISyntaxException e) {
+                    throw new IOException(e);
+                }
+                return new JARFileScript(new File(uri), location);
             } else { // TODO import query string too?
                 return new JARUrlScript(new URL(path), location);
             }
         } else if (proto.equals("file")) {
-            return new FileScript(new File(location.toURI()));
+            URI uri;
+            try {
+                uri = location.toURI();
+            } catch (URISyntaxException e) {
+                throw new IOException(e);
+            }
+            return new FileScript(new File(uri));
         } else {
             return new URLScript(location);
         }
@@ -98,7 +111,7 @@ public abstract class Script {
         return null;
     }
 
-    public Object run(Bindings args) throws Exception {
+    public Object run(Bindings args) throws ScriptException {
         if (args == null) {
             args = new SimpleBindings();
         }
@@ -145,15 +158,6 @@ public abstract class Script {
                 // reader?
             return new FakeCompiledScript(engine, this);
         }
-    }
-
-    // FIXME: make a proper test and remove.
-    public static void main(String[] args) throws Exception {
-        URL url = new URL(
-                "jar:file:///Users/bstefanescu/work/kits/freemarker-2.3.15/lib/freemarker.jar!/freemarker/version.properties");
-        System.out.println(">>" + url.getProtocol());
-        System.out.println(">>" + url.getPath());
-        System.out.println(">>" + FileUtils.read(url.openStream()));
     }
 
 }

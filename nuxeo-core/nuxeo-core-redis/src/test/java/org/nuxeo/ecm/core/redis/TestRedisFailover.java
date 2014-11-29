@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ public class TestRedisFailover {
         executor.execute(new RedisCallable<Void>() {
 
             @Override
-            public Void call(Jedis jedis) throws Exception {
+            public Void call(Jedis jedis) throws IOException {
                 jedis.get("pfouh");
                 return null;
             }

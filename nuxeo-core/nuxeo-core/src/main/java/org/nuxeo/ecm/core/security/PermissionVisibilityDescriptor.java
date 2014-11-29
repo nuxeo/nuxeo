@@ -60,7 +60,7 @@ public class PermissionVisibilityDescriptor {
         return items;
     }
 
-    public void merge(PermissionVisibilityDescriptor other) throws Exception {
+    public void merge(PermissionVisibilityDescriptor other) {
         List<PermissionUIItemDescriptor> otherItems = new ArrayList<PermissionUIItemDescriptor>(
                 other.items);
         List<PermissionUIItemDescriptor> mergedItems = new LinkedList<PermissionUIItemDescriptor>();

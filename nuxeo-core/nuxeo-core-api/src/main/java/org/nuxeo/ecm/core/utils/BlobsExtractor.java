@@ -21,7 +21,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -59,7 +58,7 @@ public class BlobsExtractor {
 
     private boolean isDefaultConfiguration = true;
 
-    protected SchemaManager getSchemaManager() throws Exception {
+    protected SchemaManager getSchemaManager() {
         if (schemaManager == null) {
             schemaManager = Framework.getService(SchemaManager.class);
         }
@@ -70,8 +69,7 @@ public class BlobsExtractor {
      * Get properties of the given document that contain a blob value. This
      * method uses the cache engine to find these properties.
      */
-    public List<Property> getBlobsProperties(DocumentModel doc)
-            throws Exception {
+    public List<Property> getBlobsProperties(DocumentModel doc) {
 
         List<Property> result = new ArrayList<Property>();
         for (String schema : getBlobFieldPathForDocumentType(doc.getType()).keySet()) {
@@ -105,10 +103,9 @@ public class BlobsExtractor {
      *
      * @param documentType document type name
      * @return return the property names that contain blob
-     * @throws Exception
      */
     public Map<String, List<String>> getBlobFieldPathForDocumentType(
-            String documentType) throws Exception {
+            String documentType) {
         DocumentType docType = getSchemaManager().getDocumentType(documentType);
 
         if (!docTypeCached.contains(documentType)) {
@@ -131,8 +128,7 @@ public class BlobsExtractor {
         docTypeCached = new ArrayList<String>();
     }
 
-    protected void createCacheForDocumentType(DocumentType docType)
-            throws Exception {
+    protected void createCacheForDocumentType(DocumentType docType) {
 
         for (Schema schema : docType.getSchemas()) {
             findInteresting(docType, schema, "", schema);
@@ -156,10 +152,9 @@ public class BlobsExtractor {
      * @param ct Current type parsed
      * @return {@code true} if the passed complex type contains at least one
      *         blob field
-     * @throws Exception thrown if a field is named '*' (name forbidden)
      */
     protected boolean findInteresting(DocumentType docType, Schema schema,
-            String path, ComplexType ct) throws Exception {
+            String path, ComplexType ct) {
         boolean interesting = false;
         for (Field field : ct.getFields()) {
             Type type = field.getType();
@@ -236,7 +231,7 @@ public class BlobsExtractor {
     }
 
     protected void getBlobValue(Property prop, List<String> subPath,
-            String completePath, List<Property> result) throws Exception {
+            String completePath, List<Property> result) {
         if (subPath.size() == 0) {
             if (!(prop.getValue() instanceof Blob)) {
                 log.debug("Path Field not contains a blob value: "
@@ -266,16 +261,11 @@ public class BlobsExtractor {
      * @param doc the document
      * @return the list of blobs in the document
      */
-    public List<Blob> getBlobs(DocumentModel doc) throws ClientException {
+    public List<Blob> getBlobs(DocumentModel doc) {
         List<Blob> result = new ArrayList<Blob>();
-
-        try {
-            for (Property blobField : getBlobsProperties(doc)) {
-                Blob blob = (Blob) blobField.getValue();
-                result.add(blob);
-            }
-        } catch (Exception e) {
-            throw new ClientException(e);
+        for (Property blobField : getBlobsProperties(doc)) {
+            Blob blob = (Blob) blobField.getValue();
+            result.add(blob);
         }
         return result;
     }

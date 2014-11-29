@@ -86,7 +86,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
             }
             try {
                 reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Error while openning core session on repo "
                         + repoName, e);
                 return null;

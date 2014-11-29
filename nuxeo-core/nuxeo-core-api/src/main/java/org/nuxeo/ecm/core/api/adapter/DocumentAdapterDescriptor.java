@@ -49,10 +49,11 @@ public class DocumentAdapterDescriptor {
      * Used by XMap to set the factory.
      */
     @XNode("@factory")
-    void setFactory(Class<DocumentAdapterFactory> factoryClass) throws Throwable {
+    void setFactory(Class<DocumentAdapterFactory> factoryClass)
+            throws ReflectiveOperationException {
         try {
             factory = factoryClass.newInstance();
-        } catch (Throwable e) {
+        } catch (ReflectiveOperationException e) {
             log.error("ERROR instantiating document adapter factory class!");
             throw e;
         }

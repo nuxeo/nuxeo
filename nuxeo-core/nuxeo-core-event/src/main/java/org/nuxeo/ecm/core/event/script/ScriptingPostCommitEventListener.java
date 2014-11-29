@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.event.script;
 
 import javax.script.Bindings;
+import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -36,7 +37,7 @@ public class ScriptingPostCommitEventListener implements
         bindings.put("bundle", bundle);
         try {
             script.run(bindings);
-        } catch (Exception e) {
+        } catch (ScriptException e) {
             throw ClientException.wrap(e);
         }
     }

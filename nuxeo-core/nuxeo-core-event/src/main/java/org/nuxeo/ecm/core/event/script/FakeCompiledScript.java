@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.event.script;
 
+import java.io.IOException;
 import java.io.Reader;
 
 import javax.script.CompiledScript;
@@ -39,7 +40,7 @@ public class FakeCompiledScript extends CompiledScript {
         try {
             Reader reader = script.getReader();
             return engine.eval(reader, arg0);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ScriptException(e);
         }
     }

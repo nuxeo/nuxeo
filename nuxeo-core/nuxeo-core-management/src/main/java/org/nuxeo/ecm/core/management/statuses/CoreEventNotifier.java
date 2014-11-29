@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -47,11 +46,7 @@ public class CoreEventNotifier implements Notifier {
                 SecurityConstants.SYSTEM_USERNAME), eventProperties);
 
         Event event = ctx.newEvent(eventName);
-        try {
-            Framework.getService(EventProducer.class).fireEvent(event);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
+        Framework.getService(EventProducer.class).fireEvent(event);
     }
 
 }

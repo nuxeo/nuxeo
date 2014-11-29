@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -55,7 +56,7 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
                 // locked by another user => deny
                 access = Access.DENY;
             }
-        } catch (Exception e) {
+        } catch (DocumentException e) {
             // ignore
             log.debug("Failed to get lock status on document ", e);
         }

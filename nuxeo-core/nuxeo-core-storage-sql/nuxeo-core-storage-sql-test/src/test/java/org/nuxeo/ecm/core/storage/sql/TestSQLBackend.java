@@ -3899,7 +3899,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             fail();
         } catch (StorageException e) {
             String expected = "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: [tst:subjects/*1]";
-            assertEquals(expected, e.getCause().getMessage());
+            assertEquals(expected, e.getMessage());
         }
 
         // ok if ORDER BY column added to SELECT columns

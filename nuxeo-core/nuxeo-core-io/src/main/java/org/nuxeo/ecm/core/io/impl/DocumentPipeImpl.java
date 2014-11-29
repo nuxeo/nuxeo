@@ -86,7 +86,7 @@ public class DocumentPipeImpl implements DocumentPipe {
     }
 
     @Override
-    public DocumentTranslationMap run() throws Exception {
+    public DocumentTranslationMap run() throws IOException {
         if (reader == null) {
             throw new IllegalArgumentException("Pipe reader cannot be null");
         }

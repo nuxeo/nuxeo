@@ -230,7 +230,7 @@ public abstract class Dialect {
         try {
             ctor = dialectClass.getConstructor(DatabaseMetaData.class,
                     BinaryManager.class, RepositoryDescriptor.class);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException("Bad constructor signature for: "
                     + dialectClassName, e);
         }
@@ -245,7 +245,7 @@ public abstract class Dialect {
             } else {
                 throw new StorageException(t.getMessage(), t);
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException("Cannot construct dialect: "
                     + dialectClassName, e);
         }

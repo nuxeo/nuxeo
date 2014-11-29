@@ -109,7 +109,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
     }
 
     @Override
-    public String persist(String basePath) throws Exception {
+    public String persist(String basePath) throws IOException {
         Path path = new Path(basePath);
         path = path.append(getHash());
         File dir = new File(path.toString());

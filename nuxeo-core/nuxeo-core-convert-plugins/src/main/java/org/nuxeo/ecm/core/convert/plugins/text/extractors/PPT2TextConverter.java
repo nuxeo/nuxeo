@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hslf.extractor.PowerPointExtractor;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -50,8 +51,9 @@ public class PPT2TextConverter implements Converter {
         File f = null;
         OutputStream fas = null;
 
+        PowerPointExtractor extractor = null;
         try {
-            PowerPointExtractor extractor = new PowerPointExtractor(blobHolder.getBlob().getStream());
+            extractor = new PowerPointExtractor(blobHolder.getBlob().getStream());
 
             byte[] bytes = extractor.getText().getBytes();
             f = File.createTempFile("po-ppt2text", ".txt");
@@ -62,14 +64,21 @@ public class PPT2TextConverter implements Converter {
             blob.setMimeType("text/plain");
 
             return new SimpleCachableBlobHolder(blob);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ConversionException("Error during PPT2Text conversion", e);
         } finally {
+            if (extractor != null) {
+                try {
+                    extractor.close();
+                } catch (IOException e) {
+                    log.error(e, e);
+                }
+            }
             if (fas != null) {
                 try {
                     fas.close();
                 } catch (IOException e) {
-                    log.error(e);
+                    log.error(e, e);
                 }
             }
             if (f != null) {

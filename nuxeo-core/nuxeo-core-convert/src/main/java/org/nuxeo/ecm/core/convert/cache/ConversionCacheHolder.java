@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.convert.cache;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,7 +112,7 @@ public class ConversionCacheHolder {
 
         try {
             persisted = cce.persist(getCacheEntryPath(key));
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Error while trying to persist cache entry", e);
         }
 

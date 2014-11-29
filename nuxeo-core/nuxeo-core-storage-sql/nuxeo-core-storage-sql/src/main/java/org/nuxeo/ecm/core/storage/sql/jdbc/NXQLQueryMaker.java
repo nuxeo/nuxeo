@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FullTextUtils;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -259,7 +260,12 @@ public class NXQLQueryMaker implements QueryMaker {
 
         // transform the query according to the transformers defined by the
         // security policies
-        SQLQuery sqlQuery = SQLQueryParser.parse(query);
+        SQLQuery sqlQuery;
+        try {
+            sqlQuery = SQLQueryParser.parse(query);
+        } catch (QueryParseException e) {
+            throw new StorageException(e);
+        }
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
             sqlQuery = transformer.transform(queryFilter.getPrincipal(),
                     sqlQuery);
@@ -478,7 +484,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (NXQL.ECM_FULLTEXT_SCORE.equals(key)) {
                     FulltextMatchInfo ftMatchInfo = whereBuilder.ftMatchInfo;
                     if (ftMatchInfo == null) {
-                        throw new QueryMakerException(NXQL.ECM_FULLTEXT_SCORE
+                        throw new StorageException(NXQL.ECM_FULLTEXT_SCORE
                                 + " cannot be used without "
                                 + NXQL.ECM_FULLTEXT);
                     }

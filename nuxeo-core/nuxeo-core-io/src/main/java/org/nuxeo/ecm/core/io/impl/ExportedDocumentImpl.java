@@ -262,7 +262,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 element.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(
                         lifeCyclePolicy);
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
         }
     }

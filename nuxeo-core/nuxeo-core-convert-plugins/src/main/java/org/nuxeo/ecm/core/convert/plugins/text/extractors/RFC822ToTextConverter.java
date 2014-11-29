@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.Address;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
@@ -40,6 +41,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -86,7 +88,7 @@ public class RFC822ToTextConverter implements Converter {
             Blob outblob = new FileBlob(new FileInputStream(f));
             outblob.setMimeType(descriptor.getDestinationMimeType());
             return outblob;
-        } catch (Exception e) {
+        } catch (ClientException | IOException | MessagingException e) {
             log.error(e);
         } finally {
             if (fo != null) {
@@ -108,8 +110,8 @@ public class RFC822ToTextConverter implements Converter {
             try {
                 stream.write(address.toString().getBytes());
                 stream.write(" ".getBytes());
-            } catch (Exception e) {
-                log.error(e);
+            } catch (IOException e) {
+                log.error(e, e);
             }
         }
     }
@@ -127,8 +129,8 @@ public class RFC822ToTextConverter implements Converter {
             try {
                 stream.write(info.getBytes());
                 stream.write(" ".getBytes());
-            } catch (Exception e) {
-                log.error(e);
+            } catch (IOException e) {
+                log.error(e, e);
             }
         }
     }
@@ -138,13 +140,14 @@ public class RFC822ToTextConverter implements Converter {
             try {
                 stream.write(info);
                 stream.write(" ".getBytes());
-            } catch (Exception e) {
-                log.error(e);
+            } catch (IOException e) {
+                log.error(e, e);
             }
         }
     }
 
-    protected static byte[] extractTextFromMessagePart(Part p) throws Exception {
+    protected static byte[] extractTextFromMessagePart(Part p)
+            throws ClientException, MessagingException, IOException {
         ContentType contentType = new ContentType(p.getContentType());
         String baseType = contentType.getBaseType();
         if (TXT_MT.equals(baseType)) {
@@ -167,7 +170,8 @@ public class RFC822ToTextConverter implements Converter {
         }
     }
 
-    protected static List<Part> getAttachmentParts(Part p) throws Exception {
+    protected static List<Part> getAttachmentParts(Part p)
+            throws MessagingException, IOException {
         List<Part> res = new ArrayList<Part>();
         if (p.isMimeType(MESSAGE_RFC822_MIMETYPE)) {
             res.addAll(getAttachmentParts((Part) p.getContent()));
@@ -210,16 +214,10 @@ public class RFC822ToTextConverter implements Converter {
 
         try {
             inputBlob = blobHolder.getBlob();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ConversionException("Error while getting blob from Holder", e);
         }
-        Blob outputBlob;
-        try {
-            outputBlob = extractTextFromMessage(inputBlob);
-        } catch (Exception e) {
-            throw new ConversionException("Error in Text conversion", e);
-        }
-
+        Blob outputBlob = extractTextFromMessage(inputBlob);
         return new SimpleCachableBlobHolder(outputBlob);
     }
 

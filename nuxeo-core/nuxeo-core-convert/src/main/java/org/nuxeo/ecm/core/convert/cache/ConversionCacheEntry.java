@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.convert.cache;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -46,7 +47,7 @@ public class ConversionCacheEntry {
         lastAccessTime = new Date();
     }
 
-    public boolean persist(String basePath) throws Exception {
+    public boolean persist(String basePath) throws IOException {
         if (bh instanceof CachableBlobHolder) {
             CachableBlobHolder cbh = (CachableBlobHolder) bh;
             persistPath = cbh.persist(basePath);

@@ -28,6 +28,7 @@ import net.htmlparser.jericho.Source;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -41,7 +42,7 @@ import org.nuxeo.runtime.services.streaming.StringSource;
 /**
  * Extract the text content of HTML documents while trying to respect the
  * paragraph structure.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
@@ -82,7 +83,7 @@ public class Html2TextConverter implements Converter {
             text = text.trim();
             return new SimpleCachableBlobHolder(new StringBlob(text,
                     "text/plain"));
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ConversionException("Error during Html2Text conversion", e);
         } finally {
             if (stream != null) {

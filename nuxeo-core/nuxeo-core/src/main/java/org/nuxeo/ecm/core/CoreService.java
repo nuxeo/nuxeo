@@ -94,7 +94,7 @@ public class CoreService extends DefaultComponent {
         try {
             versionRemovalPolicy = (VersionRemovalPolicy) context.getRuntimeContext().loadClass(
                     klass).newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
         }
     }
@@ -105,7 +105,7 @@ public class CoreService extends DefaultComponent {
         try {
             orphanVersionRemovalFilters.add((OrphanVersionRemovalFilter) context.getRuntimeContext().loadClass(
                     klass).newInstance());
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate versionRemovalPolicy: " + klass, e);
         }
     }

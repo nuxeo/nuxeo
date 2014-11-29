@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -86,7 +85,7 @@ public class ConverterDescriptor implements Serializable {
         return destinationMimeType;
     }
 
-    public void initConverter() throws Exception {
+    public void initConverter() {
         if (instance == null) {
             if (className == null
                     || converterType.equals(CHAINED_CONVERTER_TYPE)) {
@@ -100,19 +99,18 @@ public class ConverterDescriptor implements Serializable {
                 }
                 converterType = CHAINED_CONVERTER_TYPE;
             } else {
-                instance = (Converter) className.newInstance();
+                try {
+                    instance = (Converter) className.newInstance();
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
             }
             instance.init(this);
         }
     }
 
     public Converter getConverterInstance() {
-        try {
-            initConverter();
-        } catch (Exception e) {
-            log.debug(e.getMessage(), e);
-            // TODO: handle exception
-        }
+        initConverter();
         return instance;
     }
 

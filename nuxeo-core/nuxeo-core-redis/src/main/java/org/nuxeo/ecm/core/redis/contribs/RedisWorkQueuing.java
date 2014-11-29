@@ -428,7 +428,7 @@ public class RedisWorkQueuing implements WorkQueuing {
             return (Work) in.readObject();
         } catch (RuntimeException cause) {
             throw cause;
-        } catch (Exception cause) {
+        } catch (IOException | ClassNotFoundException cause) {
             throw new RuntimeException("Cannot deserialize work", cause);
         }
     }

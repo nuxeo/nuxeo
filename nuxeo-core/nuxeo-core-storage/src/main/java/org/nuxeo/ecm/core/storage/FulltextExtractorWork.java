@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -173,7 +174,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                     string = string.replace("\0", " ");
                 }
                 strings.add(string);
-            } catch (Exception e) {
+            } catch (ClientException | IOException e) {
                 String msg = "Could not extract fulltext of file '"
                         + blob.getFilename() + "' for document: " + docId
                         + ": " + e;

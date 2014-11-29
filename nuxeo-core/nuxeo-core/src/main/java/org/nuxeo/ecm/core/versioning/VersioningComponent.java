@@ -157,7 +157,7 @@ public class VersioningComponent extends DefaultComponent implements
         if (service == null || klass != service.getClass()) {
             try {
                 service = klass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
         } // else keep old service instance

@@ -339,7 +339,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             } finally {
                 closeStatement(ps);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not select: " + sql, e);
         }
@@ -453,7 +453,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 return Collections.emptyList();
             }
             return list;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e, true);
             checkConcurrentUpdate(e);
             throw new StorageException("Could not select: " + select.sql, e);
@@ -595,7 +595,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             } finally {
                 closeStatement(ps);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             if (e instanceof BatchUpdateException) {
                 BatchUpdateException bue = (BatchUpdateException) e;
@@ -628,7 +628,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             } finally {
                 closeStatement(ps);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not insert: " + sql, e);
         }
@@ -720,7 +720,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 } finally {
                     closeStatement(ps);
                 }
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 checkConnectionReset(e);
                 throw new StorageException("Could not update: " + update.sql, e);
             }
@@ -787,7 +787,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     start = end;
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not soft delete", e);
         }
@@ -901,7 +901,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     closeStatement(ps);
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not purge soft delete", e);
         }
@@ -926,7 +926,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             } finally {
                 closeStatement(ps);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             checkConcurrentUpdate(e);
             throw new StorageException("Could not delete: " + tableName, e);
@@ -1021,7 +1021,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             } finally {
                 closeStatement(ps);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not select: " + sql, e);
         }
@@ -1114,7 +1114,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
             return new CopyResult(newRootId, invalidations, proxyIds);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not copy: "
                     + source.id.toString(), e);
@@ -1154,7 +1154,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             } finally {
                 closeStatement(ps);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Could not update: " + sql, e);
         }
@@ -1452,7 +1452,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 logger.log("  -> " + debugValues);
             }
             return descendants;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to get descendants", e);
         } finally {

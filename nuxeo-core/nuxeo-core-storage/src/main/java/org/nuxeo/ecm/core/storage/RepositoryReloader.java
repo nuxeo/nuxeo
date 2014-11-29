@@ -34,19 +34,15 @@ public class RepositoryReloader implements EventListener {
         final String id = event.getId();
         if (ReloadService.RELOAD_REPOSITORIES_ID.equals(id)
                 || ReloadService.FLUSH_EVENT_ID.equals(id)) {
-            try {
-                reloadRepositories();
-            } catch (Exception e) {
-                log.error("Failed to reload repositories", e);
-            }
+            reloadRepositories();
         }
     }
 
-    protected static void closeRepositories() throws Exception {
+    protected static void closeRepositories() {
         Framework.getService(RepositoryService.class).shutdown();
     }
 
-    protected static void flushJCAPool() throws Exception {
+    protected static void flushJCAPool() {
         try {
             Class<?> nuxeoContainerClass = Class.forName("org.nuxeo.runtime.jtajca.NuxeoContainer");
             if (nuxeoContainerClass != null) {
@@ -56,15 +52,15 @@ public class RepositoryReloader implements EventListener {
         } catch (ClassNotFoundException e) {
             // no container
             log.debug(e, e);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Reload core repositories.
-     *
-     * @throws Exception
      */
-    protected static void reloadRepositories() throws Exception {
+    protected static void reloadRepositories() {
         RepositoryReloader.closeRepositories();
     }
 }

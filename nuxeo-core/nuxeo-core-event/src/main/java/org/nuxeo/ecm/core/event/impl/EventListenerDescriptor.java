@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -130,23 +131,29 @@ public class EventListenerDescriptor {
         this.retryCount = retryCount;
     }
 
-    public void initListener() throws Exception {
-        if (clazz != null) {
-            if (EventListener.class.isAssignableFrom(clazz)) {
-                inLineListener = (EventListener) clazz.newInstance();
-                isPostCommit = false;
-            } else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
-                postCommitEventListener = (PostCommitEventListener) clazz.newInstance();
-                isPostCommit = true;
-            }
-        } else if (script != null) {
-            if (isPostCommit) {
-                postCommitEventListener = new ScriptingPostCommitEventListener(getScript());
+    public void initListener() {
+        try {
+            if (clazz != null) {
+                if (EventListener.class.isAssignableFrom(clazz)) {
+                    inLineListener = (EventListener) clazz.newInstance();
+                    isPostCommit = false;
+                } else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
+                    postCommitEventListener = (PostCommitEventListener) clazz.newInstance();
+                    isPostCommit = true;
+                }
+            } else if (script != null) {
+                if (isPostCommit) {
+                    postCommitEventListener = new ScriptingPostCommitEventListener(
+                            getScript());
+                } else {
+                    inLineListener = new ScriptingEventListener(getScript());
+                }
             } else {
-                inLineListener = new ScriptingEventListener(getScript());
+                throw new IllegalArgumentException(
+                        "Listener extension must define either a class or a script");
             }
-        } else {
-            throw new IllegalArgumentException("Listener extension must define either a class or a script");
+        } catch (ReflectiveOperationException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -158,7 +165,7 @@ public class EventListenerDescriptor {
         return postCommitEventListener;
     }
 
-    public Script getScript() throws Exception {
+    public Script getScript() throws IOException {
         if (rc != null) {
             URL url = rc.getBundle().getEntry(script);
             if (url == null) {
@@ -166,7 +173,7 @@ public class EventListenerDescriptor {
                 // in a test environment bundle entries may not work
                 url = rc.getResource(script);
                 if (url == null) {
-                    throw new Exception("Script Not found: " + script);
+                    throw new IOException("Script Not found: " + script);
                 }
             }
             return Script.newScript(url);

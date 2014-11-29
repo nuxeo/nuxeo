@@ -157,7 +157,7 @@ public class SessionImpl implements Session, XAResource {
 
         try {
             fulltextParser = repository.fulltextParserClass.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException(e);
         }
         saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories",
@@ -1549,7 +1549,7 @@ public class SessionImpl implements Session, XAResource {
         if (flags == TMNOFLAGS) {
             try {
                 processReceivedInvalidations();
-            } catch (Exception e) {
+            } catch (StorageException e) {
                 log.error("Could not start transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
@@ -1566,7 +1566,7 @@ public class SessionImpl implements Session, XAResource {
             if (flags != TMFAIL) {
                 try {
                     flush();
-                } catch (Exception e) {
+                } catch (StorageException e) {
                     String msg = "Exception during transaction commit";
                     if (e instanceof ConcurrentUpdateStorageException) {
                         TransactionHelper.noteSuppressedException(e);
@@ -1626,7 +1626,7 @@ public class SessionImpl implements Session, XAResource {
             } finally {
                 checkThreadEnd();
             }
-        } catch (Exception e) {
+        } catch (StorageException e) {
             log.error("Could not send invalidations", e);
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         }

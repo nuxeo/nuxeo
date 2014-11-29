@@ -25,6 +25,7 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -233,7 +234,7 @@ public abstract class AbstractWork implements Work {
      *
      * @return the session (also available in {@code session} field)
      */
-    public CoreSession initSession() throws Exception {
+    public CoreSession initSession() throws ClientException {
         return initSession(repositoryName);
     }
 
@@ -244,7 +245,8 @@ public abstract class AbstractWork implements Work {
      * @param repositoryName the repository name
      * @return the session (also available in {@code session} field)
      */
-    public CoreSession initSession(String repositoryName) throws Exception {
+    public CoreSession initSession(String repositoryName)
+            throws ClientException {
         session = CoreInstance.openCoreSessionSystem(repositoryName);
         return session;
     }

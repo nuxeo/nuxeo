@@ -25,8 +25,11 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -41,6 +44,8 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 @Deprecated
 public class Word2TextConverter implements Converter {
 
+    private static final Log log = LogFactory.getLog(Word2TextConverter.class);
+
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
@@ -48,8 +53,9 @@ public class Word2TextConverter implements Converter {
         File f = null;
         OutputStream fas = null;
 
+        WordExtractor extractor = null;
         try {
-            WordExtractor extractor = new WordExtractor(blobHolder.getBlob().getStream());
+            extractor = new WordExtractor(blobHolder.getBlob().getStream());
             byte[] bytes = extractor.getText().getBytes();
             f = File.createTempFile("po-word2text", ".txt");
             fas = new FileOutputStream(f);
@@ -59,13 +65,21 @@ public class Word2TextConverter implements Converter {
             blob.setMimeType("text/plain");
 
             return new SimpleCachableBlobHolder(blob);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ConversionException("Error during Word2Text conversion", e);
         } finally {
+            if (extractor != null) {
+                try {
+                    extractor.close();
+                } catch (IOException e) {
+                    log.error(e, e);
+                }
+            }
             if (fas != null) {
                 try {
                     fas.close();
                 } catch (IOException e) {
+                    log.error(e, e);
                 }
             }
             if (f != null) {

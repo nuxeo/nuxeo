@@ -70,7 +70,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
             Field field = clazz.getDeclaredField(name);
             field.setAccessible(true);
             return field;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot get access to " + clazz + "#"
                     + name + " field");
         }
@@ -80,7 +80,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
     protected static <T> T fetch(Field field, Object object) {
         try {
             return (T) field.get(object);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot get access to field content", e);
         }
     }
@@ -88,7 +88,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
     protected static void save(Field field, Object object, Object value) {
         try {
             field.set(object, value);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot set field content", e);
         }
     }

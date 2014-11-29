@@ -22,14 +22,18 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.xml.sax.SAXException;
 
 public class XML2TextConverter implements Converter {
 
@@ -47,7 +51,8 @@ public class XML2TextConverter implements Converter {
 
             return new SimpleCachableBlobHolder(new StringBlob(text,
                     "text/plain"));
-        } catch (Exception e) {
+        } catch (ClientException | IOException | SAXException
+                | ParserConfigurationException e) {
             throw new ConversionException("Error during XML2Text conversion", e);
         } finally {
             if (stream != null) {

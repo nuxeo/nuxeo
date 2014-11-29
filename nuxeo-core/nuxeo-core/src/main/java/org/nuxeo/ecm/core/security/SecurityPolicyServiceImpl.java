@@ -75,8 +75,8 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
                                         + " must implement SecurityPolicy interface",
                                 descriptor.getName()));
                     }
-                } catch (Exception e) {
-                    log.error(e);
+                } catch (ReflectiveOperationException e) {
+                    log.error(e, e);
                 }
             }
         }

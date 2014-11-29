@@ -293,22 +293,14 @@ public class SchemaManagerImpl implements SchemaManager {
         for (SchemaBindingDescriptor sd : allSchemas) {
             try {
                 copySchema(sd);
-            } catch (Exception error) {
-                if (error instanceof InterruptedException) {
-                    // restore interrupted status
-                    Thread.currentThread().interrupt();
-                }
+            } catch (IOException | SAXException | TypeException error) {
                 errors.addSuppressed(error);
             }
         }
         for (SchemaBindingDescriptor sd : allSchemas) {
             try {
                 loadSchema(sd);
-            } catch (Exception error) {
-                if (error instanceof InterruptedException) {
-                    // restore interrupted status
-                    Thread.currentThread().interrupt();
-                }
+            } catch (IOException | SAXException | TypeException error) {
                 errors.addSuppressed(error);
             }
         }

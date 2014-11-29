@@ -106,7 +106,7 @@ public class JDBCBackend implements RepositoryBackend {
         Object instance;
         try {
             instance = klass.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new StorageException(
                     "Cannot instantiate class: " + className, e);
         }
@@ -130,7 +130,7 @@ public class JDBCBackend implements RepositoryBackend {
             }
             try {
                 BeanUtils.setProperty(xadatasource, name, value);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error(String.format("Cannot set %s = %s", name, value));
             }
         }

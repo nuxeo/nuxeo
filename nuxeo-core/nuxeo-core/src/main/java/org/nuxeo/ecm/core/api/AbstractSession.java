@@ -78,6 +78,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -168,11 +169,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected VersioningService getVersioningService() {
         if (versioningService == null) {
-            try {
-                versioningService = Framework.getService(VersioningService.class);
-            } catch (Exception e) {
-                throw new RuntimeException("VersioningService not found", e);
-            }
+            versioningService = Framework.getService(VersioningService.class);
         }
         return versioningService;
     }
@@ -764,7 +761,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (service != null) {
                 try {
                     service.initialize(doc, initialLifecycleState);
-                } catch (Exception e) {
+                } catch (LifeCycleException e) {
                     throw new ClientException(
                             "Failed to initialize document lifecycle", e);
                 }
@@ -1369,7 +1366,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 docs.setTotalSize(n);
             }
             return docs;
-        } catch (Exception e) {
+        } catch (ClientException | QueryException e) {
             throw new ClientException("Failed to execute query: "
                     + tryToExtractMeaningfulErrMsg(e), e);
         }
@@ -1401,7 +1398,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             IterableQueryResult result = getSession().queryAndFetch(query,
                     queryType, queryFilter, params);
             return result;
-        } catch (Exception e) {
+        } catch (ClientException | QueryException e) {
             throw new ClientException("Failed to execute query: " + queryType
                     + ": " + query + ": " + tryToExtractMeaningfulErrMsg(e), e);
         }
@@ -2953,7 +2950,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             return refresh;
         } catch (ClientException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (DocumentException | LifeCycleException e) {
             throw new ClientException("Failed to get refresh data", e);
         }
     }

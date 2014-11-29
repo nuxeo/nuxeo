@@ -284,7 +284,7 @@ public class DocumentModelStatusPersister implements
             StatusSaver saver = new StatusSaver(status);
             saver.runUnrestricted();
             return saver.getStatus();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while saving status", e);
             return null;
         }

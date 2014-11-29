@@ -32,6 +32,7 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -287,18 +288,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
             try {
                 return method.invoke(context.baseSession, args);
-            } catch (Throwable t) {
-                if (t instanceof InvocationTargetException) {
-                    Throwable te = ((InvocationTargetException) t).getTargetException();
-                    if (te != null) {
-                        t = te;
-                    }
-                }
-                if (t instanceof InterruptedException) {
-                    // restore interrupted state
-                    Thread.currentThread().interrupt();
-                }
-                throw t;
+            } catch (ReflectiveOperationException e) {
+                throw ExceptionUtils.unwrapInvoke(e);
             }
         }
 

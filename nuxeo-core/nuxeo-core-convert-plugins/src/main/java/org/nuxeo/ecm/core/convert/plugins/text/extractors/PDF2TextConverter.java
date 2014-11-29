@@ -38,6 +38,7 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -63,7 +64,7 @@ public class PDF2TextConverter implements Converter {
                 Field f = PDFStreamEngine.class.getDeclaredField(name);
                 f.setAccessible(true);
                 return f.get(this);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(
                         "Cannot get access to PDFStreamEngine fields", e);
             }
@@ -97,7 +98,7 @@ public class PDF2TextConverter implements Converter {
                         unsupportedOperators().add(operation);
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 StackTraceElement root = e.getStackTrace()[0];
                 synchronized (loggedStacks) {
                     if (loggedStacks.contains(root)) {
@@ -150,14 +151,14 @@ public class PDF2TextConverter implements Converter {
             } else {
                 return new SimpleCachableBlobHolder(new StringBlob(""));
             }
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             throw new ConversionException(
                     "Error during text extraction with PDFBox", e);
         } finally {
             if (document != null) {
                 try {
                     document.close();
-                } catch (Exception e) {
+                } catch (IOException e) {
                     log.error("Error while closing PDFBox document", e);
                 }
             }

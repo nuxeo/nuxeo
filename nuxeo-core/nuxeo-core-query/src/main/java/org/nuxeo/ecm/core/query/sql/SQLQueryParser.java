@@ -17,6 +17,7 @@ package org.nuxeo.ecm.core.query.sql;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.parser.Scanner;
@@ -32,17 +33,19 @@ public final class SQLQueryParser {
     private SQLQueryParser() {
     }
 
-    public static SQLQuery parse(Reader reader) {
+    public static SQLQuery parse(Reader reader) throws QueryParseException {
         try {
             Scanner scanner = new Scanner(reader);
             parser parser = new parser(scanner);
             return (SQLQuery) parser.parse().value;
-        } catch (Exception e) {
-            throw new QueryParseException(e);
+        } catch (QueryParseException e) {
+            throw e;
+        } catch (Exception e) { // stupid CUPS API throws Exception
+            throw new QueryParseException(ExceptionUtils.runtimeException(e));
         }
     }
 
-    public static SQLQuery parse(String string) {
+    public static SQLQuery parse(String string) throws QueryParseException {
         try {
             SQLQuery query = parse(new StringReader(string));
             query.setQueryString(string);

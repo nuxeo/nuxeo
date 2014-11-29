@@ -100,15 +100,11 @@ public class TypeService extends DefaultComponent {
         } else if (XP_SCHEMA.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    // use the context of the bundle contributing the extension
-                    // to load schemas
-                    SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
-                    sbd.context = extension.getContext();
-                    schemaManager.registerSchema(sbd);
-                } catch (Exception e) {
-                    log.error(e, e);
-                }
+                // use the context of the bundle contributing the extension
+                // to load schemas
+                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
+                sbd.context = extension.getContext();
+                schemaManager.registerSchema(sbd);
             }
         } else if (XP_CONFIGURATION.equals(xp)) {
             Object[] contribs = extension.getContributions();

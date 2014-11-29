@@ -61,11 +61,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     public List<UserVisiblePermission> getUserVisiblePermissionDescriptors(
             String typeName) throws ClientException {
         if (mergedPermissionsVisibility == null) {
-            try {
-                computeMergedPermissionsVisibility();
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            computeMergedPermissionsVisibility();
         }
         // grab the default items (type is "")
         PermissionVisibilityDescriptor defaultVisibility = mergedPermissionsVisibility
@@ -87,7 +83,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return getUserVisiblePermissionDescriptors("");
     }
 
-    private void computeMergedPermissionsVisibility() throws Exception {
+    private void computeMergedPermissionsVisibility() {
         mergedPermissionsVisibility = new HashMap<String, PermissionVisibilityDescriptor>();
         for (PermissionVisibilityDescriptor pvd : registeredPermissionsVisibility) {
             PermissionVisibilityDescriptor mergedPvd = mergedPermissionsVisibility

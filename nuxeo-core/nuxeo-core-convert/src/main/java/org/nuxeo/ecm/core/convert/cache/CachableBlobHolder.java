@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.core.convert.cache;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
@@ -31,9 +33,8 @@ public interface CachableBlobHolder extends BlobHolder {
      * @param basePath
      *            the base path (existing directory) as determined by the caller
      * @return the full path of the newly created FileSystem resource
-     * @throws Exception
      */
-    String persist(String basePath) throws Exception;
+    String persist(String basePath) throws IOException;
 
     /**
      * Reloads the {@link BlobHolder} from a file.

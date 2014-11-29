@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -92,7 +93,7 @@ public class Repository {
      * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open() throws Exception {
+    public CoreSession open() throws ClientException {
         return CoreInstance.openCoreSession(name);
     }
 
@@ -100,7 +101,8 @@ public class Repository {
      * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open(Map<String, Serializable> context) throws Exception {
+    public CoreSession open(Map<String, Serializable> context)
+            throws ClientException {
         return CoreInstance.openCoreSession(name, context);
     }
 

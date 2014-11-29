@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,8 +34,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
@@ -66,8 +65,6 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     public static final String JTA = PersistenceUnitTransactionType.JTA.name();
 
     public static final String TXTYPE_PROPERTY_NAME = "org.nuxeo.runtime.txType";
-
-    private static final Log log = LogFactory.getLog(HibernateConfiguration.class);
 
     @XNode("@name")
     public String name;
@@ -297,7 +294,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         map.register(HibernateConfiguration.class);
         try {
             return (HibernateConfiguration) map.load(location);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PersistenceError(
                     "Cannot load hibernate configuration from " + location, e);
         }

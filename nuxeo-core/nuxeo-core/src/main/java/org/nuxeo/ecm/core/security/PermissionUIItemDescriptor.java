@@ -19,6 +19,7 @@ import java.io.Serializable;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 @XObject("item")
 public class PermissionUIItemDescriptor implements Serializable{
@@ -141,11 +142,10 @@ public class PermissionUIItemDescriptor implements Serializable{
         return false;
     }
 
-    public void merge(PermissionUIItemDescriptor pid) throws Exception {
+    public void merge(PermissionUIItemDescriptor pid) {
         // sanity check
         if (!permission.equals(pid.permission)) {
-            // TODO: use a dedicated Nuxeo Runtime / OSGi exception here
-            throw new Exception(String.format(
+            throw new NuxeoException(String.format(
                     "cannot merge permission item '%s' with '%s'", permission,
                     pid.permission));
         }

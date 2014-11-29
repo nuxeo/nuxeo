@@ -25,6 +25,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -171,12 +172,7 @@ public class SerializableInputStream extends InputStream implements
 
     @Override
     protected void finalize() throws Throwable {
-        if (in != null) {
-            try {
-                in.close();
-            } catch (Throwable e) {
-            }
-        }
+        IOUtils.closeQuietly(in);
         if (file != null) {
             file.delete();
         }

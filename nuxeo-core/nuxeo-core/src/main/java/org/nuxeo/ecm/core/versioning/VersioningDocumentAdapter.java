@@ -30,11 +30,7 @@ public class VersioningDocumentAdapter implements VersioningDocument {
     public final VersioningService service;
 
     public VersioningDocumentAdapter(DocumentModel doc) {
-        try {
-            service = Framework.getService(VersioningService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        service = Framework.getService(VersioningService.class);
         this.doc = doc;
     }
 

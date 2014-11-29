@@ -218,7 +218,7 @@ public class ResultSetQueryResult implements IterableQueryResult,
         }
         try {
             next = fetchNext();
-        } catch (Exception e) {
+        } catch (StorageException | SQLException e) {
             logger.error("Error fetching next: " + e.getMessage(), e);
         }
         eof = next == null;

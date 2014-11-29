@@ -25,6 +25,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
+import redis.clients.jedis.exceptions.JedisException;
 
 /**
  * Descriptor for a Redis configuration.
@@ -76,7 +77,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
         try {
             String pong = jedis.ping();
             return "PONG".equals(pong);
-        } catch (Exception cause) {
+        } catch (JedisException cause) {
             return false;
         }
     }

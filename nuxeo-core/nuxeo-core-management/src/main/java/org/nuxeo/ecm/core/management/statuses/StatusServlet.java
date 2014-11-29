@@ -104,11 +104,7 @@ public class StatusServlet extends HttpServlet {
 
     private RuntimeService getRuntimeService() {
         if (runtimeService == null) {
-            try {
-                runtimeService = (OSGiRuntimeService) Framework.getRuntime();
-            } catch (Exception e) {
-                log.error(e);
-            }
+            runtimeService = (OSGiRuntimeService) Framework.getRuntime();
         }
         return runtimeService;
     }

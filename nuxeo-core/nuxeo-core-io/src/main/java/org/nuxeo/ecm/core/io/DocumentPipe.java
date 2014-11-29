@@ -14,6 +14,7 @@
 
 package org.nuxeo.ecm.core.io;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,6 +37,6 @@ public interface DocumentPipe {
 
     List<DocumentTransformer> getTransformers();
 
-    DocumentTranslationMap run() throws Exception;
+    DocumentTranslationMap run() throws IOException;
 
 }

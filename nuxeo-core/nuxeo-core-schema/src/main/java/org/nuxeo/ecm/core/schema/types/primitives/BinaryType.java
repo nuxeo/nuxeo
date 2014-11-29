@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.schema.types.primitives;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
@@ -76,7 +77,7 @@ public final class BinaryType extends PrimitiveType {
         if (object instanceof InputStream) {
             try {
                 return FileUtils.read((InputStream) object);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error(e, e);
                 return null;
             }

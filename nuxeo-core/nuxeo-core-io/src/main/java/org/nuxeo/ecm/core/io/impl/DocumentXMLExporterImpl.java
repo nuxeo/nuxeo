@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -78,7 +79,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
 
         try {
             pipe.run();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException(
                     "Error while trying to export the document to XML.", e);
         } finally {

@@ -86,7 +86,7 @@ public class Log4jWebFilter implements Filter {
                     MDC.put(propertyName, prop);
                 }
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error(e, e);
         }
     }
