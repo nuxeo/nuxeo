@@ -5,14 +5,11 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.Work.Progress;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.ReportLayoutSettings;
@@ -20,7 +17,6 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.quartz.simpl.InitThreadContextClassLoadHelper;
 
 public class AclAuditWork extends AbstractWork {
 
@@ -85,7 +81,7 @@ public class AclAuditWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         // use an explicit transaction timeout
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
