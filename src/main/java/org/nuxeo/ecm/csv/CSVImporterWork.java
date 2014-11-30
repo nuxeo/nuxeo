@@ -48,7 +48,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -198,7 +198,7 @@ public class CSVImporterWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         setStatus("Importing");
         initSession();
         try (Reader in = new BufferedReader(new FileReader(csvFile));
@@ -524,7 +524,7 @@ public class CSVImporterWork extends AbstractWork {
         log.error(String.format("%s: %s", lineMessage, errorMessage));
     }
 
-    protected void sendMail() throws Exception {
+    protected void sendMail() {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         NuxeoPrincipal principal = userManager.getPrincipal(username);
         String email = principal.getEmail();
@@ -565,19 +565,17 @@ public class CSVImporterWork extends AbstractWork {
             chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML",
                     true).set("subject", subject).set("message", message);
             Framework.getLocalService(AutomationService.class).run(ctx, chain);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted", e);
         } catch (Exception e) {
+            ExceptionUtils.checkInterrupt(e);
             log.error(String.format(
                     "Unable to notify user '%s' for import result of '%s': %s",
                     username, csvFileName, e.getMessage()));
             log.debug(e, e);
-            throw e;
+            throw ExceptionUtils.runtimeException(e);
         }
     }
 
-    protected String getDocumentUrl(DocumentModel doc) throws Exception {
+    protected String getDocumentUrl(DocumentModel doc) {
         return MailTemplateHelper.getDocumentUrl(doc, null);
     }
 
