@@ -226,7 +226,7 @@ public interface Work extends Serializable {
      * @see #suspended
      * @see #cleanUp
      */
-    void work() throws Exception;
+    void work();
 
     /**
      * The work id.

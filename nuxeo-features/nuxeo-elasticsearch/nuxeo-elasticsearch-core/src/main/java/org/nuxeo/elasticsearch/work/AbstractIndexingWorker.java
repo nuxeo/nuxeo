@@ -47,7 +47,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
     }
 
     @Override
-    public void doWork() throws Exception {
+    public void doWork() {
             CoreSession session = initSession(repositoryName);
             ElasticSearchIndexing esi = Framework
                     .getLocalService(ElasticSearchIndexing.class);
@@ -56,6 +56,6 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
     }
 
     protected abstract void doIndexingWork(ElasticSearchIndexing esi,
-            IndexingCommand cmd) throws Exception;
+            IndexingCommand cmd);
 
 }

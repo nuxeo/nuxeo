@@ -163,7 +163,7 @@ public class AsyncEventExecutor {
         }
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             EventService eventService = Framework.getLocalService(EventService.class);
             listener = eventService.getEventListener(listenerName);
             if (listener == null) {

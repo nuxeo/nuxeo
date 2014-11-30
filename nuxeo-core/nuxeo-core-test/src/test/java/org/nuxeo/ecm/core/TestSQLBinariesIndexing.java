@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -89,10 +88,16 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
         }
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             setStatus("Blocking");
             readyLatch.countDown();
-            startLatch.await();
+            try {
+                startLatch.await();
+            } catch (InterruptedException e) {
+                // restore interrupted status
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
             setStatus("Released");
         }
     }

@@ -2,6 +2,7 @@ package org.nuxeo.ecm.platform.picture;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         DocumentModel workingDocument = null;
 
         setProgress(Progress.PROGRESS_INDETERMINATE);
@@ -77,7 +78,11 @@ public class PictureViewsGenerationWork extends AbstractWork {
         Blob blob = (Blob) fileProp.getValue();
         String filename = blob == null ? null : blob.getFilename();
         String title = workingDocument.getTitle();
-        picture.fillPictureViews(blob, filename, title, pictureTemplates);
+        try {
+            picture.fillPictureViews(blob, filename, title, pictureTemplates);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         startTransaction();
         initSession();

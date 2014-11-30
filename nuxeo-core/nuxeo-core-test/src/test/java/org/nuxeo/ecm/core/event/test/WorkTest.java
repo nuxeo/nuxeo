@@ -110,14 +110,23 @@ public class WorkTest extends TXSQLRepositoryTestCase {
             return getClass().getName();
         }
 
-        protected void ready() throws InterruptedException {
-            ready.countDown();
-            ready.await();
+        protected void ready() {
+            countDownAndAwait(ready);
         }
 
-        protected void proceed() throws InterruptedException {
-            proceed.countDown();
-            proceed.await();
+        protected void proceed() {
+            countDownAndAwait(proceed);
+        }
+
+        protected static void countDownAndAwait(CountDownLatch latch) {
+            latch.countDown();
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                // restore interrupted status
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -133,7 +142,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             initSession();
             ready();
             try {
@@ -165,7 +174,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         }
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             initSession();
             ready();
             try {

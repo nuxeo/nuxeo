@@ -53,7 +53,7 @@ public abstract class RemovedAbstractWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         setStatus("Updating");
         if (docId != null) {
             initSession();
@@ -67,8 +67,15 @@ public abstract class RemovedAbstractWork extends AbstractWork {
 
             if (nbResult == CollectionAsynchrnonousQuery.MAX_RESULT) {
                 setStatus("Rescheduling next work");
-                Constructor<? extends RemovedAbstractWork> c = this.getClass().getDeclaredConstructor(long.class);
-                RemovedAbstractWork nextWork = c.newInstance(offset + CollectionAsynchrnonousQuery.MAX_RESULT);
+                RemovedAbstractWork nextWork;
+                try {
+                    Constructor<? extends RemovedAbstractWork> c = this.getClass().getDeclaredConstructor(
+                            long.class);
+                    nextWork = c.newInstance(offset
+                            + CollectionAsynchrnonousQuery.MAX_RESULT);
+                } catch (ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
                 nextWork.setDocument(repositoryName, docId);
                 WorkManager workManager = Framework.getLocalService(WorkManager.class);
                 workManager.schedule(nextWork, WorkManager.Scheduling.IF_NOT_SCHEDULED,

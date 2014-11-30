@@ -100,7 +100,7 @@ public class FulltextUpdaterWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         initSession();
         // if the runtime has shut down (normally because tests are finished)
         // this can happen, see NXP-4009

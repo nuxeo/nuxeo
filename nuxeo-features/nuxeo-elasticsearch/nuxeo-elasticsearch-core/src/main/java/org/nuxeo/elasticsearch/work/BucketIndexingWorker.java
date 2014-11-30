@@ -64,7 +64,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
     }
 
     @Override
-    protected void doWork() throws Exception {
+    protected void doWork() {
         ElasticSearchIndexing esi = Framework
                 .getLocalService(ElasticSearchIndexing.class);
         CoreSession session = initSession(repositoryName);

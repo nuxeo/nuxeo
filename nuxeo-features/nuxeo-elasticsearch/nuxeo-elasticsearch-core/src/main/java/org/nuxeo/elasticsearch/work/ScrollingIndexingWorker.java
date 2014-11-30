@@ -60,7 +60,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     }
 
     @Override
-    protected void doWork() throws Exception {
+    protected void doWork() {
         CoreSession session = initSession(repositoryName);
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         int bucketCount = 0;

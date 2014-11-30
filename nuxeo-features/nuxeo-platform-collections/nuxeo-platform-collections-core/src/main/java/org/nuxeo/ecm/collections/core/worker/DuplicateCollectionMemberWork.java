@@ -75,7 +75,7 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         setStatus("Duplicating");
         if (collectionMemberIds != null) {
             CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);

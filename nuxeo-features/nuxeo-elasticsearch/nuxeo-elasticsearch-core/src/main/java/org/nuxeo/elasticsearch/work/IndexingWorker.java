@@ -60,8 +60,7 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
-            throws Exception {
+    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) {
 
         esi.indexNow(cmd);
         if (needRecurse(cmd)) {

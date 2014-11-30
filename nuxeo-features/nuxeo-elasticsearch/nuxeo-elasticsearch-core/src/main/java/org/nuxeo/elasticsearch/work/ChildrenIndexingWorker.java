@@ -52,8 +52,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
     }
 
     @Override
-    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
-            throws Exception {
+    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd) {
         DocumentModel doc = cmd.getTargetDocument();
         DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
         while (iter.hasNext()) {

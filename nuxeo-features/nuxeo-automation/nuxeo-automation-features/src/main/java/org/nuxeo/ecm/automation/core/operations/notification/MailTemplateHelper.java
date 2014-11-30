@@ -31,8 +31,7 @@ public class MailTemplateHelper {
     private MailTemplateHelper() {
     }
 
-    public static String getDocumentUrl(DocumentModel doc, String viewId)
-            throws Exception {
+    public static String getDocumentUrl(DocumentModel doc, String viewId) {
         if (viewId == null) {
             viewId = "view_documents";
         }

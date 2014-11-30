@@ -68,7 +68,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         }
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             FileEvent.onFile(this, file, this).send();
         }
     }

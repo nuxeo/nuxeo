@@ -81,7 +81,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         initSession();
         // if the runtime has shutdown (normally because tests are finished)
         // this can happen, see NXP-4009

@@ -97,7 +97,17 @@ public class SleepWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws InterruptedException {
+    public void work() {
+        try {
+            doWork();
+        } catch (InterruptedException e) {
+            // restore interrupted status
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void doWork() throws InterruptedException {
         if (debug) {
             setStatus("Starting sleep work");
             readyLatch.countDown();

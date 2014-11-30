@@ -49,7 +49,7 @@ public abstract class BaseIndexingWorker extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         try {
             doWork();
         } finally {
@@ -57,5 +57,5 @@ public abstract class BaseIndexingWorker extends AbstractWork {
         }
     }
 
-    protected abstract void doWork() throws Exception;
+    protected abstract void doWork();
 }

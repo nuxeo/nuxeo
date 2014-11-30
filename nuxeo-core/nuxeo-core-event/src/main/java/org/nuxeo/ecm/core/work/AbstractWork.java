@@ -381,7 +381,7 @@ public abstract class AbstractWork implements Work {
     }
 
     @Override
-    public abstract void work() throws Exception;
+    public abstract void work();
 
     /**
      * Gets the number of times that this Work instance can be retried in case

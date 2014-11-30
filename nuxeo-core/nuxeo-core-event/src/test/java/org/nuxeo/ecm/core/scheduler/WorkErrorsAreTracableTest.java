@@ -46,15 +46,10 @@ public class WorkErrorsAreTracableTest {
         }
 
         @Override
-        public void work() throws Exception {
-            throw new Error();
+        public void work() {
+            throw new RuntimeException("test");
         }
 
-        public static class Error extends java.lang.Error {
-
-            private static final long serialVersionUID = 1L;
-
-        }
     }
 
     protected class Nest extends AbstractWork {
@@ -71,7 +66,7 @@ public class WorkErrorsAreTracableTest {
         }
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             sub = new Fail();
             manager.schedule(sub);
         }
