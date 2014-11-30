@@ -78,7 +78,7 @@ public class VideoConversionWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         setStatus("Extracting");
         setProgress(Progress.PROGRESS_INDETERMINATE);
 
