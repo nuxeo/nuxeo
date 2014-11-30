@@ -63,7 +63,7 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public void work() {
         new UnrestrictedSessionRunner(repositoryName) {
 
             @Override
