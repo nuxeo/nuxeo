@@ -113,7 +113,7 @@ public class DocumentRoutingEscalationServiceImpl implements
         }
 
         @Override
-        public void work() throws Exception {
+        public void work() {
             initSession();
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
