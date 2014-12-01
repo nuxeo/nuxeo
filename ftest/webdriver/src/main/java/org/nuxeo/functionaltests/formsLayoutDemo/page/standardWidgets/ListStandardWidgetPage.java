@@ -19,10 +19,10 @@
 package org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.forms.ListWidgetElement;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.Page;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 
 /**
  * @since 7.1
@@ -48,8 +48,11 @@ public class ListStandardWidgetPage extends Page {
     }
 
     public ListStandardWidgetPage submitS2HtmlTextComplexListWidget() {
+        AjaxRequestManager a = new AjaxRequestManager(AbstractTest.driver);
+        a.watchAjaxRequests();
         AbstractTest.driver.findElement(
                 By.id(S2_HTML_TEXT_COMPLEX_LIST_WIDGET_SUBMIT_ID)).click();
+        a.waitForAjaxRequests();
         return AbstractTest.asPage(ListStandardWidgetPage.class);
     }
 
