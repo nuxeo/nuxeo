@@ -4,42 +4,58 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
   class="hostInfos">
 
-  <h3> Index Operations </h3>
-  <div class="detail">Indexing operations are done asynchronously.
+  <h3>Re indexing operations</h3>
+
+  <div class="detail">Re-indexing operations are done asynchronously.
     When they are terminated the status "No indexing in progress"
     is displayed in the Info tab.
 
-    To remove suprious documents, you need to drop the index first and
+    To remove spurious documents, you need to drop the index first and
     re-index all the repository.
   </div>
 
   <h:form id="esAdmin">
 
-    <h4>Re-index using a NXQL query</h4>
+    <h4>Options</h4>
+    <h5>Repository selection</h5>
+    <div class="detail">Choose a repository where the re-indexing command will apply.</div>
+    <div class="bubbleBox">
+      <h:selectOneMenu name="j_repo" value="#{esAdmin.repositoryName}">
+        <f:selectItems value="#{esAdmin.repositoryNames}" />
+      </h:selectOneMenu>
+    </div>
+
+    <h5>Drop index before indexing</h5>
+    <div class="detail">Warning this will first drop Elasticsearch index before indexing.
+    You may experience incomplete search results during the re-indexing.</div>
+    <div class="bubbleBox">
+      <h:selectBooleanCheckbox value="#{esAdmin.dropIndex}" /> Drop Elasticsearch index associated with the repository.
+    </div>
+
+    <h4>Re-indexing using a NXQL query</h4>
     <div class="detail">Use this to re-index documents that match a NXQL query.
-      The default query match all the documents and can be used to re-index all the repository
-      except the Relations. Relations can be indexed with SELECT * From Relation.</div>
+      The default query match all documents and can be used to re-index the whole repository.</div>
     <div class="bubbleBox">
       NXQL query:
       <h:inputText name="j_nxql" value="#{esAdmin.nxql}"/>
       <h:commandButton action="#{esAdmin.startReindex}" value="Re-index"/>
     </div>
 
-    <h4>Re-index from a root document</h4>
-    <div class="detail">Use this to reindex a document and its children. The default id is the
-      Root repository node, it will not reindex Version and Relation and it is much slower
-      than re-indexing using a NXQL query.
-    </div>
+    <h4>Re-indexing a document</h4>
+    <div class="detail">This will re-index a document and its children recursively.</div>
     <div class="bubbleBox">
       Document id:
       <h:inputText name="j_docid" value="#{esAdmin.rootId}"/>
       <h:commandButton action="#{esAdmin.startReindexFrom}" value="Re-index"/>
     </div>
-    <h4>Flush Elasticsearch index</h4>
 
-    <div class="detail">Use this to make sure Elasticsearch flush index to disk.</div>
+    <h3>Other operations</h3>
+
+    <h4>Flush all Elasticsearch indexes</h4>
+    <div class="detail">Use this to make sure Elasticsearch flush its indexes to disk.</div>
     <div class="bubbleBox">
       <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
     </div>

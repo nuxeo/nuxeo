@@ -23,8 +23,10 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -96,7 +98,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             localNode = createEmbeddedNode(localConfig);
             client = connectToEmbedded();
         }
-        checkClient();
+        checkClusterHealth();
         log.info("ES Connected");
     }
 
@@ -188,7 +190,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         return ret;
     }
 
-    private void checkClient() {
+    private void checkClusterHealth() {
         if (client == null) {
             throw new IllegalStateException("No es client available");
         }
@@ -293,11 +295,18 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void initIndexes(boolean dropIfExists) {
+        indexInitDone = false;
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             initIndex(conf, dropIfExists);
         }
         log.info("ES Service ready");
         indexInitDone = true;
+    }
+
+    @Override
+    public List<String> getRepositoryNames() {
+        return Collections.unmodifiableList(new ArrayList<String>(indexNames
+                .keySet()));
     }
 
     void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
@@ -348,6 +357,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                     .execute().actionGet();
 
         }
+        // make sure the index is ready before returning
+        checkClusterHealth();
     }
 
     @Override
