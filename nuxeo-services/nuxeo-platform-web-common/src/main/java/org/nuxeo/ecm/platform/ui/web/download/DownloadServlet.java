@@ -55,7 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Simple download servlet used for big files that can not be downloaded from
  * within the JSF context (because of buffered ResponseWrapper).
- * 
+ *
  * @author tiry
  */
 public class DownloadServlet extends HttpServlet {
@@ -180,7 +180,7 @@ public class DownloadServlet extends HttpServlet {
                 }
                 return blob;
             }
-        } catch (Exception e) {
+        } catch (ClientException | NumberFormatException e) {
             if (tx) {
                 TransactionHelper.setTransactionRollbackOnly();
             }
@@ -214,7 +214,7 @@ public class DownloadServlet extends HttpServlet {
             sb.append(VirtualHostHelper.getServerURL(req));
             sb.append(downloadUrl.substring(1));
             resp.getWriter().write(sb.toString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ServletException(e);
         }
     }
@@ -344,8 +344,6 @@ public class DownloadServlet extends HttpServlet {
 
         } catch (IOException ioe) {
             handleClientDisconnect(ioe);
-        } catch (Exception e) {
-            throw new ServletException(e);
         } finally {
             if (resp != null) {
                 try {
@@ -379,11 +377,9 @@ public class DownloadServlet extends HttpServlet {
         String tmpFileName = pathParts[0];
         File tmpZip = new File(System.getProperty("java.io.tmpdir") + "/"
                 + tmpFileName);
-        FileBlob zipBlob = new FileBlob(tmpZip);
         try {
+            FileBlob zipBlob = new FileBlob(tmpZip);
             downloadBlob(req, resp, zipBlob, "clipboard.zip");
-        } catch (Exception e) {
-            throw new ServletException(e);
         } finally {
             tmpZip.delete();
         }

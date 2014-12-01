@@ -228,7 +228,7 @@ public class CoreQueryDocumentPageProvider extends
                         }
                     }
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 error = e;
                 errorMessage = e.getMessage();
                 log.warn(e.getMessage(), e);

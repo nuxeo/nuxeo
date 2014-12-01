@@ -34,8 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ConvertHelper {
 
-    protected String findConverter(Blob blob, String destMimeType)
-            throws Exception {
+    protected String findConverter(Blob blob, String destMimeType) {
         MimetypeRegistry mtr = Framework.getLocalService(MimetypeRegistry.class);
         String srcMt = mtr.getMimetypeFromFilenameAndBlobWithDefault(
                 blob.getFilename(), blob, blob.getMimeType());
@@ -45,7 +44,7 @@ public class ConvertHelper {
     }
 
     protected Blob applyConverter(Blob blob, String converter,
-            String destMimeType,  Map<String, Serializable> params) throws Exception {
+            String destMimeType,  Map<String, Serializable> params) {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         if (params == null ) {
             params = new HashMap<String, Serializable>();
@@ -67,7 +66,7 @@ public class ConvertHelper {
         }
     }
 
-    public Blob convertBlob(Blob blob, String mimeType) throws Exception {
+    public Blob convertBlob(Blob blob, String mimeType) {
         String converter = findConverter(blob, mimeType);
         if (converter != null) {
             return applyConverter(blob, converter, mimeType, null);
@@ -75,7 +74,7 @@ public class ConvertHelper {
         return blob;
     }
 
-    public Blob convertBlob(Blob blob, String mimeType, Map<String, Serializable> params) throws Exception {
+    public Blob convertBlob(Blob blob, String mimeType, Map<String, Serializable> params) {
         String converter = findConverter(blob, mimeType);
         if (converter != null) {
             return applyConverter(blob, converter, mimeType, params);

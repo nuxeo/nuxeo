@@ -18,15 +18,15 @@
  */
 package org.nuxeo.ecm.platform.mimetype;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
  * Exception raised when no matching mimetype entry can be found / guessed by
  * the service.
  *
  * @author ogrisel@nuxeo.com
  */
-public class MimetypeNotFoundException extends Exception {
-
-    private static final long serialVersionUID = 6349167520314589047L;
+public class MimetypeNotFoundException extends NuxeoException {
 
     public MimetypeNotFoundException() {
     }

@@ -95,7 +95,7 @@ public abstract class AbstractUnicityChecker {
                 existingDocuments = fileManager.findExistingDocumentWithFile(
                         session, doc2Check.getPathAsString(), digest,
                         session.getPrincipal());
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Error in FileManager unicity check execution", e);
                 continue;
             }
@@ -131,10 +131,10 @@ public abstract class AbstractUnicityChecker {
         props.put("duplicatedDocLocation", (Serializable) existingDocs);
 
         Event event = ctx.newEvent(DUPLICATED_FILE);
+        EventProducer producer = Framework.getService(EventProducer.class);
         try {
-            EventProducer producer = Framework.getService(EventProducer.class);
             producer.fireEvent(event);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while sending duplication message", e);
         }
     }

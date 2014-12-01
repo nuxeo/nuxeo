@@ -37,6 +37,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -83,23 +84,11 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 options);
         random = new Random(System.currentTimeMillis());
 
-        try {
-            manager = Framework.getService(UserManager.class);
-            if (manager == null) {
-                log.info("UserManager implementation not found");
-            }
-        } catch (Exception e) {
-            log.error("UserManager implementation not found", e);
-        }
+        manager = Framework.getService(UserManager.class);
         log.debug("NuxeoLoginModule initialized");
 
-        try {
-            final RuntimeService runtime = Framework.getRuntime();
-            loginPluginManager = (LoginPluginRegistry) runtime
-                    .getComponent(LoginPluginRegistry.NAME);
-        } catch (Throwable t) {
-            log.error("Unable to load Plugin Registry : " + t.getMessage());
-        }
+        final RuntimeService runtime = Framework.getRuntime();
+        loginPluginManager = (LoginPluginRegistry) runtime.getComponent(LoginPluginRegistry.NAME);
     }
 
     /**
@@ -204,50 +193,40 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             }
         }
 
-        try {
-            // Login via the Web Interface : may be using a plugin
-            if (userIdent != null && userIdent.containsValidIdentity()) {
-                NuxeoPrincipal nxp = validateUserIdentity(userIdent);
+        // Login via the Web Interface : may be using a plugin
+        if (userIdent != null && userIdent.containsValidIdentity()) {
+            NuxeoPrincipal nxp = validateUserIdentity(userIdent);
 
-                if (nxp != null) {
-                    sharedState.put("javax.security.auth.login.name", nxp.getName());
-                    sharedState.put("javax.security.auth.login.password", userIdent);
-                }
-                return nxp;
+            if (nxp != null) {
+                sharedState.put("javax.security.auth.login.name", nxp.getName());
+                sharedState.put("javax.security.auth.login.password", userIdent);
             }
+            return nxp;
+        }
 
-            if (LoginComponent.isSystemLogin(principal)) {
-                return new SystemPrincipal(principal.getName());
+        if (LoginComponent.isSystemLogin(principal)) {
+            return new SystemPrincipal(principal.getName());
+        }
+        // if (principal instanceof NuxeoPrincipal) { // a nuxeo principal
+        // return validatePrincipal((NuxeoPrincipal) principal);
+        // } else
+        if (principal != null) { // a non null principal
+            String password = null;
+            if (credential instanceof char[]) {
+                password = new String((char[]) credential);
+            } else if (credential != null) {
+                password = credential.toString();
             }
-            // if (principal instanceof NuxeoPrincipal) { // a nuxeo principal
-            // return validatePrincipal((NuxeoPrincipal) principal);
-            // } else
-            if (principal != null) { // a non null principal
-                String password = null;
-                if (credential instanceof char[]) {
-                    password = new String((char[]) credential);
-                } else if (credential != null) {
-                    password = credential.toString();
-                }
-                return validateUsernamePassword(principal.getName(), password);
-            } else { // we don't have a principal - try the username &
-                // password
-                String username = nc.getName();
-                if (username == null) {
-                    return null;
-                }
-                char[] password = pc.getPassword();
-                return validateUsernamePassword(username, password != null ? new String(
-                        password)
-                        : null);
+            return validateUsernamePassword(principal.getName(), password);
+        } else { // we don't have a principal - try the username &
+            // password
+            String username = nc.getName();
+            if (username == null) {
+                return null;
             }
-        } catch (LoginException e) {
-            throw e;
-        } catch (Exception e) {
-            // jboss catches LoginException, so show it at least in the logs
-            String msg = "Authentication failed: " + e.getMessage();
-            log.error(msg, e);
-            throw (LoginException) new LoginException(msg).initCause(e);
+            char[] password = pc.getPassword();
+            return validateUsernamePassword(username,
+                    password != null ? new String(password) : null);
         }
     }
 
@@ -305,7 +284,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
             return principal;
-        } catch (Exception e) {
+        } catch (ClientException | LoginException e) {
             log.error("createIdentity failed", e);
             LoginException le = new LoginException("createIdentity failed for user " + username);
             le.initCause(e);
@@ -314,7 +293,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     protected NuxeoPrincipal validateUserIdentity(UserIdentificationInfo userIdent)
-            throws Exception {
+            throws LoginException {
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
             // we don't use a specific plugin
@@ -361,7 +340,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     protected NuxeoPrincipal validateUsernamePassword(String username, String password)
-            throws Exception {
+            throws LoginException {
         if (!manager.checkUsernamePassword(username, password)) {
             return null;
         }

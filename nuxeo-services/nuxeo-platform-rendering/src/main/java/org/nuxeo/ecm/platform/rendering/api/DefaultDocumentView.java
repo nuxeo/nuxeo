@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.SchemaTemplate;
@@ -54,7 +55,7 @@ public class DefaultDocumentView implements DocumentView {
     public interface Field {
         String getName();
 
-        Object getValue(DocumentModel doc) throws Exception;
+        Object getValue(DocumentModel doc);
     }
 
     protected final Map<String, Field> fields;
@@ -118,7 +119,7 @@ public class DefaultDocumentView implements DocumentView {
         return fields.get(name);
     }
 
-    public Object get(DocumentModel doc, String name) throws Exception {
+    public Object get(DocumentModel doc, String name) throws PropertyException {
         Field field = fields.get(name);
         if (field != null) {
             return field.getValue(doc);
@@ -157,7 +158,7 @@ public class DefaultDocumentView implements DocumentView {
             return "session";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getCoreSession();
         }
     };
@@ -167,7 +168,7 @@ public class DefaultDocumentView implements DocumentView {
             return "id";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getId();
         }
     };
@@ -177,7 +178,7 @@ public class DefaultDocumentView implements DocumentView {
             return "name";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getName();
         }
     };
@@ -187,7 +188,7 @@ public class DefaultDocumentView implements DocumentView {
             return "path";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getPathAsString();
         }
     };
@@ -197,7 +198,7 @@ public class DefaultDocumentView implements DocumentView {
             return "type";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getType();
         }
     };
@@ -207,7 +208,7 @@ public class DefaultDocumentView implements DocumentView {
             return "schemas";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getSchemas();
         }
     };
@@ -217,7 +218,7 @@ public class DefaultDocumentView implements DocumentView {
             return "facets";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getFacets();
         }
     };
@@ -227,7 +228,7 @@ public class DefaultDocumentView implements DocumentView {
             return "state";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getCurrentLifeCycleState();
         }
     };
@@ -237,7 +238,7 @@ public class DefaultDocumentView implements DocumentView {
             return "isLocked";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.isLocked();
         }
     };
@@ -247,7 +248,7 @@ public class DefaultDocumentView implements DocumentView {
             return "lifeCycleState";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getCurrentLifeCycleState();
         }
     };
@@ -257,7 +258,7 @@ public class DefaultDocumentView implements DocumentView {
             return "lifeCyclePolicy";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getLifeCyclePolicy();
         }
     };
@@ -267,7 +268,7 @@ public class DefaultDocumentView implements DocumentView {
             return "allowedStateTransitions";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getAllowedStateTransitions();
         }
     };
@@ -277,7 +278,7 @@ public class DefaultDocumentView implements DocumentView {
             return "isFolder";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getFacets().contains(FacetNames.FOLDERISH);
         }
     };
@@ -287,7 +288,7 @@ public class DefaultDocumentView implements DocumentView {
             return "title";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getTitle();
         }
     };
@@ -297,7 +298,7 @@ public class DefaultDocumentView implements DocumentView {
             return "author";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             try {
                 return doc.getPropertyValue("dc:creator");
             } catch (PropertyNotFoundException e) {
@@ -312,7 +313,7 @@ public class DefaultDocumentView implements DocumentView {
             return "created";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             try {
                 Calendar cal = (Calendar) doc.getPropertyValue("dc:created");
                 if (cal != null) {
@@ -330,7 +331,7 @@ public class DefaultDocumentView implements DocumentView {
             return "modified";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             try {
                 Calendar cal = (Calendar) doc.getPropertyValue("dc:modified");
                 if (cal != null) {
@@ -348,7 +349,7 @@ public class DefaultDocumentView implements DocumentView {
             return "content";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             try {
                 Blob blob = (Blob) doc.getPropertyValue("file:content");
                 if (blob != null) {
@@ -366,7 +367,7 @@ public class DefaultDocumentView implements DocumentView {
             return "sessionId";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getSessionId();
         }
     };
@@ -376,7 +377,7 @@ public class DefaultDocumentView implements DocumentView {
             return "repository";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getRepositoryName();
         }
     };
@@ -386,7 +387,7 @@ public class DefaultDocumentView implements DocumentView {
             return "parent";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getParentDocument(doc.getRef());
         }
@@ -397,7 +398,7 @@ public class DefaultDocumentView implements DocumentView {
             return "children";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getChildren(doc.getRef());
         }
@@ -408,7 +409,7 @@ public class DefaultDocumentView implements DocumentView {
             return "ref";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getRef();
         }
     };
@@ -418,7 +419,7 @@ public class DefaultDocumentView implements DocumentView {
             return "versions";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getVersions(doc.getRef());
         }
@@ -429,7 +430,7 @@ public class DefaultDocumentView implements DocumentView {
             return "proxies";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             CoreSession session = doc.getCoreSession();
             return session.getProxies(doc.getRef(), null);
         }
@@ -440,7 +441,7 @@ public class DefaultDocumentView implements DocumentView {
             return "versionLabel";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getVersionLabel();
         }
     };
@@ -450,7 +451,7 @@ public class DefaultDocumentView implements DocumentView {
             return "sourceId";
         }
 
-        public Object getValue(DocumentModel doc) throws Exception {
+        public Object getValue(DocumentModel doc) {
             return doc.getSourceId();
         }
     };

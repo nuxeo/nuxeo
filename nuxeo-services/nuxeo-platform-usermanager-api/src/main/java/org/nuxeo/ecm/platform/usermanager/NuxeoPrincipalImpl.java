@@ -340,12 +340,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public void updateAllGroups() throws ClientException {
-        UserManager userManager;
-        try {
-            userManager = Framework.getService(UserManager.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        UserManager userManager = Framework.getService(UserManager.class);
         Set<String> checkedGroups = new HashSet<String>();
         List<String> groupsToProcess = new ArrayList<String>();
         List<String> resultingGroups = new ArrayList<String>();

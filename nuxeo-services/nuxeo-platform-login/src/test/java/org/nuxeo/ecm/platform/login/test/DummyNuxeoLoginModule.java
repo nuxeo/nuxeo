@@ -61,7 +61,7 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  * user. The aim is to not use the user manager. Useful for directories tests
  * where it's not possible to use the usermanager in the test due to the cyclic
  * dependency between projects
- * 
+ *
  * @since 6.0
  */
 public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
@@ -77,7 +77,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     private boolean useUserIdentificationInfoCB = false;
 
     public static final String ADMINISTRATOR_USERNAME = "Administrator";
-    
+
     public final List<String> groupsToAdd = new ArrayList<String>();
 
     @Override
@@ -289,7 +289,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             if (ADMINISTRATOR_USERNAME.equalsIgnoreCase(username)) {
                 isAdmin = true;
             }
-            
+
             // don't retrieve from usernamanger, create a dummy principal
             principal = new NuxeoPrincipalImpl(username,false,isAdmin);
 
@@ -307,7 +307,7 @@ public class DummyNuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     protected NuxeoPrincipal validateUserIdentity(
-            UserIdentificationInfo userIdent) throws Exception {
+            UserIdentificationInfo userIdent) throws LoginException {
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
             // we don't use a specific plugin

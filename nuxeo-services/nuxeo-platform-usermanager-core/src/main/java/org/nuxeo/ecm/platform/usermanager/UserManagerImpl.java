@@ -766,13 +766,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected void notify(String userOrGroupName, String eventId)
             throws ClientException {
-        try {
-            EventService eventService = Framework.getService(EventService.class);
-            eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this,
-                    userOrGroupName));
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        EventService eventService = Framework.getService(EventService.class);
+        eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this,
+                userOrGroupName));
     }
 
     /**
@@ -827,7 +823,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 if (groupDir != null) {
                     groupDir.close();
                 }
-            } catch (Exception e) {
+            } catch (DirectoryException e) {
+                log.error(e, e);
             }
         }
     }
@@ -846,7 +843,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 if (userDir != null) {
                     userDir.close();
                 }
-            } catch (Exception e) {
+            } catch (DirectoryException e) {
+                log.error(e, e);
             }
         }
     }
@@ -1101,12 +1099,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     protected List<String> getLeafPermissions(String perm)
             throws ClientException {
         ArrayList<String> permissions = new ArrayList<String>();
-        PermissionProvider permissionProvider;
-        try {
-            permissionProvider = Framework.getService(PermissionProvider.class);
-        } catch (Exception e) {
-            throw new Error("An unexpected error occured", e);
-        }
+        PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
         if (subpermissions == null || subpermissions.length <= 0) {
             // it's a leaf
@@ -1608,6 +1601,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     @Override
     public String[] getUsersForPermission(String perm, ACP acp,
             DocumentModel context) {
+        PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         // using a hashset to avoid duplicates
         HashSet<String> usernames = new HashSet<String>();
 
@@ -1630,12 +1624,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 acePermissions = getLeafPermissions(ace.getPermission());
                 // Everything is a special permission (not compound)
                 if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
-                    try {
-                        acePermissions = Arrays.asList(Framework.getService(
-                                PermissionProvider.class).getPermissions());
-                    } catch (Exception e) {
-                        throw new Error("An unexpected error occured", e);
-                    }
+                    acePermissions = Arrays.asList(permissionProvider.getPermissions());
                 }
 
                 if (acePermissions.containsAll(currentPermissions)) {

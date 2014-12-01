@@ -95,7 +95,7 @@ public class DocumentViewCodecService extends DefaultComponent implements
                 // Thread context loader is not working in isolated EARs
                 codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader().loadClass(
                         className).newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 String msg = String.format(
                         "Caught error when instantiating codec '%s' with "
                                 + "class '%s' ", codecName, className);

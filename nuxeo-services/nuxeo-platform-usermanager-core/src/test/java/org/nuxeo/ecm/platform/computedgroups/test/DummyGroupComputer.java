@@ -32,8 +32,7 @@ public class DummyGroupComputer extends AbstractGroupComputer {
         grpNames.add("Grp2");
     }
 
-    public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal)
-            throws Exception {
+    public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
 
         List<String> grps = new ArrayList<String>();
         if (nuxeoPrincipal.getName().contains("1")) {
@@ -46,7 +45,7 @@ public class DummyGroupComputer extends AbstractGroupComputer {
         return grps;
     }
 
-    public List<String> getGroupMembers(String groupName) throws Exception {
+    public List<String> getGroupMembers(String groupName) {
         List<String> names = new ArrayList<String>();
 
         if ("Grp1".equals(groupName)) {
@@ -59,15 +58,15 @@ public class DummyGroupComputer extends AbstractGroupComputer {
         return names;
     }
 
-    public List<String> getParentsGroupNames(String groupName) throws Exception {
+    public List<String> getParentsGroupNames(String groupName) {
         return null;
     }
 
-    public List<String> getSubGroupsNames(String groupName) throws Exception {
+    public List<String> getSubGroupsNames(String groupName) {
         return null;
     }
 
-    public List<String> getAllGroupIds() throws Exception {
+    public List<String> getAllGroupIds() {
         return grpNames;
     }
 

@@ -38,12 +38,8 @@ public class TypeInfoAdapter implements TypeInfo {
     private final Type type;
 
     public TypeInfoAdapter(DocumentModel doc) {
-        try {
-            TypeManager mgr = Framework.getService(TypeManager.class);
-            type = mgr.getType(doc.getType());
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get document type", e);
-        }
+        TypeManager mgr = Framework.getService(TypeManager.class);
+        type = mgr.getType(doc.getType());
     }
 
     public String[] getActions() {

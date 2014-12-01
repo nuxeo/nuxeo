@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -13,6 +13,8 @@
  */
 
 package org.nuxeo.ecm.platform.rendering.wiki;
+
+import java.io.IOException;
 
 import org.wikimodel.wem.WikiParameters;
 
@@ -30,12 +32,12 @@ public class TocMacro implements WikiMacro {
     }
 
     public void eval(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws Exception {
+            WikiSerializerHandler serializer) throws IOException {
         evalInline(params, content, serializer);
     }
 
     public void evalInline(WikiParameters params, String content,
-            WikiSerializerHandler serializer) throws Exception {
+            WikiSerializerHandler serializer) throws IOException {
         serializer.writer.writeText(new TocText(content));
     }
 

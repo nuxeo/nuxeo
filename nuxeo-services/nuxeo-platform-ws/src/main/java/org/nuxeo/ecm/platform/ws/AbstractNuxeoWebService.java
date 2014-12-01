@@ -23,6 +23,7 @@ import javax.annotation.security.PermitAll;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -55,17 +56,9 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      *
      * @return a <code>WSRemotiungSessionManager</code> service
      */
-    protected WSRemotingSessionManager getSessionsManager() throws ClientException {
+    protected WSRemotingSessionManager getSessionsManager() {
         if (sessionsManager == null) {
-            try {
-                sessionsManager = Framework.getService(WSRemotingSessionManager.class);
-            } catch (Exception wse) {
-                throw new ClientException(wse);
-            }
-        }
-        if (sessionsManager == null) {
-            throw new ClientException(
-                    "Cannot find Web Service remoting session manager...");
+            sessionsManager = Framework.getService(WSRemotingSessionManager.class);
         }
         return sessionsManager;
     }
@@ -84,7 +77,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             }
             sid = _connect(username, password, repositoryName);
             loginContext.logout();
-        } catch (Exception e) {
+        } catch (LoginException e) {
             throw new ClientException(e.getMessage(), e);
         }
         return sid;
@@ -116,21 +109,14 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      */
     private String _connect(String username, String password,
             String repositoryName) throws ClientException {
-        String sid = null;
-        try {
-            // Login before doing anything.
-            login(username, password);
-            CoreSession session = CoreInstance.openCoreSession(repositoryName);
-            sid = session.getSessionId();
-            UserManager userMgr = getUserManager();
-            WSRemotingSession rs = new WSRemotingSessionImpl(session, userMgr,
-                    repositoryName, username, password);
-            getSessionsManager().addSession(sid, rs);
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException(e.getMessage());
-        }
+        // Login before doing anything.
+        login(username, password);
+        CoreSession session = CoreInstance.openCoreSession(repositoryName);
+        String sid = session.getSessionId();
+        UserManager userMgr = Framework.getService(UserManager.class);
+        WSRemotingSession rs = new WSRemotingSessionImpl(session, userMgr,
+                repositoryName, username, password);
+        getSessionsManager().addSession(sid, rs);
         return sid;
     }
 
@@ -151,7 +137,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             throws ClientException {
         try {
             Framework.login(username, password);
-        } catch (Exception e) {
+        } catch (LoginException e) {
             throw new ClientException("Login failed for " + username, e);
         }
     }
@@ -170,16 +156,6 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
         }
         login(rs.getUsername(), rs.getPassword());
         return rs;
-    }
-
-    /**
-     * Returns the user manager service.
-     *
-     * @return the user manager service.
-     * @throws Exception
-     */
-    protected UserManager getUserManager() throws Exception {
-        return Framework.getService(UserManager.class);
     }
 
 }

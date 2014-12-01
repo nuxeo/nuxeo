@@ -81,7 +81,7 @@ public class BlobTemplate extends PropertyWrapper implements
                 list.add("");
             }
             return (TemplateCollectionModel) wrapper.wrap(list);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new TemplateModelException(
                     "Failed to adapt complex property values", e);
         }

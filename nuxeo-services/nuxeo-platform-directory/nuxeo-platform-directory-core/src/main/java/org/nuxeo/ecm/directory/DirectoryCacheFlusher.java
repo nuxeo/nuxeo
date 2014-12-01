@@ -57,7 +57,7 @@ public class DirectoryCacheFlusher implements EventListener {
                     directory.getCache().invalidateAll();
                 }
             }
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
             log.error("Error while flushing the directory caches", e);
         }
     }

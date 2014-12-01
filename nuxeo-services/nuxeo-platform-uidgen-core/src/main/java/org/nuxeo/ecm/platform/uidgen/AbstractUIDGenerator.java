@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
@@ -85,7 +86,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
             Object val = document.getProperty(getSchemaName(propName),
                     getFieldName(propName));
             return val != null;
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             return false;
         }
     }
@@ -101,7 +102,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
             if (val instanceof String) {
                 return (String) val;
             }
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             throw new DocumentException(e);
         }
 
@@ -115,7 +116,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
             try {
                 document.setProperty(getSchemaName(propertyName),
                         getFieldName(propertyName), uid);
-            } catch (Exception e) {
+            } catch (PropertyException e) {
                 throw new DocumentException(String.format(
                         "Cannot set uid %s on property %s for doc %s", uid,
                         propertyName, document));
@@ -127,12 +128,8 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
     private static String getSchemaName(String propertyName) {
         String[] s = propertyName.split(":");
         String prefix = s[0];
-        Schema schema = null;
-        try {
-            SchemaManager tm = Framework.getService(SchemaManager.class);
-            schema = tm.getSchemaFromPrefix(prefix);
-        } catch (Exception e) {
-        }
+        SchemaManager tm = Framework.getService(SchemaManager.class);
+        Schema schema = tm.getSchemaFromPrefix(prefix);
         if (schema == null) {
             // fall back on prefix as it may be the schema name
             return prefix;

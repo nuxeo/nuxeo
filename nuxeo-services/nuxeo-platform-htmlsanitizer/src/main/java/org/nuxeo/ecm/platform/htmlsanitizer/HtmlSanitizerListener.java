@@ -53,12 +53,7 @@ public class HtmlSanitizerListener implements EventListener {
         if (doc.hasFacet(FacetNames.IMMUTABLE)) {
             return;
         }
-        HtmlSanitizerService sanitizer;
-        try {
-            sanitizer = Framework.getService(HtmlSanitizerService.class);
-        } catch (Exception e) {
-            throw new ClientException("Cannot sanitize", e);
-        }
+        HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
         sanitizer.sanitizeDocument(doc);
     }
 

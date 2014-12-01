@@ -93,123 +93,130 @@ public class CSVZipImporter extends AbstractFileImporter {
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
-        File tmp = File.createTempFile("zipcsv-importer", null);
-        content.transferTo(tmp);
-        ZipFile zip = getArchiveFileIfValid(tmp);
-        if (zip == null) {
-            tmp.delete();
-            return null;
-        }
+        File tmp = null;
+        try {
+            tmp = File.createTempFile("zipcsv-importer", null);
+            content.transferTo(tmp);
+            ZipFile zip = getArchiveFileIfValid(tmp);
+            if (zip == null) {
+                return null;
+            }
 
-        DocumentModel container = documentManager.getDocument(new PathRef(path));
+            DocumentModel container = documentManager.getDocument(new PathRef(
+                    path));
 
-        ZipEntry index = zip.getEntry(MARKER);
-        try (Reader reader = new InputStreamReader(zip.getInputStream(index));
-                CSVParser csvParser = new CSVParser(reader,
-                        CSVFormat.DEFAULT.withHeader());) {
+            ZipEntry index = zip.getEntry(MARKER);
+            try (Reader reader = new InputStreamReader(
+                    zip.getInputStream(index));
+                    CSVParser csvParser = new CSVParser(reader,
+                            CSVFormat.DEFAULT.withHeader());) {
 
-            Map<String, Integer> header = csvParser.getHeaderMap();
-            for (CSVRecord csvRecord : csvParser) {
-                String type = null;
-                String id = null;
-                Map<String, String> stringValues = new HashMap<>();
-                for (String headerValue : header.keySet()) {
-                    String lineValue = csvRecord.get(headerValue);
-                    if ("type".equalsIgnoreCase(headerValue)) {
-                        type = lineValue;
-                    } else if ("id".equalsIgnoreCase(headerValue)) {
-                        id = lineValue;
-                    } else {
-                        stringValues.put(headerValue, lineValue);
-                    }
-                }
-
-                boolean updateDoc = false;
-                // get doc for update
-                DocumentModel targetDoc = null;
-                if (id != null) {
-                    // update ?
-                    String targetPath = new Path(path).append(id).toString();
-                    if (documentManager.exists(new PathRef(targetPath))) {
-                        targetDoc = documentManager.getDocument(new PathRef(
-                                targetPath));
-                        updateDoc = true;
-                    }
-                }
-
-                // create doc if needed
-                if (targetDoc == null) {
-                    if (type == null) {
-                        log.error("Can not create doc without a type, skipping line");
-                        continue;
-                    }
-
-                    if (id == null) {
-                        id = IdUtils.generateStringId();
-                    }
-                    targetDoc = documentManager.createDocumentModel(path, id,
-                            type);
-                }
-
-                // update doc properties
-                @SuppressWarnings("null")
-                DocumentType targetDocType = targetDoc.getDocumentType();
-                for (String fname : stringValues.keySet()) {
-
-                    String stringValue = stringValues.get(fname);
-                    Field field = null;
-                    boolean usePrefix = false;
-                    String schemaName = null;
-                    String fieldName = null;
-
-                    if (fname.contains(":")) {
-                        if (targetDocType.hasField(fname)) {
-                            field = targetDocType.getField(fname);
-                            usePrefix = true;
-                        }
-                    } else if (fname.contains(".")) {
-                        String[] parts = fname.split("\\.");
-                        schemaName = parts[0];
-                        fieldName = parts[1];
-                        if (targetDocType.hasSchema(schemaName)) {
-                            field = targetDocType.getField(fieldName);
-                            usePrefix = false;
-                        }
-                    } else {
-                        if (targetDocType.hasField(fname)) {
-                            field = targetDocType.getField(fname);
-                            usePrefix = false;
-                            schemaName = field.getDeclaringType().getSchemaName();
+                Map<String, Integer> header = csvParser.getHeaderMap();
+                for (CSVRecord csvRecord : csvParser) {
+                    String type = null;
+                    String id = null;
+                    Map<String, String> stringValues = new HashMap<>();
+                    for (String headerValue : header.keySet()) {
+                        String lineValue = csvRecord.get(headerValue);
+                        if ("type".equalsIgnoreCase(headerValue)) {
+                            type = lineValue;
+                        } else if ("id".equalsIgnoreCase(headerValue)) {
+                            id = lineValue;
+                        } else {
+                            stringValues.put(headerValue, lineValue);
                         }
                     }
 
-                    if (field != null) {
-                        Serializable fieldValue = getFieldValue(field,
-                                stringValue, zip);
+                    boolean updateDoc = false;
+                    // get doc for update
+                    DocumentModel targetDoc = null;
+                    if (id != null) {
+                        // update ?
+                        String targetPath = new Path(path).append(id).toString();
+                        if (documentManager.exists(new PathRef(targetPath))) {
+                            targetDoc = documentManager.getDocument(new PathRef(
+                                    targetPath));
+                            updateDoc = true;
+                        }
+                    }
 
-                        if (fieldValue != null) {
-                            if (usePrefix) {
-                                targetDoc.setPropertyValue(fname, fieldValue);
-                            } else {
-                                targetDoc.setProperty(schemaName, fieldName,
-                                        fieldValue);
+                    // create doc if needed
+                    if (targetDoc == null) {
+                        if (type == null) {
+                            log.error("Can not create doc without a type, skipping line");
+                            continue;
+                        }
+
+                        if (id == null) {
+                            id = IdUtils.generateStringId();
+                        }
+                        targetDoc = documentManager.createDocumentModel(path,
+                                id, type);
+                    }
+
+                    // update doc properties
+                    DocumentType targetDocType = targetDoc.getDocumentType();
+                    for (String fname : stringValues.keySet()) {
+
+                        String stringValue = stringValues.get(fname);
+                        Field field = null;
+                        boolean usePrefix = false;
+                        String schemaName = null;
+                        String fieldName = null;
+
+                        if (fname.contains(":")) {
+                            if (targetDocType.hasField(fname)) {
+                                field = targetDocType.getField(fname);
+                                usePrefix = true;
+                            }
+                        } else if (fname.contains(".")) {
+                            String[] parts = fname.split("\\.");
+                            schemaName = parts[0];
+                            fieldName = parts[1];
+                            if (targetDocType.hasSchema(schemaName)) {
+                                field = targetDocType.getField(fieldName);
+                                usePrefix = false;
+                            }
+                        } else {
+                            if (targetDocType.hasField(fname)) {
+                                field = targetDocType.getField(fname);
+                                usePrefix = false;
+                                schemaName = field.getDeclaringType().getSchemaName();
+                            }
+                        }
+
+                        if (field != null) {
+                            Serializable fieldValue = getFieldValue(field,
+                                    stringValue, zip);
+
+                            if (fieldValue != null) {
+                                if (usePrefix) {
+                                    targetDoc.setPropertyValue(fname,
+                                            fieldValue);
+                                } else {
+                                    targetDoc.setProperty(schemaName,
+                                            fieldName, fieldValue);
+                                }
                             }
                         }
                     }
-                }
-                if (updateDoc) {
-                    documentManager.saveDocument(targetDoc);
-                } else {
-                    documentManager.createDocument(targetDoc);
+                    if (updateDoc) {
+                        documentManager.saveDocument(targetDoc);
+                    } else {
+                        documentManager.createDocument(targetDoc);
+                    }
                 }
             }
-            tmp.delete();
+            return container;
+        } finally {
+            if (tmp != null) {
+                tmp.delete();
+            }
         }
-        return container;
     }
 
     protected Serializable getFieldValue(Field field, String stringValue,
-            ZipFile zip) throws IOException {
+            ZipFile zip) {
         Serializable fieldValue = null;
         Type type = field.getType();
         if (type.isSimpleType()) {
@@ -246,7 +253,12 @@ public class CSVZipImporter extends AbstractFileImporter {
             if (TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
                 ZipEntry blobIndex = zip.getEntry(stringValue);
                 if (blobIndex != null) {
-                    InputStream blobStream = zip.getInputStream(blobIndex);
+                    InputStream blobStream;
+                    try {
+                        blobStream = zip.getInputStream(blobIndex);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     Blob blob = new InputStreamBlob(blobStream);
                     blob.setFilename(stringValue);
                     fieldValue = (Serializable) blob;

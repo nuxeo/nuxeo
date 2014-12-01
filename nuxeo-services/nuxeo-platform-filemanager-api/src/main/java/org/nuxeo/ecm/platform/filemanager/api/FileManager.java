@@ -52,7 +52,7 @@ public interface FileManager {
      */
     DocumentModel createDocumentFromBlob(CoreSession documentManager,
             Blob input, String path, boolean overwrite, String fullName)
-            throws Exception;
+            throws ClientException, IOException;
 
     /**
      * Just applies the same actions as creation but does not changes the doc
@@ -64,7 +64,7 @@ public interface FileManager {
      * @return the updated Document
      */
     DocumentModel updateDocumentFromBlob(CoreSession documentManager,
-            Blob input, String path, String fullName) throws Exception;
+            Blob input, String path, String fullName);
 
     /**
      * Creates a Folder.
@@ -74,7 +74,7 @@ public interface FileManager {
      * @return the Folder Created
      */
     DocumentModel createFolder(CoreSession documentManager, String fullname,
-            String path) throws Exception;
+            String path) throws ClientException, IOException;
 
     /**
      * Returns the list of document that are to be suggested to principalName as
@@ -83,8 +83,7 @@ public interface FileManager {
      *
      * @return the list of candidate containers
      */
-    DocumentModelList getCreationContainers(Principal principal, String docType)
-            throws Exception;
+    DocumentModelList getCreationContainers(Principal principal, String docType);
 
     /**
      * Returns the list of document that are to be suggested to the principal of
@@ -94,10 +93,7 @@ public interface FileManager {
      * @return the list of candidate containers
      */
     DocumentModelList getCreationContainers(CoreSession documentManager,
-            String docType) throws Exception;
-
-    String computeDigest(Blob blob) throws ClientException,
-            NoSuchAlgorithmException, IOException;
+            String docType);
 
     List<DocumentLocation> findExistingDocumentWithFile(
             CoreSession documentManager, String path, String digest,

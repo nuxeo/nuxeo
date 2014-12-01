@@ -51,18 +51,17 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getAllGroupIds() throws Exception {
+    public List<String> getAllGroupIds() {
         return new ArrayList<String>();
     }
 
     @Override
-    public List<String> getGroupMembers(String groupId) throws Exception {
+    public List<String> getGroupMembers(String groupId) {
         return new ArrayList<String>();
     }
 
     @Override
-    public List<String> getGroupsForUser(NuxeoPrincipalImpl user)
-            throws Exception {
+    public List<String> getGroupsForUser(NuxeoPrincipalImpl user) {
         String value = (String) user.getModel().getPropertyValue(xpath);
 
         if (value == null || "".equals(value.trim())) {
@@ -76,17 +75,17 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getParentsGroupNames(String arg0) throws Exception {
+    public List<String> getParentsGroupNames(String arg0) {
         return new ArrayList<String>();
     }
 
     @Override
-    public List<String> getSubGroupsNames(String arg0) throws Exception {
+    public List<String> getSubGroupsNames(String arg0) {
         return new ArrayList<String>();
     }
 
     @Override
-    public boolean hasGroup(String groupId) throws Exception {
+    public boolean hasGroup(String groupId) {
         return false;
     }
 }

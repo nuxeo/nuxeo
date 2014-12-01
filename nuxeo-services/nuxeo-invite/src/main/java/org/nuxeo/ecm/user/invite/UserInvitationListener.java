@@ -55,7 +55,7 @@ public class UserInvitationListener implements EventListener {
 
             }
 
-        } catch (Exception e) {
+        } catch (ClientException e) {
             event.markRollBack();
             throw new ClientException("Unable to complete registration", e);
         }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -40,7 +40,7 @@ public class NewMethod implements TemplateMethodModelEx {
             if (size == 1) {
                 return klass.newInstance();
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new TemplateModelException("Failed to isntantiate the object", e);
         }
         arguments.remove(0);
@@ -52,7 +52,7 @@ public class NewMethod implements TemplateMethodModelEx {
             if (params.length == size) { // try this one
                 try {
                     return ctor.newInstance(ar);
-                } catch (Throwable e) {
+                } catch (ReflectiveOperationException e) {
                     // continue
                 }
             }

@@ -105,8 +105,6 @@ public class XlsMimetypeSniffer implements MagicDetector {
             log.debug("MimeType detector : Not an excel file");
         } catch (IllegalArgumentException e) {
             log.debug("MimeType detector : Not an excel file");
-        } catch (Exception e) {
-            log.error(e, e);
         }
 
         return mimetypes;

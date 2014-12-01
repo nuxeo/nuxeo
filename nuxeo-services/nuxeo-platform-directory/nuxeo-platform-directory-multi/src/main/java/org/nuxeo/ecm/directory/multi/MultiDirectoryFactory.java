@@ -22,8 +22,6 @@ package org.nuxeo.ecm.directory.multi;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFactory;
@@ -40,10 +38,6 @@ public class MultiDirectoryFactory extends DefaultComponent implements
         DirectoryFactory {
 
     private static final String NAME = "org.nuxeo.ecm.directory.multi.MultiDirectoryFactory";
-
-    private static final Log log = LogFactory.getLog(MultiDirectoryFactory.class);
-
-    private static DirectoryService directoryService;
 
     protected MultiDirectoryRegistry directories;
 
@@ -67,26 +61,10 @@ public class MultiDirectoryFactory extends DefaultComponent implements
         directories = null;
     }
 
-    public static DirectoryService getDirectoryService() {
-        directoryService = (DirectoryService) Framework.getRuntime().getComponent(
-                DirectoryService.NAME);
-        if (directoryService == null) {
-            directoryService = Framework.getLocalService(DirectoryService.class);
-            if (directoryService == null) {
-                try {
-                    directoryService = Framework.getService(DirectoryService.class);
-                } catch (Exception e) {
-                    log.error("Can't find Directory Service", e);
-                }
-            }
-        }
-        return directoryService;
-    }
-
     @Override
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
-        DirectoryService dirService = getDirectoryService();
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
         for (Object contrib : contribs) {
             MultiDirectoryDescriptor descriptor = (MultiDirectoryDescriptor) contrib;
             directories.addContribution(descriptor);
@@ -104,10 +82,7 @@ public class MultiDirectoryFactory extends DefaultComponent implements
     public void unregisterExtension(Extension extension)
             throws DirectoryException {
         Object[] contribs = extension.getContributions();
-        DirectoryService dirService = getDirectoryService();
-        if (dirService == null) {
-            return;
-        }
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
         for (Object contrib : contribs) {
             MultiDirectoryDescriptor descriptor = (MultiDirectoryDescriptor) contrib;
             String directoryName = descriptor.name;

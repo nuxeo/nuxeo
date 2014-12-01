@@ -72,7 +72,7 @@ public class LoginPluginRegistry extends DefaultComponent {
     private void registerCBFactory(CallbackFactoryDescriptor cbfExtension) {
         try {
             callbackFactory = (CallbackFactory) cbfExtension.getClassName().newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Unable to create Factory", e);
         }
     }

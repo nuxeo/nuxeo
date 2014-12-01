@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 public class DocumentStateLoader implements DocumentLoader {
 
     protected static final Log log = LogFactory.getLog(DocumentStateLoader.class);
-    
+
     @Override
     public void fillProperties(DocumentModel doc,
             List<DocumentProperty> props, WSRemotingSession rs) throws ClientException {
@@ -52,7 +52,7 @@ public class DocumentStateLoader implements DocumentLoader {
                     DocumentProperty prop = new DocumentProperty(fn, fv.toString());
                     props.add(prop);
                 }
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Cannot fetch value for " + ref + ":" + fn, e);
             }
         }

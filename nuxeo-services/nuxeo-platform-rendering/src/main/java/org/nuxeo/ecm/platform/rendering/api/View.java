@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.platform.rendering.api;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -86,7 +87,7 @@ public class View {
             render(new OutputStreamWriter(out, charset));
         } catch (RenderingException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RenderingException(e);
         }
     }
@@ -101,7 +102,7 @@ public class View {
         } finally {
             try {
                 writer.flush();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new RenderingException(e);
             }
         }

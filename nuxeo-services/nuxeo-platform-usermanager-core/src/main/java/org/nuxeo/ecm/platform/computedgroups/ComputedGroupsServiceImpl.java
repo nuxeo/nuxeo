@@ -118,7 +118,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                 userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(
                         nuxeoPrincipal));
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting virtual groups for user "
                     + nuxeoPrincipal.getName(), e);
         }
@@ -157,7 +157,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                     return new NuxeoComputedGroup(groupName);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting virtual group " + groupName, e);
         }
         return null;
@@ -175,7 +175,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                     groupIds.addAll(foundGroupIds);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while listing virtual groups ids ", e);
             return new ArrayList<String>();
         }
@@ -196,7 +196,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                 }
             }
             return members;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting members of virtual group "
                     + groupName, e);
             return new ArrayList<String>();
@@ -217,7 +217,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                 }
             }
             return parents;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting parent of virtual group "
                     + groupName, e);
         }
@@ -237,7 +237,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                 }
             }
             return subGroups;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting subgroups of virtual group "
                     + groupName, e);
         }
@@ -270,7 +270,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                         fulltext));
             }
             Collections.sort(foundGroups);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while searching computed groups", e);
         }
         return foundGroups;

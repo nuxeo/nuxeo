@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import java.io.IOException;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,7 +37,7 @@ public abstract class AbstractFolderImporter implements FolderImporter {
 
     public DocumentModel create(CoreSession documentManager, String fullname,
             String path, boolean overwrite, TypeManager typeManager)
-            throws IOException, ClientException {
+            throws ClientException {
         // sample implementation to override in a custom FolderImporter
         // implementation
         return fileManagerService.defaultCreateFolder(documentManager,

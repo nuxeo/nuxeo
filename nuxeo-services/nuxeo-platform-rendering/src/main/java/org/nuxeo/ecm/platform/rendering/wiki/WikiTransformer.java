@@ -26,11 +26,13 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.ComplexPropertyTemplate;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
+import org.wikimodel.wem.WikiParserException;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
@@ -66,7 +68,7 @@ public class WikiTransformer implements TemplateDirectiveModel {
             throws RenderingException {
         try {
             serializer.serialize(reader, writer);
-        } catch (Exception e) {
+        } catch (IOException | WikiParserException e) {
             throw new RenderingException(e);
         }
     }
@@ -78,12 +80,10 @@ public class WikiTransformer implements TemplateDirectiveModel {
             InputStream in = url.openStream();
             reader = new BufferedReader(new InputStreamReader(in));
             transform(reader, writer);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RenderingException(e);
         } finally {
-            if (reader != null) {
-                try { reader.close(); } catch (Exception e) {}
-            }
+            IOUtils.closeQuietly(reader);
         }
     }
 

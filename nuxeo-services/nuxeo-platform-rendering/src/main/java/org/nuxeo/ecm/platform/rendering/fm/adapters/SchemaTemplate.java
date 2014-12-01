@@ -59,8 +59,6 @@ public class SchemaTemplate extends PropertyWrapper implements
             }
         } catch (ClientException e) {
             throw new TemplateModelException(e);
-        } catch (Exception e) {
-            throw new TemplateModelException(e);
         }
     }
 

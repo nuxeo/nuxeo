@@ -283,15 +283,6 @@ public abstract class AbstractFileImporter implements FileImporter {
         return order.compareTo(otherOrder);
     }
 
-    // TODO: remove
-    protected TypeManager getTypeService() throws ClientException {
-        try {
-            return Framework.getService(TypeManager.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-    }
-
     /**
      * Returns nearest container path
      * <p>

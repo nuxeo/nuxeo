@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.convert.plugins;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ import com.cforcoding.jmd.MarkDownParserAndSanitizer;
 
 /**
  * Markdown to HTML converter
- * 
+ *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
@@ -76,7 +77,7 @@ public class Md2HtmlConverter implements Converter {
                 outputBlob.setFilename(filename);
             }
             return new SimpleCachableBlobHolder(outputBlob);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ConversionException(
                     "Could not get Markdown string from BlobHolder", e);
         }

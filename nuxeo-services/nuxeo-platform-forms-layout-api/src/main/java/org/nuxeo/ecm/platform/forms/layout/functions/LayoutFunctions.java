@@ -45,15 +45,7 @@ public class LayoutFunctions {
 
     public static WidgetTypeDefinition getWidgetTypeDefinition(String category,
             String typeName) {
-        LayoutStore layoutService;
-        try {
-            layoutService = Framework.getService(LayoutStore.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        if (layoutService == null) {
-            throw new RuntimeException("Layout service not found");
-        }
+        LayoutStore layoutService = Framework.getService(LayoutStore.class);
         return layoutService.getWidgetTypeDefinition(category, typeName);
     }
 

@@ -293,12 +293,7 @@ public class NuxeoRequestControllerFilter implements Filter {
             log.error("Unable to find session lock, HttpSession may have been invalidated");
             return false;
         } else {
-            try {
-                lock.unlock();
-            } catch (Throwable t) {
-                log.debug("Unlock failed on request " + request.getRequestURI());
-                return false;
-            }
+            lock.unlock();
             if (request.getAttribute(SYNCED_REQUEST_FLAG) != null) {
                 request.removeAttribute(SYNCED_REQUEST_FLAG);
             }

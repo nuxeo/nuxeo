@@ -14,6 +14,7 @@
 
 package org.nuxeo.ecm.platform.rendering.fm;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.net.SocketException;
 import java.util.ResourceBundle;
@@ -40,6 +41,8 @@ import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -138,7 +141,7 @@ public class FreemarkerEngine implements RenderingEngine {
     public void setSharedVariable(String key, Object value) {
         try {
             cfg.setSharedVariable(key, value);
-        } catch (Exception e) {
+        } catch (TemplateModelException e) {
             log.error(e, e);
         }
     }
@@ -196,7 +199,7 @@ public class FreemarkerEngine implements RenderingEngine {
             bw.copyTo(writer);
         } catch (SocketException e) {
             log.debug("Output closed while rendering " + template);
-        } catch (Exception e) {
+        } catch (IOException | TemplateException e) {
             throw new RenderingException(e);
         }
     }

@@ -112,7 +112,7 @@ public class LDAPDirectoryDescriptor {
 
     @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
     public PermissionDescriptor[] permissions = null;
-    
+
     @XNode("emptyRefMarker")
     public String emptyRefMarker = "cn=emptyRef";
 
@@ -130,14 +130,14 @@ public class LDAPDirectoryDescriptor {
 
     @XNode("queryTimeLimit")
     private int queryTimeLimit = 0; // default to wait indefinitely
-    
+
     // Add attribute to allow to ignore referrals resolution
     /**
      * Since 5.9.4
      */
     @XNode("followReferrals")
     protected boolean followReferrals = true; // default to true
-    
+
     protected EntryAdaptor entryAdaptor;
 
     @XObject(value = "entryAdaptor")
@@ -373,7 +373,7 @@ public class LDAPDirectoryDescriptor {
             } else {
                 try {
                     exceptionProcessor = exceptionProcessorClass.newInstance();
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Unable to instanciate custom Exception handler",
                             e);
                     exceptionProcessor = new DefaultLdapExceptionProcessor();

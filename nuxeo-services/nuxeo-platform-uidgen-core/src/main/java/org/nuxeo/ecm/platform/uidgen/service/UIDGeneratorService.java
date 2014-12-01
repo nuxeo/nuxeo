@@ -91,14 +91,6 @@ public class UIDGeneratorService extends DefaultComponent {
         }
     }
 
-    public UIDSequencer getSequencer() {
-        try {
-            return Framework.getService(UIDSequencer.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Service is not available.");
-        }
-    }
-
     private void registerGenerators(Extension extension, final Object[] contribs) {
 
         // read the list of generators
@@ -171,7 +163,7 @@ public class UIDGeneratorService extends DefaultComponent {
         }
         // TODO maybe maintain an initialization state for generators
         // so the next call could be avoided (for each request)
-        generator.setSequencer(getSequencer());
+        generator.setSequencer(Framework.getService(UIDSequencer.class));
 
         return generator;
     }

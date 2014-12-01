@@ -30,8 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
 import net.sf.jmimemagic.MagicMatchNotFoundException;
+import net.sf.jmimemagic.MagicParseException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -247,7 +249,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 return getMimetypeFromFilename(file.getAbsolutePath());
             }
             throw new MimetypeNotFoundException(e.getMessage(), e);
-        } catch (Exception e) {
+        } catch (MagicException | MagicParseException | IOException e) {
             throw new MimetypeDetectionException(e.getMessage(), e);
         }
     }

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
 
 import freemarker.core.CollectionAndSequence;
@@ -66,7 +67,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
             if (value != DefaultDocumentView.UNKNOWN) {
                 return wrapper.wrap(value);
             }
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             throw new TemplateModelException("Failed to get document field: "
                     + key, e);
         }
@@ -97,13 +98,9 @@ public class DocumentTemplate implements TemplateHashModelEx,
 
     public Collection<Object> getRawValues() throws TemplateModelException {
         List<Object> values = new ArrayList<Object>();
-        try {
-            Collection<DefaultDocumentView.Field> fields = DefaultDocumentView.DEFAULT.getFields().values();
-            for (DefaultDocumentView.Field field : fields) {
-                values.add(field.getValue(doc));
-            }
-        } catch (Exception e) {
-            throw new TemplateModelException("failed to fetch field values", e);
+        Collection<DefaultDocumentView.Field> fields = DefaultDocumentView.DEFAULT.getFields().values();
+        for (DefaultDocumentView.Field field : fields) {
+            values.add(field.getValue(doc));
         }
         return values;
     }

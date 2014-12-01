@@ -52,8 +52,6 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
-import com.sun.star.uno.RuntimeException;
-
 /**
  * Converter based on JOD which uses an external OpenOffice process to do actual
  * conversions.
@@ -162,8 +160,7 @@ public class JODBasedConverter implements ExternalConverter {
      * @return DocumentFormat for the given file
      */
     private static DocumentFormat getSourceFormat(
-            OfficeDocumentConverter documentConverter, File file)
-            throws Exception {
+            OfficeDocumentConverter documentConverter, File file) {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimetypeStr = mimetypeRegistry.getMimetypeFromFile(file);
         DocumentFormat format = documentConverter.getFormatRegistry().getFormatByMediaType(
@@ -265,7 +262,7 @@ public class JODBasedConverter implements ExternalConverter {
                         + System.currentTimeMillis());
                 boolean created = myTmpDir.mkdir();
                 if (!created) {
-                    throw new ConversionException("Unable to create temp dir");
+                    throw new IOException("Unable to create temp dir");
                 }
 
                 outFile = new File(myTmpDir.getAbsolutePath() + "/"
@@ -274,7 +271,7 @@ public class JODBasedConverter implements ExternalConverter {
 
                 created = outFile.createNewFile();
                 if (!created) {
-                    throw new ConversionException("Unable to create temp file");
+                    throw new IOException("Unable to create temp file");
                 }
 
                 log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
@@ -318,7 +315,7 @@ public class JODBasedConverter implements ExternalConverter {
                 blobs.add(blob);
             }
             return new SimpleCachableBlobHolder(blobs);
-        } catch (Exception e) {
+        } catch (IOException e) {
             String msg = String.format(
                     "An error occurred trying to convert file %s to from %s to %s",
                     blobPath, sourceMimetype, getDestinationMimeType());
@@ -344,12 +341,8 @@ public class JODBasedConverter implements ExternalConverter {
 
     protected OfficeDocumentConverter newDocumentConverter()
             throws ConversionException {
-        OfficeDocumentConverter documentConverter = null;
-        try {
-            OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
-            documentConverter = oooManagerService.getDocumentConverter();
-        } catch (Exception e) {
-        }
+        OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
+        OfficeDocumentConverter documentConverter = oooManagerService.getDocumentConverter();
         if (documentConverter == null) {
             throw new ConversionException(
                     "Could not connect to the remote OpenOffice server");
@@ -365,13 +358,9 @@ public class JODBasedConverter implements ExternalConverter {
     @Override
     public ConverterCheckResult isConverterAvailable() {
         ConverterCheckResult result = new ConverterCheckResult();
-        try {
-            OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
-            if (!oooManagerService.isOOoManagerStarted()) {
-                result.setAvailable(false);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Could not get OOoManagerService");
+        OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
+        if (!oooManagerService.isOOoManagerStarted()) {
+            result.setAvailable(false);
         }
         return result;
     }

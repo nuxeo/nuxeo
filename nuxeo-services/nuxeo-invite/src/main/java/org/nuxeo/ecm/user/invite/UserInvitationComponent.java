@@ -96,13 +96,8 @@ public class UserInvitationComponent extends DefaultComponent implements
 
     protected String getTargetRepositoryName() {
         if (repoName == null) {
-            try {
-                RepositoryManager rm = Framework.getService(RepositoryManager.class);
-                repoName = rm.getDefaultRepositoryName();
-            } catch (Exception e) {
-                log.error("Error while getting default repository name", e);
-                repoName = "default";
-            }
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
+            repoName = rm.getDefaultRepositoryName();
         }
         return repoName;
     }
@@ -443,7 +438,7 @@ public class UserInvitationComponent extends DefaultComponent implements
         } catch (UserRegistrationException ue) {
             log.warn("Error during event processing", ue);
             throw ue;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while sending event", e);
             return null;
         }

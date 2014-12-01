@@ -35,41 +35,40 @@ public interface GroupComputer {
     /**
      * Returns the group names for a give User.
      */
-    List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal)
-            throws Exception;
+    List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal);
 
     /**
      * Return all group ids. If you class can not efficiently compute this list,
      * you can return an empty list. In this case you need to implement the
      * searchGroups method.
      */
-    List<String> getAllGroupIds() throws Exception;
+    List<String> getAllGroupIds();
 
     /**
      * Returns the members for a give group.
      */
-    List<String> getGroupMembers(String groupName) throws Exception;
+    List<String> getGroupMembers(String groupName);
 
     /**
      * Return parent groups.
      */
-    List<String> getParentsGroupNames(String groupName) throws Exception;
+    List<String> getParentsGroupNames(String groupName);
 
     /**
      * Returns children groups.
      */
-    List<String> getSubGroupsNames(String groupName) throws Exception;
+    List<String> getSubGroupsNames(String groupName);
 
     /**
      * Searches for a group. (This method is used in particular from UI to
      * search/select a group).
      */
     List<String> searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws Exception;
+            Set<String> fulltext);
 
     /**
      * Returns true if the given group exists.
      */
-    boolean hasGroup(String name) throws Exception;
+    boolean hasGroup(String name);
 
 }

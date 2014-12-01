@@ -90,7 +90,7 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
                     mimetype = type;
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e);
         }
         return mimetype;

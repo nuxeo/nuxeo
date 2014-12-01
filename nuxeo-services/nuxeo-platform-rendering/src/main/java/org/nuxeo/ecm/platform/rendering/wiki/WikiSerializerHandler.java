@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -14,6 +14,8 @@
 
 package org.nuxeo.ecm.platform.rendering.wiki;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.WikiBlockWriter;
@@ -22,6 +24,7 @@ import org.wikimodel.wem.WikiFormat;
 import org.wikimodel.wem.WikiParameters;
 
 import freemarker.core.Environment;
+import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -383,7 +386,7 @@ public class WikiSerializerHandler extends PrintListener {
         if (expression != null) {
             try {
                 expression.eval(params, content, this);
-            } catch (Exception e) {
+            } catch (IOException | TemplateException e) {
                 log.error("Failed to eval macro", e);
             }
         } else {
@@ -399,7 +402,7 @@ public class WikiSerializerHandler extends PrintListener {
         if (expression != null) {
             try {
                 expression.evalInline(params, content, this);
-            } catch (Exception e) {
+            } catch (IOException | TemplateException e) {
                 log.error("Failed to eval macro", e);
             }
         } else {
@@ -410,31 +413,13 @@ public class WikiSerializerHandler extends PrintListener {
     @Override
     public void onExtensionBlock(String extensionName, WikiParameters params) {
         flushWords();
-        WikiExpression expression = engine.expressions.get(extensionName);
-        if (expression != null) {
-            try {
-                expression.eval(params, this);
-            } catch (Exception e) {
-                log.error("Failed to eval expression", e);
-            }
-        } else {
-            log.warn("Unknown wiki expression: "+extensionName);
-        }
+        log.warn("Unknown wiki expression: "+extensionName);
     }
 
     @Override
     public void onExtensionInline(String extensionName, WikiParameters params) {
         flushWords();
-        WikiExpression expression = engine.expressions.get(extensionName);
-        if (expression != null) {
-            try {
-                expression.evalInline(params, this);
-            } catch (Exception e) {
-                log.error("Failed to eval expression", e);
-            }
-        } else {
-            log.warn("Unknown wiki expression: "+extensionName);
-        }
+        log.warn("Unknown wiki expression: "+extensionName);
     }
 
     @Override

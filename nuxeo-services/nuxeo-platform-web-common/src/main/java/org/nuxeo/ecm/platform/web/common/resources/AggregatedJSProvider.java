@@ -155,7 +155,7 @@ public class AggregatedJSProvider extends HttpServlet {
                             .getContextClassLoader().loadClass(
                                     minimizerClassName);
                     minimizer = (JSMinimizer) minimizerClass.newInstance();
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Error while getting minimizer implementation", e);
                 }
             }

@@ -77,7 +77,7 @@ public class MultiDirectorySession extends BaseSession {
     private List<SourceInfo> sourceInfos;
 
     public MultiDirectorySession(MultiDirectory directory) {
-        directoryService = MultiDirectoryFactory.getDirectoryService();
+        directoryService = Framework.getService(DirectoryService.class);
         schemaManager = Framework.getLocalService(SchemaManager.class);
         this.directory = directory;
         descriptor = directory.getDescriptor();
@@ -742,7 +742,7 @@ public class MultiDirectorySession extends BaseSession {
             return results;
         }
         init();
-        
+
         // entry ids already seen (mapped to the source name)
         final Map<String, String> seen = new HashMap<String, String>();
         if (fulltext == null) {

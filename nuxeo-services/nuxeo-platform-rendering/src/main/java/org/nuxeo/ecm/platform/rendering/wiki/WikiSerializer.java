@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -38,7 +38,6 @@ public class WikiSerializer {
     protected final CommonWikiParser parser;
 
     protected final Map<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
-    protected final Map<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
     protected final List<WikiFilter> filters = new ArrayList<WikiFilter>();
 
     public WikiSerializer() {
@@ -48,10 +47,6 @@ public class WikiSerializer {
 
     public void registerMacro(WikiMacro macro) {
         macros.put(macro.getName(), macro);
-    }
-
-    public void registerExpression(WikiExpression expression) {
-        expressions.put(expression.getName(), expression);
     }
 
     public void addFilter(WikiFilter filter) {

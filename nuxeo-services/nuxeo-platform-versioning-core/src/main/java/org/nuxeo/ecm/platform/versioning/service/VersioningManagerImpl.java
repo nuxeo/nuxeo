@@ -17,8 +17,6 @@
  */
 package org.nuxeo.ecm.platform.versioning.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -37,21 +35,11 @@ public class VersioningManagerImpl extends DefaultComponent implements
 
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.VersioningManager";
 
-    private static final Log log = LogFactory.getLog(VersioningManagerImpl.class);
-
     @Override
     public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc)
             throws ClientException {
         VersionIncEditOptions options = new VersionIncEditOptions();
-
-        VersioningService service;
-        try {
-            service = Framework.getService(VersioningService.class);
-        } catch (Exception e) {
-            log.error(e, e);
-            return options;
-        }
-
+        VersioningService service = Framework.getService(VersioningService.class);
         for (VersioningOption option : service.getSaveOptions(doc)) {
             VersioningActions action;
             switch (option) {

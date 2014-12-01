@@ -58,18 +58,12 @@ public class DigestComputer implements EventListener {
 
     private boolean initIfNeeded() {
         if (!initDone) {
-            try {
-                FileManager fm = Framework.getService(FileManager.class);
-                xpathFields = fm.getFields();
-                digestAlgo = fm.getDigestAlgorithm();
-                activateDigestComputation = fm.isDigestComputingEnabled();
-                initDone = true;
-            } catch (Exception e) {
-                log.error("Unable to initialize Digest Computer Core Listener",
-                        e);
-            }
+            FileManager fm = Framework.getService(FileManager.class);
+            xpathFields = fm.getFields();
+            digestAlgo = fm.getDigestAlgorithm();
+            activateDigestComputation = fm.isDigestComputingEnabled();
+            initDone = true;
         }
-
         return initDone;
     }
 
@@ -93,17 +87,21 @@ public class DigestComputer implements EventListener {
                             blob.setDigest(digest);
                         }
                     }
-                } catch (Exception e) {
+                } catch (PropertyException | IOException e) {
                     log.error("Error while trying to save blob digest", e);
                 }
             }
         }
     }
 
-    private String computeDigest(Blob blob) throws NoSuchAlgorithmException,
-            IOException {
+    private String computeDigest(Blob blob) throws IOException {
 
-        MessageDigest md = MessageDigest.getInstance(digestAlgo);
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance(digestAlgo);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 
         // make sure the blob can be read several times without exhausting its
         // binary source

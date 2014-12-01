@@ -60,21 +60,20 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getAllGroupIds() throws Exception {
+    public List<String> getAllGroupIds() {
         List<String> groupIds = new ArrayList<String>();
         return groupIds;
     }
 
     @Override
-    public List<String> getGroupMembers(String groupId) throws Exception {
+    public List<String> getGroupMembers(String groupId) {
 
         List<String> participants = new ArrayList<String>();
         return participants;
     }
 
     @Override
-    public List<String> getGroupsForUser(NuxeoPrincipalImpl user)
-            throws Exception {
+    public List<String> getGroupsForUser(NuxeoPrincipalImpl user) {
         String username = user.getName();
         GetDocumentsFromUsername runner = new GetDocumentsFromUsername(
                 getRepository(), whereClause, username, xpath);
@@ -92,17 +91,17 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getParentsGroupNames(String groupID) throws Exception {
+    public List<String> getParentsGroupNames(String groupID) {
         return new ArrayList<String>();
     }
 
     @Override
-    public List<String> getSubGroupsNames(String groupID) throws Exception {
+    public List<String> getSubGroupsNames(String groupID) {
         return new ArrayList<String>();
     }
 
     @Override
-    public boolean hasGroup(String groupId) throws Exception {
+    public boolean hasGroup(String groupId) {
         return false;
     }
 
@@ -119,8 +118,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
         public List<String> result = new ArrayList<String>();
 
         protected GetDocumentsFromUsername(String repositoryName,
-                String whereClause, String username, String xpath)
-                throws Exception {
+                String whereClause, String username, String xpath) {
             super(repositoryName);
             this.username = username;
             whereClausePattern = whereClause;

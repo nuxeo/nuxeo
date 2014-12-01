@@ -182,16 +182,6 @@ public class FileManageActionsBean implements FileManageActions {
                     documentManager, blob, path, true, fileName);
         } catch (IOException e) {
             throw new ClientException("Can not write blob for" + fileName, e);
-        } catch (ClientException e) {
-            throw e;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            new ClientException(
-                    "Caught general system exception, throwing client exception ",
-                    e);
         }
         EventManager.raiseEventsOnDocumentSelected(createdDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,

@@ -90,23 +90,18 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     @Override
     public String[] getSuperTypes(String typeName) {
-        try {
-            SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
-            DocumentType type = schemaMgr.getDocumentType(typeName);
-            if (type == null) {
-                return null;
-            }
-            type = (DocumentType) type.getSuperType();
-            List<String> superTypes = new ArrayList<String>();
-            while (type != null) {
-                superTypes.add(type.getName());
-                type = (DocumentType) type.getSuperType();
-            }
-            return superTypes.toArray(new String[superTypes.size()]);
-        } catch (Exception e) {
-            log.error("Failed to lookup the SchemaManager service", e);
-            return new String[0];
+        SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
+        DocumentType type = schemaMgr.getDocumentType(typeName);
+        if (type == null) {
+            return null;
         }
+        type = (DocumentType) type.getSuperType();
+        List<String> superTypes = new ArrayList<String>();
+        while (type != null) {
+            superTypes.add(type.getName());
+            type = (DocumentType) type.getSuperType();
+        }
+        return superTypes.toArray(new String[superTypes.size()]);
     }
 
     @Override
@@ -185,16 +180,10 @@ public class TypeService extends DefaultComponent implements TypeManager {
     }
 
     protected UITypesConfiguration getConfiguration(DocumentModel currentDoc) {
-        UITypesConfiguration configuration = null;
-        try {
-            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-            configuration = localConfigurationService.getConfiguration(
-                    UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
-                    currentDoc);
-        } catch (Exception e) {
-            log.error(e, e);
-        }
-        return configuration;
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        return localConfigurationService.getConfiguration(
+                UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
+                currentDoc);
     }
 
     @Override

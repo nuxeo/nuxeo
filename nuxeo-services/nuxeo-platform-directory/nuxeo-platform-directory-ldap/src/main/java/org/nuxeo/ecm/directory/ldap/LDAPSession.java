@@ -235,7 +235,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
             directory.invalidateCaches();
             return fieldMapToDocumentModel(fieldMap);
-        } catch (Exception e) {
+        } catch (NamingException e) {
             handleException(e, "createEntry failed");
             return null;
         }
@@ -481,7 +481,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         schemaName, referenceFieldName);
                 reference.setTargetIdsForSource(docModel.getId(), targetIds);
             }
-        } catch (Exception e) {
+        } catch (NamingException e) {
             handleException(e, "updateEntry failed:");
         }
         directory.invalidateCaches();
@@ -527,7 +527,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         id, result.getNameInNamespace(), this));
             }
             dirContext.destroySubcontext(result.getNameInNamespace());
-        } catch (Exception e) {
+        } catch (NamingException e) {
             handleException(e, "deleteEntry failed for: " + id);
         }
         directory.invalidateCaches();

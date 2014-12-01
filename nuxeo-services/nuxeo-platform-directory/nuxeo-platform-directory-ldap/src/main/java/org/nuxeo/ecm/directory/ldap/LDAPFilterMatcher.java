@@ -19,7 +19,10 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -75,7 +78,7 @@ public class LDAPFilterMatcher {
         try {
             ExprNode parsedFilter = parser.parse(filter);
             return recursiveMatch(attributes, parsedFilter);
-        } catch (Exception e) {
+        } catch (DirectoryException | IOException | ParseException e) {
             throw new DirectoryException("could not parse LDAP filter: "
                     + filter, e);
         }
@@ -209,7 +212,7 @@ public class LDAPFilterMatcher {
                             pattern = Pattern.compile(sb.toString(),
                                     Pattern.CASE_INSENSITIVE);
                         }
-                    } catch (Exception e) {
+                    } catch (PatternSyntaxException e) {
                         throw new DirectoryException(
                                 "could not build regexp for substring: "
                                         + substringElement.toString());

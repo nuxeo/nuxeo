@@ -37,15 +37,10 @@ public class EjbSequencerFactory implements UIDSequencerFactory {
 
     public UIDSequencer createUIDSequencer() {
         log.debug("create UIDSequencer ... ");
-        try {
-            return getSequencerManager();
-        } catch (Exception e) {
-            log.error(e);
-            return null;
-        }
+        return getSequencerManager();
     }
 
-    private static UIDSequencer getSequencerManager() throws Exception {
+    private static UIDSequencer getSequencerManager() {
         return new UIDSequencerImpl();
     }
 

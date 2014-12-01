@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -192,7 +193,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
                 return bh.getBlobs().get(idx);
             }
         }
-        catch (Exception e) {
+        catch (ClientException | NumberFormatException e) {
             log.error("Error whild using BlobHolder to retrieve Blob", e);
         }
         return null;

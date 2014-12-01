@@ -193,7 +193,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
                 try {
                     NuxeoAuthenticationSessionManager sm = smContrib.getClassName().newInstance();
                     sessionManagers.put(smContrib.getName(), sm);
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Unable to create session manager", e);
                 }
             } else {
@@ -455,7 +455,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
                 try {
                     NuxeoAuthPreFilter preFilter = (NuxeoAuthPreFilter) desc.getClassName().newInstance();
                     preFilters.add(preFilter);
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Unable to create preFilter " + desc.getName()
                             + " and class" + desc.getClassName(), e);
                 }

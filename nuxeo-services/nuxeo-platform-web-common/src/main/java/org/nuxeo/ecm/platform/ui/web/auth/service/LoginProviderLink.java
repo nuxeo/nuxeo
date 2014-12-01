@@ -92,7 +92,7 @@ public class LoginProviderLink implements Serializable {
         if (urlComputerClass != null && urlComputer == null) {
             try {
                 urlComputer = (LoginProviderLinkComputer) urlComputerClass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to instantiate LoginProviderLinkComputer", e);
             }
         }

@@ -107,8 +107,6 @@ public class PptMimetypeSniffer implements MagicDetector {
         } catch (RuntimeException e) {
             // This is not a powerpoint file
             log.debug("MimeType detector : Not a powerpoint file - RuntimeException");
-        } catch (Exception e) {
-            log.error(e, e);
         }
         return mimetypes;
     }

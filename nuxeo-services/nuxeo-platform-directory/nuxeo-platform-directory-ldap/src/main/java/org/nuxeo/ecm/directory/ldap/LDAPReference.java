@@ -671,7 +671,7 @@ public class LDAPReference extends AbstractReference {
                 } finally {
                     results.close();
                 }
-            } catch (Exception e) {
+            } catch (NamingException e) {
                 throw new DirectoryException(
                         "error during reference search for " + targetId, e);
             } finally {

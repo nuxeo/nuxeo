@@ -155,7 +155,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         }
         try {
             ret = klass.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new ClientException(String.format(
                     "Cannot create an instance of class %s for page provider definition"
                             + " with name '%s'", klass.getName(), name), e);

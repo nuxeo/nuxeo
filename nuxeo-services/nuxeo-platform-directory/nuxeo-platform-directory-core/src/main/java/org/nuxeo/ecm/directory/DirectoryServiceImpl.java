@@ -70,23 +70,16 @@ public class DirectoryServiceImpl extends DefaultComponent implements
 
     protected DirectoryConfiguration getDirectoryConfiguration(
             DocumentModel documentContext) {
-        DirectoryConfiguration configuration = null;
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
 
-        try {
-            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-
-            if (localConfigurationService == null) {
-                log.info("Local configuration not deployed, will use default configuration");
-                return null;
-            }
-
-            configuration = localConfigurationService.getConfiguration(
-                    DirectoryConfiguration.class,
-                    DIRECTORY_CONFIGURATION_FACET, documentContext);
-        } catch (Exception e) {
-            log.error(e, e);
+        if (localConfigurationService == null) {
+            log.info("Local configuration not deployed, will use default configuration");
+            return null;
         }
-        return configuration;
+
+        return localConfigurationService.getConfiguration(
+                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
+                documentContext);
     }
 
     /**

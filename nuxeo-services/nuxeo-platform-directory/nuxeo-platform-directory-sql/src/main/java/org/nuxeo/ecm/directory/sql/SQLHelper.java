@@ -238,12 +238,12 @@ public class SQLHelper {
                 columnNames.add(rs.getString("COLUMN_NAME"));
             }
         } finally {
-            try {
-                if (rs != null) {
+            if (rs != null) {
+                try {
                     rs.close();
+                } catch (SQLException e) {
+                    log.warn("Error while trying to close result set", e);
                 }
-            } catch (Exception e) {
-                log.warn("Error while trying to close result set", e);
             }
         }
         return columnNames;

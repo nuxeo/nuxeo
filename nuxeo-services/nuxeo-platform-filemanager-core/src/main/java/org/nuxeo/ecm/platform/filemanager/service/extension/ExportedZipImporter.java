@@ -76,55 +76,57 @@ public class ExportedZipImporter extends AbstractFileImporter {
     public DocumentModel create(CoreSession documentManager, Blob content,
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException {
+        File tmp = null;
+        try {
+            tmp = File.createTempFile("xml-importer", null);
+            content.transferTo(tmp);
+            ZipFile zip = getArchiveFileIfValid(tmp);
+            if (zip == null) {
+                tmp.delete();
+                return null;
+            }
 
-        File tmp = File.createTempFile("xml-importer", null);
+            boolean importWithIds = false;
+            DocumentReader reader = new NuxeoArchiveReader(tmp);
+            ExportedDocument root = reader.read();
+            IdRef rootRef = new IdRef(root.getId());
 
-        content.transferTo(tmp);
+            if (documentManager.exists(rootRef)) {
+                DocumentModel target = documentManager.getDocument(rootRef);
+                if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
+                    importWithIds = true;
+                }
+            }
 
-        ZipFile zip = getArchiveFileIfValid(tmp);
+            DocumentWriter writer = new DocumentModelWriter(documentManager, path,
+                    10);
+            reader.close();
+            reader = new NuxeoArchiveReader(tmp);
 
-        if (zip == null) {
-            tmp.delete();
-            return null;
-        }
+            DocumentRef resultingRef;
+            if (overwrite && importWithIds) {
+                resultingRef = rootRef;
+            } else {
+                String rootName = root.getPath().lastSegment();
+                resultingRef = new PathRef(path, rootName);
+            }
 
-        boolean importWithIds = false;
-        DocumentReader reader = new NuxeoArchiveReader(tmp);
-        ExportedDocument root = reader.read();
-        IdRef rootRef = new IdRef(root.getId());
-
-        if (documentManager.exists(rootRef)) {
-            DocumentModel target = documentManager.getDocument(rootRef);
-            if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
-                importWithIds = true;
+            try {
+                DocumentPipe pipe = new DocumentPipeImpl(10);
+                pipe.setReader(reader);
+                pipe.setWriter(writer);
+                pipe.run();
+            } catch (IOException e) {
+                log.warn(e, e);
+            } finally {
+                reader.close();
+                writer.close();
+            }
+            return documentManager.getDocument(resultingRef);
+        } finally {
+            if (tmp != null) {
+                tmp.delete();
             }
         }
-
-        DocumentWriter writer = new DocumentModelWriter(documentManager, path,
-                10);
-        reader.close();
-        reader = new NuxeoArchiveReader(tmp);
-
-        DocumentRef resultingRef;
-        if (overwrite && importWithIds) {
-            resultingRef = rootRef;
-        } else {
-            String rootName = root.getPath().lastSegment();
-            resultingRef = new PathRef(path, rootName);
-        }
-
-        try {
-            DocumentPipe pipe = new DocumentPipeImpl(10);
-            pipe.setReader(reader);
-            pipe.setWriter(writer);
-            pipe.run();
-        } catch (Exception e) {
-            log.warn(e, e);
-        } finally {
-            reader.close();
-            writer.close();
-        }
-        tmp.delete();
-        return documentManager.getDocument(resultingRef);
     }
 }

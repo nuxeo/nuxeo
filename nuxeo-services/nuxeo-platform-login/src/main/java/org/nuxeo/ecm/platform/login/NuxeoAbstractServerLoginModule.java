@@ -62,7 +62,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
 
     protected abstract Group[] getRoleSets() throws LoginException;
 
-    protected abstract Principal createIdentity(String username) throws Exception;
+    protected abstract Principal createIdentity(String username) throws LoginException;
 
 
     public boolean abort() throws LoginException {
@@ -130,7 +130,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
             try {
                 unauthenticatedIdentity = createIdentity(name);
                 log.trace("Saw unauthenticatedIdentity=" + name);
-            } catch (Exception e) {
+            } catch (LoginException e) {
                 log.warn("Failed to create custom unauthenticatedIdentity", e);
             }
         }

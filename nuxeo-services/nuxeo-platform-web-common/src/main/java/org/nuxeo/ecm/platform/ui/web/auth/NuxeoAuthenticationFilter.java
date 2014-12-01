@@ -184,14 +184,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return false;
             }
 
-            EventProducer evtProducer = null;
-            try {
-                evtProducer = Framework.getService(EventProducer.class);
-            } catch (Exception e) {
-                log.error("Unable to get Event producer: " + e.getMessage());
-                return false;
-            }
-
+            EventProducer evtProducer = Framework.getService(EventProducer.class);
             Principal principal = new SimplePrincipal(userInfo.getUserName());
 
             Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -665,10 +658,10 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     private String getAnonymousId() throws ServletException {
         if (anonymous == null) {
+            UserManager um = Framework.getService(UserManager.class);
             try {
-                UserManager um = Framework.getService(UserManager.class);
                 anonymous = um.getAnonymousUserId();
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Can't find anonymous User id", e);
                 anonymous = "";
                 throw new ServletException("Can't find anonymous user id");

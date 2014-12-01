@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
@@ -235,7 +236,7 @@ public class SQLDirectory extends AbstractDirectory {
         } finally {
             try {
                 sqlConnection.close();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 throw new DirectoryException(e);
             }
         }
@@ -265,7 +266,7 @@ public class SQLDirectory extends AbstractDirectory {
             }
             log.trace("found datasource: " + dataSource);
             return dataSource;
-        } catch (Exception e) {
+        } catch (NamingException e) {
             log.error("dataSource lookup failed", e);
             throw new DirectoryException("dataSource lookup failed", e);
         }

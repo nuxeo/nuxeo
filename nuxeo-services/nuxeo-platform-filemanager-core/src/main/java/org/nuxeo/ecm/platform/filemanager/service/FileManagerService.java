@@ -16,9 +16,6 @@
 package org.nuxeo.ecm.platform.filemanager.service;
 
 import java.io.IOException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +28,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -128,22 +124,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private MimetypeRegistry getMimeService() throws ClientException {
         if (mimeService == null) {
-            try {
-                mimeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            mimeService = Framework.getService(MimetypeRegistry.class);
         }
         return mimeService;
     }
 
     private TypeManager getTypeService() throws ClientException {
         if (typeService == null) {
-            try {
-                typeService = Framework.getService(TypeManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            typeService = Framework.getService(TypeManager.class);
         }
         return typeService;
     }
@@ -218,12 +206,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 return null;
             }
 
-            PathSegmentService pss;
-            try {
-                pss = Framework.getService(PathSegmentService.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            PathSegmentService pss = Framework.getService(PathSegmentService.class);
             docModel = documentManager.createDocumentModel(containerTypeName);
             docModel.setProperty("dublincore", "title", title);
 
@@ -240,7 +223,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     public DocumentModel createDocumentFromBlob(CoreSession documentManager,
             Blob input, String path, boolean overwrite, String fullName)
-            throws IOException, ClientException {
+            throws ClientException, IOException {
 
         // check mime type to be able to select the best importer plugin
         input = checkMimeType(input, fullName);
@@ -543,22 +526,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             creationContainerListProviders.remove(providerToRemove);
         }
         log.info("unregistered creationContaineterList provider: " + name);
-    }
-
-    // XXX: bad exception management here: unexpected Exceptions should not be
-    // logged but be un-catched so that the caller can handle them properly
-    public String computeDigest(Blob blob) throws NoSuchAlgorithmException,
-            IOException {
-
-        MessageDigest md = MessageDigest.getInstance(digestAlgorithm);
-
-        DigestInputStream dis = new DigestInputStream(blob.getStream(), md);
-        while (dis.available() > 0) {
-            dis.read();
-        }
-        byte[] b = md.digest();
-        String base64Digest = Base64.encodeBytes(b);
-        return base64Digest;
     }
 
     public List<DocumentLocation> findExistingDocumentWithFile(

@@ -24,6 +24,8 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Florent Guillaume
@@ -81,12 +83,12 @@ public class MultiDirectory extends AbstractDirectory {
 
     @Override
     public void invalidateDirectoryCache() throws DirectoryException {
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
         getCache().invalidateAll();
         // and also invalidates the cache from the source directories
         for (SourceDescriptor src : descriptor.sources) {
             for (SubDirectoryDescriptor sub : src.subDirectories) {
-                Directory dir = MultiDirectoryFactory.getDirectoryService().getDirectory(
-                        sub.name);
+                Directory dir = dirService.getDirectory(sub.name);
                 if (dir != null) {
                     dir.invalidateDirectoryCache();
                 }

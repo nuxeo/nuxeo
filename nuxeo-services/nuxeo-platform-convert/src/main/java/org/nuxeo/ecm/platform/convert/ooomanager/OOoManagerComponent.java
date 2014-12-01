@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.office.DefaultOfficeManagerConfiguration;
 import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
+import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.OfficeTask;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -219,7 +220,7 @@ public class OOoManagerComponent extends DefaultComponent implements
                 officeManager.start();
                 started = true;
                 log.debug("Starting ooo manager.");
-            } catch (Exception e) {
+            } catch (IllegalStateException | OfficeException e) {
                 started = false;
                 Throwable t = unwrapException(e);
                 log.warn("OpenOffice was not found, JOD Converter "

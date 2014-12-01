@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -82,7 +82,7 @@ public class PropertyWrapper {
             } else {
                 return new ComplexPropertyTemplate(wrapper, property);
             }
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             throw new TemplateModelException(e);
         }
     }

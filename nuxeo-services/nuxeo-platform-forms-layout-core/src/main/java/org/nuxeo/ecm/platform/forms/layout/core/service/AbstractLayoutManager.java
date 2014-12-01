@@ -40,16 +40,7 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements
     public abstract String getDefaultStoreCategory();
 
     protected LayoutStore getLayoutStore() {
-        LayoutStore lm = null;
-        try {
-            lm = Framework.getLocalService(LayoutStore.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        if (lm == null) {
-            throw new RuntimeException("Missing service for LayoutStore");
-        }
-        return lm;
+        return Framework.getService(LayoutStore.class);
     }
 
     @Override

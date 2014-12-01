@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author bjalon
- * 
+ *
  */
 public class DefaultUserMultiTenantManagement implements
         UserMultiTenantManagement {
@@ -42,22 +42,13 @@ public class DefaultUserMultiTenantManagement implements
     protected static final String SUFFIX_SEPARATOR = "-";
 
     protected String getDirectorySuffix(DocumentModel documentContext) {
-        DirectoryConfiguration configuration = null;
-
-        try {
-            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-
-            configuration = localConfigurationService.getConfiguration(
-                    DirectoryConfiguration.class,
-                    DIRECTORY_CONFIGURATION_FACET, documentContext);
-        } catch (Exception e) {
-            log.error(e, e);
-        }
-
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        DirectoryConfiguration configuration = localConfigurationService.getConfiguration(
+                DirectoryConfiguration.class, DIRECTORY_CONFIGURATION_FACET,
+                documentContext);
         if (configuration != null && configuration.getDirectorySuffix() != null) {
             return SUFFIX_SEPARATOR + configuration.getDirectorySuffix();
         }
-
         return null;
     }
 

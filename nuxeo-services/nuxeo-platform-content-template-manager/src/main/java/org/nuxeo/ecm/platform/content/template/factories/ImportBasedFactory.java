@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.content.template.factories;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -131,8 +132,8 @@ public class ImportBasedFactory extends BaseContentFactory {
         try {
             String parentPath = eventDoc.getPathAsString();
             importBlob(importedFile, parentPath);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot import file: " + importedFile, e);
         }
 
     }
@@ -142,9 +143,9 @@ public class ImportBasedFactory extends BaseContentFactory {
      *
      * @param file to import
      * @param parentPath of the targetDocument
-     * @throws Exception
      */
-    protected void importBlob(File file, String parentPath) throws Exception {
+    protected void importBlob(File file, String parentPath)
+            throws ClientException, IOException {
         if (file.isDirectory()) {
             DocumentModel createdFolder = getFileManagerService().createFolder(
                     session, file.getAbsolutePath(), parentPath);
@@ -162,12 +163,7 @@ public class ImportBasedFactory extends BaseContentFactory {
 
     protected FileManager getFileManagerService() {
         if (fileManager == null) {
-            try {
-                fileManager = Framework.getService(FileManager.class);
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Unable to get FileManager service ", e);
-            }
+            fileManager = Framework.getService(FileManager.class);
         }
         return fileManager;
     }

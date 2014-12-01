@@ -41,11 +41,7 @@ public class MemoryDirectoryFactory implements DirectoryFactory {
 
     public MemoryDirectoryFactory() throws DirectoryException {
         directories = new HashMap<String, MemoryDirectory>();
-        try {
-            directoryService = Framework.getService(DirectoryService.class);
-        } catch (Exception e) {
-            throw new DirectoryException("Error in Directory Service lookup", e);
-        }
+        directoryService = Framework.getService(DirectoryService.class);
     }
 
     public String getName() {

@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -262,7 +263,7 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                     }
                     return true;
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error(e, e);
             }
         }

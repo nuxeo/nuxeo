@@ -604,24 +604,17 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         // String contentType = (String) contentMap.get("mime-type") ;
         Blob blob = StreamingBlob.createFromByteArray(contentData);
 
-        MimetypeRegistry mimeService = null;
+        MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
+
+        String mimetype;
         try {
-            mimeService = Framework.getService(MimetypeRegistry.class);
-        } catch (Exception e1) {
-            log.error("Unable to access Mimetype service: " + e1.getMessage());
-        }
-
-        String mimetype = "";
-
-        if (mimeService != null) {
-            try {
-                mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                        filname, blob, mimetype);
-            } catch (MimetypeDetectionException e) {
-                log.error(String.format(
-                        "error during mimetype detection for %s: %s", filname,
-                        e.getMessage()));
-            }
+            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
+                    filname, blob, "");
+        } catch (MimetypeDetectionException e) {
+            log.error(String.format(
+                    "error during mimetype detection for %s: %s", filname,
+                    e.getMessage()));
+            mimetype = "";
         }
 
         String encoding = (String) contentMap.get("encoding");

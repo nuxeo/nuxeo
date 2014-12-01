@@ -28,14 +28,14 @@ public class DocumentLoaderDescriptor {
 
     @XNode("@name")
     public  String name;
-    
+
     public DocumentLoader instance;
-    
+
     @XNode("@class")
     public void setClass(Class<? extends DocumentLoader> clazz) {
         try {
             instance = clazz.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot instanciate " + clazz.getName());
         }
     }

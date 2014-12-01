@@ -75,7 +75,7 @@ public class MimetypeIconUpdater implements EventListener {
 
     MimetypeRegistry mimetypeService;
 
-    public MimetypeRegistry getMimetypeRegistry() throws Exception {
+    public MimetypeRegistry getMimetypeRegistry() {
         if (mimetypeService == null) {
             mimetypeService = Framework.getService(MimetypeRegistry.class);
         }
@@ -120,8 +120,7 @@ public class MimetypeIconUpdater implements EventListener {
                             doc.getProperty(MAIN_BLOB_FIELD).getValue(
                                     Blob.class));
                 }
-            }
-            catch (Exception e) {
+            } catch (PropertyException e) {
                 throw new ClientException("Error in MimetypeIconUpdater listener", e);
             }
         }
@@ -136,8 +135,7 @@ public class MimetypeIconUpdater implements EventListener {
     @Deprecated
     // TODO: remove
     public void recursivelyUpdateBlobs(DocumentModel doc,
-            MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren)
-            throws Exception {
+            MimetypeRegistry mimetypeService, Iterator<Property> dirtyChildren) {
         while (dirtyChildren.hasNext()) {
             Property dirtyProperty = dirtyChildren.next();
             if (dirtyProperty instanceof BlobProperty) {
@@ -154,8 +152,7 @@ public class MimetypeIconUpdater implements EventListener {
      * document if the blob is the main blob of the document.
      */
     public void updateBlobProperty(DocumentModel doc,
-            MimetypeRegistry mimetypeService, Property dirtyProperty)
-            throws Exception {
+            MimetypeRegistry mimetypeService, Property dirtyProperty) {
         String fieldPath = dirtyProperty.getPath();
         //cas shema without prefix : we need to add schema name as prefix
         if (!fieldPath.contains(":")) {
@@ -174,7 +171,7 @@ public class MimetypeIconUpdater implements EventListener {
 
     private void updateIconAndSizeFields(DocumentModel doc,
             MimetypeRegistry mimetypeService, Blob blob)
-            throws PropertyException, ClientException, Exception {
+            throws PropertyException, ClientException {
         // update the icon field of the document
         if (blob != null && !doc.isFolder()) {
             MimetypeEntry mimetypeEntry = mimetypeService.getMimetypeEntryByMimeType(blob.getMimeType());
@@ -225,7 +222,7 @@ public class MimetypeIconUpdater implements EventListener {
     /**
      * If the icon field is empty, initialize it to the document type icon
      */
-    public void setDefaultIcon(DocumentModel doc) throws Exception {
+    public void setDefaultIcon(DocumentModel doc) {
         if (doc.hasSchema(ICON_SCHEMA)
                 && doc.getProperty(ICON_FIELD).getValue(String.class) == null) {
             updateIconField(null, doc);
@@ -237,7 +234,7 @@ public class MimetypeIconUpdater implements EventListener {
      * main attached blob with of fallback on the document type generic icon.
      */
     public void updateIconField(MimetypeEntry mimetypeEntry,
-            DocumentModel doc) throws Exception {
+            DocumentModel doc) {
         String iconPath = null;
         if (mimetypeEntry != null && mimetypeEntry.getIconPath() != null) {
             iconPath = "/icons/" + mimetypeEntry.getIconPath();

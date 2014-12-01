@@ -16,28 +16,19 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7
- * 
+ *
  * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public class UserAdapterFactory implements DocumentAdapterFactory {
 
-    private static final Log log = LogFactory.getLog(UserAdapterFactory.class);
-
     public Object getAdapter(DocumentModel doc, Class itf) {
-        try {
-            UserManager um = Framework.getLocalService(UserManager.class);
-            return new UserAdapterImpl(doc, um);
-        } catch (Exception e) {
-            log.debug("failed to get user service", e);
-        }
-        return new UserAdapterImpl(doc, null);
+        UserManager um = Framework.getService(UserManager.class);
+        return new UserAdapterImpl(doc, um);
     }
 }

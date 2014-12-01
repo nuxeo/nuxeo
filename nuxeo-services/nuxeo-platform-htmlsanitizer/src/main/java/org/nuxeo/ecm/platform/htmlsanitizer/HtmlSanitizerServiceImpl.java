@@ -35,6 +35,7 @@ import org.owasp.validator.html.AntiSamy;
 import org.owasp.validator.html.CleanResults;
 import org.owasp.validator.html.Policy;
 import org.owasp.validator.html.PolicyException;
+import org.owasp.validator.html.ScanException;
 
 /**
  * Service that sanitizes some HMTL fields to remove potential cross-site
@@ -247,7 +248,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements
                         : info, err));
             }
             return cr.getCleanHTML();
-        } catch (Exception e) {
+        } catch (ScanException | PolicyException e) {
             log.error(String.format("Cannot sanitize %s: %s", info == null ? ""
                     : info, e));
             return string;

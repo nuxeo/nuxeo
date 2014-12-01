@@ -63,7 +63,7 @@ public class GroupComputerDescriptor implements Serializable {
             if (computerClass != null) {
                 try {
                     groupComputer = computerClass.newInstance();
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Enable to instanciate GroupComputer", e);
                     throw new ClientException(
                             "Enable to instanciate GroupComputer", e);

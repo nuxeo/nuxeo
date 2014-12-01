@@ -31,6 +31,8 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryEntryNotFoundException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 
 public class MultiReference extends AbstractReference {
 
@@ -61,11 +63,11 @@ public class MultiReference extends AbstractReference {
 
     protected List<String> doCollect(Collector extractor)
             throws DirectoryException {
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
         Set<String> ids = new HashSet<String>();
         for (SourceDescriptor src : dir.getDescriptor().sources) {
             for (SubDirectoryDescriptor sub : src.subDirectories) {
-                Directory dir = MultiDirectoryFactory.getDirectoryService().getDirectory(
-                        sub.name);
+                Directory dir = dirService.getDirectory(sub.name);
                 if (dir == null) {
                     continue;
                 }

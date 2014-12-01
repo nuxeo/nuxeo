@@ -80,10 +80,6 @@ public abstract class AbstractGroupsPageProvider<T> extends
                 error = slee;
                 errorMessage = SEARCH_OVERFLOW_ERROR_MESSAGE;
                 log.warn(slee.getMessage(), slee);
-            } catch (Exception e) {
-                error = e;
-                errorMessage = e.getMessage();
-                log.warn(e.getMessage(), e);
             }
 
             if (!hasError()) {
@@ -108,12 +104,12 @@ public abstract class AbstractGroupsPageProvider<T> extends
         return pageGroups;
     }
 
-    protected List<DocumentModel> searchAllGroups() throws Exception {
+    protected List<DocumentModel> searchAllGroups() {
         return Framework.getService(UserManager.class).searchGroups(
                 Collections.<String, Serializable> emptyMap(), null);
     }
 
-    protected List<DocumentModel> searchGroups() throws Exception {
+    protected List<DocumentModel> searchGroups() {
         UserManager userManager = Framework.getService(UserManager.class);
         List<DocumentModel> groups = new ArrayList<DocumentModel>();
         String searchString = getFirstParameter();

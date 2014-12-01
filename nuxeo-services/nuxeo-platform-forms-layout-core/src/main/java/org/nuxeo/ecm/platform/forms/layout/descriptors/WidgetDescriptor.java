@@ -324,17 +324,13 @@ public class WidgetDescriptor {
         List<WidgetSelectOption> options = new ArrayList<WidgetSelectOption>();
         while (p != null) {
             if (p.getNodeType() == Node.ELEMENT_NODE) {
-                try {
-                    Object desc = xmap.load((Element) p);
-                    if (desc instanceof WidgetSelectOptionDescriptor) {
-                        options.add(((WidgetSelectOptionDescriptor) desc).getWidgetSelectOption());
-                    } else if (desc instanceof WidgetSelectOptionsDescriptor) {
-                        options.add(((WidgetSelectOptionsDescriptor) desc).getWidgetSelectOption());
-                    } else {
-                        log.error("Unknown resolution of select option");
-                    }
-                } catch (Exception e) {
-                    log.error(e, e);
+                Object desc = xmap.load((Element) p);
+                if (desc instanceof WidgetSelectOptionDescriptor) {
+                    options.add(((WidgetSelectOptionDescriptor) desc).getWidgetSelectOption());
+                } else if (desc instanceof WidgetSelectOptionsDescriptor) {
+                    options.add(((WidgetSelectOptionsDescriptor) desc).getWidgetSelectOption());
+                } else {
+                    log.error("Unknown resolution of select option");
                 }
             }
             p = p.getNextSibling();

@@ -295,7 +295,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
         try {
             widgetTypeClass = LayoutStoreImpl.class.getClassLoader().loadClass(
                     className);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Caught error when instantiating widget type handler", e);
             return;
         }
@@ -565,7 +565,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
                     LayoutDefinitionConverter converter = (LayoutDefinitionConverter) converterClass.newInstance();
                     res.add(converter);
                     orderedConverterNames.add(desc.getName());
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Caught error when instantiating "
                             + "layout definition converter", e);
                 }
@@ -597,7 +597,7 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
                     WidgetDefinitionConverter converter = (WidgetDefinitionConverter) converterClass.newInstance();
                     res.add(converter);
                     orderedConverterNames.add(desc.getName());
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Caught error when instantiating "
                             + "widget definition converter", e);
                 }

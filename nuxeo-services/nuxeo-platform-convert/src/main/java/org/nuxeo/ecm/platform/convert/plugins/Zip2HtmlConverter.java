@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -43,7 +44,7 @@ public class Zip2HtmlConverter implements Converter {
                 throw new ConversionException("not a zip file");
             }
             return new ZipCachableBlobHolder(blob);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ConversionException("Could not get Zip File from BlobHolder", e);
         }
     }

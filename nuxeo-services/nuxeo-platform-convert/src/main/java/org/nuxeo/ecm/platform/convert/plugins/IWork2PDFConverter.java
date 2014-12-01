@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.platform.convert.plugins;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class IWork2PDFConverter implements Converter {
                 throw new ConversionException(
                         "iWork file does not contain a pdf preview.");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ConversionException(
                     "Could not find the pdf preview in the iWork file", e);
         }

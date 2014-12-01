@@ -18,12 +18,14 @@
  */
 package org.nuxeo.ecm.platform.mimetype;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
  * Exception raised when an unexpected exception occur during mimetype sniffing.
  *
  * @author ogrisel@nuxeo.com
  */
-public class MimetypeDetectionException extends Exception {
+public class MimetypeDetectionException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

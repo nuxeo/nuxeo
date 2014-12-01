@@ -40,7 +40,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
 
     protected abstract String getAttributeForGroupComputation();
 
-    public List<String> getAllGroupIds() throws Exception {
+    public List<String> getAllGroupIds() {
 
         List<String> companies = new ArrayList<String>();
         for (String userId : getUM().getUserIds()) {
@@ -57,7 +57,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
         return companies;
     }
 
-    public List<String> getGroupMembers(String groupName) throws Exception {
+    public List<String> getGroupMembers(String groupName) {
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         filter.put(getAttributeForGroupComputation(), groupName);
@@ -72,8 +72,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
         return memberIds;
     }
 
-    public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal)
-            throws Exception {
+    public List<String> getGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         List<String> grpNames = new ArrayList<String>();
         String property = (String) nuxeoPrincipal.getModel().getProperty(
                 getUM().getUserSchemaName(), getAttributeForGroupComputation());
@@ -83,17 +82,17 @@ public abstract class AbstractAttributeBasedGroupComputer extends
         return grpNames;
     }
 
-    public List<String> getParentsGroupNames(String groupName) throws Exception {
+    public List<String> getParentsGroupNames(String groupName) {
         return null;
     }
 
-    public List<String> getSubGroupsNames(String groupName) throws Exception {
+    public List<String> getSubGroupsNames(String groupName) {
         return null;
     }
 
     @Override
     public List<String> searchGroups(Map<String, Serializable> filter,
-            Set<String> fulltext) throws Exception {
+            Set<String> fulltext) {
 
         List<String> companies = new ArrayList<String>();
 

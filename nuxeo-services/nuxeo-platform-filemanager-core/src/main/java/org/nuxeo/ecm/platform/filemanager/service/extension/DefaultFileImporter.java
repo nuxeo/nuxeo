@@ -65,16 +65,10 @@ public class DefaultFileImporter extends AbstractFileImporter {
 
     protected static UITypesConfiguration getConfiguration(
             DocumentModel currentDoc) {
-        UITypesConfiguration configuration = null;
-        try {
-            LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
-            configuration = localConfigurationService.getConfiguration(
-                    UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
-                    currentDoc);
-        } catch (Exception e) {
-            log.error(e, e);
-        }
-        return configuration;
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        return localConfigurationService.getConfiguration(
+                UITypesConfiguration.class, UI_TYPES_CONFIGURATION_FACET,
+                currentDoc);
     }
 
 }

@@ -97,7 +97,7 @@ public class PostContentCreationHandlerRegistry extends
         for (PostContentCreationHandlerDescriptor desc : descs) {
             try {
                 handlers.add(desc.getClazz().newInstance());
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error(
                         "Unable to instantiate class for handler: "
                                 + desc.getName(), e);

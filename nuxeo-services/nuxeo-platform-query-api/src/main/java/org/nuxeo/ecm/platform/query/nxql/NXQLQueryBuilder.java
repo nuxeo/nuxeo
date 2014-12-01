@@ -623,7 +623,7 @@ public class NXQLQueryBuilder {
                         + ":" + name);
             }
             return field.getType().getName();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("failed to get field type for "
                     + (xpath != null ? xpath : (schema + ":" + name)), e);
         }

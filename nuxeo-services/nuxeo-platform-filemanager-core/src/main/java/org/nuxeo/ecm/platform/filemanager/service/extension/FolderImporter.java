@@ -33,7 +33,7 @@ public interface FolderImporter {
 
     DocumentModel create(CoreSession documentManager, String fullname,
             String path, boolean overwrite, TypeManager typeManager)
-            throws IOException, ClientException;
+            throws ClientException, IOException;
 
     String getName();
 

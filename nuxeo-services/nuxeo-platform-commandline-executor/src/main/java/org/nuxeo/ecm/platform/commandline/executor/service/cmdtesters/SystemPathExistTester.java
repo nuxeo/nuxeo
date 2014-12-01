@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
@@ -34,7 +36,7 @@ public class SystemPathExistTester implements CommandTester {
         String cmd = cmdDescriptor.getCommand();
         try {
             Runtime.getRuntime().exec(cmd);
-        } catch (Exception e) {
+        } catch (IOException e) {
             return new CommandTestResult("command " + cmd
                     + " not found in system path");
         }

@@ -102,7 +102,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             }
 
             orderIndexPageFirst(blobs);
-        } catch (Exception e) {
+        } catch (ConversionException e) {
             throw new RuntimeException("Blob loading from cache failed",
                     e.getCause());
         }
@@ -146,11 +146,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
 
     public MimetypeRegistry getMimeTypeService() throws ConversionException {
         if (mimeTypeService == null) {
-            try {
-                mimeTypeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                throw new ConversionException("Could not get MimeTypeRegistry", e);
-            }
+            mimeTypeService = Framework.getService(MimetypeRegistry.class);
         }
         return mimeTypeService;
     }
