@@ -45,6 +45,8 @@ public class ITLayoutDemoTest extends AbstractTest {
 
     private final static String S2_SELECTION_2 = "Germany";
 
+    private final static String S2_PREFIX = "s2id_";
+
     @Test
     public void testListWidgets() {
 
@@ -60,9 +62,8 @@ public class ITLayoutDemoTest extends AbstractTest {
                 "nxw_suggest_select2", 0, Select2WidgetElement.class, true);
         // TODO fix getSubWidget, I have to reload the select2 somehow
         select2WidgetElement = new Select2WidgetElement(driver,
-                select2WidgetElement.getId());
-        select2WidgetElement.selectValue(S2_SELECTION_1);
-
+                S2_PREFIX + select2WidgetElement.getId());
+        select2WidgetElement.selectValue(S2_SELECTION_1, true);
         RichEditorElement richEditorElement = s2HtmlTextComplexListEditWidget.getSubWidget(
                 "nxw_htmlTextItem", 0, RichEditorElement.class, true);
         richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_1);
@@ -72,8 +73,8 @@ public class ITLayoutDemoTest extends AbstractTest {
                 "nxw_suggest_select2", 1, Select2WidgetElement.class, true);
         // TODO fix getSubWidget, I have to reload the select2 somehow
         select2WidgetElement = new Select2WidgetElement(driver,
-                select2WidgetElement.getId());
-        select2WidgetElement.selectValue(S2_SELECTION_2);
+                S2_PREFIX + select2WidgetElement.getId());
+        select2WidgetElement.selectValue(S2_SELECTION_2, true);
 
         richEditorElement = s2HtmlTextComplexListEditWidget.getSubWidget(
                 "nxw_htmlTextItem", 1, RichEditorElement.class, true);
@@ -85,7 +86,7 @@ public class ITLayoutDemoTest extends AbstractTest {
         select2WidgetElement = s2HtmlTextComplexListViewWidget.getSubWidget(
                 "nxw_suggest_1_select2", 0, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver,
-                select2WidgetElement.getId());
+                S2_PREFIX + select2WidgetElement.getId());
         assertEquals("Europe/" + S2_SELECTION_1,
                 select2WidgetElement.getSelectedValue().getText());
         WidgetElement we = s2HtmlTextComplexListViewWidget.getSubWidget(
@@ -94,7 +95,7 @@ public class ITLayoutDemoTest extends AbstractTest {
         select2WidgetElement = s2HtmlTextComplexListViewWidget.getSubWidget(
                 "nxw_suggest_1_select2", 1, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver,
-                select2WidgetElement.getId());
+                S2_PREFIX + select2WidgetElement.getId());
         assertEquals("Europe/" + S2_SELECTION_2,
                 select2WidgetElement.getSelectedValue().getText());
         we = s2HtmlTextComplexListViewWidget.getSubWidget("nxw_htmlTextItem_1",
