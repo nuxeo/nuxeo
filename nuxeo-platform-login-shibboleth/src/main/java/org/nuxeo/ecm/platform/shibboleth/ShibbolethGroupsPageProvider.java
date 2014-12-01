@@ -32,12 +32,12 @@ import org.nuxeo.ecm.platform.usermanager.providers.GroupsPageProvider;
 public class ShibbolethGroupsPageProvider extends GroupsPageProvider {
 
     @Override
-    protected List<DocumentModel> searchAllGroups() throws Exception {
+    protected List<DocumentModel> searchAllGroups() {
         return ShibbolethGroupHelper.getGroups();
     }
 
     @Override
-    protected List<DocumentModel> searchGroups() throws Exception {
+    protected List<DocumentModel> searchGroups() {
         String searchString = getFirstParameter();
         if ("*".equals(searchString)) {
             return searchAllGroups();

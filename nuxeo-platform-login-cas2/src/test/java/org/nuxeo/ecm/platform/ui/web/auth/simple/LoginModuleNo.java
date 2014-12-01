@@ -63,7 +63,7 @@ public class LoginModuleNo extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    protected Principal createIdentity(String username) throws Exception {
+    protected Principal createIdentity(String username) {
         return null;
     }
 

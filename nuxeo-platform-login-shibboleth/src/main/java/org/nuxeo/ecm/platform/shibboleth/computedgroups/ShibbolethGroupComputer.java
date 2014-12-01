@@ -37,7 +37,7 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getAllGroupIds() throws Exception {
+    public List<String> getAllGroupIds() {
         List<String> groupsId = new ArrayList<String>();
         for (DocumentModel group : getAllGroups()) {
             groupsId.add(group.getId());
@@ -46,15 +46,14 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getGroupMembers(String arg0) throws Exception {
+    public List<String> getGroupMembers(String arg0) {
         // Cannot retrieve group member for a specific group, cause it's
         // assigned at user login.
         return null;
     }
 
     @Override
-    public List<String> getGroupsForUser(NuxeoPrincipalImpl nxPrincipal)
-            throws Exception {
+    public List<String> getGroupsForUser(NuxeoPrincipalImpl nxPrincipal) {
         List<String> groupsId = new ArrayList<String>();
         for (DocumentModel group : getAllGroups()) {
             String el = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA
@@ -67,12 +66,12 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getParentsGroupNames(String arg0) throws Exception {
+    public List<String> getParentsGroupNames(String arg0) {
         return ShibbolethGroupHelper.getParentsGroups(arg0);
     }
 
     @Override
-    public List<String> getSubGroupsNames(String arg0) throws Exception {
+    public List<String> getSubGroupsNames(String arg0) {
         return null;
     }
 
@@ -80,9 +79,8 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
      * Get current Directory Service
      *
      * @return
-     * @throws Exception
      */
-    private DirectoryService getDS() throws Exception {
+    private DirectoryService getDS() {
         return Framework.getService(DirectoryService.class);
     }
 
@@ -90,9 +88,8 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
      * List all Shibbolet Group in a DocumentModelList
      *
      * @return
-     * @throws Exception
      */
-    private DocumentModelList getAllGroups() throws Exception {
+    private DocumentModelList getAllGroups() {
         Session shibGroupDirectory = null;
         try {
             shibGroupDirectory = getDS().open(getDirectoryName());

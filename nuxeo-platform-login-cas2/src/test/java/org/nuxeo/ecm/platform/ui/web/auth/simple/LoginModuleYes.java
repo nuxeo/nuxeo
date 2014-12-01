@@ -90,7 +90,7 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
     }
 
     @Override
-    protected Principal createIdentity(String username) throws Exception {
+    protected Principal createIdentity(String username) {
         return new UserPrincipal(username);
     }
 
