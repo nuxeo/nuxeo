@@ -24,7 +24,7 @@ import {Query} from '../nuxeo/rpc/query';
  */
 class Spreadsheet {
 
-  constructor(container, connection, layout = 'spreadsheet_listing', columns = null) {
+  constructor(container, connection, layout, columns, pageProvider) {
     this.container = container;
     this.connection = connection;
 
@@ -47,14 +47,14 @@ class Spreadsheet {
 
     this.query = new Query(connection);
     this.query.enrichers = ['permissions', 'vocabularies'];
-    this.query.pageProvider = 'spreadsheet_query';
+    this.query.pageProvider = pageProvider;
 
     new Layout(connection, layout).fetch().then((layout) => {
       // Check which columns to display
       var cols = (!columns) ?
           layout.columns.filter((c) =>  c.selectedByDefault !== false)
           :
-          columns.map((name) => layout.columns.filter((c) => c.name == name)[0]);
+          columns.map((name) => layout.columns.filter((c) => c.name === name)[0]);
       this.columns = cols
           // Exclude columns without widgets
           .filter((c) => c.widgets)
@@ -100,7 +100,15 @@ class Spreadsheet {
   }
 
   set nxql(q) {
-    this.query.queryParams = [q];
+    this.queryParameters = [q];
+  }
+
+  set queryParameters(p) {
+    this.query.queryParameters = p;
+  }
+
+  set namedParameters(p) {
+    this.query.namedParameters = p;
   }
 
   _fetch() {
