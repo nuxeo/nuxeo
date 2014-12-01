@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.forms.ListWidgetElement;
 import org.nuxeo.functionaltests.forms.RichEditorElement;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
