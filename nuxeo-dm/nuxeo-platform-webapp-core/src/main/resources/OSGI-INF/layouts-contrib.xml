@@ -27,7 +27,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets//info_box_widget_template.xhtml
+        /widgets/info_box_widget_template.xhtml
       </property>
     </widgetType>
 
