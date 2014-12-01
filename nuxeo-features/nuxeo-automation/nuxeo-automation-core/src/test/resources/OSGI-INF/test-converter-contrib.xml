@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.picture.convert.test">
+<component name="org.nuxeo.ecm.automation.core.convert.test">
 
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
     point="converter">
 
-    <converter name="nop" class="org.nuxeo.ecm.platform.picture.convert.test.NopConverter">
+    <converter name="nop" class="org.nuxeo.ecm.automation.core.operations.blob.NOPConverter">
       <sourceMimeType>text/plain</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>

@@ -7,9 +7,6 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
 
-    <operation
-      class="org.nuxeo.ecm.platform.picture.convert.operation.ConverterOperation" />
-
     <operation class="org.nuxeo.ecm.platform.picture.convert.operation.PictureResize" />
 
     <operation class="org.nuxeo.ecm.platform.picture.convert.operation.CreatePicture" />
@@ -22,7 +19,7 @@
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
 
     <chain id="Image.Blob.Resize">
-      <operation id="ConverterOperation">
+      <operation id="Blob.RunConverter">
         <param name="converter" type="string">pictureResize</param>
       </operation>
     </chain>

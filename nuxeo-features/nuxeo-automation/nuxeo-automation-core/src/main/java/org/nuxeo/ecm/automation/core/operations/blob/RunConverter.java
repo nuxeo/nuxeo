@@ -14,7 +14,7 @@
  * Contributors:
  *     Vincent Vergnolle
  */
-package org.nuxeo.ecm.platform.picture.convert.operation;
+package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -40,12 +40,12 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
  *
  * @author Vincent Vergnolle
  */
-@Operation(id = ConverterOperation.ID, category = Constants.CAT_CONVERSION, label = ConverterOperation.ID, description = "Simply call a converter based on the 'converter' parameter. You can pass the converter properties with the 'properties' parameter.", since = "5.9.6")
-public class ConverterOperation {
+@Operation(id = RunConverter.ID, category = Constants.CAT_CONVERSION, label = RunConverter.ID, description = "Simply call a converter based on the 'converter' parameter. You can pass the converter properties with the 'properties' parameter.", since = "7.1")
+public class RunConverter {
 
-    public static final String ID = "ConverterOperation";
+    public static final String ID = "Blob.RunConverter";
 
-    public static final Log log = LogFactory.getLog(ConverterOperation.class);
+    public static final Log log = LogFactory.getLog(RunConverter.class);
 
     @Param(name = "converter", description = "The name of the converter to call")
     protected String converter;

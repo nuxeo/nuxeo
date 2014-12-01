@@ -194,6 +194,7 @@
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.BlobToPDF" />
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.ConcatenatePDFs" />
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.blob.RunConverter" />
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.BlobToFile" />
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.CreateBlob" />
     <operation class="org.nuxeo.ecm.automation.core.operations.blob.CreateZip" />
