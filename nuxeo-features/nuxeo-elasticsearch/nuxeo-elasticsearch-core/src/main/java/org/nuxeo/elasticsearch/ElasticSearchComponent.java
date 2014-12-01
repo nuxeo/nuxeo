@@ -218,6 +218,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
+    public List<String> getRepositoryNames() {
+        return esa.getRepositoryNames();
+    }
+
+    @Override
     public int getPendingDocs() {
         return pendingWork.size();
     }
@@ -341,8 +346,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public void reindex(String nxql) {
-        esi.reindex(nxql);
+    public void reindex(String repositoryName, String nxql) {
+        esi.reindex(repositoryName, nxql);
     }
 
     // ES Search ===============================================================

@@ -20,10 +20,10 @@ package org.nuxeo.elasticsearch.work;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_READ_PROPERTY;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,50 +46,56 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     private static final String DEFAULT_BUCKET_SIZE = "500";
     protected final String nxql;
     protected WorkManager workManager;
-    private long docCount = 0;
+    protected long documentCount = 0;
 
-    public ScrollingIndexingWorker(String nxql) {
+    public ScrollingIndexingWorker(String repositoryName, String nxql) {
         super();
+        this.repositoryName = repositoryName;
         this.nxql = nxql;
     }
 
     @Override
     public String getTitle() {
-        return "ElasticSearch scrolling indexer: " + nxql + ", processed "
-                + docCount;
+        return "Elasticsearch scrolling indexer: " + nxql + ", processed "
+                + documentCount;
     }
 
     @Override
     protected void doWork() {
+        String jobName = getSchedulePath().getPath();
+        log.warn(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s",
+                jobName, nxql, repositoryName));
         CoreSession session = initSession(repositoryName);
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         int bucketCount = 0;
         try {
             Iterator<Map<String, Serializable>> it = res.iterator();
             int bucketSize = getBucketSize();
-            Set<String> ids = new HashSet<>(bucketSize);
+            List<String> ids = new ArrayList<>(bucketSize);
             while (it.hasNext()) {
-                docCount += 1;
+                documentCount += 1;
                 ids.add((String) it.next().get(NXQL.ECM_UUID));
                 if (ids.size() == bucketSize) {
                     scheduleBucketWorker(ids, false);
-                    ids = new HashSet<>(bucketSize);
+                    ids = new ArrayList<>(bucketSize);
                     bucketCount += 1;
                 }
             }
             scheduleBucketWorker(ids, true);
-            bucketCount += 1;
+            if (!ids.isEmpty()) {
+                bucketCount += 1;
+            }
         } finally {
             res.close();
-            log.warn(String.format(
-                    "%d documents submitted in %d bucket worker", docCount,
-                    bucketCount));
+            log.warn(String
+                    .format("Re-indexing job: %s has submited %d documents in %d bucket workers",
+                            jobName, documentCount, bucketCount));
         }
     }
 
-    protected void scheduleBucketWorker(Set<String> bucket, boolean isLast) {
-        BucketIndexingWorker subWorker = new BucketIndexingWorker(bucket,
-                isLast);
+    protected void scheduleBucketWorker(List<String> bucket, boolean isLast) {
+        BucketIndexingWorker subWorker = new BucketIndexingWorker(
+                repositoryName, bucket, isLast);
         getWorkManager().schedule(subWorker);
     }
 

@@ -142,7 +142,7 @@ public class TestReindex {
     }
 
     @Test
-    public void shouldIndexDocument() throws Exception {
+    public void shouldReindexDocument() throws Exception {
         buildDocs();
         startTransaction();
 
@@ -162,8 +162,8 @@ public class TestReindex {
         DocumentModelList docs2 = ess.query(new NxQueryBuilder(session)
                 .nxql("SELECT * FROM Document"));
         Assert.assertEquals(0, docs2.totalSize());
-        esi.reindex("SELECT * FROM Document");
-        esi.reindex("SELECT * FROM Relation");
+        esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
+        esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
         waitForIndexing();
         docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(45));
 

@@ -20,7 +20,6 @@ package org.nuxeo.elasticsearch.api;
 
 import java.util.List;
 
-import org.hibernate.bytecode.javassist.BulkAccessor;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
@@ -71,6 +70,6 @@ public interface ElasticSearchIndexing {
      *
      * @since 7.1
      */
-    void reindex(String nxql);
+    void reindex(String repositoryName, String nxql);
 
 }
