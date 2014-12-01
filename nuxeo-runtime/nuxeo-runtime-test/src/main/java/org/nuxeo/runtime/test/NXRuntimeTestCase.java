@@ -67,7 +67,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.MDCFeature;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
@@ -82,6 +86,8 @@ import org.osgi.framework.FrameworkEvent;
  */
 // Make sure this class is kept in sync with with RuntimeHarness
 @RunWith(FeaturesRunner.class)
+@Features({MDCFeature.class, ConditionalIgnoreRule.Feature.class,
+        RandomBug.Feature.class})
 @Ignore
 public class NXRuntimeTestCase implements RuntimeHarness {
 

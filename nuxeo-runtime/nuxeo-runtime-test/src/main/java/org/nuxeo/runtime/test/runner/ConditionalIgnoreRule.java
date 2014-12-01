@@ -62,7 +62,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
 
         @Override
         public boolean shouldIgnore() {
-            return true;
+            return false;
         }
 
     }

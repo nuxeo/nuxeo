@@ -21,24 +21,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import junit.framework.Assert;
-
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgresql;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPostgresql.class)
+@RandomBug.Repeat(issue="/NXP-16098")
 public class WorkTest extends TXSQLRepositoryTestCase {
 
     @Before
@@ -82,8 +80,6 @@ public class WorkTest extends TXSQLRepositoryTestCase {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.NXP10926H2Upgrade.class)
-    // no concurrent update detected in H2 1.4.177
     public void testWorkConcurrencyExceptionImplicitSave() throws Exception {
         doTestWorkConcurrencyException(false);
     }
