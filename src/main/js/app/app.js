@@ -19,10 +19,14 @@ import {Log} from './ui/log';
 import {Spreadsheet} from './ui/spreadsheet';
 import {parseNXQL} from './nuxeo/util/nxql';
 
-var {layout, query, columns} = parseParams();
+// Extract the parameters (content view state and page provider)
+var {cv, pp} = parseParams();
+
+// Parse the content view state
+cv = cv && JSON.parse(atob(cv));
 
 // Check if we're in standalone mode
-var isStandalone = !query;
+var isStandalone = !cv;
 
 // Our Spreadsheet instance
 var sheet;
@@ -33,26 +37,24 @@ function setupUI() {
 
   log = new Log($('#console'));
 
-  // Only display close button in popup
+  // Setup popup UI
   if (!isStandalone) {
     $('#close').click(function() {
       parent.jQuery.fancybox.close();
     });
     $('#close').toggle(true);
+
+  // Setup standalone UI
+  } else {
+    $('#queryArea').toggle(true);
+    $('#execute').click(doQuery);
   }
-
-  // Only display query area in standalone
-  $('#queryArea').toggle(isStandalone);
-
-  $('#query').val(query);
-
-  $('#execute').click(doQuery);
 
   $('#save').click(() => {
     log.info('Saving...');
     sheet.save().then((results) => {
       if (!results) {
-        log.error("Failed to save changes.");
+        log.error('Failed to save changes.');
         return;
       }
       var msg;
@@ -79,12 +81,14 @@ function setupUI() {
 }
 
 function doQuery() {
-  var q = $('#query').val();
   // Only parse queries in standalone mode
-  sheet.nxql = (isStandalone) ? parseNXQL(q) : q;
+  if (isStandalone) {
+    var q = $('#query').val();
+    sheet.nxql = parseNXQL(q);
+  }
   sheet.update().catch(function(err) {
     log.error(err.message);
-  })
+  });
 }
 
 function run() {
@@ -98,27 +102,52 @@ function run() {
     setupUI();
 
     nx.connect().then(() => {
+      // Extract content view configuration
+      var layout = (cv && cv.resultLayout && cv.resultLayout.name) || 'spreadsheet_listing',
+          resultColumns = cv && cv.resultColumns;
+
+      var pageProvider = pp || 'spreadsheet_query';
 
       // Setup the SpreadSheet
-      sheet = new Spreadsheet($('#grid'), nx, layout, (columns) ? columns.split(',') : null);
-      sheet.nxql = query;
+      sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider);
 
-      if (query) {
-        doQuery();
+      // Add query parameters
+      if (cv && cv.queryParameters) {
+        sheet.queryParameters = cv.queryParameters;
       }
 
-    })
+      // Add the search document
+      if (cv && cv.searchDocument) {
+        var namedParameters = {};
+        for (var k in cv.searchDocument.properties) {
+          var v = cv.searchDocument.properties[k];
+          // skip empty values
+          if ((typeof(v.length) !== 'undefined') && (v.length === 0)) {
+            continue;
+          }
+          namedParameters[k] = JSON.stringify(v);
+        }
+        sheet.namedParameters = namedParameters;
+      }
+
+      if (!isStandalone) {
+        doQuery();
+      }
+    });
   });
 }
 
 // Utils
 function parseParams() {
   var parameters = {};
-  var query = window.location.search;
-  query = query.replace('?', '');
+  var query = window.location.search.replace('?', '');
+  if (query.length === 0) {
+    return parameters;
+  }
   var params = query.split('&');
-  for(var param of params) {
+  for (var param of params) {
     var [k, v] = param.split('=');
+    v = v.replace(/\+/g, ' ');
     parameters[k] = decodeURIComponent(v);
   }
   return parameters;

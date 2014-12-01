@@ -30,7 +30,11 @@ class Query extends Operation {
     this.params.query = q;
   }
 
-  set queryParams(p) {
+  set namedParameters(p) {
+    this.params.namedParameters = p;
+  }
+
+  set queryParameters(p) {
     this.params.queryParams = p;
   }
 
