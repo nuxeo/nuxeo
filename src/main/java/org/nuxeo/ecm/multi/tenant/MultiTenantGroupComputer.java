@@ -42,8 +42,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class MultiTenantGroupComputer extends AbstractGroupComputer {
 
     @Override
-    public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal)
-            throws Exception {
+    public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal) {
         final List<String> groups = new ArrayList<String>();
         final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue(
                 "user:tenantId");
@@ -86,22 +85,22 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
     }
 
     @Override
-    public List<String> getAllGroupIds() throws Exception {
+    public List<String> getAllGroupIds() {
         return null;
     }
 
     @Override
-    public List<String> getGroupMembers(String s) throws Exception {
+    public List<String> getGroupMembers(String s) {
         return null;
     }
 
     @Override
-    public List<String> getParentsGroupNames(String s) throws Exception {
+    public List<String> getParentsGroupNames(String s) {
         return null;
     }
 
     @Override
-    public List<String> getSubGroupsNames(String s) throws Exception {
+    public List<String> getSubGroupsNames(String s) {
         return null;
     }
 
