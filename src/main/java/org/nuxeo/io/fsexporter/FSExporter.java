@@ -36,12 +36,15 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
 
         ExportLogicDescriptor exportLogicDesc = (ExportLogicDescriptor) contribution;
         if (exportLogicDesc.plugin != null) {
-            exporter = exportLogicDesc.plugin.newInstance();
+            try {
+                exporter = exportLogicDesc.plugin.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
