@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
@@ -319,8 +320,14 @@ public class ImagingComponent extends DefaultComponent implements
     protected PictureView computeView(Blob blob,
             PictureConversion pictureConversion, ImageInfo imageInfo,
             boolean convert) throws IOException, ClientException {
+        return computeView(null, blob, pictureConversion, imageInfo, convert);
+    }
+
+    protected PictureView computeView(DocumentModel doc, Blob blob,
+            PictureConversion pictureConversion, ImageInfo imageInfo,
+            boolean convert) throws IOException, ClientException {
         if (convert) {
-            return computeView(blob, pictureConversion, imageInfo);
+            return computeView(doc, blob, pictureConversion, imageInfo);
         } else {
             return computeViewWithoutConversion(blob, pictureConversion,
                     imageInfo);
@@ -329,7 +336,7 @@ public class ImagingComponent extends DefaultComponent implements
 
     /**
      * Use
-     * {@link ImagingComponent#computeView(Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)}
+     * {@link ImagingComponent#computeView(org.nuxeo.ecm.core.api.DocumentModel, Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)}
      * by passing the <b>Original</b> picture template.
      *
      * @deprecated since 7.1
@@ -370,7 +377,7 @@ public class ImagingComponent extends DefaultComponent implements
 
     /**
      * Use
-     * {@link ImagingComponent#computeView(Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)}
+     * {@link ImagingComponent#computeView(org.nuxeo.ecm.core.api.DocumentModel, Blob, org.nuxeo.ecm.platform.picture.api.PictureConversion, ImageInfo)}
      * by passing the <b>OriginalJpeg</b> picture template.
      *
      * @deprecated since 7.1
@@ -427,7 +434,7 @@ public class ImagingComponent extends DefaultComponent implements
         }
     }
 
-    protected PictureView computeView(Blob blob,
+    protected PictureView computeView(DocumentModel doc, Blob blob,
             PictureConversion pictureConversion, ImageInfo imageInfo) {
 
         String title = pictureConversion.getId();
@@ -455,8 +462,8 @@ public class ImagingComponent extends DefaultComponent implements
         String conversionFormat = getConfigurationValue(CONVERSION_FORMAT,
                 JPEG_CONVERSATION_FORMAT);
 
-        Blob viewBlob = callPictureConversionChain(blob, pictureConversion,
-                imageInfo, size, conversionFormat);
+        Blob viewBlob = callPictureConversionChain(doc, blob,
+                pictureConversion, imageInfo, size, conversionFormat);
 
         String viewFilename = String.format("%s_%s.%s", title,
                 FilenameUtils.getBaseName(blob.getFilename()),
@@ -468,31 +475,31 @@ public class ImagingComponent extends DefaultComponent implements
         return new PictureViewImpl(pictureViewMap);
     }
 
-    protected Blob callPictureConversionChain(Blob blob,
+    protected Blob callPictureConversionChain(DocumentModel doc, Blob blob,
             PictureConversion pictureConversion, ImageInfo imageInfo,
             Point size, String conversionFormat) {
+        String chainId = pictureConversion.getChainId();
+
+        // if the chainId is null just use the same blob (wrapped)
+        if (StringUtils.isBlank(chainId)) {
+            return new BlobWrapper(blob);
+        }
+
         Properties parameters = new Properties();
         parameters.put(OPTION_RESIZE_WIDTH, String.valueOf(size.x));
         parameters.put(OPTION_RESIZE_HEIGHT, String.valueOf(size.y));
         parameters.put(OPTION_RESIZE_DEPTH,
                 String.valueOf(imageInfo.getDepth()));
-
-        Map<String, Object> chainParameters = new HashMap<>(1);
-        chainParameters.put("parameters", parameters);
-
         parameters.put(CONVERSION_FORMAT, conversionFormat);
 
+        Map<String, Object> chainParameters = new HashMap<>();
+        chainParameters.put("parameters", parameters);
+
         OperationContext context = new OperationContext();
-        context.setInput(blob);
-
-        String chainId = pictureConversion.getChainId();
-
-        /*
-         * If the chainId is null just use the same blob (wrapped)
-         */
-        if (chainId == null) {
-            return new BlobWrapper(blob);
+        if (doc != null) {
+            context.put("docId", doc.getId());
         }
+        context.setInput(blob);
 
         try {
             Blob viewBlob = (Blob) Framework.getService(AutomationService.class).run(
@@ -520,8 +527,8 @@ public class ImagingComponent extends DefaultComponent implements
 
         for (PictureConversion pictureConversion : pictureConversions) {
             if (canApplyPictureConversion(pictureConversion, doc)) {
-                PictureView pictureView = computeView(blob, pictureConversion,
-                        getImageInfo(blob), convert);
+                PictureView pictureView = computeView(doc, blob,
+                        pictureConversion, getImageInfo(blob), convert);
                 pictureViews.add(pictureView);
             }
         }

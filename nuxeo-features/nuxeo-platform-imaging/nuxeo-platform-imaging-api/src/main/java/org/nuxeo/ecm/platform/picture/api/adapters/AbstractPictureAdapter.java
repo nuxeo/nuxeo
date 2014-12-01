@@ -159,8 +159,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     private CoreSession session;
 
-    private ImagingService imagingService;
-
     private ConversionService converionService;
 
     @Override
@@ -169,15 +167,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     protected ImagingService getImagingService() {
-        if (imagingService == null) {
-            try {
-                imagingService = Framework.getService(ImagingService.class);
-            } catch (Exception e) {
-                log.error("Unable to get Imaging Service.", e);
-            }
-
-        }
-        return imagingService;
+        return Framework.getLocalService(ImagingService.class);
     }
 
     protected ConversionService getConversionService() throws ClientException {
