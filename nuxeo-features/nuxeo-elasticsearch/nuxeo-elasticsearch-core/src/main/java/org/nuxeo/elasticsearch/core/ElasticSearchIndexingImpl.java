@@ -42,7 +42,6 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.jboss.seam.annotations.RaiseEvent;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -105,14 +104,13 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void reindex(String nxql) {
+    public void reindex(String repositoryName, String nxql) {
         if (nxql == null || nxql.isEmpty()) {
-            throw new IllegalArgumentException("Expecting an nxql query");
+            throw new IllegalArgumentException("Expecting an NXQL query");
         }
-        log.warn("Re-indexing using: " + nxql);
         esa.totalCommandRunning.incrementAndGet();
         try {
-            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(nxql);
+            ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             wm.schedule(worker);
         } finally {

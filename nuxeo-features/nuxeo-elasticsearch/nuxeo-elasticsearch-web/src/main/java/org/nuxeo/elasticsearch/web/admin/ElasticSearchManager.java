@@ -30,6 +30,7 @@ import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -81,6 +82,10 @@ public class ElasticSearchManager {
 
     private String nxql = DEFAULT_NXQL_QUERY;
 
+    private String repositoryName;
+
+    private Boolean dropIndex = false;
+
     public String getNodesInfo() {
         NodesInfoResponse nodesInfo = esa.getClient().admin().cluster()
                 .prepareNodesInfo().execute().actionGet();
@@ -100,18 +105,25 @@ public class ElasticSearchManager {
     }
 
     public void startReindex() throws Exception {
-        log.warn(String.format("Start re-indexing NXQL: %s",
-                getNxql()));
-        esi.reindex(getNxql());
+        if (dropIndex) {
+            esa.initIndexes(dropIndex);
+        }
+        esi.reindex(repositoryName, getNxql());
     }
 
     public void startReindexFrom() throws Exception {
-        DocumentModel doc = documentManager.getDocument(new IdRef(rootId));
-        log.warn(String.format("Start re-indexing from root document: %s, %s",
-                doc.getId(), doc));
-        IndexingCommand cmd = new IndexingCommand(
-                doc, false, true);
-        esi.scheduleIndexing(cmd);
+        if (dropIndex) {
+            esa.initIndexes(dropIndex);
+        }
+        try (CoreSession session = CoreInstance
+                .openCoreSessionSystem(repositoryName)) {
+            DocumentModel doc = session.getDocument(new IdRef(rootId));
+            log.warn(String.format(
+                    "Start re-indexing repository %s root document: %s, %s",
+                    repositoryName, doc.getId(), doc));
+            IndexingCommand cmd = new IndexingCommand(doc, false, true);
+            esi.scheduleIndexing(cmd);
+        }
     }
 
     public void flush() {
@@ -215,10 +227,11 @@ public class ElasticSearchManager {
     }
 
     public String getRootId() {
-        if (rootId == null) {
-            rootId = documentManager.getRootDocument().getId();
-        }
         return rootId;
+    }
+
+    public List<String> getRepositoryNames() {
+        return esa.getRepositoryNames();
     }
 
     public void setRootId(String rootId) {
@@ -231,5 +244,21 @@ public class ElasticSearchManager {
 
     public void setNxql(String nxql) {
         this.nxql = nxql;
+    }
+
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+    public Boolean getDropIndex() {
+        return dropIndex;
+    }
+
+    public void setDropIndex(Boolean dropIndex) {
+        this.dropIndex = dropIndex;
     }
 }

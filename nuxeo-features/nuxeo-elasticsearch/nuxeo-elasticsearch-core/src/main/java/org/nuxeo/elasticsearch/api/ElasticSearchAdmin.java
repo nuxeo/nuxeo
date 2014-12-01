@@ -18,6 +18,8 @@
 
 package org.nuxeo.elasticsearch.api;
 
+import java.util.List;
+
 import org.elasticsearch.client.Client;
 
 /**
@@ -46,6 +48,60 @@ public interface ElasticSearchAdmin {
      * @since 5.9.3
      */
     void initIndexes(boolean dropIfExists);
+
+    /**
+     * List repository names that has Elasticsearch support.
+     *
+     * @since 7.1
+     */
+    List<String> getRepositoryNames();
+
+    /**
+     * Returns true if there are indexing activities.
+     *
+     * This include currently running, scheduled and asynchronous recursive
+     * jobs.
+     *
+     * @since 5.9.5
+     */
+    boolean isIndexingInProgress();
+
+    /**
+     * Refresh all document indexes, immediately after the operation occurs, so
+     * that the updated document appears in search results immediately.
+     *
+     * There is no fsync thus doesn't guarantee durability.
+     *
+     * @since 5.9.3
+     */
+    void refresh();
+
+    /**
+     * Refresh document index for the specific repository, immediately after the
+     * operation occurs, so that the updated document appears in search results
+     * immediately.
+     *
+     * There is no fsync thus doesn't guarantee durability.
+     *
+     * @since 5.9.4
+     */
+    void refreshRepositoryIndex(String repositoryName);
+
+    /**
+     * Elasticsearch flush on all document indexes, triggers a lucene commit,
+     * empties the transaction log. Data is flushed to disk.
+     *
+     * @since 5.9.3
+     */
+    void flush();
+
+    /**
+     * Elasticsearch flush on document index for a specific repository, triggers
+     * a lucene commit, empties the transaction log. Data is flushed to disk.
+     *
+     * @since 5.9.4
+     */
+    void flushRepositoryIndex(String repositoryName);
 
     /**
      * Returns the number of documents that are waiting for being indexed.
@@ -79,51 +135,4 @@ public interface ElasticSearchAdmin {
      */
     int getTotalCommandProcessed();
 
-
-    /**
-     * Returns true if there are indexing activities.
-     *
-     * This include currently running, scheduled and asynchronous recursive jobs.
-     *
-     * @since 5.9.5
-     */
-    boolean isIndexingInProgress();
-
-    /**
-     * Refresh all document indexes, immediately after the operation occurs,
-     * so that the updated document appears in search results immediately.
-     *
-     * There is no fsync thus doesn't guarantee durability.
-     *
-     * @since 5.9.3
-     */
-    void refresh();
-
-    /**
-     * Refresh document index for the specific repository, immediately after
-     * the operation occurs, so that the updated document appears in search
-     * results immediately.
-     *
-     * There is no fsync thus doesn't guarantee durability.
-     *
-     * @since 5.9.4
-     */
-    void refreshRepositoryIndex(String repositoryName);
-
-    /**
-     * Elasticsearch flush on all document indexes, triggers a lucene commit,
-     * empties the transaction log. Data is flushed to disk.
-     *
-     * @since 5.9.3
-     */
-    void flush();
-
-    /**
-     * Elasticsearch flush on document index for a specific repository,
-     * triggers a lucene commit, empties the transaction log. Data is flushed
-     * to disk.
-     *
-     * @since 5.9.4
-     */
-    void flushRepositoryIndex(String repositoryName);
 }

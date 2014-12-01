@@ -61,6 +61,8 @@ public class TestService {
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getRunningCommands());
         Assert.assertFalse(esa.isIndexingInProgress());
+        Assert.assertEquals(1, esa.getRepositoryNames().size());
+        Assert.assertEquals("test", esa.getRepositoryNames().get(0));
     }
 
     @Test
