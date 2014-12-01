@@ -171,7 +171,7 @@ public class RandomBug {
             }
             return statement = onRepeat(actual, notifier, base);
         }
-        
+
         @Override
         public Statement apply(Statement base, FrameworkMethod method,
                 Object target) {
@@ -217,7 +217,7 @@ public class RandomBug {
     /**
      * The default mode if {@link MODE_PROPERTY} is not set.
      */
-    public final Mode DEFAULT = Mode.STRICT;
+    public final Mode DEFAULT = Mode.RELAX;
 
     protected Mode fetchMode() {
         String mode = System.getProperty(MODE_PROPERTY, DEFAULT.name());

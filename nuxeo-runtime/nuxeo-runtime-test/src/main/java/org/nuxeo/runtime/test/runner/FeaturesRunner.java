@@ -312,17 +312,17 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         final RulesFactory<ClassRule, TestRule> factory = new RulesFactory<>(
                 ClassRule.class, TestRule.class);
 
+        factory.withRule(new TestRule() {
+            @Override
+            public Statement apply(Statement base, Description description) {
+                return new BeforeClassStatement(base);
+            }
+        }).withRules(super.classRules());
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override
             public void call(Holder holder) throws Exception {
                 factory.withRules(holder.testClass, null);
-            }
-        });
-        factory.withRules(super.classRules()).withRule(new TestRule() {
-            @Override
-            public Statement apply(Statement base, Description description) {
-                return new BeforeClassStatement(base);
             }
         });
 
