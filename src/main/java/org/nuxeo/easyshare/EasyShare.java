@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -179,7 +180,7 @@ public class EasyShare extends ModuleRoot {
                             mailProps.put("template", "easyShareEmail");
                             emailer.sendmail(mailProps);
                             log.debug("Easyshare: completed email");
-                        } catch (Exception ex) {
+                        } catch (MessagingException ex) {
                             log.error("Cannot send easyShare notification email", ex);
                         }
 
