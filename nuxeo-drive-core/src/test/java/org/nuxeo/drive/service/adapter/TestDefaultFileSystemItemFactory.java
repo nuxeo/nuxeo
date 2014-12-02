@@ -39,6 +39,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
@@ -63,10 +64,13 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -85,7 +89,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
+        "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
+        "org.nuxeo.runtime.reload" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
@@ -97,6 +102,9 @@ public class TestDefaultFileSystemItemFactory {
 
     // needs to be bigger than 1s for MySQL
     private static final int VERSIONING_DELAY = 3000; // ms
+
+    @Inject
+    protected RuntimeHarness harness;
 
     @Inject
     protected CoreSession session;
@@ -770,6 +778,23 @@ public class TestDefaultFileSystemItemFactory {
         checkChildren(folderChildren, folder.getId(), note.getId(),
                 file.getId(), subFolder.getId(), adaptableChild.getId(),
                 ordered);
+    }
+
+    @Test
+    public void testFolderItemChildrenPageProviderOverride() throws Exception {
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                syncRootFolder, session);
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+        FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
+        assertEquals(5, syncRootFolderItem.getChildren().size());
+
+        harness.deployContrib("org.nuxeo.drive.core.test",
+                "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
+        Framework.getService(ReloadService.class).reload();
+        assertEquals(2, syncRootFolderItem.getChildren().size());
+        harness.undeployContrib("org.nuxeo.drive.core.test",
+                "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
+        Framework.getService(ReloadService.class).reload();
     }
 
     @Test
