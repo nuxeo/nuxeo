@@ -1,9 +1,8 @@
 package org.nuxeo.ecm.core.test;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -94,8 +93,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
         try (CoreSession main = settings.openSessionAsSystemUser()) {
             NestedQueryRunner runner = new NestedQueryRunner(
                     settings.repositoryName);
-            mainResults = main.queryAndFetch(
-                    "SELECT * from Document", "NXQL");
+            mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
             runner.runUnrestricted();
             Assert.assertFalse(runner.result.isLife());
             Assert.assertTrue(mainResults.isLife());
