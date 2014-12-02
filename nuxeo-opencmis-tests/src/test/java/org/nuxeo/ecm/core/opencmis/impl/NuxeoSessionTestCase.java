@@ -96,6 +96,7 @@ import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * Tests that hit the high-level Session abstraction.
@@ -874,6 +875,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-16106")
     public void testDeleteObjectOrCancelCheckOut() throws Exception {
         // test cancelCheckOut
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
