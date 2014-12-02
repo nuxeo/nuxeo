@@ -229,6 +229,15 @@ public class RandomBug {
 
         protected final RunNotifier notifier;
 
+        protected boolean gotFailure;
+
+        protected final RunListener listener = new RunListener() {
+            @Override
+            public void testFailure(Failure failure) throws Exception {
+                gotFailure = true;
+            }
+        };
+
         protected final Statement base;
 
         protected int serial;
@@ -247,6 +256,45 @@ public class RandomBug {
         protected void onLeave() {
             MDC.remove("fRepeat");
         }
+
+        @Override
+        public void evaluate() throws Throwable {
+            Error error = error();
+            notifier.addListener(listener);
+            try {
+                for (int i = 1; i <= retryCount(); i++) {
+                    onEnter(i);
+                    try {
+                        base.evaluate();
+                        if (!gotFailure && returnOnSuccess()) {
+                            return;
+                        }
+                    } catch (Throwable cause) {
+                        error.addSuppressed(cause);
+                        if (returnOnFailure()) {
+                            throw error;
+                        }
+                    } finally {
+                        onLeave();
+                    }
+                    if (gotFailure && returnOnFailure()) {
+                        return;
+                    }
+                }
+            } finally {
+                notifier.removeListener(listener);
+            }
+            throw error;
+        }
+
+        protected abstract Error error();
+
+        protected abstract int retryCount();
+
+        protected abstract boolean returnOnSuccess();
+
+        protected abstract boolean returnOnFailure();
+
     }
 
     protected class RepeatOnFailure extends RepeatStatement {
@@ -259,65 +307,61 @@ public class RandomBug {
         }
 
         @Override
-        public void evaluate() throws Throwable {
-            AssertionError error = new AssertionError(String.format(
+        protected Error error() {
+            return new AssertionError(String.format(
                     "No success after %d tries. Either the bug is not random "
                             + "or you should increase the 'onFailure' value.\n"
                             + "Issue: %s", params.onFailure(), issue));
-            for (int i = 0; i <= params.onFailure(); i++) {
-                onEnter(i);
-                try {
-                    base.evaluate();
-                    return;
-                } catch (Throwable cause) {
-                    error.addSuppressed(cause);
-                } finally {
-                    onLeave();
-                }
-            }
-            throw error;
         }
+
+        @Override
+        protected int retryCount() {
+            return params.onFailure();
+        }
+
+        @Override
+        protected boolean returnOnFailure() {
+            return false;
+        }
+
+        @Override
+        protected boolean returnOnSuccess() {
+            return true;
+        }
+
     }
 
     protected class RepeatOnSuccess extends RepeatStatement {
 
-        protected final RunListener listener = new RunListener() {
-            @Override
-            public void testFailure(Failure failure) throws Exception {
-                gotFailure = true;
-            }
-        };
 
         protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier,
                 Statement aStatement) {
             super(someParams, aNotifier, aStatement);
         }
 
-        protected boolean gotFailure;
 
         @Override
-        public void evaluate() throws Throwable {
-            Error error = new AssertionError(String.format(
+        protected Error error() {
+           return new AssertionError(String.format(
                     "No failure after %d tries. Either the bug is fixed "
                             + "or you should increase the 'onSuccess' value.\n"
                             + "Issue: %s", params.onSuccess(), params.issue()));
-            notifier.addListener(listener);
-            try {
-                for (int i = 1; i <= params.onSuccess(); i++) {
-                    onEnter(i);
-                    try {
-                        base.evaluate();
-                    } finally {
-                        onLeave();
-                    }
-                    if (gotFailure) {
-                        return;
-                    }
-                }
-            } finally {
-                notifier.removeListener(listener);
-            }
-            throw error;
+        }
+
+        @Override
+        protected boolean returnOnFailure() {
+            return true;
+        }
+
+        @Override
+        protected boolean returnOnSuccess() {
+            return false;
+        }
+
+
+        @Override
+        protected int retryCount() {
+            return params.onSuccess();
         }
     }
 
@@ -333,6 +377,28 @@ public class RandomBug {
             throw new AssumptionViolatedException(
                     "Random bug ignored (bypass mode): " + params.issue());
         }
+
+        @Override
+        protected Error error() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected int retryCount() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected boolean returnOnSuccess() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected boolean returnOnFailure() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
     }
 
     protected RepeatStatement onRepeat(Repeat someParams,
@@ -350,5 +416,7 @@ public class RandomBug {
         }
         throw new IllegalArgumentException("no such mode");
     }
+
+
 
 }
