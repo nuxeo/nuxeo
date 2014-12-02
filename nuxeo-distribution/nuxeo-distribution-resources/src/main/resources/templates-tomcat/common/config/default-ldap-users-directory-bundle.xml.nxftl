@@ -68,7 +68,7 @@
 </#if>
       -->
 <#if "${nuxeo.ldap.user.searchFilter}" != "">
-        <searchFilter></searchFilter>
+        <searchFilter>${nuxeo.ldap.user.searchFilter}</searchFilter>
 </#if>
 
       <!-- use subtree if the people branch is nested -->
