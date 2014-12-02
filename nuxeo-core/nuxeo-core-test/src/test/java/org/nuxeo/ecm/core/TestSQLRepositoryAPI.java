@@ -1276,8 +1276,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         }
     }
 
-    // Uncomment to reveal NXP-14686
-    // @Test
+    @Test
+    @Ignore("NXP-14686")
     public void testRemoveChildrenWithVersion() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
