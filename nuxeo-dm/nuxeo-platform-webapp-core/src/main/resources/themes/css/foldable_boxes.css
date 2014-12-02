@@ -81,6 +81,10 @@ author: lkemen@nuxeo.com
   padding: 1em;
   overflow-x: auto  }
 
+.foldableBox div.foldableLightBox a.foldableHeaderLink {
+  font-size: .9em;
+  padding: 0 1em 0 1.7em }
+
 .foldableBox .listingLayoutSelector {
   margin: 0 0 0 .7em }
 
