@@ -53,30 +53,23 @@ public class PictureViewsGenerationWork extends AbstractWork {
 
     @Override
     public void work() {
-        DocumentModel workingDocument = null;
-
         setProgress(Progress.PROGRESS_INDETERMINATE);
         setStatus("Extracting");
-        try {
-            initSession();
-            if (!session.exists(new IdRef(docId))) {
-                setStatus("Nothing to process");
-                return;
-            }
-            workingDocument = session.getDocument(new IdRef(docId));
-            workingDocument.detach(true);
-        } finally {
-            cleanUp(true, null);
-            commitOrRollbackTransaction();
 
+        initSession();
+        if (!session.exists(new IdRef(docId))) {
+            setStatus("Nothing to process");
+            return;
         }
 
-        setStatus("Generating views");
+        DocumentModel workingDocument = session.getDocument(new IdRef(docId));
         Property fileProp = workingDocument.getProperty(xpath);
         PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
         Blob blob = (Blob) fileProp.getValue();
-        String filename = blob == null ? null : blob.getFilename();
         String title = workingDocument.getTitle();
+        String filename = blob == null ? null : blob.getFilename();
+
+        setStatus("Generating views");
         try {
             picture.fillPictureViews(blob, filename, title, null);
         } catch (IOException e) {

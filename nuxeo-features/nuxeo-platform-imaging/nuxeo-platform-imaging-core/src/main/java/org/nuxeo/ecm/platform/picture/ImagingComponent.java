@@ -72,6 +72,7 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class ImagingComponent extends DefaultComponent implements
         ImagingService {
@@ -489,11 +490,19 @@ public class ImagingComponent extends DefaultComponent implements
 
         OperationContext context = new OperationContext();
         if (doc != null) {
-            context.put("docId", doc.getId());
+            DocumentModel pictureDocument = doc.getCoreSession().getDocument(doc.getRef());
+            pictureDocument.detach(true);
+            context.put("pictureDocument", pictureDocument);
         }
         context.setInput(blob);
 
+        boolean txWasActive = false;
         try {
+            if (TransactionHelper.isTransactionActive()) {
+                txWasActive = true;
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+
             Blob viewBlob = (Blob) Framework.getService(AutomationService.class).run(
                     context, chainId, chainParameters);
             if (viewBlob == null) {
@@ -502,6 +511,11 @@ public class ImagingComponent extends DefaultComponent implements
             return viewBlob;
         } catch (OperationException | IOException e) {
             throw new ClientRuntimeException(e);
+        } finally {
+            if (txWasActive
+                    && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.startTransaction();
+            }
         }
     }
 
