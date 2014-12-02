@@ -1,4 +1,4 @@
-<project name="selenium-tests" xmlns:nx="urn:nuxeo-build"
+<project name="nuxeo-layoutDemo-selenium-tests" xmlns:nx="urn:nuxeo-build"
   default="run-selenium"
   xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
@@ -24,7 +24,7 @@
   </target>
 
   <target name="set-layout-demo-conf" depends="_init">
-    <echo message="Removing single datasource conf" />
+    <echo level="info" message="Removing single datasource conf" />
     <!-- do not declare datasources (NXP-14138) -->
     <antcall target="set-conf">
       <param name="name" value="nuxeo.server.declare_datasources" />

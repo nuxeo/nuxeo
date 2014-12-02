@@ -22,6 +22,7 @@
       <id>itest</id>
       <modules>
         <module>ftest/selenium</module>
+        <module>ftest/webdriver</module>
       </modules>
     </profile>
   </profiles>
