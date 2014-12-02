@@ -297,16 +297,7 @@ public class Select2ActionsBean implements Serializable {
     }
 
     protected LayoutStore getLayoutStore() {
-        LayoutStore layoutStore = null;
-        try {
-            layoutStore = Framework.getLocalService(LayoutStore.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        if (layoutStore == null) {
-            throw new RuntimeException("Missing service for LayoutStore");
-        }
-        return layoutStore;
+        return Framework.getService(LayoutStore.class);
     }
 
     @SuppressWarnings("rawtypes")
@@ -418,12 +409,8 @@ public class Select2ActionsBean implements Serializable {
             return documentManager;
         }
 
-        try {
-            dedicatedSession = CoreInstance.openCoreSession(repoName);
-            return dedicatedSession;
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        dedicatedSession = CoreInstance.openCoreSession(repoName);
+        return dedicatedSession;
     }
 
     protected JSONObject getSingleDirectoryEntry(final String storedReference,

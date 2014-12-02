@@ -97,13 +97,13 @@ public interface AutomationService {
      * The returned object can be used to run the chain.
      */
     CompiledChain compileChain(Class<?> inputType, OperationChain chain)
-            throws Exception, InvalidChainException;
+            throws OperationException;
 
     /**
      * Same as previous but takes an array of operation parameters
      */
     CompiledChain compileChain(Class<?> inputType, OperationParameters... chain)
-            throws Exception, InvalidChainException;
+            throws OperationException;
 
     /**
      * Builds and runs the operation chain given a context. If the context
@@ -112,22 +112,21 @@ public interface AutomationService {
      * {@link InvalidChainException} is thrown.
      */
     Object run(OperationContext ctx, OperationChain chain)
-            throws OperationException, InvalidChainException, Exception;
+            throws OperationException;
 
     /**
      * Same as previous but for managed chains identified by an ID. For managed
      * chains always use this method since the compiled chain is cached and run
      * will be faster
      */
-    Object run(OperationContext ctx, String chainId) throws OperationException,
-            InvalidChainException, Exception;
+    Object run(OperationContext ctx, String chainId) throws OperationException;
 
     /**
      * Shortcut to execute a single operation described by the given ID and map
      * of parameters
      */
     Object run(OperationContext ctx, String id, Map<String, Object> params)
-            throws OperationException, InvalidChainException, Exception;
+            throws OperationException;
 
 /**
      * Registers a parametrized operation chain. This chain can be executed
@@ -215,7 +214,7 @@ public interface AutomationService {
      * valid operation context.
      */
     <T> T getAdaptedValue(OperationContext ctx, Object toAdapt,
-            Class<?> targetType) throws Exception;
+            Class<?> targetType) throws OperationException;
 
     /**
      * Checks whether or not the given type is adaptable into the target type.
@@ -306,6 +305,7 @@ public interface AutomationService {
      * @param rollbackGlobalOnError Rollback or not transaction after failing.
      * @since 6.0
      */
-    Object runInNewTx(OperationContext ctx, String chainId, Map chainParameters,
-            Integer timeout, boolean rollbackGlobalOnError) throws Exception;
+    Object runInNewTx(OperationContext ctx, String chainId,
+            Map chainParameters, Integer timeout, boolean rollbackGlobalOnError)
+            throws OperationException;
 }

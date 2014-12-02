@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 import java.io.IOException;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.faces.context.ExternalContext;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.transaction.Transaction;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -56,7 +58,7 @@ public class RestfulPhaseListener implements PhaseListener {
 
     protected URLPolicyService service;
 
-    protected URLPolicyService getURLPolicyService() throws Exception {
+    protected URLPolicyService getURLPolicyService() {
         if (service == null) {
             service = Framework.getService(URLPolicyService.class);
         }
@@ -71,12 +73,7 @@ public class RestfulPhaseListener implements PhaseListener {
         FacesContext context = event.getFacesContext();
         HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
-            URLPolicyService service;
-            try {
-                service = getURLPolicyService();
-            } catch (Exception e) {
-                throw new ClientRuntimeException(e);
-            }
+            URLPolicyService service = getURLPolicyService();
             if (service.isCandidateForDecoding(httpRequest)) {
                 // Make sure we're in a transaction, and that Seam knows it.
                 // Sometimes, when there is a page action, SeamPhaseListener
@@ -96,7 +93,8 @@ public class RestfulPhaseListener implements PhaseListener {
                 // to be restored first.
                 service.applyRequestParameters(context);
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
             handleException(context, e);
         }
     }
@@ -110,13 +108,7 @@ public class RestfulPhaseListener implements PhaseListener {
             throws ClientRuntimeException {
         try {
             ExternalContext externalContext = context.getExternalContext();
-            ExceptionHandlingService exceptionHandlingService;
-            try {
-                exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);
-            } catch (Exception e1) {
-                // hopeless
-                throw new ClientRuntimeException(e1);
-            }
+            ExceptionHandlingService exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);
             NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
             handler.handleException(
                     (HttpServletRequest) externalContext.getRequest(),
@@ -148,7 +140,7 @@ public class RestfulPhaseListener implements PhaseListener {
                         actionBinding, String.class,
                         new Class[] { DocumentView.class });
                 action.invoke(context, new Object[0]);
-            } catch (Exception e) {
+            } catch (ELException | NullPointerException e) {
                 String msg = String.format(
                         "Error while trying to flush seam context after "
                                 + "a reload, executing method expression '%s'",

@@ -28,8 +28,6 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
@@ -59,8 +57,6 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(EVENT)
 public class EmailNotificationSenderActionsBean extends InputController
         implements EmailNotificationSenderActions, Serializable {
-
-    private static final Log log = LogFactory.getLog(EmailNotificationSenderActionsBean.class);
 
     private static final long serialVersionUID = 2125646683248052737L;
 
@@ -168,14 +164,7 @@ public class EmailNotificationSenderActionsBean extends InputController
         ctx.setProperties(options);
         Event event = ctx.newEvent(DocumentEventTypes.EMAIL_DOCUMENT_SEND);
 
-        EventProducer evtProducer = null;
-        try {
-            evtProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            log.error("Can not get EventProducer : email won't be sent", e);
-            return;
-        }
-
+        EventProducer evtProducer = Framework.getService(EventProducer.class);
         evtProducer.fireEvent(event);
 
     }

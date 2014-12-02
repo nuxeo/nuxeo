@@ -143,12 +143,10 @@ final public class NxqlQueryConverter {
                     String name = ref != null ? ref.name : node.lvalue
                             .toString();
                     String value = null;
-                    try {
+                    if (node.rvalue instanceof Literal) {
                         value = ((Literal) node.rvalue).asString();
-                    } catch (Throwable e) {
-                        if (node.rvalue != null) {
-                            value = node.rvalue.toString();
-                        }
+                    } else if (node.rvalue != null) {
+                        value = node.rvalue.toString();
                     }
                     Object[] values = null;
                     if (node.rvalue instanceof LiteralList) {

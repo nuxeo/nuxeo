@@ -330,7 +330,7 @@ public class Utils {
                 } catch (FileNotFoundException e) {
                     throw new WebApplicationException(e,
                             Response.Status.NOT_FOUND);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw new WebApplicationException(e,
                             Response.Status.INTERNAL_SERVER_ERROR);
                 } finally {

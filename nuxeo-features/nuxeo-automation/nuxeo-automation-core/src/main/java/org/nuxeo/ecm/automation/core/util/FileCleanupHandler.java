@@ -42,7 +42,7 @@ public class FileCleanupHandler implements CleanupHandler {
         this.files.addAll(files);
     }
 
-    public void cleanup() throws Exception {
+    public void cleanup() {
         for (File file : files) {
             file.delete();
         }

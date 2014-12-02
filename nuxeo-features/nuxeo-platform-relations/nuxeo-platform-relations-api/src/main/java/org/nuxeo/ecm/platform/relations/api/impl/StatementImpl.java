@@ -290,8 +290,13 @@ public class StatementImpl implements Statement {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        StatementImpl clone = (StatementImpl) super.clone();
+    public Object clone() {
+        StatementImpl clone;
+        try {
+            clone = (StatementImpl) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
         Map<Resource, Node[]> clonedProperties = new HashMap<Resource, Node[]>();
         for (Map.Entry<Resource, Node[]> property : properties.entrySet()) {
             clonedProperties.put(property.getKey(), property.getValue().clone());

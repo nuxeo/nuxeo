@@ -26,7 +26,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 
 /**
  * The root entry for the WebEngine module.
- * 
+ *
  * @author nelson.silva
  */
 @Path("/oauth2")
@@ -41,8 +41,8 @@ public class Root extends ModuleRoot {
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
     /**
-     * 
-     * 
+     *
+     *
      * @param serviceProviderName
      * @param serviceProviderURL
      * @return the rendered page.
@@ -97,16 +97,8 @@ public class Root extends ModuleRoot {
 
     protected static NuxeoOAuth2ServiceProvider getServiceProvider(
             String serviceName) throws Exception {
-        OAuth2ServiceProviderRegistry registry;
-        try {
-            registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Could not find OAuthServiceProviderRegistry service.", e);
-        }
-        NuxeoOAuth2ServiceProvider nuxeoServiceProvider = registry.getProvider(serviceName);
-
-        return nuxeoServiceProvider;
+        OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
+        return registry.getProvider(serviceName);
     }
 
     protected String getCurrentUsername() {

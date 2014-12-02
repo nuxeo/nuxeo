@@ -74,7 +74,7 @@ public class UIHtmlText extends org.jboss.seam.pdf.ui.UIHtmlText {
                     getStyle(), interfaceProps)) {
                 addToITextParent(o);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             // XXX avoid crash when rendering an image with resource not found
             log.error("Error converting HTML to PDF", e);
         }

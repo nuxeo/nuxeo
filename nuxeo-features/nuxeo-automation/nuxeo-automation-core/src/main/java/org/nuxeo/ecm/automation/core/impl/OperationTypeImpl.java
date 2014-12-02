@@ -204,8 +204,13 @@ public class OperationTypeImpl implements OperationType {
 
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws Exception {
-        Object obj = type.newInstance();
+            throws OperationException {
+        Object obj;
+        try {
+            obj = type.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new OperationException(e);
+        }
         inject(ctx, args, obj);
         return obj;
     }
@@ -214,7 +219,7 @@ public class OperationTypeImpl implements OperationType {
      * @since 5.9.2
      */
     protected Object resolveObject(final OperationContext ctx,
-            final String key, Map<String, Object> args) throws Exception {
+            final String key, Map<String, Object> args) {
         Object obj = args.get(key);
         if (obj instanceof Expression) {
             obj = ((Expression) obj).eval(ctx);
@@ -230,7 +235,7 @@ public class OperationTypeImpl implements OperationType {
     }
 
     public void inject(OperationContext ctx, Map<String, Object> args,
-            Object target) throws Exception {
+            Object target) throws OperationException {
         for (Map.Entry<String, Field> entry : params.entrySet()) {
             Object obj = resolveObject(ctx, entry.getKey(), args);
             if (obj == null) {
@@ -261,12 +266,20 @@ public class OperationTypeImpl implements OperationType {
                     // try to adapt
                     obj = service.getAdaptedValue(ctx, obj, field.getType());
                 }
-                field.set(target, obj);
+                try {
+                    field.set(target, obj);
+                } catch (ReflectiveOperationException e) {
+                    throw new OperationException(e);
+                }
             }
         }
         for (Field field : injectableFields) {
             Object obj = ctx.getAdapter(field.getType());
-            field.set(target, obj);
+            try {
+                field.set(target, obj);
+            } catch (ReflectiveOperationException e) {
+                throw new OperationException(e);
+            }
         }
     }
 

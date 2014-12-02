@@ -104,7 +104,7 @@ public class PublicationRelationHelper {
                 PublisherService publisherService = Framework.getService(PublisherService.class);
                 tree = publisherService.getPublicationTree(localName,
                         coreSession, null);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Unable to get PublicationTree for name: "
                         + localName, e);
             }

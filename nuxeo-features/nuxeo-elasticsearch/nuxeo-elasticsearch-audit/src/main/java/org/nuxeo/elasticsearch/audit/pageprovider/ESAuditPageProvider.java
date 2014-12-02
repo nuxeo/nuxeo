@@ -13,6 +13,7 @@
  */
 package org.nuxeo.elasticsearch.audit.pageprovider;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry>
         for (SearchHit hit : hits) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
         }

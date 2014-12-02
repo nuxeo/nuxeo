@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.rendering.template;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.platform.ec.notification.email.templates.NuxeoTemplatesLoader;
 import org.nuxeo.ecm.platform.rendering.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.RenderingEngine;
@@ -26,6 +28,7 @@ import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 
 import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
 
 /**
  * Base class for RenderingEngine implementation that will work with freemarker.
@@ -43,7 +46,7 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
      *
      * TODO: write a clear TODO
      */
-    public Configuration createConfiguration() throws Exception {
+    public Configuration createConfiguration() {
         Configuration config = new Configuration();
         config.setTemplateLoader(new NuxeoTemplatesLoader());
         config.setDefaultEncoding("UTF-8");
@@ -63,9 +66,7 @@ public abstract class FreemarkerRenderingEngine implements RenderingEngine {
             cfg.getTemplate(job.getTemplate(), cfg.getDefaultEncoding()).process(
                     ctx, job.getWriter());
             return job.getResult();
-        } catch (RenderingException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (IOException | TemplateException e) {
             throw new RenderingException("Freemarker processing failed", e);
         }
     }

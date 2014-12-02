@@ -32,7 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
 import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
@@ -122,7 +125,8 @@ public abstract class IndexingCommandsStacker {
                 log.error("Unable to register synchronization : no TransactionManager");
                 return false;
             }
-        } catch (Exception e) {
+        } catch (NamingException | IllegalStateException | SystemException
+                | RollbackException e) {
             log.error("Unable to register synchronization", e);
             return false;
         }

@@ -45,7 +45,7 @@ public class AbstractTypeDefWriter {
     }
 
     protected void writeSchema(JsonGenerator jg, Schema schema)
-            throws Exception {
+            throws IOException {
         jg.writeObjectFieldStart(schema.getName());
         jg.writeStringField("@prefix", schema.getNamespace().prefix);
         for (Field field : schema.getFields()) {
@@ -55,7 +55,7 @@ public class AbstractTypeDefWriter {
     }
 
     protected void writeSchemaObject(JsonGenerator jg, Schema schema)
-            throws Exception {
+            throws IOException {
         jg.writeStartObject();
         jg.writeStringField("name", schema.getName());
         jg.writeStringField("@prefix", schema.getNamespace().prefix);
@@ -68,7 +68,7 @@ public class AbstractTypeDefWriter {
     }
 
     protected void writeDocType(JsonGenerator jg, DocumentType docType,
-            boolean expandSchemas) throws Exception {
+            boolean expandSchemas) throws IOException {
 
         if (docType.getSuperType() != null) {
             jg.writeStringField("parent", docType.getSuperType().getName());
@@ -96,7 +96,7 @@ public class AbstractTypeDefWriter {
 
     }
 
-    protected void writeField(JsonGenerator jg, Field field) throws Exception {
+    protected void writeField(JsonGenerator jg, Field field) throws IOException {
         if (!field.getType().isComplexType()) {
             if (field.getType().isListType()) {
                 ListType lt = (ListType) field.getType();
@@ -135,7 +135,7 @@ public class AbstractTypeDefWriter {
     }
 
     protected void buildComplexFields(JsonGenerator jg, Field field)
-            throws Exception {
+            throws IOException {
         ComplexType cplXType = (ComplexType) field.getType();
         jg.writeObjectFieldStart("fields");
         for (Field subField : cplXType.getFields()) {
@@ -145,7 +145,7 @@ public class AbstractTypeDefWriter {
     }
 
     protected void writeFacet(JsonGenerator jg, CompositeType facet,
-            boolean expandSchemas) throws Exception {
+            boolean expandSchemas) throws IOException {
 
         jg.writeStringField("name", facet.getName());
         if (facet.getSchemaNames() != null && facet.getSchemaNames().length > 0) {

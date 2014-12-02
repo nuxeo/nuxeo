@@ -77,7 +77,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
             aToken = storeAccessTokenAsDirectoryEntry(aToken);
             removeRequestToken(requestToken.getToken());
             return aToken;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during directory persistence", e);
             return null;
         }
@@ -85,7 +85,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     @Override
     public NuxeoOAuthToken getClientAccessToken(String appId, String owner)
-            throws Exception {
+            throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -111,7 +111,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     @Override
     public void removeClientAccessToken(String appId, String owner)
-            throws Exception {
+            throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -150,13 +150,13 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         aToken.clientId = owner;
         try {
             aToken = storeAccessTokenAsDirectoryEntry(aToken);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during directory persistence", e);
         }
     }
 
     protected NuxeoOAuthToken getTokenFromDirectory(String token)
-            throws Exception {
+            throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -179,7 +179,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     }
 
     protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(
-            NuxeoOAuthToken aToken) throws Exception {
+            NuxeoOAuthToken aToken) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -222,7 +222,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
         try {
             return getTokenFromDirectory(token);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while accessing Token SQL storage", e);
             return null;
         }
@@ -254,7 +254,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
                     session.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during token listing", e);
         }
         return result;
@@ -282,7 +282,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
                     session.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during token listing", e);
         }
         return result;
@@ -290,7 +290,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
     }
 
     @Override
-    public void removeAccessToken(String token) throws Exception {
+    public void removeAccessToken(String token) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {

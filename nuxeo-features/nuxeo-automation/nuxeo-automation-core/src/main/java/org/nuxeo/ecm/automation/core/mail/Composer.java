@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.core.mail;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -93,7 +94,7 @@ public class Composer {
                     } finally {
                         in.close();
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     log.error("Failed to load mail properties", e);
                 }
             }

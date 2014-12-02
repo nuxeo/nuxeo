@@ -100,14 +100,14 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
                 schemas = StringUtils.split(props.get(0), ',', true);
             }
             writeDocuments(entityStream, docs, schemas, headers);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to serialize document list", e);
             throw new WebApplicationException(500);
         }
     }
 
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas) throws Exception {
+            String[] schemas) throws IOException {
         writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8),
                 docs, schemas, request);
     }
@@ -116,14 +116,14 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
      * @since 5.9.5
      */
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws Exception {
+            String[] schemas, HttpHeaders headers) throws IOException {
         writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8),
                 docs, schemas, headers, request);
     }
 
     public static void writeDocuments(JsonGenerator jg,
             List<DocumentModel> docs, String[] schemas, ServletRequest request)
-            throws Exception {
+            throws IOException {
         writeDocuments(jg, docs, schemas, null, request);
     }
 
@@ -132,7 +132,7 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
      */
     public static void writeDocuments(JsonGenerator jg,
             List<DocumentModel> docs, String[] schemas, HttpHeaders headers,
-            ServletRequest request) throws Exception {
+            ServletRequest request) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "documents");
 

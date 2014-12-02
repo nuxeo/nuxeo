@@ -58,15 +58,8 @@ public class AnnotationEventListener implements EventListener {
     private List<AnnotatedDocumentEventListener> getListeners()
             throws AnnotationException {
         if (listeners == null) {
-            synchronized (this) {
-                AnnotationsRepositoryConfigurationService service;
-                try {
-                    service = Framework.getService(AnnotationsRepositoryConfigurationService.class);
-                } catch (Exception e) {
-                    throw new AnnotationException(e);
-                }
-                listeners = service.getEventListeners();
-            }
+            AnnotationsRepositoryConfigurationService service = Framework.getService(AnnotationsRepositoryConfigurationService.class);
+            listeners = service.getEventListeners();
         }
         return listeners;
     }

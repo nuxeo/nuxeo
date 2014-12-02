@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.mail.action;
 
 import javax.mail.Address;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
@@ -46,7 +47,7 @@ public class SendMailAction implements MessageAction {
         this.textMessage = textMessage;
     }
 
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         if (log.isDebugEnabled()) {
             log.debug("Sending mail because of message: " + message.getSubject());
@@ -62,7 +63,7 @@ public class SendMailAction implements MessageAction {
         return true;
     }
 
-    public void reset(ExecutionContext context) throws Exception {
+    public void reset(ExecutionContext context) {
         //do nothing
     }
 

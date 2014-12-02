@@ -204,54 +204,53 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements
         Document document;
         try {
             document = DocumentHelper.parseText(xml);
-            org.dom4j.Element rootElem = document.getRootElement();
-
-            QName qname = rootElem.getQName();
-            String name = rootElem.getName();
-
-            if (name.equals("publicationNode")) {
-                return nodeMarshaler.unMarshalPublicationNode(xml);
-            } else if (name.equals("publishedDocument")) {
-                return publishedDocumentMarshaler.unMarshalPublishedDocument(xml);
-            } else if (name.equals("document")) {
-                return documentModelMarshaler.unMarshalDocument(xml,
-                        coreSession);
-            } else if (name.equals("documentLocation")) {
-                return docLocMarshaler.unMarshalDocumentLocation(xml);
-            } else if (name.equals("list")) {
-                List<Object> lst = new ArrayList<Object>();
-                for (Iterator i = rootElem.elementIterator("listitem"); i.hasNext();) {
-                    org.dom4j.Element el = (org.dom4j.Element) i.next();
-                    if (el.elements().size() == 0) {
-                        lst.add(el.getText());
-                    } else {
-                        lst.add(unMarshalSingleObject(
-                                ((org.dom4j.Element) el.elements().get(0)).asXML(),
-                                coreSession));
-                    }
-                }
-                return lst;
-            } else if (name.equals("map")) {
-                Map map = new HashMap();
-                for (Iterator i = rootElem.elementIterator("mapitem"); i.hasNext();) {
-                    org.dom4j.Element el = (org.dom4j.Element) i.next();
-
-                    Object value = null;
-                    if (el.elements().size() > 0) {
-                        value = unMarshalSingleObject(
-                                ((org.dom4j.Element) (el).elements().get(0)).asXML(),
-                                coreSession);
-                    } else {
-                        value = el.getText();
-                    }
-                    String key = el.attributeValue("name");
-                    map.put(key, value);
-                }
-                return map;
-            }
-        } catch (Throwable e) {
+        } catch (DocumentException e) {
             throw new PublishingMarshalingException(
                     "Error during unmarshaling", e);
+        }
+        org.dom4j.Element rootElem = document.getRootElement();
+
+        QName qname = rootElem.getQName();
+        String name = rootElem.getName();
+
+        if (name.equals("publicationNode")) {
+            return nodeMarshaler.unMarshalPublicationNode(xml);
+        } else if (name.equals("publishedDocument")) {
+            return publishedDocumentMarshaler.unMarshalPublishedDocument(xml);
+        } else if (name.equals("document")) {
+            return documentModelMarshaler.unMarshalDocument(xml, coreSession);
+        } else if (name.equals("documentLocation")) {
+            return docLocMarshaler.unMarshalDocumentLocation(xml);
+        } else if (name.equals("list")) {
+            List<Object> lst = new ArrayList<Object>();
+            for (Iterator i = rootElem.elementIterator("listitem"); i.hasNext();) {
+                org.dom4j.Element el = (org.dom4j.Element) i.next();
+                if (el.elements().size() == 0) {
+                    lst.add(el.getText());
+                } else {
+                    lst.add(unMarshalSingleObject(
+                            ((org.dom4j.Element) el.elements().get(0)).asXML(),
+                            coreSession));
+                }
+            }
+            return lst;
+        } else if (name.equals("map")) {
+            Map map = new HashMap();
+            for (Iterator i = rootElem.elementIterator("mapitem"); i.hasNext();) {
+                org.dom4j.Element el = (org.dom4j.Element) i.next();
+
+                Object value = null;
+                if (el.elements().size() > 0) {
+                    value = unMarshalSingleObject(
+                            ((org.dom4j.Element) (el).elements().get(0)).asXML(),
+                            coreSession);
+                } else {
+                    value = el.getText();
+                }
+                String key = el.attributeValue("name");
+                map.put(key, value);
+            }
+            return map;
         }
 
         throw new PublishingMarshalingException("Unable to unmarshal data");

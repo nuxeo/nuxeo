@@ -87,14 +87,6 @@ public interface ImagingService {
     String getImageMimeType(Blob blob);
 
     /**
-     * Returns the mime-type for the given input stream.
-     *
-     * @deprecated since 5.5
-     */
-    @Deprecated
-    String getImageMimeType(InputStream in);
-
-    /**
      * Retrieves the {@link ImageInfo} of the {@link Blob} that is received as
      * parameter.
      * <p>

@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.OperationException;
@@ -24,6 +26,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
@@ -49,7 +52,7 @@ public abstract class ExecutableResource {
 
     @POST
     public Object doPost(@Context
-    HttpServletRequest request, ExecutionRequest xreq) throws Exception {
+    HttpServletRequest request, ExecutionRequest xreq) {
         this.request = request;
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer
@@ -60,7 +63,7 @@ public abstract class ExecutableResource {
             Object result = execute(xreq);
             return ResponseHelper.getResponse(result, request);
         } catch (OperationException | ClientException | SecurityException
-                | DocumentException cause) {
+                | MessagingException | IOException cause) {
             if (cause instanceof ConflictOperationException) {
                 throw WebException.newException(
                         "Failed to invoke operation: " + getId(), cause,
@@ -78,7 +81,8 @@ public abstract class ExecutableResource {
 
     public abstract String getId();
 
-    public abstract Object execute(ExecutionRequest req) throws Exception;
+    public abstract Object execute(ExecutionRequest req)
+            throws OperationException;
 
     public abstract boolean isChain();
 

@@ -41,42 +41,34 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         this.docModel = docModel;
     }
 
-    private static CommentManager getCommentManager() {
-        try {
-            return Framework.getService(CommentManager.class);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public DocumentModel addComment(DocumentModel comment) throws ClientException {
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, comment);
     }
 
     @Deprecated
     public DocumentModel addComment(String comment) throws ClientException {
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, comment);
     }
 
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) throws ClientException {
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, parent, comment);
     }
 
     public void removeComment(DocumentModel comment) throws ClientException {
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         commentManager.deleteComment(docModel, comment);
     }
 
     public List<DocumentModel> getComments() throws ClientException {
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.getComments(docModel);
     }
 
     public List<DocumentModel> getComments(DocumentModel parent) throws ClientException {
-        CommentManager commentManager = getCommentManager();
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.getComments(docModel, parent);
     }
 

@@ -17,8 +17,10 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -66,7 +68,8 @@ public class ResponseHelper {
                 "attachment; filename=" + blob.getFilename()).build();
     }
 
-    public static Response blobs(List<Blob> blobs) throws Exception {
+    public static Response blobs(List<Blob> blobs) throws MessagingException,
+            IOException {
         return new MultipartBlobs(blobs).getResponse();
     }
 
@@ -74,7 +77,7 @@ public class ResponseHelper {
      * @since 5.7.2
      */
     public static Object getResponse(Object result, HttpServletRequest request)
-            throws Exception {
+            throws MessagingException, IOException {
         if (result == null) {
             return null;
         }

@@ -60,23 +60,12 @@ public class FancyURLFilter implements Filter {
 
     public void init(FilterConfig conf) throws ServletException {
         log.debug("Nuxeo5 URLFilter started");
-        getUrlService(true);
         this.servletContext = conf.getServletContext();
     }
 
     protected URLPolicyService getUrlService() {
-        return getUrlService(false);
-    }
-
-    protected URLPolicyService getUrlService(boolean silent) {
         if (urlService == null) {
-            try {
-                urlService = Framework.getService(URLPolicyService.class);
-            } catch (Exception e) {
-                if (!silent) {
-                    log.error("Could not retrieve the URLPolicyService", e);
-                }
-            }
+            urlService = Framework.getService(URLPolicyService.class);
         }
         return urlService;
     }

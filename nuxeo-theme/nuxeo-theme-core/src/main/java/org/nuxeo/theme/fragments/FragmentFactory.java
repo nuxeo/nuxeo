@@ -48,7 +48,7 @@ public final class FragmentFactory {
             fragment.setFragmentType(fragmentType);
 
             uidManager.register(fragment);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error(e, e);
         }
         return fragment;

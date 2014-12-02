@@ -121,23 +121,14 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static MimetypeRegistry getMimetypeService() {
         if (mimetypeService == null) {
-            try {
-                mimetypeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                log.error("Unable to get mimetype service : " + e.getMessage());
-            }
+            mimetypeService = Framework.getService(MimetypeRegistry.class);
         }
         return mimetypeService;
     }
 
     private static TypeManager getTypeManager() {
         if (typeManagerService == null) {
-            try {
-                typeManagerService = Framework.getService(TypeManager.class);
-            } catch (Exception e) {
-                log.error("Unable to get typeManager service : "
-                        + e.getMessage());
-            }
+            typeManagerService = Framework.getService(TypeManager.class);
         }
         return typeManagerService;
     }
@@ -271,16 +262,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String fileIconPath(Blob blob) {
         String iconPath = "";
         if (blob != null) {
-            try {
-                MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(
-                        blob.getMimeType());
-                if (mimeEntry != null) {
-                    if (mimeEntry.getIconPath() != null) {
-                        // FIXME: above Context should find it
-                        iconPath = "/icons/" + mimeEntry.getIconPath();
-                    }
+            MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(
+                    blob.getMimeType());
+            if (mimeEntry != null) {
+                if (mimeEntry.getIconPath() != null) {
+                    // FIXME: above Context should find it
+                    iconPath = "/icons/" + mimeEntry.getIconPath();
                 }
-            } catch (Exception err) {
             }
         }
         return iconPath;
@@ -524,26 +512,18 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (doc == null) {
             return null;
         }
-        try {
-            DocumentLocation docLoc = new DocumentLocationImpl(doc);
-            Map<String, String> params = new HashMap<String, String>();
-            params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY,
-                    blobPropertyName);
-            params.put(DocumentFileCodec.FILENAME_KEY, filename);
-            DocumentView docView = new DocumentViewImpl(docLoc, null, params);
+        DocumentLocation docLoc = new DocumentLocationImpl(doc);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, blobPropertyName);
+        params.put(DocumentFileCodec.FILENAME_KEY, filename);
+        DocumentView docView = new DocumentViewImpl(docLoc, null, params);
 
-            // generate url
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            if (patternName == null) {
-                patternName = service.getDefaultPatternName();
-            }
-            return service.getUrlFromDocumentView(patternName, docView, baseURL);
-
-        } catch (Exception e) {
-            log.error("Could not generate url for document file", e);
+        // generate url
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        if (patternName == null) {
+            patternName = service.getDefaultPatternName();
         }
-
-        return null;
+        return service.getUrlFromDocumentView(patternName, docView, baseURL);
     }
 
     public static String fileUrl(String patternName, DocumentModel doc,
@@ -636,30 +616,23 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String complexFileUrl(String patternName, DocumentModel doc,
             String listElement, int index, String blobPropertyName,
             String filename) {
-        try {
-            DocumentLocation docLoc = new DocumentLocationImpl(doc);
-            Map<String, String> params = new HashMap<String, String>();
+        DocumentLocation docLoc = new DocumentLocationImpl(doc);
+        Map<String, String> params = new HashMap<String, String>();
 
-            String fileProperty = getPropertyPath(listElement, index,
-                    blobPropertyName);
+        String fileProperty = getPropertyPath(listElement, index,
+                blobPropertyName);
 
-            params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
-            params.put(DocumentFileCodec.FILENAME_KEY, filename);
-            DocumentView docView = new DocumentViewImpl(docLoc, null, params);
+        params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
+        params.put(DocumentFileCodec.FILENAME_KEY, filename);
+        DocumentView docView = new DocumentViewImpl(docLoc, null, params);
 
-            // generate url
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            if (patternName == null) {
-                patternName = service.getDefaultPatternName();
-            }
-            return service.getUrlFromDocumentView(patternName, docView,
-                    BaseURL.getBaseURL());
-
-        } catch (Exception e) {
-            log.error("Could not generate url for document file", e);
+        // generate url
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        if (patternName == null) {
+            patternName = service.getDefaultPatternName();
         }
-
-        return null;
+        return service.getUrlFromDocumentView(patternName, docView,
+                BaseURL.getBaseURL());
     }
 
     // TODO: add method accepting filename property name (used for edit online)
@@ -703,36 +676,30 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             DocumentLocation docLoc, String viewId,
             Map<String, String> parameters, boolean newConversation,
             HttpServletRequest req) {
-        try {
-            DocumentView docView = new DocumentViewImpl(docLoc, viewId,
-                    parameters);
+        DocumentView docView = new DocumentViewImpl(docLoc, viewId, parameters);
 
-            // generate url
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            if (patternName == null || patternName.length() == 0) {
-                patternName = service.getDefaultPatternName();
-            }
-
-            String baseURL = null;
-            if (req == null) {
-                baseURL = BaseURL.getBaseURL();
-            } else {
-                baseURL = BaseURL.getBaseURL(req);
-            }
-
-            String url = service.getUrlFromDocumentView(patternName, docView,
-                    baseURL);
-
-            // pass conversation info if needed
-            if (!newConversation && url != null) {
-                url = RestHelper.addCurrentConversationParameters(url);
-            }
-
-            return url;
-        } catch (Exception e) {
-            log.error("Could not generate url for document", e);
+        // generate url
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        if (patternName == null || patternName.length() == 0) {
+            patternName = service.getDefaultPatternName();
         }
-        return null;
+
+        String baseURL = null;
+        if (req == null) {
+            baseURL = BaseURL.getBaseURL();
+        } else {
+            baseURL = BaseURL.getBaseURL(req);
+        }
+
+        String url = service.getUrlFromDocumentView(patternName, docView,
+                baseURL);
+
+        // pass conversation info if needed
+        if (!newConversation && url != null) {
+            url = RestHelper.addCurrentConversationParameters(url);
+        }
+
+        return url;
     }
 
     /**
@@ -1017,7 +984,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             DocumentModel documentModel = directory.getEntry(id);
             String schemaName = documentModel.getSchemas()[0];
             return (String) documentModel.getProperty(schemaName, "label");
-        } catch (Exception e) {
+        } catch (ClientException e) {
             return "";
         } finally {
             if (directory != null) {

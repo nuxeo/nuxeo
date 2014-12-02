@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -119,7 +120,7 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
                     URL rewrittenURL = new URL(serverURL, url);
                     url = rewrittenURL.toString();
                 }
-            } catch (Exception e) {
+            } catch (MalformedURLException e) {
                 log.error("Could not redirect", e);
             }
         }

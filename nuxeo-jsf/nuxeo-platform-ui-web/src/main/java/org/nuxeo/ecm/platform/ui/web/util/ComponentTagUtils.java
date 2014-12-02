@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
@@ -145,7 +146,7 @@ public final class ComponentTagUtils {
             try {
                 return app.evaluateExpressionGet(context, elExpression,
                         Object.class);
-            } catch (Exception e) {
+            } catch (ELException e) {
                 log.error(String.format(
                         "Faces context: Error processing expression '%s'",
                         elExpression), e);
@@ -178,7 +179,7 @@ public final class ComponentTagUtils {
                 ValueExpression vExpression = eFactory.createValueExpression(
                         elContext, elExpression, Object.class);
                 vExpression.setValue(elContext, value);
-            } catch (Exception e) {
+            } catch (ELException e) {
                 log.error(String.format(
                         "Error setting value '%s' for expression '%s'", value,
                         elExpression), e);
@@ -216,7 +217,7 @@ public final class ComponentTagUtils {
                     faceletContext, elExpression, Object.class);
             try {
                 return expr.getValue(elContext);
-            } catch (Exception e) {
+            } catch (ELException e) {
                 log.error(String.format(
                         "Facelet context: Error processing expression '%s'",
                         elExpression), e);

@@ -26,6 +26,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.Package;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -51,7 +52,7 @@ public class RemoveHandler extends DefaultObject {
             pus.removePackage(pkgId);
             return getView("removeDone").arg("pkgId", pkgId).arg("source",
                     source);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during first step of installation", e);
             return getView("removeError").arg("e", e);
         }

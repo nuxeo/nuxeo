@@ -193,7 +193,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                     userName, context);
             finder.runUnrestricted();
             return finder.getDetachedUserWorkspace();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.warn("Error while trying to get user workspace unrestricted");
             throw new ClientException(e);
         }
@@ -205,13 +205,9 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
             return null;
         }
         // get the user service
-        UserManager userManager = null;
-        try {
-            userManager = Framework.getService(UserManager.class);
-        } catch (Exception e) {
-            log.debug("failed to get user service", e);
-        }
+        UserManager userManager = Framework.getService(UserManager.class);
         if (userManager == null) {
+            // for tests
             return userName;
         }
 
@@ -314,7 +310,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 DocumentModel root;
                 try {
                     root = doCreateUserWorkspacesRoot(session, rootRef);
-                } catch (Exception e) {
+                } catch (ClientException e) {
                     // domain may have been removed !
                     targetDomainName = null;
                     rootRef = new PathRef(computePathUserWorkspaceRoot(session,userName,
@@ -348,7 +344,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         protected DocumentModel context;
 
         protected UnrestrictedUserWorkspaceFinder(String userName,
-                DocumentModel context) throws Exception {
+                DocumentModel context) {
             super(context.getCoreSession().getRepositoryName(), userName);
             this.userName = userName;
             this.context = context;

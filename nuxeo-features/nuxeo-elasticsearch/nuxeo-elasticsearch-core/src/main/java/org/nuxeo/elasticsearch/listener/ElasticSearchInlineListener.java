@@ -161,7 +161,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
         try {
             // run flush !
             flushCommands();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during flush", e);
         } finally {
             synched.set(false);

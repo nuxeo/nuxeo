@@ -173,20 +173,20 @@ public class VocabularyTreeNode {
         String label = null;
         try {
             label = (String) entry.getProperty(schemaName, fieldName);
-        } catch (Exception e) {
+        } catch (ClientException e) {
         }
         if (label == null) {
             fieldName = LABEL_FIELD_PREFIX + locale.getLanguage();
             try {
                 label = (String) entry.getProperty(schemaName, fieldName);
-            } catch (Exception e) {
+            } catch (ClientException e) {
             }
         }
         if (label == null) {
             fieldName = LABEL_FIELD_PREFIX + DEFAULT_LANGUAGE;
             try {
                 label = (String) entry.getProperty(schemaName, fieldName);
-            } catch (Exception e) {
+            } catch (ClientException e) {
             }
         }
         return label;

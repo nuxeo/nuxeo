@@ -22,9 +22,6 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.library;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.faces.FacesException;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -158,15 +155,7 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
     // JSF functions
 
     public static WidgetTypeDefinition getWidgetTypeDefinition(String typeName) {
-        WebLayoutManager layoutService;
-        try {
-            layoutService = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new FacesException(e);
-        }
-        if (layoutService == null) {
-            throw new FacesException("Layout service not found");
-        }
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
         return layoutService.getWidgetTypeDefinition(typeName);
     }
 

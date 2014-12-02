@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.automation.server.jaxrs.debug;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -26,8 +27,10 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -106,7 +109,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chain);
             return Response.ok("Operation Done.").build();
-        } catch (Exception e) {
+        } catch (ClientException | OperationException | IOException e) {
             log.error(e, e);
             return Response.status(500).build();
         }
@@ -122,7 +125,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chainId);
             return Response.ok("Operation Done.").build();
-        } catch (Exception e) {
+        } catch (OperationException e) {
             log.error(e, e);
             return Response.status(500).build();
         }

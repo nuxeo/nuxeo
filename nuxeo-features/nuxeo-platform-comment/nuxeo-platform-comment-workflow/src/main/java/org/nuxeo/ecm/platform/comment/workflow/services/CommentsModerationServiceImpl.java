@@ -50,7 +50,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     public void startModeration(CoreSession session, DocumentModel doc,
             String commentID, ArrayList<String> moderators)
             throws ClientException {
-        TaskService taskService = getTaskService();
+        TaskService taskService = Framework.getService(TaskService.class);
         if (moderators == null || moderators.isEmpty()) {
             throw new ClientException("No moderators defined");
         }
@@ -95,7 +95,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     @Override
     public void approveComent(CoreSession session, DocumentModel doc,
             String commentId) throws ClientException {
-        TaskService taskService = getTaskService();
+        TaskService taskService = Framework.getService(TaskService.class);
         Task moderationTask = getModerationTask(taskService, session, doc,
                 commentId);
         if (moderationTask == null) {
@@ -117,8 +117,8 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     @Override
     public void rejectComment(CoreSession session, DocumentModel doc,
             String commentId) throws ClientException {
-        TaskService taskService = getTaskService();
-        Task moderationTask = getModerationTask(getTaskService(), session, doc,
+        TaskService taskService = Framework.getService(TaskService.class);
+        Task moderationTask = getModerationTask(taskService, session, doc,
                 commentId);
         if (moderationTask == null) {
             // throw new ClientException("No moderation task found");
@@ -139,15 +139,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
 
         notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null,
                 null, comment);
-    }
-
-    protected static TaskService getTaskService() throws ClientException {
-        try {
-            return Framework.getService(TaskService.class);
-        } catch (Exception e) {
-            log.error(e);
-            throw new ClientException(e);
-        }
     }
 
     protected void notifyEvent(CoreSession session, String eventId,
@@ -176,20 +167,11 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         ctx.setComment(comment);
         ctx.setCategory(category);
 
-        EventProducer evtProducer = null;
-
-        try {
-            evtProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            log.error("Unable to access EventProducer", e);
-            return;
-        }
-
+        EventProducer evtProducer = Framework.getService(EventProducer.class);
         Event event = ctx.newEvent(eventId);
-
         try {
             evtProducer.fireEvent(event);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while sending event", e);
         }
     }

@@ -12,10 +12,12 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -105,7 +107,7 @@ public class AutomationResource extends ModuleRoot {
                 return ResponseHelper.blob((Blob) obj);
             }
             return ResponseHelper.notFound();
-        } catch (Exception e) {
+        } catch (MessagingException | IOException e) {
             throw WebException.newException(e);
         }
     }
@@ -140,7 +142,7 @@ public class AutomationResource extends ModuleRoot {
             try {
                 OperationType op = service.getOperation(oid);
                 return new OperationResource(service, op);
-            } catch (Throwable cause) {
+            } catch (OperationException cause) {
                 if (cause instanceof ConflictOperationException) {
                     return WebException.newException(
                             "Failed to invoke operation: " + oid, cause,

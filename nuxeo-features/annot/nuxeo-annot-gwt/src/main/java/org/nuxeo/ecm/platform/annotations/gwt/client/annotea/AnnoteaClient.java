@@ -73,7 +73,7 @@ public class AnnoteaClient {
                     controller.reloadAnnotations();
                 }
             });
-        } catch (Throwable e) {
+        } catch (RequestException e) {
             GWT.log("Error while sending new annotation", e);
             Log.debug("Error while sending new annotation", e);
         }

@@ -34,7 +34,6 @@ import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.CompiledChain;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationCompoundExceptionBuilder;
@@ -86,7 +85,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public Object run(OperationContext ctx, String operationId)
-            throws Exception {
+            throws OperationException {
         OperationType operationType = getOperation(operationId);
         if (operationType instanceof ChainTypeImpl) {
             return run(ctx, operationType,
@@ -98,7 +97,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public Object run(OperationContext ctx, OperationChain chain)
-            throws Exception {
+            throws OperationException {
         Map<String, Object> chainParameters = Collections.<String, Object> emptyMap();
         if (!chain.getChainParameters().isEmpty()) {
             chainParameters = chain.getChainParameters();
@@ -114,7 +113,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
      */
     @Override
     public Object run(OperationContext ctx, String operationId,
-            Map<String, Object> runtimeParameters) throws Exception {
+            Map<String, Object> runtimeParameters) throws OperationException {
         OperationType type = getOperation(operationId);
         return run(ctx, type, runtimeParameters);
     }
@@ -126,7 +125,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @SuppressWarnings("unchecked")
     public Object runInNewTx(OperationContext ctx, String chainId,
             Map chainParameters, Integer timeout,
-            boolean rollbackGlobalOnError) throws Exception {
+            boolean rollbackGlobalOnError) throws OperationException {
         Object result = null;
         // if the current transaction was already marked for rollback,
         // do nothing
@@ -170,7 +169,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
      * @param params The chain parameters.
      */
     public Object run(OperationContext ctx, OperationType operationType,
-            Map<String, Object> params) throws Exception {
+            Map<String, Object> params) throws OperationException {
         Boolean mainChain = true;
         CompiledChainImpl chain;
         if (params == null) {
@@ -270,7 +269,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                         catchChainException = getCatchChainExceptionByPriority(
                                 catchChainException, catchChainExceptionItem);
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) { // TODO more specific exceptions?
                     throw new OperationException(
                             "Cannot evaluate Automation Filter "
                                     + filter.getId() + " mvel expression.", e);
@@ -442,7 +441,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public CompiledChain compileChain(Class<?> inputType, OperationChain chain)
-            throws Exception, InvalidChainException {
+            throws OperationException {
         List<OperationParameters> ops = chain.getOperations();
         return compileChain(inputType,
                 ops.toArray(new OperationParameters[ops.size()]));
@@ -450,8 +449,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public CompiledChain compileChain(Class<?> inputType,
-            OperationParameters... operations) throws Exception,
-            InvalidChainException {
+            OperationParameters... operations) throws OperationException {
         return CompiledChainImpl.buildChain(this, inputType == null ? Void.TYPE
                 : inputType, operations);
     }
@@ -480,7 +478,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt,
-            Class<?> targetType) throws Exception {
+            Class<?> targetType) throws OperationException {
         if (toAdapt == null) {
             return null;
         }

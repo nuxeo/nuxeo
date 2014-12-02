@@ -166,19 +166,11 @@ public class TreeActionsBean implements TreeActions, Serializable {
             firstAccessibleParentPath = firstAccessibleParent == null ? null
                     : firstAccessibleParent.getPathAsString();
             if (firstAccessibleParent != null) {
-                Filter filter = null;
-                Filter leafFilter = null;
-                Sorter sorter = null;
-                String pageProvider = null;
-                try {
-                    TreeManager treeManager = Framework.getService(TreeManager.class);
-                    filter = treeManager.getFilter(treeName);
-                    leafFilter = treeManager.getLeafFilter(treeName);
-                    sorter = treeManager.getSorter(treeName);
-                    pageProvider = treeManager.getPageProviderName(treeName);
-                } catch (Exception e) {
-                    log.error("Could not fetch filter or sorter for tree ", e);
-                }
+                TreeManager treeManager = Framework.getService(TreeManager.class);
+                Filter filter = treeManager.getFilter(treeName);
+                Filter leafFilter = treeManager.getLeafFilter(treeName);
+                Sorter sorter = treeManager.getSorter(treeName);
+                String pageProvider = treeManager.getPageProviderName(treeName);
 
                 DocumentTreeNode treeRoot = null;
                 treeRoot = new DocumentTreeNodeImpl(firstAccessibleParent,

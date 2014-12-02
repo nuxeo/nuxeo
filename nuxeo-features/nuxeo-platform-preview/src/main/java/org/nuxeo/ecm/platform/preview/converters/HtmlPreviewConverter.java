@@ -51,7 +51,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
         if (canUsePDF2Html == null) {
             try {
                 canUsePDF2Html = getConversionService().isConverterAvailable("pdf2html").isAvailable();
-            } catch (Exception e) {
+            } catch (ConversionException e) {
                 return false;
             }
         }
@@ -62,7 +62,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
         if (canUseOOo2Html == null) {
             try {
                 canUseOOo2Html = getConversionService().isConverterAvailable("office2html").isAvailable();
-            } catch (Exception e) {
+            } catch (ConversionException e) {
                 return false;
             }
         }
@@ -106,7 +106,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
 
         try {
             sourceBlob = blobHolder.getBlob();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ConversionException("Can not fetch blob", e);
         }
 

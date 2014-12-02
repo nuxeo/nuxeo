@@ -62,22 +62,10 @@ public class TypeManagerBusinessDelegate implements Serializable {
      * @throws ClientException
      */
     @Unwrap
-    public TypeManager getTypeManager() throws ClientException {
-        if (null == typeManager) {
-            try {
-                typeManager = Framework.getService(TypeManager.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to TypeManager. "
-                        + e.getMessage();
-                // log.error(errMsg, e);
-                throw new ClientException(errMsg, e);
-            }
-
-            if (null == typeManager) {
-                throw new ClientException("TypeManager service not bound");
-            }
+    public TypeManager getTypeManager() {
+        if (typeManager == null) {
+            typeManager = Framework.getService(TypeManager.class);
         }
-
         return typeManager;
     }
 

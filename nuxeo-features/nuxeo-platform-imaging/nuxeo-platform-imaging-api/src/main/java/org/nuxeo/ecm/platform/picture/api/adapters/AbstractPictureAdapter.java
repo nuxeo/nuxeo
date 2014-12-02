@@ -172,12 +172,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     protected ConversionService getConversionService() throws ClientException {
         if (converionService == null) {
-            try {
-                converionService = Framework.getService(ConversionService.class);
-            } catch (Exception e) {
-                log.error("Unable to get conversion Service.", e);
-                throw new ClientException(e);
-            }
+            converionService = Framework.getService(ConversionService.class);
         }
         return converionService;
     }
@@ -494,7 +489,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                 bh = getConversionService().convert(OPERATION_CROP, bh, options);
                 return new FileBlob(bh.getBlob().getStream(), type);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException("Crop failed", e);
         }
         return null;

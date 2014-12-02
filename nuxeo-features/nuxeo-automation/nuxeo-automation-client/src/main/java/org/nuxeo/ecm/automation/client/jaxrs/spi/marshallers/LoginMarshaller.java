@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
     }
 
     @Override
-    public LoginInfo read(JsonParser jp) throws Exception {
+    public LoginInfo read(JsonParser jp) throws IOException {
         boolean isAdmin = false;
         String username = null;
         Set<String> groups = null;
@@ -65,7 +66,7 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
         return new LoginInfo(username, groups, isAdmin);
     }
 
-    protected Set<String> readGroups(JsonParser jp) throws Exception {
+    protected Set<String> readGroups(JsonParser jp) throws IOException {
         HashSet<String> groups = new HashSet<String>();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
@@ -76,7 +77,7 @@ public class LoginMarshaller implements JsonMarshaller<LoginInfo> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         LoginInfo loginInfo = (LoginInfo) value;
         jg.writeStringField("username", loginInfo.getUsername());
         jg.writeBooleanField("isAdministrator", loginInfo.isAdministrator());

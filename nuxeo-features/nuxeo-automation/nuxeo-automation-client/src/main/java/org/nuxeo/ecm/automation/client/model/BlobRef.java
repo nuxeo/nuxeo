@@ -56,13 +56,7 @@ public class BlobRef extends Blob {
         if (blob == null) {
             synchronized (this) {
                 if (blob == null) {
-                    try {
-                        blob = session.getFile(ref);
-                    } catch (IOException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        throw new IOException(e);
-                    }
+                    blob = session.getFile(ref);
                 }
             }
         }

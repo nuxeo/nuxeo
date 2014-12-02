@@ -30,7 +30,7 @@ public class EmailHelperMock extends EmailHelper {
     public int compteur = 0;
 
     @Override
-    public void sendmail(Map<String, Object> mail) throws Exception {
+    public void sendmail(Map<String, Object> mail) {
         compteur++;
         log.info("Faking send mail : ");
         for (String key : mail.keySet()) {

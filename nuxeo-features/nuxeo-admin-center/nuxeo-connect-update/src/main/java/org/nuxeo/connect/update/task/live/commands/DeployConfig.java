@@ -17,6 +17,7 @@
 package org.nuxeo.connect.update.task.live.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
@@ -47,7 +48,7 @@ public class DeployConfig extends DeployConfigPlaceholder {
             throws PackageException {
         try {
             Framework.getRuntime().getContext().deploy(file.toURI().toURL());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PackageException("Failed to deploy configuration file "
                     + file, e);
         }

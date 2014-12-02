@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -42,12 +44,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Creates a MailMessage document for every new email found in the INBOX.
- * 
+ *
  * The creation is handled by an AutomationChain
- * 
+ *
  * @since 6.0
  * @author tiry
- * 
+ *
  */
 public class CreateDocumentsFromAutomationChainAction extends
         AbstractMailAction {
@@ -95,7 +97,7 @@ public class CreateDocumentsFromAutomationChainAction extends
     }
 
     @Override
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) {
         CoreSession session = getCoreSession(context);
         if (session == null) {
             log.error("Could not open CoreSession");
@@ -121,7 +123,11 @@ public class CreateDocumentsFromAutomationChainAction extends
             automationCtx.put(ATTACHMENTS_KEY, Collections.EMPTY_LIST);
         }
 
-        as.run(automationCtx, getChainName());
+        try {
+            as.run(automationCtx, getChainName());
+        } catch (OperationException e) {
+            throw new ClientException(e);
+        }
 
         return true;
     }

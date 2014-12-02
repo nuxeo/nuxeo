@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -139,55 +141,39 @@ public class NotificationService extends DefaultComponent implements
         if (NOTIFICATIONS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    NotificationDescriptor notifDesc = (NotificationDescriptor) contrib;
-                    notificationRegistry.registerNotification(notifDesc,
-                            getNames(notifDesc.getEvents()));
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                NotificationDescriptor notifDesc = (NotificationDescriptor) contrib;
+                notificationRegistry.registerNotification(notifDesc,
+                        getNames(notifDesc.getEvents()));
             }
         } else if (TEMPLATES_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    TemplateDescriptor templateDescriptor = (TemplateDescriptor) contrib;
-                    templateDescriptor.setContext(extension.getContext());
-                    registerTemplate(templateDescriptor);
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                TemplateDescriptor templateDescriptor = (TemplateDescriptor) contrib;
+                templateDescriptor.setContext(extension.getContext());
+                registerTemplate(templateDescriptor);
             }
         } else if (GENERAL_SETTINGS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    registerGeneralSettings((GeneralSettingsDescriptor) contrib);
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                registerGeneralSettings((GeneralSettingsDescriptor) contrib);
             }
         } else if (NOTIFICATION_HOOK_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
+                NotificationListenerHookDescriptor desc = (NotificationListenerHookDescriptor) contrib;
+                Class<? extends NotificationListenerHook> clazz = desc.hookListener;
                 try {
-                    NotificationListenerHookDescriptor desc = (NotificationListenerHookDescriptor) contrib;
-                    Class<? extends NotificationListenerHook> clazz = desc.hookListener;
                     NotificationListenerHook hookListener = (NotificationListenerHook) clazz.newInstance();
-                    registerHookListener(desc.name,hookListener);
-                } catch (Exception e) {
+                    registerHookListener(desc.name, hookListener);
+                } catch (ReflectiveOperationException e) {
                     log.error(e);
                 }
             }
         } else if (NOTIFICATION_VETO_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    NotificationListenerVetoDescriptor desc = (NotificationListenerVetoDescriptor) contrib;
-                    notificationVetoRegistry.addContribution(desc);
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                NotificationListenerVetoDescriptor desc = (NotificationListenerVetoDescriptor) contrib;
+                notificationVetoRegistry.addContribution(desc);
             }
         }
     }
@@ -222,24 +208,16 @@ public class NotificationService extends DefaultComponent implements
         if (NOTIFICATIONS_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    NotificationDescriptor notifDesc = (NotificationDescriptor) contrib;
-                    notificationRegistry.unregisterNotification(notifDesc,
-                            getNames(notifDesc.getEvents()));
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                NotificationDescriptor notifDesc = (NotificationDescriptor) contrib;
+                notificationRegistry.unregisterNotification(notifDesc,
+                        getNames(notifDesc.getEvents()));
             }
         } else if (TEMPLATES_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    TemplateDescriptor templateDescriptor = (TemplateDescriptor) contrib;
-                    templateDescriptor.setContext(extension.getContext());
-                    unregisterTemplate(templateDescriptor);
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                TemplateDescriptor templateDescriptor = (TemplateDescriptor) contrib;
+                templateDescriptor.setContext(extension.getContext());
+                unregisterTemplate(templateDescriptor);
             }
         } else if (NOTIFICATION_VETO_EP.equals(xp)) {
             Object[] contribs = extension.getContributions();
@@ -261,12 +239,7 @@ public class NotificationService extends DefaultComponent implements
 
     public List<String> getSubscribers(String notification, String docId)
             throws ClientException {
-        PlacefulService service;
-        try {
-            service = NotificationServiceHelper.getPlacefulService();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PlacefulService service = NotificationServiceHelper.getPlacefulService();
         String className = service.getAnnotationRegistry().get(
                 SUBSCRIPTION_NAME);
         // Class klass =
@@ -291,12 +264,7 @@ public class NotificationService extends DefaultComponent implements
 
     public List<String> getSubscriptionsForUserOnDocument(String username,
             String docId) throws ClassNotFoundException, ClientException {
-        PlacefulService service;
-        try {
-            service = NotificationServiceHelper.getPlacefulService();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PlacefulService service = NotificationServiceHelper.getPlacefulService();
         String className = service.getAnnotationRegistry().get(
                 SUBSCRIPTION_NAME);
         // Class klass =
@@ -401,12 +369,7 @@ public class NotificationService extends DefaultComponent implements
 
     protected void doFireEvent(Event event) throws ClientException {
         if (producer == null) {
-            try {
-                producer = Framework.getService(EventProducer.class);
-            } catch (Exception e) {
-                throw new ClientRuntimeException(
-                        "Unable to get MessageProducer : ", e);
-            }
+            producer = Framework.getService(EventProducer.class);
         }
         producer.fireEvent(event);
     }
@@ -551,7 +514,7 @@ public class NotificationService extends DefaultComponent implements
 
         try {
             emailHelper.sendmail(infoMap);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             throw new ClientException("Failed to send notification email ", e);
         }
     }
@@ -584,7 +547,7 @@ public class NotificationService extends DefaultComponent implements
             infoMap.put("mail.to", to);
             try {
                 emailHelper.sendmail(infoMap);
-            } catch (Exception e) {
+            } catch (MessagingException e) {
                 log.debug("Failed to send notification email " + e);
             }
         }
@@ -592,13 +555,8 @@ public class NotificationService extends DefaultComponent implements
 
     private DocumentViewCodecManager getDocLocator() {
         if (docLocator == null) {
-            try {
-                docLocator = Framework.getService(DocumentViewCodecManager.class);
-            } catch (Exception e) {
-                log.info("Could not get service for document view manager");
-            }
+            docLocator = Framework.getService(DocumentViewCodecManager.class);
         }
-
         return docLocator;
     }
 

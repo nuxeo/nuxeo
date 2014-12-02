@@ -11,11 +11,13 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.activation.DataHandler;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.MediaType;
@@ -35,18 +37,20 @@ public class MultipartBlobs extends MimeMultipart {
         super("mixed");
     }
 
-    public MultipartBlobs(List<Blob> blobs) throws Exception {
+    public MultipartBlobs(List<Blob> blobs) throws MessagingException,
+            IOException {
         super("mixed");
         addBlobs(blobs);
     }
 
-    public void addBlobs(List<Blob> blobs) throws Exception {
+    public void addBlobs(List<Blob> blobs) throws MessagingException,
+            IOException {
         for (Blob blob : blobs) {
             addBlob(blob);
         }
     }
 
-    public void addBlob(Blob blob) throws Exception {
+    public void addBlob(Blob blob) throws MessagingException, IOException {
         MimeBodyPart part = new MimeBodyPart();
         part.setDataHandler(new DataHandler(new InputStreamDataSource(
                 blob.getStream(), blob.getMimeType(), blob.getFilename())));

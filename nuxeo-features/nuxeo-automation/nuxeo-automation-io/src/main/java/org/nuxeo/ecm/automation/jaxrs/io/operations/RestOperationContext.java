@@ -40,7 +40,7 @@ public class RestOperationContext extends OperationContext {
                     public void cleanup(HttpServletRequest req) {
                         try {
                             deferredDispose();
-                        } catch (Exception e) {
+                        } catch (OperationException e) {
                             throw new RuntimeException(e);
                         }
                     }

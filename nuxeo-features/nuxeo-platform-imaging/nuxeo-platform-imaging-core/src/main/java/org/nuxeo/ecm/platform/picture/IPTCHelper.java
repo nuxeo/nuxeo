@@ -97,7 +97,7 @@ public class IPTCHelper {
                 constructor.newInstance(segment).extract(md);
                 extract(md, metadata);
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             // Unable to read this kind of metadata, so skip
         }
     }

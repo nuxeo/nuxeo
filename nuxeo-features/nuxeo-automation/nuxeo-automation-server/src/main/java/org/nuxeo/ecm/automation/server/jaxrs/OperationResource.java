@@ -46,7 +46,7 @@ public class OperationResource extends ExecutableResource {
     }
 
     @Override
-    public Object execute(ExecutionRequest xreq) throws Exception {
+    public Object execute(ExecutionRequest xreq) throws OperationException {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
         return service.run(ctx, type.getId(), xreq.getParams());
     }

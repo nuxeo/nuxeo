@@ -21,6 +21,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions;
@@ -110,7 +111,7 @@ public class UserDisplayConverter implements Converter {
                                 firstNameValue, lastNameValue, emailValue);
 
                     }
-                } catch (Exception e) {
+                } catch (ClientException e) {
                     throw new RuntimeException(e);
                 }
             } else {

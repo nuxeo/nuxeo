@@ -18,15 +18,15 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -57,8 +57,6 @@ import org.restlet.resource.StringRepresentation;
  * @author Olivier Grisel
  */
 public class OpenSearchRestlet extends BaseNuxeoRestlet {
-
-    private static final Log log = LogFactory.getLog(OpenSearchRestlet.class);
 
     public static final String RSS_TAG = "rss";
 
@@ -154,7 +152,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
             rep.setCharacterSet(CharacterSet.UTF_8);
             res.setEntity(rep);
 
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             handleError(res, e);
         }
     }

@@ -129,7 +129,8 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
     }
 
     protected Object doInvoke(OperationContext ctx, Map<String, Object> args,
-            Object input) throws Exception {
+            Object input) throws OperationException,
+            ReflectiveOperationException {
         Object target = op.newInstance(ctx, args);
         if (consume == Void.TYPE) {
             // preserve last output for void methods
@@ -162,13 +163,13 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
                 }
                 throw new OperationException(exceptionMessage, t);
             }
-        } catch (Throwable t) {
+        } catch (ReflectiveOperationException e) {
             String exceptionMessage = "Failed to invoke operation " + op.getId();
             if (op.getAliases() != null && op.getAliases().length > 0) {
                 exceptionMessage += " with aliases " + Arrays.toString(op
                         .getAliases());
             }
-            throw new OperationException(exceptionMessage, t);
+            throw new OperationException(exceptionMessage, e);
         }
     }
 

@@ -171,12 +171,7 @@ public class ThreadActionBean implements ThreadAction {
             docThread.setProperty(schema, "moderators", selectedModerators);
         }
 
-        PathSegmentService pss;
-        try {
-            pss = Framework.getService(PathSegmentService.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         docThread.setPathInfo(path, pss.generatePathSegment(docThread));
         return docThread;
     }

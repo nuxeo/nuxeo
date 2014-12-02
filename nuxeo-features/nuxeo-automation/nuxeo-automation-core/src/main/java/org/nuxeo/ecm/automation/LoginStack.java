@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -61,7 +63,7 @@ public class LoginStack {
             entry.session = CoreInstance.openCoreSession(repositoryName);
             currentSession = entry.session;
             stack.add(entry);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new OperationException(
                     "Failed to create new core session for loginAs", e);
         }
@@ -104,7 +106,7 @@ public class LoginStack {
             try {
                 // this will indirectly process refresh the session
                 session.save();
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 throw new OperationException(e);
             }
         }
@@ -156,14 +158,14 @@ public class LoginStack {
                         session.close();
                     }
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 throw new OperationException(e);
             } finally {
                 try {
                     session = null;
                     lc.logout();
                     lc = null;
-                } catch (Exception e) {
+                } catch (LoginException e) {
                     throw new OperationException(e);
                 }
             }

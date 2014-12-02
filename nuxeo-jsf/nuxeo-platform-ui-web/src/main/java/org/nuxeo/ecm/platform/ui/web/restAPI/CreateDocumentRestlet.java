@@ -72,7 +72,6 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
         }
 
         DocumentModel parentDm;
-        PathSegmentService pss;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));
@@ -86,12 +85,12 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements
                         "you must specify a valid document IdRef for the parent document");
                 return;
             }
-            pss = Framework.getService(PathSegmentService.class);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             handleError(res, e);
             return;
         }
 
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         String docTypeName = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         String titleField = "dublincore:title";
         String title = getQueryParamValue(req, titleField, "New " + docTypeName);

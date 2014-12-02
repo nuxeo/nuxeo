@@ -127,7 +127,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         for (DocumentModel child : children) {
             try {
                 childrenDocs.add(factory.wrapDocumentModel(child));
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 // Nothing to do for now
                 log.error(e);
             }
@@ -194,7 +194,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
                             getCoreSession().getSessionId(), docRef.toString(),
                             treeConfigName, sid, factory);
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Error while retrieving parent: ", e);
             }
         }

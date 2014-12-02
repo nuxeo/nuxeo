@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.mail.action;
 import java.util.Map;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +49,7 @@ public class StoreMessageAction implements MessageAction {
     }
 
     @SuppressWarnings("unchecked")
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) throws MessagingException {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         Message message = context.getMessage();
         String title = message.getSubject();
@@ -84,7 +85,7 @@ public class StoreMessageAction implements MessageAction {
         return MAIL_MESSAGE;
     }
 
-    public void reset(ExecutionContext context) throws Exception {
+    public void reset(ExecutionContext context) {
         //do nothing
     }
 

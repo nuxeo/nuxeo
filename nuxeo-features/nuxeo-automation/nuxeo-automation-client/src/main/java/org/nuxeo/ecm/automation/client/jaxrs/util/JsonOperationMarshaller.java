@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.codehaus.jackson.JsonParser;
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.automation.client.model.OperationDocumentation.Param;
  */
 public class JsonOperationMarshaller {
 
-    public static OperationDocumentation read(JsonParser jp) throws Exception {
+    public static OperationDocumentation read(JsonParser jp) throws IOException {
         OperationDocumentation op = new OperationDocumentation();
         JsonToken tok = jp.nextToken(); // skip {
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -65,7 +66,7 @@ public class JsonOperationMarshaller {
         return op;
     }
 
-    public static String[] readStringArray(JsonParser jp) throws Exception {
+    public static String[] readStringArray(JsonParser jp) throws IOException {
         JsonToken tok = jp.nextToken(); // skip [
         if (tok == JsonToken.END_ARRAY) {
             return null;
@@ -78,7 +79,8 @@ public class JsonOperationMarshaller {
         return list.toArray(new String[list.size()]);
     }
 
-    private static void readParams(JsonParser jp, OperationDocumentation op) throws Exception {
+    private static void readParams(JsonParser jp, OperationDocumentation op)
+            throws IOException {
         JsonToken tok = jp.nextToken();  // skip [
         if (tok == JsonToken.END_ARRAY) {
             return;
@@ -89,7 +91,8 @@ public class JsonOperationMarshaller {
         } while(tok != JsonToken.END_ARRAY);
     }
 
-    private static void readParam(JsonParser jp, OperationDocumentation op) throws Exception {
+    private static void readParam(JsonParser jp, OperationDocumentation op)
+            throws IOException {
         Param para = new Param();
         JsonToken tok = jp.nextToken(); // skip {
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -113,7 +116,7 @@ public class JsonOperationMarshaller {
         op.params.add(para);
     }
 
-    public static void write(JsonParser jp, OperationDocumentation op) throws Exception {
+    public static void write(JsonParser jp, OperationDocumentation op) {
 
     }
 

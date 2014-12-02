@@ -208,7 +208,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
                 documentManager.save();
             }
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             log.error("Picture Creation failed", e);
             documentManager.cancel();
             FacesMessage message = FacesMessages.createFacesMessage(

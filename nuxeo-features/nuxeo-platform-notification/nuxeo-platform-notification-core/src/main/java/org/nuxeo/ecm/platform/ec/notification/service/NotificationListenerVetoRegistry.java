@@ -65,7 +65,7 @@ public class NotificationListenerVetoRegistry extends
         } else {
             try {
                 vetos.put(id, contrib.getNotificationVeto().newInstance());
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error(e);
             }
         }

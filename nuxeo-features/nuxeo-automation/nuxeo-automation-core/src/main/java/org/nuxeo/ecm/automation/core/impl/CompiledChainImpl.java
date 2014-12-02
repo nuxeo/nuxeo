@@ -27,6 +27,7 @@ import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -136,13 +137,15 @@ class CompiledChainImpl implements CompiledChain {
     }
 
     public static CompiledChainImpl buildChain(Class<?> in,
-            OperationParameters[] params) throws Exception {
+            OperationParameters[] params) throws OperationNotFoundException,
+            InvalidChainException {
         return buildChain(Framework.getLocalService(AutomationService.class),
                 in, params);
     }
 
     public static CompiledChainImpl buildChain(AutomationService service,
-            Class<?> in, OperationParameters[] operations) throws Exception {
+            Class<?> in, OperationParameters[] operations)
+            throws OperationNotFoundException, InvalidChainException {
         if (operations.length == 0) {
             throw new InvalidChainException("Null operation chain.");
         }

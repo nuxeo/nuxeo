@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.jboss.seam.web.MultipartRequest;
@@ -56,7 +58,8 @@ public class FileUploadHelper {
     /**
      * Parses a Multipart Restlet Request to extract blobs.
      */
-    public static List<Blob> parseRequest(Request request) throws Exception {
+    public static List<Blob> parseRequest(Request request)
+            throws FileUploadException, IOException {
         if (request instanceof HttpRequest) {
             HttpRequest httpRequest = (HttpRequest) request;
             HttpCall httpCall = httpRequest.getHttpCall();
@@ -71,9 +74,8 @@ public class FileUploadHelper {
     /**
      * Parses a Multipart Servlet Request to extract blobs
      */
-    @SuppressWarnings("unchecked")
     public static List<Blob> parseRequest(HttpServletRequest request)
-            throws Exception {
+            throws FileUploadException, IOException {
         List<Blob> blobs = new ArrayList<Blob>();
 
         if (request instanceof MultipartRequest) {

@@ -46,6 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -306,10 +307,7 @@ public abstract class ChainSelectBase extends UIInput implements
             throw new RuntimeException("failed to query  directory: "
                     + directoryName, e);
         } finally {
-            try {
-                session.close();
-            } catch (Exception e) {
-            }
+            closeSession(session);
         }
 
         return result;
@@ -372,7 +370,7 @@ public abstract class ChainSelectBase extends UIInput implements
     private static void closeSession(Session session) {
         try {
             session.close();
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
         }
     }
 

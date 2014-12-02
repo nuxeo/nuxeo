@@ -17,6 +17,7 @@
 package org.nuxeo.connect.update.task.live.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -28,6 +29,7 @@ import org.nuxeo.connect.update.task.standalone.commands.CompositeCommand;
 import org.nuxeo.connect.update.task.standalone.commands.DeployPlaceholder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
+import org.osgi.framework.BundleException;
 
 /**
  * Deploy a runtime bundle, or a directory containing runtime bundles.
@@ -57,7 +59,7 @@ public class Deploy extends DeployPlaceholder {
         }
         try {
             service.deployBundle(file, true);
-        } catch (Exception e) {
+        } catch (BundleException e) {
             throw new PackageException("Failed to deploy bundle " + file, e);
         }
         return new Undeploy(file);
@@ -100,7 +102,7 @@ public class Deploy extends DeployPlaceholder {
             // some deployments where done
             try {
                 srv.runDeploymentPreprocessor();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new PackageException(e.getMessage(), e);
             }
         }

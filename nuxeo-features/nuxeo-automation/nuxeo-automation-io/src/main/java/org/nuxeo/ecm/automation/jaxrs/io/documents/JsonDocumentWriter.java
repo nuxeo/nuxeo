@@ -115,14 +115,11 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         } catch (IOException e) {
             log.error("Failed to serialize document", e);
             throw e;
-        } catch (Exception e) {
-            log.error("Failed to serialize document", e);
-            throw new WebApplicationException(e, 500);
         }
     }
 
     public void writeDocument(OutputStream out, DocumentModel doc,
-            String[] schemas) throws Exception {
+            String[] schemas) throws IOException {
         writeDocument(out, doc, schemas, null);
     }
 
@@ -131,13 +128,13 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      */
     public void writeDocument(OutputStream out, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
-            throws Exception {
+            throws IOException {
         writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
                 schemas, contextParameters, headers, servletRequest);
     }
 
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, ServletRequest request) throws Exception {
+            String[] schemas, ServletRequest request) throws IOException {
         writeDocument(jg, doc, schemas, null, request);
     }
 
@@ -146,7 +143,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters,
-            ServletRequest request) throws Exception {
+            ServletRequest request) throws IOException {
         writeDocument(jg, doc, schemas, contextParameters, null, request);
     }
 
@@ -159,13 +156,12 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @param contextParameters
      * @param headers
      * @param request the ServletRequest. If null blob URLs won't be generated.
-     * @throws Exception
      *
      * @since 5.7.3
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers, ServletRequest request) throws Exception {
+            HttpHeaders headers, ServletRequest request) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "document");
         jg.writeStringField("repository", doc.getRepositoryName());
@@ -254,7 +250,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeProperties(JsonGenerator jg, DocumentModel doc,
-            String schema, ServletRequest request) throws Exception {
+            String schema, ServletRequest request) throws IOException {
         DocumentPart part = doc.getPart(schema);
         if (part == null) {
             return;

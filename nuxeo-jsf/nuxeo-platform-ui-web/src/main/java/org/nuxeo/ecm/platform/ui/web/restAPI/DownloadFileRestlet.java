@@ -134,7 +134,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
                     + filename + "\";");
             // TODO: add mimetype here too
 
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             handleError(res, e);
         }
     }

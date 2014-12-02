@@ -23,6 +23,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -313,7 +314,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     .getClient()
                     .prepareIndex(esa.getRepositoryIndex(cmd.getRepository()),
                             DOC_TYPE, cmd.getDocId()).setSource(builder);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException(
                     "Unable to create index request for Document "
                             + cmd.getDocId(), e);

@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.IOException;
+
 
 public class ConnectorHandler implements Connector {
 
@@ -25,7 +27,7 @@ public class ConnectorHandler implements Connector {
 
     @Override
 
-    public Object execute(Request request) {
+    public Object execute(Request request) throws IOException {
         interceptor.processRequest(request, connector);
         return connector.execute(request);
     }

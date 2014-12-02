@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class FreemarkerRender extends FreemarkerEngine implements Renderer {
                     } else {
                         return new URL(key);
                     }
-                } catch (Exception e) {
+                } catch (MalformedURLException e) {
                     return null;
                 }
             }

@@ -39,19 +39,8 @@ public class BreadcrumbEnricher extends AbstractContentEnricher {
         DocumentModel doc = ec.getDocumentModel();
         CoreSession session = doc.getCoreSession();
         List<DocumentModel> parentDocuments = session.getParentDocuments(doc.getRef());
-
-        try {
-
-            JsonDocumentListWriter.writeDocuments(jg,
-                    new DocumentModelListImpl(parentDocuments), new String[] {}, ec.getRequest());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted", e);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        JsonDocumentListWriter.writeDocuments(jg, new DocumentModelListImpl(
+                parentDocuments), new String[] {}, ec.getRequest());
     }
 
 }

@@ -33,8 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 public class CommentNotificationListener implements NotificationListenerHook {
 
     @Override
-    public void handleNotifications(Event event)
-            throws Exception {
+    public void handleNotifications(Event event) {
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (docCtx.getSourceDocument().getType().equals("Post")

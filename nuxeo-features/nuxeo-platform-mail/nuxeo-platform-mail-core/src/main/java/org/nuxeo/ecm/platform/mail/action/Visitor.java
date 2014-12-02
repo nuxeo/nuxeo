@@ -34,7 +34,7 @@ public class Visitor {
         this.pipe = pipe;
     }
 
-    public void visit(Folder folder) throws Exception {
+    public void visit(Folder folder) throws MessagingException {
         visit(folder, null);
     }
 
@@ -45,7 +45,7 @@ public class Visitor {
      * @param initialContext context variables passed to each execution context
      */
     public void visit(Folder folder, ExecutionContext initialContext)
-            throws Exception {
+            throws MessagingException {
         for (Message message : folder.getMessages()) {
             ExecutionContext context = new ExecutionContext(message,
                     initialContext);
@@ -75,7 +75,7 @@ public class Visitor {
      * @param initialContext context variables passed to each execution context
      */
     public void visit(Message[] messages, ExecutionContext initialContext)
-            throws Exception {
+            throws MessagingException {
         for (Message message : messages) {
             ExecutionContext context = new ExecutionContext(message,
                     initialContext);

@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUR
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.UPDATE_PICTURE_VIEW_EVENT;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,7 +124,7 @@ public class PictureChangedListener implements EventListener {
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             adapter.preFillPictureViews(blob, pictureConversions,
                     emptyPictureImageInfo);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             log.error(
                     "Error while pre-filling picture views: " + e.getMessage(),
                     e);

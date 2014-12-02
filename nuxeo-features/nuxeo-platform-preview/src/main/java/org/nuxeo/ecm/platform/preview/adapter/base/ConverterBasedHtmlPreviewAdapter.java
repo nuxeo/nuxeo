@@ -51,17 +51,13 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     protected MimetypeRegistry mimeTypeService;
 
-    public ConversionService getConversionService() throws Exception {
+    public ConversionService getConversionService() {
         return Framework.getService(ConversionService.class);
     }
 
     @Override
-    protected PreviewAdapterManager getPreviewManager() throws PreviewException {
-        try {
-            return Framework.getService(PreviewAdapterManager.class);
-        } catch (Exception e) {
-            throw new PreviewException(e);
-        }
+    protected PreviewAdapterManager getPreviewManager() {
+        return Framework.getService(PreviewAdapterManager.class);
     }
 
     protected static String getMimeType(Blob blob) {
@@ -77,7 +73,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
                 srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(
                         blob.getFilename(), blob, "application/octet-stream");
                 log.debug("mime type service returned " + srcMT);
-            } catch (Exception e) {
+            } catch (MimetypeDetectionException e) {
                 log.warn("error while calling Mimetype service", e);
             }
         }
@@ -120,14 +116,8 @@ public class ConverterBasedHtmlPreviewAdapter extends
             return blobResults;
         }
 
-        String converterName = null;
-        try {
-            converterName = getConversionService().getConverterName(srcMT,
-                    "text/html");
-        } catch (Exception e1) {
-            throw new PreviewException("Unable to get converter", e1);
-        }
-
+        String converterName = getConversionService().getConverterName(srcMT,
+                "text/html");
         if (converterName == null) {
             log.debug("No dedicated converter found, using generic");
             converterName = "any2html";
@@ -139,11 +129,9 @@ public class ConverterBasedHtmlPreviewAdapter extends
                     blobHolder2preview, null);
             setMimeType(result);
             return result.getBlobs();
-        } catch (ConverterNotAvailable e) {
-            throw new PreviewException(e.getMessage(), e);
         } catch (ConversionException e) {
-            throw new PreviewException("Error during conversion", e);
-        } catch (Exception e) {
+            throw new PreviewException(e.getMessage(), e);
+        } catch (ClientException e) {
             throw new PreviewException("Unexpected Error", e);
         }
 
@@ -214,11 +202,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     public MimetypeRegistry getMimeTypeService() throws ConversionException {
         if (mimeTypeService == null) {
-            try {
-                mimeTypeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                throw new ConversionException("Could not get MimeTypeRegistry");
-            }
+            mimeTypeService = Framework.getService(MimetypeRegistry.class);
         }
         return mimeTypeService;
     }

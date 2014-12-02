@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
@@ -35,19 +37,19 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
         return RemoteException.class;
     }
 
-
-    public static RemoteException readException(String content) throws Exception {
+    public static RemoteException readException(String content)
+            throws IOException {
         JsonParser jp = JsonMarshalling.getFactory().createJsonParser(content);
         jp.nextToken(); // skip {
         return _read(jp);
     }
 
     @Override
-    public RemoteException read(JsonParser jp) throws Exception {
+    public RemoteException read(JsonParser jp) throws IOException {
         return _read(jp);
     }
 
-    public static RemoteException _read(JsonParser jp) throws Exception {
+    public static RemoteException _read(JsonParser jp) throws IOException {
         int status = 0;
         String type = null, message = null;
         Throwable cause = null;
@@ -79,7 +81,7 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) {
         throw new UnsupportedOperationException();
     }
 

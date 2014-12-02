@@ -55,11 +55,7 @@ public class ProxyNode extends AbstractRemotableNode implements PublicationNode 
     protected RemotePublicationTreeManager getPublisher()
             throws ClientException {
         if (service == null) {
-            try {
-                service = Framework.getService(RemotePublicationTreeManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            service = Framework.getService(RemotePublicationTreeManager.class);
         }
         return service;
     }

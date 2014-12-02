@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webapp.seam;
 import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 
@@ -116,11 +117,7 @@ public class NuxeoSeamHotReloader implements Serializable {
             URLPolicyService service = Framework.getLocalService(URLPolicyService.class);
             String outcome = service.getOutcomeFromViewId(viewId, null);
             ReloadService srv = Framework.getLocalService(ReloadService.class);
-            try {
-                srv.flush();
-            } catch (Exception e) {
-                log.error("Error while flushing the application in dev mode", e);
-            }
+            srv.flush();
             Events.instance().raiseEvent(EventNames.FLUSH_EVENT);
             // return the current view id otherwise an error appears in logs
             // because navigation cache needs to be rebuilt after execution
@@ -138,23 +135,17 @@ public class NuxeoSeamHotReloader implements Serializable {
      * @see ReloadService#lastFlushed()
      */
     public boolean shouldResetCache(Long cacheTimestamp) {
-        try {
-            ReloadService service = Framework.getService(ReloadService.class);
-            if (cacheTimestamp == null || service == null) {
-                return true;
-            }
-            Long serviceTimestamp = service.lastFlushed();
-            if (serviceTimestamp == null) {
-                return false;
-            }
-            if (cacheTimestamp.compareTo(serviceTimestamp) < 0) {
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            log.error(e, e);
+        if (cacheTimestamp == null) {
             return true;
         }
+        Long serviceTimestamp = getCurrentCacheTimestamp();
+        if (serviceTimestamp == null) {
+            return false;
+        }
+        if (cacheTimestamp.compareTo(serviceTimestamp) < 0) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -165,16 +156,8 @@ public class NuxeoSeamHotReloader implements Serializable {
      * @see TimestampedService
      */
     public Long getCurrentCacheTimestamp() {
-        Long res = null;
-        try {
-            ReloadService service = Framework.getService(ReloadService.class);
-            if (service != null) {
-                res = service.lastFlushed();
-            }
-        } catch (Exception e) {
-            log.error(e, e);
-        }
-        return res;
+        ReloadService service = Framework.getService(ReloadService.class);
+        return service.lastFlushed();
     }
 
     /**
@@ -256,7 +239,7 @@ public class NuxeoSeamHotReloader implements Serializable {
             request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
                     Boolean.TRUE);
             facesContext.responseComplete();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Error during redirect", e);
         }
         return null;

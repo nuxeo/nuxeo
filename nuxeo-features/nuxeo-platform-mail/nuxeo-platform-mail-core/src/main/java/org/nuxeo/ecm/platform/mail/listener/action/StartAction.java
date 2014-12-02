@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.mail.listener.action;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.Flags.Flag;
+import javax.mail.MessagingException;
 
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 public class StartAction extends AbstractMailAction {
 
     @Override
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         if (message == null) {
             return false;

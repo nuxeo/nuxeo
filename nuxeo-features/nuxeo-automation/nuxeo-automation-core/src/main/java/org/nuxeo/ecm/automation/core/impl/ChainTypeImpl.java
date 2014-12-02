@@ -22,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -133,7 +135,7 @@ public class ChainTypeImpl implements OperationType {
 
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws Exception {
+            throws OperationNotFoundException, InvalidChainException {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
         CompiledChainImpl op = CompiledChainImpl.buildChain(service, inputType,

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.forms.layout.actions;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -59,10 +61,10 @@ public class RichTextEditorActions implements Serializable {
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put("bodyContentOnly", Boolean.TRUE);
         try {
-            bh = Framework.getLocalService(ConversionService.class).convertToMimeType(
+            bh = Framework.getService(ConversionService.class).convertToMimeType(
                     "text/html", bh, parameters);
             text = bh.getBlob().getString();
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             log.error("Failed to convert to HTML.", e);
         }
         return text;

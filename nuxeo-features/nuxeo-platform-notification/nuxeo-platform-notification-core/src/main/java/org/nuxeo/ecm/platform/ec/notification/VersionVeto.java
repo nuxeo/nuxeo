@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 public class VersionVeto implements NotificationListenerVeto {
 
     @Override
-    public boolean accept(Event event) throws Exception {
+    public boolean accept(Event event) {
         // this cast is safe because the type checking was done in
         // NotificationEventListener
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();

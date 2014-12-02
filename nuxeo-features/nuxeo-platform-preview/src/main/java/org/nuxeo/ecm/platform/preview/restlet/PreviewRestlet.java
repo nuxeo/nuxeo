@@ -138,7 +138,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         List<Blob> previewBlobs;
         try {
             previewBlobs = initCachedBlob(res, xpath, blobPostProcessing);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             handleError(res, "unable to get preview");
             return;
         }

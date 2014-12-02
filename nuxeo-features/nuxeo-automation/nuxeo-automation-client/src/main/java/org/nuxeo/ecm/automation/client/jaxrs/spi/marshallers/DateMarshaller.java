@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.codehaus.jackson.JsonGenerator;
@@ -37,14 +38,14 @@ public class DateMarshaller implements JsonMarshaller<Date> {
     }
 
     @Override
-    public Date read(JsonParser jp) throws Exception {
+    public Date read(JsonParser jp) throws IOException {
         jp.nextToken();
         jp.nextToken();
         return DateParser.parseW3CDateTime(jp.getText());
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", getType());
         jg.writeStringField("value", DateParser.formatW3CDateTime((Date) value));

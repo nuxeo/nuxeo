@@ -16,10 +16,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationParameters;
-import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -82,7 +79,7 @@ public class ExecutionRequest {
     }
 
     public OperationContext createContext(HttpServletRequest request,
-            CoreSession session) throws Exception {
+            CoreSession session) {
         ctx.addRequestCleanupHandler(request);
         ctx.setCoreSession(session);
         ctx.setInput(input);

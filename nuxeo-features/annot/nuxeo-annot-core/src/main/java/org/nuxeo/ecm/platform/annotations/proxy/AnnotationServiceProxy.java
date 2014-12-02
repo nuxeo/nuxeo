@@ -67,12 +67,8 @@ public class AnnotationServiceProxy implements AnnotationsService {
     private List<EventListener> listeners;
 
     public void initialise() {
-        try {
-            service = new AnnotationsServiceImpl();
-            configurationService = Framework.getService(AnnotationConfigurationService.class);
-        } catch (Exception e) {
-            log.error(e);
-        }
+        service = new AnnotationsServiceImpl();
+        configurationService = Framework.getService(AnnotationConfigurationService.class);
         filter = configurationService.getUrlPatternFilter();
         resolver = configurationService.getUriResolver();
         annotabilityManager = configurationService.getAnnotabilityManager();

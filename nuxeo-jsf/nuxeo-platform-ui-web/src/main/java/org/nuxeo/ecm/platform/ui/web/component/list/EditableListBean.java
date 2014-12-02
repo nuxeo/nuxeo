@@ -262,21 +262,16 @@ public class EditableListBean {
                     "Could not find '%s' parameter in the request map",
                     FOR_PARAMETER_NAME));
         } else {
-            try {
-                UIComponent forComponent = component.findComponent(forString);
-                if (forComponent == null) {
-                    log.error("Could not find component with id: " + forString);
-                } else if (!(forComponent instanceof UIEditableList)) {
-                    log.error(String.format(
-                            "Invalid component with id %s: %s, expected a "
-                                    + "component with class %s", forString,
-                            forComponent, UIEditableList.class));
-                } else {
-                    listComponent = (UIEditableList) forComponent;
-                }
-            } catch (Exception e) {
-                log.error("Caught exception while looking for component "
-                        + "with id: " + forString);
+            UIComponent forComponent = component.findComponent(forString);
+            if (forComponent == null) {
+                log.error("Could not find component with id: " + forString);
+            } else if (!(forComponent instanceof UIEditableList)) {
+                log.error(String.format(
+                        "Invalid component with id %s: %s, expected a "
+                                + "component with class %s", forString,
+                        forComponent, UIEditableList.class));
+            } else {
+                listComponent = (UIEditableList) forComponent;
             }
         }
         return listComponent;
@@ -313,7 +308,7 @@ public class EditableListBean {
         } else {
             try {
                 index = Integer.valueOf(indexString);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 log.error(String.format(
                         "Illegal value for '%s' attribute: %s, "
                                 + "should be integer", INDEX_PARAMETER_NAME,
@@ -330,7 +325,7 @@ public class EditableListBean {
         if (numberString != null) {
             try {
                 number = Integer.valueOf(numberString);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 log.error(String.format(
                         "Illegal value for '%s' attribute: %s, "
                                 + "should be integer", NUMBER_PARAMETER_NAME,

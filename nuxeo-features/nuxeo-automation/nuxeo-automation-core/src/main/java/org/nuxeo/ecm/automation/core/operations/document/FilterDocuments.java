@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.events.DocumentAttributeFilterFactory;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
@@ -159,17 +160,13 @@ public class FilterDocuments {
                     if (!lc.equals(doc.getCurrentLifeCycleState())) {
                         return false;
                     }
-                } catch (Exception e) {
+                } catch (ClientException e) {
                     log.error(e, e);
                 }
             }
             if (path != null) {
-                try {
-                    if (!doc.getPathAsString().startsWith(path)) {
-                        return false;
-                    }
-                } catch (Exception e) {
-                    log.error(e, e);
+                if (!doc.getPathAsString().startsWith(path)) {
+                    return false;
                 }
             }
             if (attr != null) {
@@ -182,7 +179,7 @@ public class FilterDocuments {
                     if (!(Boolean) expr.eval(ctx)) {
                         return false;
                     }
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     log.error(e, e);
                 }
             }

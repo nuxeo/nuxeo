@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
@@ -35,12 +37,12 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     protected void readDocumentEntries(JsonParser jp, Documents docs)
-            throws Exception {
+            throws IOException {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
             docs.add(DocumentMarshaller.readDocument(jp));
@@ -48,7 +50,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
         }
     }
 
-    protected Documents readDocuments(JsonParser jp) throws Exception {
+    protected Documents readDocuments(JsonParser jp) throws IOException {
         Documents docs = new Documents();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
@@ -62,7 +64,8 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
         return docs;
     }
 
-    protected Documents readPaginableDocuments(JsonParser jp) throws Exception {
+    protected Documents readPaginableDocuments(JsonParser jp)
+            throws IOException {
         PaginableDocuments docs = new PaginableDocuments();
         JsonToken tok = jp.getCurrentToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -95,7 +98,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
     }
 
     @Override
-    public Documents read(JsonParser jp) throws Exception {
+    public Documents read(JsonParser jp) throws IOException {
         jp.nextToken();
         String key = jp.getCurrentName();
         if ("isPaginable".equals(key)) {

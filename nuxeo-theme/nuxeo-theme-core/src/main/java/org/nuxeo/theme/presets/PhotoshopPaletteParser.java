@@ -55,7 +55,7 @@ public class PhotoshopPaletteParser extends PaletteParser {
             try {
                 words[size] = dis.readChar();
                 size++;
-            } catch (Exception e) {
+            } catch (IOException e) {
                 break;
             }
         }

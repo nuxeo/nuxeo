@@ -217,34 +217,26 @@ public class DocumentContentViewActions implements Serializable {
 
     public List<ContentViewHeader> getLocalConfiguredContentViews(
             DocumentModel doc) {
-        LocalConfigurationService localConfigurationService;
-        try {
-            localConfigurationService = Framework.getService(LocalConfigurationService.class);
-            if (localConfigurationService == null) {
-                return null;
+        LocalConfigurationService localConfigurationService = Framework.getService(LocalConfigurationService.class);
+        ContentViewConfiguration configuration = localConfigurationService.getConfiguration(
+                ContentViewConfiguration.class,
+                CONTENT_VIEW_CONFIGURATION_FACET, doc);
+        if (configuration == null) {
+            return null;
+        }
+        List<String> cvNames = configuration.getContentViewsForType(doc.getType());
+        if (cvNames == null) {
+            return null;
+        }
+        List<ContentViewHeader> headers = new ArrayList<ContentViewHeader>();
+        for (String cvName : cvNames) {
+            ContentViewHeader header = contentViewService.getContentViewHeader(cvName);
+            if (header != null) {
+                headers.add(header);
             }
-            ContentViewConfiguration configuration = localConfigurationService.getConfiguration(
-                    ContentViewConfiguration.class,
-                    CONTENT_VIEW_CONFIGURATION_FACET, doc);
-            if (configuration == null) {
-                return null;
-            }
-            List<String> cvNames = configuration.getContentViewsForType(doc.getType());
-            if (cvNames == null) {
-                return null;
-            }
-            List<ContentViewHeader> headers = new ArrayList<ContentViewHeader>();
-            for (String cvName : cvNames) {
-                ContentViewHeader header = contentViewService.getContentViewHeader(cvName);
-                if (header != null) {
-                    headers.add(header);
-                }
-            }
-            if (!headers.isEmpty()) {
-                return headers;
-            }
-        } catch (Exception e) {
-            log.error("Failed to get local configured ContentViews", e);
+        }
+        if (!headers.isEmpty()) {
+            return headers;
         }
         return null;
     }

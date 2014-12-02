@@ -91,7 +91,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
         try {
             getProperty(key.toString());
             return true;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             return false;
         }
     }
@@ -104,7 +104,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     public boolean containsValue(Object value) {
         try {
             return getProperty(value.toString()) != null;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             return false;
         }
     }
@@ -113,7 +113,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     public Serializable get(Object key) {
         try {
             return getProperty(key.toString());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             return null;
         }
     }
@@ -150,7 +150,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
             Serializable v = p.getValue();
             p.setValue(value);
             return v;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new RuntimeException(e);
         }
     }

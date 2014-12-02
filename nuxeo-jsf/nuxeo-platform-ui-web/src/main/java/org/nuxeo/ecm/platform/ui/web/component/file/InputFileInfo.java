@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.file;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.faces.convert.ConverterException;
@@ -100,7 +101,8 @@ public class InputFileInfo {
                 convertedBlob = FileUtils.createSerializableBlob(upFile,
                         getConvertedFilename(), getConvertedMimeType());
             } catch (ConverterException e) {
-            } catch (Exception e) {
+                throw e;
+            } catch (IOException e) {
                 throw new ConverterException(INVALID_FILE_MESSAGE);
             }
         } else if (blob != null) {
@@ -125,7 +127,7 @@ public class InputFileInfo {
             String stringChoice = (String) choice;
             try {
                 convertedChoice = InputFileChoice.valueOf(stringChoice);
-            } catch (Exception err) {
+            } catch (IllegalArgumentException err) {
                 throw new ConverterException("error.inputFile.invalidChoice");
             }
         } else if (choice != null) {

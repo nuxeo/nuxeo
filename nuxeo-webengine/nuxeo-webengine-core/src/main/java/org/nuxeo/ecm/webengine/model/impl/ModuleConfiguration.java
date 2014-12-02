@@ -21,18 +21,14 @@ package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -40,7 +36,6 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
-import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
@@ -126,23 +121,6 @@ public class ModuleConfiguration implements Cloneable {
 
     @XNodeList(value = "links/link", type = ArrayList.class, componentType = LinkDescriptor.class, nullByDefault = true)
     public List<LinkDescriptor> links;
-
-    @XNodeMap(value = "validators/validator", key = "@type", type = HashedMap.class, componentType = Class.class, nullByDefault = true)
-    public void setValidators(Map<String, Class<Validator>> m) {
-        if (m != null) {
-            validators = new HashMap<String, Validator>();
-            for (Map.Entry<String, Class<Validator>> entry : m.entrySet()) {
-                try {
-                    validators.put(entry.getKey(),
-                            entry.getValue().newInstance());
-                } catch (Exception e) {
-                    log.error(e);
-                }
-            }
-        }
-    }
-
-    public Map<String, Validator> validators;
 
     /**
      * @deprecated resources are deprecated - you should use a jax-rs

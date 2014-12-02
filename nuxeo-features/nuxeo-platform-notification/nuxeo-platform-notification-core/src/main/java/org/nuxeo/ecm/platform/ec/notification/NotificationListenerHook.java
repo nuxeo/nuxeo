@@ -22,6 +22,6 @@ import org.nuxeo.ecm.core.event.Event;
  */
 public interface NotificationListenerHook {
 
-    void handleNotifications(Event event) throws Exception;
+    void handleNotifications(Event event);
 
 }

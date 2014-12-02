@@ -21,6 +21,7 @@ import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class CommentSorter implements Sorter {
 
@@ -44,8 +45,8 @@ public class CommentSorter implements Sorter {
 
         int cmp = 0;
         try {
-            Calendar created1 = doc1.getProperty("dc:created").getValue(Calendar.class);
-            Calendar created2 = doc2.getProperty("dc:created").getValue(Calendar.class);
+            Calendar created1 = (Calendar) doc1.getPropertyValue("dc:created");
+            Calendar created2 = (Calendar) doc2.getPropertyValue("dc:created");
 
             if (created1 == null && created2 == null) {
                 return 0;
@@ -56,7 +57,7 @@ public class CommentSorter implements Sorter {
             }
             cmp = created1.compareTo(created2);
         }
-        catch (Exception e) {
+        catch (PropertyException e) {
         }
         return asc ? cmp : -cmp;
     }

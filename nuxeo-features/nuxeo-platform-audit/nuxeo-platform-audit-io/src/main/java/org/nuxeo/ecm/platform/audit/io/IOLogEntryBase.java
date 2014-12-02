@@ -204,7 +204,7 @@ public class IOLogEntryBase {
         LogEntry newLogEntry;
         try {
             newLogEntry = (LogEntry)BeanUtils.cloneBean(logEntry);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new AuditRuntimeException("cannot clone bean " + logEntry, e);
         }
         newLogEntry.setDocUUID(newRef);

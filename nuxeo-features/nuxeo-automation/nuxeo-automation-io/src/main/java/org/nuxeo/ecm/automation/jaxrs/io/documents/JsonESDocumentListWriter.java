@@ -2,6 +2,7 @@ package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -83,14 +84,14 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
      */
     @Override
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws Exception {
+            String[] schemas, HttpHeaders headers) throws IOException {
         writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
                 schemas);
     }
 
     @Override
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas) throws Exception {
+            String[] schemas) throws IOException {
         writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
                 schemas, null);
     }
@@ -99,12 +100,12 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
      * @since 5.9.5
      */
     public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
-            String[] schemas) throws Exception {
+            String[] schemas) throws IOException {
         writeDocs(jg, docs, schemas, null);
     }
 
     public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws Exception {
+            String[] schemas, HttpHeaders headers) throws IOException {
         String esIndex = request.getParameter("esIndex");
         if (esIndex == null) {
             esIndex = DEFAULT_ES_INDEX;

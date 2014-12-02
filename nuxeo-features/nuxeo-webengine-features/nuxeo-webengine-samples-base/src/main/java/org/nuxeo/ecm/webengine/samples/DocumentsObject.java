@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  * {@code public Object handleError(WebApplicationException e)} that will be invoked each time
  * an uncatched exception is thrown during the request. From that method you should return a suitable response to render the error.
  * To ensure exceptions are correctly redirected to your error handler you must catch all exceptions thrown in your resource methods
- * and rethrowing them as following: {@code ... }} catch (Throwable t) { throw WebException.wrap(t); } </code>.
+ * and rethrowing them as following: {@code ... }} catch (Exception e) { throw WebException.wrap(e); } </code>.
  * The exception wrapping is automatically converting exceptions to the ones defined by WebEngine model.
 
  *

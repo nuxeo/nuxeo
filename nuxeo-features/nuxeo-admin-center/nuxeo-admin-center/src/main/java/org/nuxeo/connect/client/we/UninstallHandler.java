@@ -80,7 +80,7 @@ public class UninstallHandler extends DefaultObject {
             return getView("startUninstall").arg("status", status).arg(
                     "uninstallTask", uninstallTask).arg("pkg", pkg).arg(
                     "source", source);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during first step of installation", e);
             return getView("uninstallError").arg("e", e);
         }
@@ -133,7 +133,7 @@ public class UninstallHandler extends DefaultObject {
                 return getView("uninstallDone").arg("uninstallTask",
                         uninstallTask).arg("pkg", pkg).arg("source", source);
             }
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during uninstall of " + pkgId, e);
             return getView("uninstallError").arg("e", e).arg("source", source);
         }
@@ -168,7 +168,7 @@ public class UninstallHandler extends DefaultObject {
         PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
         try {
             pus.restart();
-        } catch (Exception e) {
+        } catch (PackageException e) {
             throw WebException.wrap(e);
         }
         // TODO create a page that waits for the server to restart

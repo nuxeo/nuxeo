@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
@@ -181,7 +182,7 @@ public class BatchManagerComponent extends DefaultComponent implements
             // Drag and Drop action category is accessible from the chain sub context as chain parameters
             result = as.run(ctx, chainOrOperationId, operationParams);
             return result;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             log.error("Error while executing automation batch ", e);
             throw ClientException.wrap(e);
         }

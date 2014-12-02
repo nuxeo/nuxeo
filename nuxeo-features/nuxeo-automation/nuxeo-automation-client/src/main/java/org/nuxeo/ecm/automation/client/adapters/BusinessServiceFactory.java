@@ -26,7 +26,7 @@ public class BusinessServiceFactory implements
 		try {
 			return clazz.getDeclaredConstructor(Session.class).newInstance(
 					session);
-		} catch (Exception e) {
+		} catch (Exception e) { // Java 6 doesn't have ReflectiveOperationException
 			throw new IllegalArgumentException("Cannot instantiate bo service "
 					+ clazz.getName(), e);
 		}

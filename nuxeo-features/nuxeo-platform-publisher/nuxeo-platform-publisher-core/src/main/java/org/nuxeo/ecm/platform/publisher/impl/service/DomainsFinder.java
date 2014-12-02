@@ -18,13 +18,10 @@
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -37,8 +34,6 @@ import org.nuxeo.runtime.api.Framework;
  * Finds the domains for a session.
  */
 public class DomainsFinder extends UnrestrictedSessionRunner {
-
-    private static final Log log = LogFactory.getLog(DomainsFinder.class);
 
     public static final String PUBLISHING_DOMAINS_PROVIDER = "domains_for_publishing";
 
@@ -55,13 +50,7 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
 
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> getDomainsFiltered() throws ClientException {
-        PageProviderService pps;
-        try {
-            pps = Framework.getService(PageProviderService.class);
-        } catch (Exception e) {
-            log.error("Failed to get PageProviderService", e);
-            return new ArrayList<DocumentModel>();
-        }
+        PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);

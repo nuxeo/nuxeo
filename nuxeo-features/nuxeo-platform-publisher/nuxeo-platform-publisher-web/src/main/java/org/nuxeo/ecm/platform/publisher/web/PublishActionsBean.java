@@ -132,12 +132,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     @Create
     public void create() {
-        try {
-            publisherService = Framework.getService(PublisherService.class);
-        } catch (Exception e) {
-            throw new IllegalStateException("Publisher service not deployed.",
-                    e);
-        }
+        publisherService = Framework.getService(PublisherService.class);
     }
 
     @Destroy
@@ -724,14 +719,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     }
 
     protected static Set<String> getTypeNamesForFacet(String facetName) {
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            log.error("Exception in retrieving publish spaces : ", e);
-            return null;
-        }
-
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Set<String> publishRoots = schemaManager.getDocumentTypeNamesForFacet(facetName);
         if (publishRoots == null || publishRoots.isEmpty()) {
             return null;
@@ -775,19 +763,11 @@ public class PublishActionsBean extends AbstractPublishActions implements
         ctx.setComment(comment);
         ctx.setCategory(category);
 
-        EventProducer evtProducer;
-        try {
-            evtProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            log.error("Unable to access EventProducer", e);
-            return;
-        }
-
+        EventProducer evtProducer = Framework.getService(EventProducer.class);
         Event event = ctx.newEvent(eventId);
-
         try {
             evtProducer.fireEvent(event);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while sending event", e);
         }
     }

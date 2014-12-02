@@ -197,21 +197,12 @@ public class DocumentRelationService implements DocumentRelationManager {
     protected void notifyEvent(String eventId, DocumentModel source,
             Map<String, Serializable> options, String comment,
             CoreSession session) {
-
-        EventProducer evtProducer = null;
-
-        try {
-            evtProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            log.error("Unable to get EventProducer to send event notification",
-                    e);
-        }
-
         DocumentEventContext docCtx = new DocumentEventContext(session,
                 session.getPrincipal(), source);
         options.put("category", RelationEvents.CATEGORY);
         options.put("comment", comment);
 
+        EventProducer evtProducer = Framework.getService(EventProducer.class);
         try {
             evtProducer.fireEvent(docCtx.newEvent(eventId));
         } catch (ClientException e) {

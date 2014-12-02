@@ -60,7 +60,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
             NuxeoOAuthServiceProvider provider = getEntry(gadgetUri,
                     serviceName, null);
             return provider;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to read provider from Directory backend", e);
             return null;
         }
@@ -111,7 +111,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
     }
 
     protected NuxeoOAuthServiceProvider getEntry(String gadgetUri,
-            String serviceName, Set<String> ftFilter) throws Exception {
+            String serviceName, Set<String> ftFilter) throws ClientException {
 
         String id = mkStringIdx(gadgetUri, serviceName);
         if (inMemoryProviders.containsKey(id)) {
@@ -211,7 +211,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
                     session.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to delete provider " + providerId, e);
         }
     }
@@ -237,7 +237,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
                     session.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while fetching provider directory", e);
         }
         return result;

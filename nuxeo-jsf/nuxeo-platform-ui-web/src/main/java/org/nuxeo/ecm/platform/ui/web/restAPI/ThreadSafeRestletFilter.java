@@ -52,7 +52,7 @@ public class ThreadSafeRestletFilter extends Filter {
                 // get a new instance of the restlet each time it is called.
                 Restlet next = getNext().getClass().newInstance();
                 next.handle(request, response);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Restlet handling error", e);
                 response.setEntity(
                         "Error while getting a new Restlet instance: "

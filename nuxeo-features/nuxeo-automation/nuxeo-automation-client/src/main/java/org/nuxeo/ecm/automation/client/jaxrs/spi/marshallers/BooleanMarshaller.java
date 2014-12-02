@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
@@ -34,14 +36,14 @@ public class BooleanMarshaller implements JsonMarshaller<Boolean> {
     }
 
     @Override
-    public Boolean read(JsonParser jp) throws Exception {
+    public Boolean read(JsonParser jp) throws IOException {
         jp.nextToken();
         jp.nextToken();
         return jp.readValueAs(Boolean.class);
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         // No need to escape
         jg.writeBoolean((Boolean) value);
     }

@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
@@ -82,24 +81,6 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
     protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(
             new ExpressionFactoryImpl());
-
-    protected Principal guardedPrincipal(CoreSession session) {
-        try {
-            return session.getPrincipal();
-        } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + session, e);
-        }
-    }
-
-    protected Principal guardedPrincipal(CoreEvent event) {
-        try {
-            return event.getPrincipal();
-        } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + event, e);
-        }
-    }
 
     protected DocumentModel guardedDocument(CoreSession session,
             DocumentRef reference) {
@@ -168,14 +149,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             expressionEvaluator.bindValue(context, "source", source);
             // inject now the adapters
             for (AdapterDescriptor ad : component.getDocumentAdapters()) {
-                Object adapter = null;
-                try {
-                    adapter = source.getAdapter(ad.getKlass());
-                } catch (Exception e) {
-                    log.debug(String.format(
-                            "can't get adapter for %s to log extinfo: %s",
-                            source.getPathAsString(), e.getMessage()));
-                }
+                Object adapter = source.getAdapter(ad.getKlass());
                 if (adapter != null) {
                     expressionEvaluator.bindValue(context, ad.getName(),
                             adapter);
@@ -242,8 +216,6 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                 entry.setDocPath(document.getPathAsString());
                 entry.setDocType(document.getType());
                 entry.setRepositoryId(document.getRepositoryName());
-            } else {
-                log.warn("received event " + eventName + " with null document");
             }
             if (principal != null) {
                 String principalName = null;
@@ -352,12 +324,12 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
         long nbSyncedEntries = 1;
 
-        Principal principal = guardedPrincipal(session);
+        Principal principal = session.getPrincipal();
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
         try {
             provider.addLogEntry(doCreateAndFillEntryFromDocument(node,
-                    guardedPrincipal(session)));
+                    session.getPrincipal()));
 
             for (DocumentModel child : guardedDocumentChildren(session,
                     node.getRef())) {

@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import java.net.URI;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,17 +33,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public class RepositoryAnnotabilityManager implements AnnotabilityManager {
 
-    private static final Log log = LogFactory.getLog(RepositoryAnnotabilityManager.class);
-
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
     private AnnotationsRepositoryService service;
 
     public RepositoryAnnotabilityManager() {
-        try {
-            service = Framework.getService(AnnotationsRepositoryService.class);
-        } catch (Exception e) {
-            log.error(e);
-        }
+        service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
     public boolean isAnnotable(URI uri) throws AnnotationException {
@@ -60,7 +52,7 @@ public class RepositoryAnnotabilityManager implements AnnotabilityManager {
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.isAnnotable(model);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
     }

@@ -17,14 +17,16 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
+import java.io.IOException;
+import java.util.Map;
+
+import org.dom4j.DocumentException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-
-import java.util.Map;
 
 public class FSPublishedDocumentFactory extends
         AbstractBasePublishedDocumentFactory implements
@@ -38,7 +40,7 @@ public class FSPublishedDocumentFactory extends
             FSPublishedDocument pubDoc = new FSPublishedDocument("local", doc);
             pubDoc.persist(targetNode.getPath());
             return pubDoc;
-        } catch (Exception e) {
+        } catch (DocumentException | IOException e) {
             throw new ClientException("Error duning FS Publishing", e);
         }
     }
@@ -49,7 +51,7 @@ public class FSPublishedDocumentFactory extends
 
             doc = snapshotDocumentBeforePublish(doc);
             return new FSPublishedDocument("local", doc);
-        } catch (Exception e) {
+        } catch (DocumentException e) {
             throw new ClientException(
                     "Error while wrapping DocumentModel as FSPublishedDocument",
                     e);

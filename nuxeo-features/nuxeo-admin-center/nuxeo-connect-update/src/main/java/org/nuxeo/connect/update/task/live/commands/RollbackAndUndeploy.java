@@ -17,6 +17,7 @@
 package org.nuxeo.connect.update.task.live.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.connect.update.PackageException;
@@ -51,7 +52,7 @@ public class RollbackAndUndeploy extends Rollback {
             // then re-build the war now that jar is deleted
             ReloadService srv = Framework.getLocalService(ReloadService.class);
             srv.runDeploymentPreprocessor();
-        } catch (Exception e) {
+        } catch (PackageException | IOException e) {
             // ignore uninstall -> this may break the entire chain. Usually
             // uninstall is done only when rollbacking or uninstalling => force
             // restart required

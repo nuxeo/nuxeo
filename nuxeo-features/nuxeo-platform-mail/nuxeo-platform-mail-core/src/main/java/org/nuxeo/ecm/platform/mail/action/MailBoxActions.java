@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.mail.action;
 
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 /**
  * @author Alexandre Russel
  */
@@ -30,8 +32,8 @@ public interface MailBoxActions {
 
     void addActions(List<MessageAction> actions);
 
-    void execute() throws Exception;
+    void execute() throws MessagingException;
 
-    void execute(ExecutionContext initialContext) throws Exception;
+    void execute(ExecutionContext initialContext) throws MessagingException;
 
 }

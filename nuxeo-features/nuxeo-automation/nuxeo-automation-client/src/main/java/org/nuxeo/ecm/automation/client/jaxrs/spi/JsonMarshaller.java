@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 
@@ -43,7 +45,7 @@ public interface JsonMarshaller<T> {
      * @param json
      * @return
      */
-    T read(JsonParser jp) throws Exception;
+    T read(JsonParser jp) throws IOException;
 
     /**
      * Writes the POJO object to the JsonGenerator
@@ -51,6 +53,6 @@ public interface JsonMarshaller<T> {
      * @param o
      * @param value
      */
-    void write(JsonGenerator jg, Object value) throws Exception;
+    void write(JsonGenerator jg, Object value) throws IOException;
 
 }

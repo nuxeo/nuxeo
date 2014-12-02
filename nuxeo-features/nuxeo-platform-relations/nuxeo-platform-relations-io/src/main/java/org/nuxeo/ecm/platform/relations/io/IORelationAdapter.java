@@ -117,12 +117,12 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         }
     }
 
-    protected RelationManager getRelationManager() throws Exception {
+    protected RelationManager getRelationManager() {
         return Framework.getService(RelationManager.class);
     }
 
     protected List<Statement> getMatchingStatements(Graph graph,
-            Resource resource) throws CloneNotSupportedException {
+            Resource resource) {
         // TODO filter using properties
         List<Statement> matching = new ArrayList<Statement>();
         Statement incomingPattern = new StatementImpl(null, null, resource);
@@ -132,8 +132,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         return filterMatchingStatements(matching);
     }
 
-    protected Statement getFilteredStatement(Statement statement)
-            throws CloneNotSupportedException {
+    protected Statement getFilteredStatement(Statement statement) {
         Subject subject = statement.getSubject();
         Resource predicate = statement.getPredicate();
         Node object = statement.getObject();
@@ -193,7 +192,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
     }
 
     protected List<Statement> filterMatchingStatements(
-            List<Statement> statements) throws CloneNotSupportedException {
+            List<Statement> statements) {
         List<Statement> newStatements = null;
         if (statements != null) {
             newStatements = new ArrayList<Statement>();
@@ -321,7 +320,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             memoryGraph.remove(toRemove);
             return new IORelationResources(namespaces, docResources,
                     memoryGraph.getStatements());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
             return null;
         }
@@ -332,16 +331,12 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         if (!(resources instanceof IORelationResources)) {
             return;
         }
-        try {
-            IORelationResources relResources = (IORelationResources) resources;
-            Map<String, String> namespaces = relResources.getNamespaces();
-            List<Statement> statements = relResources.getStatements();
-            IORelationGraphHelper graphHelper = new IORelationGraphHelper(
-                    namespaces, statements);
-            graphHelper.write(out);
-        } catch (Exception e) {
-            log.error(e, e);
-        }
+        IORelationResources relResources = (IORelationResources) resources;
+        Map<String, String> namespaces = relResources.getNamespaces();
+        List<Statement> statements = relResources.getStatements();
+        IORelationGraphHelper graphHelper = new IORelationGraphHelper(
+                namespaces, statements);
+        graphHelper.write(out);
     }
 
     private void addResourceEntry(RelationManager relManager,
@@ -392,7 +387,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                 addResourceEntry(relManager, docResources, object);
             }
             return new IORelationResources(namespaces, docResources, statements);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
         }
         return null;
@@ -420,7 +415,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                 return;
             }
             graph.add(relResources.getStatements());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
         }
     }
@@ -523,7 +518,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             }
             return new IORelationResources(namespaces,
                     relResources.getResourcesMap(), graph.getStatements());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
         }
         return null;

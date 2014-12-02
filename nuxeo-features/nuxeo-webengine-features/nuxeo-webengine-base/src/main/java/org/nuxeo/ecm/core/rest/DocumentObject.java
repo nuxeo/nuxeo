@@ -115,7 +115,7 @@ public class DocumentObject extends DefaultObject {
             CoreSession session = ctx.getCoreSession();
             session.removeDocument(doc.getRef());
             session.save();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to delete document " + doc.getPathAsString(), e);
         }
         if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
@@ -160,7 +160,7 @@ public class DocumentObject extends DefaultObject {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }
@@ -169,17 +169,13 @@ public class DocumentObject extends DefaultObject {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }
 
     public DocumentObject newDocument(DocumentModel doc) {
-        try {
-            return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        return (DocumentObject) ctx.newObject(doc.getType(), doc);
     }
 
     public CoreSession getCoreSession() {

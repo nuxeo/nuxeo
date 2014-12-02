@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.task.core.listener;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -43,12 +42,7 @@ public class DeleteTaskForDeletedDocumentListener implements EventListener {
 
     public TaskService getTaskService() {
         if (taskService == null) {
-            try {
-                taskService = Framework.getService(TaskService.class);
-            } catch (Exception e) {
-                throw new ClientRuntimeException("JbpmService is not deployed",
-                        e);
-            }
+            taskService = Framework.getService(TaskService.class);
         }
         return taskService;
     }

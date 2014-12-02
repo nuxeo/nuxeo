@@ -21,9 +21,11 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -33,6 +35,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -86,7 +89,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                     repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             targetContainer = documentManager.getDocument(new IdRef(docid));
-        } catch (Exception e) {
+        } catch (ClientException e) {
             handleError(res, e);
             return;
         }
@@ -95,7 +98,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
             List<Blob> blobs = null;
             try {
                 blobs = FileUploadHelper.parseRequest(req);
-            } catch (Exception e) {
+            } catch (FileUploadException | IOException e) {
                 handleError(res, e);
                 return;
             }
@@ -109,7 +112,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                     inputBlob.setFilename(fileName);
                     outcome = FileManageActions.addBinaryFileFromPlugin(
                             inputBlob, fileName, targetContainer);
-                } catch (Exception e) {
+                } catch (ClientException | IOException e) {
                     outcome = "ERROR : " + e.getMessage();
                 }
                 result.addElement("upload").setText(outcome);
@@ -121,7 +124,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                     try {
                         outcome = FileManageActions.addBinaryFileFromPlugin(
                                 blob, blob.getFilename(), targetContainer);
-                    } catch (Exception e) {
+                    } catch (ClientException e) {
                         log.error("error importing " + blob.getFilename()
                                 + ": " + e.getMessage(), e);
                         outcome = "ERROR : " + e.getMessage();

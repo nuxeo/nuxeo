@@ -28,18 +28,11 @@ public class LibrarySelectorServiceDescriptor {
     @XNode("ImageUtils")
     public ImageUtilsDescriptor imageUtils;
 
-    @XNode("MimeUtils")
-    public MimeUtilsDescriptor mimeUtils;
-
     @XNode("MetadataUtils")
     public MetadataUtilsDescriptor metadataUtils;
 
     public ImageUtilsDescriptor getImageUtils() {
         return imageUtils;
-    }
-
-    public MimeUtilsDescriptor getMimeUtils() {
-        return mimeUtils;
     }
 
     public MetadataUtilsDescriptor getMetadataUtils() {

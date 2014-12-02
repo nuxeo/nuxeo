@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 public class NotificationVeto3 implements NotificationListenerVeto {
 
     @Override
-    public boolean accept(Event event) throws Exception {
+    public boolean accept(Event event) {
         return false;
     }
 

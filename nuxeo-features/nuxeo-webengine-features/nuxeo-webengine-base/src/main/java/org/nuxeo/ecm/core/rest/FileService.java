@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -121,7 +122,7 @@ public class FileService extends DefaultAdapter {
             }
             return builder.build();
 
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
     }
@@ -177,9 +178,7 @@ public class FileService extends DefaultAdapter {
             session.saveDocument(doc);
             session.save();
             return redirect(getTarget().getPath());
-        } catch (WebException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to attach file", e);
         }
     }
@@ -209,7 +208,7 @@ public class FileService extends DefaultAdapter {
             CoreSession session = ctx.getCoreSession();
             session.saveDocument(doc);
             session.save();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to delete attached file", e);
         }
         return redirect(getTarget().getPath());

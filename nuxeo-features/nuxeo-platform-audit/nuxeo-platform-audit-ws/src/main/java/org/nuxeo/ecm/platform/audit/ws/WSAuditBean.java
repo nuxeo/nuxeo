@@ -56,18 +56,8 @@ public class WSAuditBean extends AbstractNuxeoWebService implements
 
     private static final long serialVersionUID = 1L;
 
-    private transient Logs logsBean;
-
-    protected final Logs getLogsBean() throws AuditException {
-        try {
-            logsBean = Framework.getService(Logs.class);
-        } catch (Exception e) {
-            throw new AuditException("Cannot locate remote logs audit", e);
-        }
-        if (logsBean == null) {
-            throw new AuditException("Cannot find log remote bean...");
-        }
-        return logsBean;
+    protected final Logs getLogsBean() {
+        return Framework.getService(Logs.class);
     }
 
     @WebMethod

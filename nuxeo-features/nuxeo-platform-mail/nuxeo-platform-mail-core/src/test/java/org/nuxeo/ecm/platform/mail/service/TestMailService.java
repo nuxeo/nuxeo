@@ -189,12 +189,12 @@ public class TestMailService extends NXRuntimeTestCase {
     static class TestMailAction implements MessageAction {
         private static int counter;
 
-        public boolean execute(ExecutionContext context) throws Exception {
+        public boolean execute(ExecutionContext context) {
             counter++;
             return true;
         }
 
-        public void reset(ExecutionContext context) throws Exception {
+        public void reset(ExecutionContext context) {
         }
     }
 

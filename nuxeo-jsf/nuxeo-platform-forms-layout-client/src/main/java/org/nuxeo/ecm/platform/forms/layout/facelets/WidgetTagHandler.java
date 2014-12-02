@@ -168,15 +168,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         } else {
             // resolve widget according to name and mode (and optional
             // category)
-            WebLayoutManager layoutService;
-            try {
-                layoutService = Framework.getService(WebLayoutManager.class);
-            } catch (Exception e) {
-                throw new FacesException(e);
-            }
-            if (layoutService == null) {
-                throw new FacesException("Layout service not found");
-            }
+            WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
             String modeValue = mode.getValue(ctx);
             String layoutNameValue = null;
@@ -289,12 +281,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         if (widget == null) {
             return;
         }
-        WebLayoutManager layoutService;
-        try {
-            layoutService = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new FacesException(e);
-        }
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         FaceletHandler handler = layoutService.getFaceletHandler(ctx, config,

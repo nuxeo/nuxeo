@@ -45,7 +45,7 @@ public class StatsTask implements Runnable {
     protected final String repositoryName;
 
     public StatsTask(String repoName, DocumentRef rootDocRef,
-            boolean includeBlob, RepoStat instance) throws Exception {
+            boolean includeBlob, RepoStat instance) {
         this.repositoryName = repoName;
         this.rootDocRef = rootDocRef;
         this.includeBlob = includeBlob;
@@ -74,15 +74,8 @@ public class StatsTask implements Runnable {
         if (cmdInstance.isPoolFull()) {
             return null;
         }
-        StatsTask newTask;
-        try {
-            newTask = new StatsTask(repositoryName, root.getRef(), includeBlob,
-                    cmdInstance);
-        } catch (Exception e) {
-            log.error("Unable to start new task", e);
-            return null;
-        }
-        return newTask;
+        return new StatsTask(repositoryName, root.getRef(), includeBlob,
+                cmdInstance);
     }
 
     protected RepoStatInfo getInfo() {

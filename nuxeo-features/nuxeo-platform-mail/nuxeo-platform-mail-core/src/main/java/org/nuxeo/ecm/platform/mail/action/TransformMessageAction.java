@@ -66,7 +66,7 @@ public class TransformMessageAction implements MessageAction {
         schemas.put("files", filesSchema);
     }
 
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         if (log.isDebugEnabled()) {
             log.debug("Transforming message" + message.getSubject());
@@ -88,7 +88,11 @@ public class TransformMessageAction implements MessageAction {
             mailSchema.put("recipients", recipients);
         }
         if (message instanceof MimeMessage) {
-            processMimeMessage((MimeMessage) message);
+            try {
+                processMimeMessage((MimeMessage) message);
+            } catch (IOException e) {
+                throw new MessagingException(e.getMessage(), e);
+            }
         }
         mailSchema.put("text", text.toString());
         dcSchema.put("title", message.getSubject());
@@ -96,7 +100,8 @@ public class TransformMessageAction implements MessageAction {
         return true;
     }
 
-    private void processMimeMessage(MimeMessage message) throws MessagingException, IOException {
+    private void processMimeMessage(MimeMessage message)
+            throws MessagingException, IOException {
         Object object = message.getContent();
         if (object instanceof String) {
             addToTextMessage(message.getContent().toString(), true);
@@ -240,7 +245,7 @@ public class TransformMessageAction implements MessageAction {
         text.append(message);
     }
 
-    public void reset(ExecutionContext context) throws Exception {
+    public void reset(ExecutionContext context) {
         mailSchema.clear();
         dcSchema.clear();
         files.clear();

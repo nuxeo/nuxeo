@@ -40,18 +40,16 @@
 
 package org.nuxeo.theme.jsf.facelets.vendor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.faces.FacesException;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.theme.protocol.nxtheme.Connection;
-
-import com.sun.faces.util.FacesLogger;
 
 /**
  * Util methods for facelets management.
@@ -63,9 +61,6 @@ import com.sun.faces.util.FacesLogger;
 public class Util {
 
     public static final String LAST_MODIFIED_ERROR = "Error Checking Last Modified for ";
-
-    // Log instance for this class
-    private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
 
     public static long getLastModified(URL url) {
         long lastModified;
@@ -94,18 +89,10 @@ public class Util {
                 is = conn.getInputStream();
                 lastModified = conn.getLastModified();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new FacesException(LAST_MODIFIED_ERROR + url, e);
         } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (Exception e) {
-                    if (LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST, "Closing stream", e);
-                    }
-                }
-            }
+            IOUtils.closeQuietly(is);
         }
         return lastModified;
     }

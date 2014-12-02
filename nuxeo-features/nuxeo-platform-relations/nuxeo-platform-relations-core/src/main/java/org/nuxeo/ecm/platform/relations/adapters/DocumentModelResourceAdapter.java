@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -94,7 +95,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                     return null;
                 }
                 object = session.getDocument(ref);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.warn("Cannot get resource: " + resource, e);
             } finally {
                 if (sessionOpened) {

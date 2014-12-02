@@ -195,7 +195,7 @@ public class TracePrinter {
                 printHeading("end sub chain");
             }
             printLine(sb.toString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Nuxeo TracePrinter cannot write traces output", e);
         }
     }

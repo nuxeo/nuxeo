@@ -31,6 +31,7 @@ import org.jboss.seam.core.ConversationPropagation;
 import org.jboss.seam.core.Manager;
 import org.jboss.seam.servlet.ServletRequestSessionMap;
 import org.jboss.seam.web.ServletContexts;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.restlet.Filter;
@@ -126,7 +127,8 @@ public class SeamRestletFilter extends Filter {
             } else {
                 try {
                     seamRestlet.handle(request, response);
-                } catch (Exception e) {
+                } catch (Exception e) { // deals with interrupt below
+                    ExceptionUtils.checkInterrupt(e);
                     log.error("Restlet handling error", e);
                     response.setEntity(
                             "Error while calling Seam aware Restlet: "

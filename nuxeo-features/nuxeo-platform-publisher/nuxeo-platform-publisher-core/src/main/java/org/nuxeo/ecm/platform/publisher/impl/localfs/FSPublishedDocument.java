@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 
 import org.dom4j.Document;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.CoreIODocumentModelMarshaler;
+import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 public class FSPublishedDocument implements PublishedDocument {
 
@@ -103,19 +105,20 @@ public class FSPublishedDocument implements PublishedDocument {
         }
     }
 
-    public void persist(String containerPath) throws Exception {
+    public void persist(String containerPath) throws IOException {
         File output = new File(containerPath, sourceDocumentRef.toString());
         FileUtils.writeFile(output, xmlRepresentation);
         persistPath = output.getAbsolutePath();
     }
 
     public FSPublishedDocument(String server, DocumentModel doc)
-            throws Exception {
+            throws PublishingMarshalingException, DocumentException {
         this(server, doc, false);
     }
 
     public FSPublishedDocument(String server, DocumentModel doc,
-            boolean isPending) throws Exception {
+            boolean isPending) throws PublishingMarshalingException,
+            DocumentException {
 
         sourceRepositoryName = doc.getRepositoryName();
         sourceDocumentRef = doc.getRef();

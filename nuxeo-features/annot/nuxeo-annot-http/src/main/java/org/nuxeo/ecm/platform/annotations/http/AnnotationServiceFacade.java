@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
@@ -53,12 +54,8 @@ public class AnnotationServiceFacade {
     }
 
     protected AnnotationsService getService() throws AnnotationException {
-        if (service==null) {
-            try {
-                service = Framework.getService(AnnotationsService.class);
-            } catch (Exception e) {
-                throw new AnnotationException(e);
-            }
+        if (service == null) {
+            service = Framework.getService(AnnotationsService.class);
         }
         return service;
     }
@@ -79,7 +76,7 @@ public class AnnotationServiceFacade {
         try {
             RelationManager service = Framework.getService(RelationManager.class);
             graph = service.getTransientGraph(TRANSIENT_GRAPH_TYPE);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
         graph.add(statements);

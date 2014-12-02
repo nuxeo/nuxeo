@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth.oauth;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.LinkedHashMap;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
+import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthValidator;
 import net.oauth.SimpleOAuthValidator;
@@ -292,7 +294,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         OAuthValidator validator = getValidator();
         try {
             validator.validateMessage(message, accessor);
-        } catch (Exception e) {
+        } catch (OAuthException | URISyntaxException | IOException e) {
             log.error("Error while validating OAuth signature", e);
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
             httpResponse.sendError(errCode, "Can not validate signature");
@@ -353,7 +355,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
 
         try {
             validator.validateMessage(message, accessor);
-        } catch (Exception e) {
+        } catch (OAuthException | URISyntaxException | IOException e) {
             log.error("Error while validating OAuth signature", e);
             int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
             httpResponse.sendError(errCode, "Can not validate signature");
@@ -485,7 +487,8 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                             "No configured login information");
                     return null;
                 }
-            } catch (Exception e) {
+            } catch (OAuthException | URISyntaxException | IOException
+                    | LoginException e) {
                 log.error("Error while validating OAuth signature", e);
                 int errCode = OAuth.Problems.TO_HTTP_CODE.get(OAuth.Problems.SIGNATURE_INVALID);
                 httpResponse.sendError(errCode, "Can not validate signature");

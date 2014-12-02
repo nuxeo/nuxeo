@@ -199,7 +199,7 @@ public class DocumentListingActionsBean implements Serializable {
                 List<?> items = cProvider.getCurrentPage();
                 try {
                     documents = (List<DocumentModel>) items;
-                } catch (Exception e) {
+                } catch (ClassCastException e) {
                     throw new ClientException(e);
                 }
             }

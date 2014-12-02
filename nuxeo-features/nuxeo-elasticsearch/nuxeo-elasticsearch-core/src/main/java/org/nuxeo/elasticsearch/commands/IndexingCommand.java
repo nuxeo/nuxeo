@@ -206,13 +206,13 @@ public class IndexingCommand implements Serializable {
             } finally {
                 jp.close();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw ClientException.wrap(e);
         }
     }
 
     public static IndexingCommand fromJSON(CoreSession session, JsonParser jp)
-            throws Exception {
+            throws IOException {
 
         IndexingCommand cmd = new IndexingCommand();
 

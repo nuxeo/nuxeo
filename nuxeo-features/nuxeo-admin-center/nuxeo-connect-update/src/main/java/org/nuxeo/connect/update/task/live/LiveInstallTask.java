@@ -51,11 +51,7 @@ public class LiveInstallTask extends InstallTask {
 
     @Override
     protected void taskDone() throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).reload();
-        } catch (Exception e) {
-            throw new PackageException("Can not relaod service", e);
-        }
+        Framework.getService(ReloadService.class).reload();
         if (isRestartRequired()) {
             service.setPackageState(pkg, PackageState.INSTALLED);
         } else {
@@ -97,14 +93,10 @@ public class LiveInstallTask extends InstallTask {
      */
     @Deprecated
     protected static void reloadComponent(String name) throws PackageException {
-        try {
-            RegistrationInfoImpl ri = (RegistrationInfoImpl) Framework.getRuntime().getComponentManager().getRegistrationInfo(
-                    new ComponentName(name));
-            if (ri != null) {
-                ri.reload();
-            }
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload component: " + name, e);
+        RegistrationInfoImpl ri = (RegistrationInfoImpl) Framework.getRuntime().getComponentManager().getRegistrationInfo(
+                new ComponentName(name));
+        if (ri != null) {
+            ri.reload();
         }
     }
 

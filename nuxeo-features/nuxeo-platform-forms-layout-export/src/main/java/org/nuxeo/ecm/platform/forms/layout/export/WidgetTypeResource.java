@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
@@ -61,16 +60,11 @@ public class WidgetTypeResource {
 
     public WidgetTypeResource(String category) throws Exception {
         this.category = category;
-        try {
-            service = Framework.getService(LayoutStore.class);
-            widgetTypes = service.getWidgetTypeDefinitions(category);
-            // sort so that order is deterministic
-            Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(
-                    true));
-            widgetTypesByCat = getWidgetTypesByCategory();
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to initialize WebLayoutManager", e);
-        }
+        service = Framework.getService(LayoutStore.class);
+        widgetTypes = service.getWidgetTypeDefinitions(category);
+        // sort so that order is deterministic
+        Collections.sort(widgetTypes, new WidgetTypeDefinitionComparator(true));
+        widgetTypesByCat = getWidgetTypesByCategory();
     }
 
     protected Map<String, List<WidgetTypeDefinition>> getWidgetTypesByCategory() {

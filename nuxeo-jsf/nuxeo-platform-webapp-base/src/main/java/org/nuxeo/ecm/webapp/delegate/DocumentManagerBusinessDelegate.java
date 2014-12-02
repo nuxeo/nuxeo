@@ -107,13 +107,8 @@ public class DocumentManagerBusinessDelegate implements Serializable {
                 return null;
             }
             String serverName = serverLocation.getName();
-            try {
-                session = CoreInstance.openCoreSession(serverName);
-                log.debug("Opened session for repository " + serverName);
-            } catch (Exception e) {
-                throw new ClientException(
-                        "Error opening session for repository " + serverName, e);
-            }
+            session = CoreInstance.openCoreSession(serverName);
+            log.debug("Opened session for repository " + serverName);
             sessions.put(serverLocation, session);
         }
         return session;

@@ -66,13 +66,9 @@ public class ContentViewConfigurationActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    protected SchemaManager getSchemaManager() throws ClientException {
-        if ( schemaManager == null ){
-            try {
-                schemaManager = Framework.getService(SchemaManager.class);
-            } catch (Exception e) {
-                throw new ClientException("can NOT obtain schema manager", e);
-            }
+    protected SchemaManager getSchemaManager() {
+        if (schemaManager == null) {
+            schemaManager = Framework.getService(SchemaManager.class);
         }
         return schemaManager;
     }

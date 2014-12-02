@@ -44,7 +44,7 @@ public final class ElementFactory {
             element = (Element) Class.forName(className).newInstance();
             element.setElementType(elementType);
             uidManager.register(element);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Could not create element", e);
         }
         return element;

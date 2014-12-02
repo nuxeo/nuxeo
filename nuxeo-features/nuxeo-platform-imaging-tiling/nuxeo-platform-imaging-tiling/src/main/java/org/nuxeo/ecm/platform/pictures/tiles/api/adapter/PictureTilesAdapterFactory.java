@@ -45,14 +45,8 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
     public Object getAdapter(DocumentModel doc, Class itf) {
-        String blobProperty = null;
-        try {
-            PictureTilingService tilingService = Framework.getService(PictureTilingService.class);
-            blobProperty = tilingService.getBlobProperty(doc.getType());
-        } catch (Exception e) {
-            log.error("Unable to load PictureTilingService", e);
-        }
-
+        PictureTilingService tilingService = Framework.getService(PictureTilingService.class);
+        String blobProperty = tilingService.getBlobProperty(doc.getType());
         try {
             PictureTilesAdapter ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);
 

@@ -141,7 +141,7 @@ public class ThemePage {
         try {
             String[] nameEl = themePage.split("/");
             return nameEl[1];
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException(String.format(
                     "Invalid theme page name '%s': cannot retrieve page name",
                     themePage));
@@ -155,7 +155,7 @@ public class ThemePage {
         try {
             String[] nameEl = themePage.split("/");
             return nameEl[0];
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException(String.format(
                     "Invalid theme page name '%s': cannot retrieve theme name",
                     themePage));

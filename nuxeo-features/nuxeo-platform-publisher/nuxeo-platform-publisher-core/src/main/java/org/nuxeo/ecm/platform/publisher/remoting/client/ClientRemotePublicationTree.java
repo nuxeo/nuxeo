@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * {@link PublicationTree} implementation that points to a remote tree on a
  * remote server.
- * 
+ *
  * @author tiry
  */
 public class ClientRemotePublicationTree extends AbstractRemotableTree
@@ -155,9 +155,9 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
             marshaler = new DefaultMarshaler();
         } else {
             try {
-                marshaler = (RemotePublisherMarshaler) this.getClass().forName(
+                marshaler = (RemotePublisherMarshaler) Class.forName(
                         marshalerClassName).newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 marshaler = new DefaultMarshaler();
             }
         }
@@ -169,19 +169,13 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree
                 userName, password, marshaler);
 
         Map<String, String> remoteParameters = new HashMap<String, String>();
-        try {
             Map<String, String> rTree = treeService.initRemoteSession(
                     targetTreeName, remoteParameters);
 
-            serverSessionId = rTree.get("sessionId");
-            this.title = rTree.get("title");
-            rootPath = rTree.get("path");
-            nodeType = rTree.get("nodeType");
-
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Failed to initialized remote Tree session", e);
-        }
+        serverSessionId = rTree.get("sessionId");
+        this.title = rTree.get("title");
+        rootPath = rTree.get("path");
+        nodeType = rTree.get("nodeType");
 
         PublicationNode basicRootNode = new BasicPublicationNode(nodeType,
                 rootPath, this.title, configName, sessionId);

@@ -24,11 +24,10 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.IMAPS;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.LEAVE_ON_SERVER_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PROTOCOL_TYPE_KEY;
 
-import javax.mail.Message;
 import javax.mail.Flags.Flag;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 
 /**
@@ -36,10 +35,8 @@ import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
  */
 public class EndAction extends AbstractMailAction {
 
-    private static final Log log = LogFactory.getLog(EndAction.class);
-
     @Override
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) {
         try {
             Message message = context.getMessage();
             // erase marker: mail has been treated
@@ -53,12 +50,12 @@ public class EndAction extends AbstractMailAction {
 //            log.debug(LEAVE_ON_SERVER_KEY + ": " + leaveOnServer);
             if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
                 message.setFlag(Flag.SEEN, true);
-                
+
             } else {
                 message.setFlag(Flag.DELETED, true);
             }
             return true;
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             return false;
         }
     }

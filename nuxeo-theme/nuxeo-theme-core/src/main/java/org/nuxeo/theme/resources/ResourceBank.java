@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.resources;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ResourceBank implements Type {
         byte[] status;
         try {
             status = Utils.fetchUrl(new URL(src));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             return false;
         }
         return status != null && "OK".equals(new String(status));
@@ -92,7 +93,7 @@ public class ResourceBank implements Type {
         log.debug("Loading THEME " + typeName + " from: " + src);
         try {
             return Utils.fetchUrl(new URL(src));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             log.error("Could not retrieve RESOURCE: " + src
                     + " from THEME BANK: " + name);
         }
@@ -105,7 +106,7 @@ public class ResourceBank implements Type {
         String list = "";
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             log.error("Could not retrieve image list: " + src
                     + " from THEME BANK: " + name);
             return images;
@@ -124,7 +125,7 @@ public class ResourceBank implements Type {
         String list = "";
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             log.error("Could not retrieve collection list: " + src
                     + " from THEME BANK: " + name);
             return paths;
@@ -142,7 +143,7 @@ public class ResourceBank implements Type {
         String list = "";
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             log.error("Could not retrieve skin list: " + src
                     + " from THEME BANK: " + name);
             return skins;
@@ -164,7 +165,7 @@ public class ResourceBank implements Type {
         String list = "";
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             log.error("Could not retrieve the style list: " + src
                     + " from THEME BANK: " + name);
             return styles;
@@ -187,7 +188,7 @@ public class ResourceBank implements Type {
         String list = "";
         try {
             list = new String(Utils.fetchUrl(new URL(src)));
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             log.error("Could not retrieve the preset list: " + src
                     + " from THEME BANK: " + name);
             return presets;

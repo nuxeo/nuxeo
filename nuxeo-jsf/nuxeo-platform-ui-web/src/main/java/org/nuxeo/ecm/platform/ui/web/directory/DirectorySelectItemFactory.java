@@ -46,7 +46,7 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
             try {
                 DirectoryService service = DirectoryHelper.getDirectoryService();
                 directorySession = service.open(dirName);
-            } catch (Exception e) {
+            } catch (DirectoryException e) {
                 log.error(String.format("Error when retrieving directory %s",
                         dirName), e);
             }

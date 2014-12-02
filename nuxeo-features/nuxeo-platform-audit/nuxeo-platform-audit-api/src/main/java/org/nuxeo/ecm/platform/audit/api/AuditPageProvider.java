@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -87,13 +88,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     @SuppressWarnings("unchecked")
     @Override
     public List<LogEntry> getCurrentPage() {
-        AuditReader reader;
-        try {
-            reader = Framework.getService(AuditReader.class);
-        } catch (Exception e) {
-            return null;
-        }
-
+        AuditReader reader = Framework.getService(AuditReader.class);
         buildAuditQuery(true);
         List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(
                 auditQuery, auditQueryParams, (int) getCurrentPageIndex() + 1,
@@ -239,7 +234,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                                         fieldDef[fidx].getName());
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (ClientException e) {
                         throw new ClientRuntimeException(e);
                     }
 
@@ -344,14 +339,7 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     public long getResultsCount() {
         if (resultsCount == AbstractPageProvider.UNKNOWN_SIZE) {
             buildAuditQuery(false);
-
-            AuditReader reader;
-            try {
-                reader = Framework.getService(AuditReader.class);
-            } catch (Exception e) {
-                return 0;
-            }
-
+            AuditReader reader = Framework.getService(AuditReader.class);
             List<Long> res = (List<Long>) reader.nativeQuery(
                     "select count(log.id) " + auditQuery, auditQueryParams, 1,
                     20);

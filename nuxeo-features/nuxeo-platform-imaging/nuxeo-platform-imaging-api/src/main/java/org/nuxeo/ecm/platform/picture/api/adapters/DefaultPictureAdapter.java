@@ -106,7 +106,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         }
         try {
             setMetadata();
-        } catch (Exception e) {
+        } catch (IOException | ClientException e) {
             log.debug("An error occured while trying to set metadata for "
                     + filename, e);
         }
@@ -165,7 +165,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
                     doc.getProperty(xpath + "height").setValue(width);
                     doc.getProperty(xpath + "width").setValue(height);
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Rotation Failed", e);
             }
         }

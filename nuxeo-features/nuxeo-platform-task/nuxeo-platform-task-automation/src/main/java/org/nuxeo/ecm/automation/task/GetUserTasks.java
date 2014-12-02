@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -60,7 +61,7 @@ public class GetUserTasks {
     protected TaskService taskService;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException {
         List<Task> tasks = taskService.getCurrentTaskInstances(repo);
         if (tasks == null) {
             return null;
@@ -70,7 +71,7 @@ public class GetUserTasks {
             DocumentModel doc = null;
             try {
                 doc = taskService.getTargetDocumentModel(task, repo);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.warn("Cannot get doc for task " + task.getId(), e);
             }
             if (doc == null) {

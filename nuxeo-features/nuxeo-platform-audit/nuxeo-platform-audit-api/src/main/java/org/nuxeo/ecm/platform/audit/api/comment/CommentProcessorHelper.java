@@ -16,6 +16,7 @@ package org.nuxeo.ecm.platform.audit.api.comment;
 import java.util.List;
 
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -63,7 +64,8 @@ public class CommentProcessorHelper {
 
             DocumentRef docRef = new IdRef(strDocRef);
             targetDocExists = documentManager.exists(docRef);
-        } catch (Exception e) {
+        } catch (ClientException e) {
+            // ignore
         }
 
         if (targetDocExists) {
@@ -92,7 +94,7 @@ public class CommentProcessorHelper {
         try {
             String repoName = oldComment.split(":")[0];
             String strDocRef = oldComment.split(":")[1];
-            
+
             // test if strDocRef is a document uuid to continue
             if (IdUtils.isValidUUID(strDocRef)) {
                 DocumentRef docRef = new IdRef(strDocRef);
@@ -111,7 +113,7 @@ public class CommentProcessorHelper {
                     linkedDoc.setBrokenDocument(false);
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             // not the expected format or broken document
         }
 

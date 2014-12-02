@@ -122,7 +122,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
             saveFileToDocument(filename, dm, blobPropertyName,
                     filenamePropertyName, is);
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             handleError(res, e);
         }
     }

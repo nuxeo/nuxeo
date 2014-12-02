@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -45,7 +46,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
         try {
             NuxeoOAuth2ServiceProvider provider = getEntry(serviceName, null);
             return provider;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to read provider from Directory backend", e);
             return null;
         }
@@ -85,7 +86,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
     }
 
     protected NuxeoOAuth2ServiceProvider getEntry(String serviceName,
-            Set<String> ftFilter) throws Exception {
+            Set<String> ftFilter) throws ClientException {
 
         // normalize "empty" service name
         serviceName = preProcessServiceName(serviceName);

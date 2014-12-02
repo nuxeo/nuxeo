@@ -36,9 +36,12 @@ public class MetadataUtilsDescriptor {
         return name;
     }
 
-    public MetadataUtils getNewInstance() throws InstantiationException,
-            IllegalAccessException {
-        return adapterClass.newInstance();
+    public MetadataUtils getNewInstance() {
+        try {
+            return adapterClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

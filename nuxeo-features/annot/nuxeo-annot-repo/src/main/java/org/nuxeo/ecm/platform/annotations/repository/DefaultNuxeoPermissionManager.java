@@ -21,12 +21,11 @@ package org.nuxeo.ecm.platform.annotations.repository;
 
 import java.net.URI;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryService;
 import org.nuxeo.ecm.platform.annotations.service.PermissionManager;
@@ -39,18 +38,12 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultNuxeoPermissionManager implements PermissionManager {
 
-    private static final Log log = LogFactory.getLog(DefaultNuxeoPermissionManager.class);
-
     private AnnotationsRepositoryService service;
 
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
 
     public DefaultNuxeoPermissionManager() {
-        try {
-            service = Framework.getService(AnnotationsRepositoryService.class);
-        } catch (Exception e) {
-            log.error(e);
-        }
+        service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
     public boolean check(NuxeoPrincipal user, String permission, URI uri)
@@ -59,7 +52,7 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.check(user, permission, model);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
     }

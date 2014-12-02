@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 import org.jboss.seam.Seam;
 import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.Manager;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.ui.web.rest.FancyURLRequestWrapper;
 
 public class SeamJsfSessionManager extends DefaultSessionManager {
@@ -42,7 +43,8 @@ public class SeamJsfSessionManager extends DefaultSessionManager {
         try {
             Seam.invalidateSession();
         }
-        catch (Exception e) {
+        catch (Exception e) { // TODO what is caught here?
+            ExceptionUtils.checkInterrupt(e);
             super.onBeforeSessionInvalidate(request);
         }
     }

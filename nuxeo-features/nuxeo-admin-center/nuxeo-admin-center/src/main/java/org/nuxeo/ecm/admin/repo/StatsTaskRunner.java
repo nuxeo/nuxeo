@@ -91,7 +91,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
                             }
                         }
                     }
-                } catch (Throwable t) {
+                } catch (ClientException t) {
                     log.warn("Unable to find Blob info for doc " + doc.getId(), t);
                 }
             }
@@ -114,7 +114,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
         try {
             DocumentModel root = session.getDocument(rootref);
             recurse(root);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while running StatsTaskRunner", e);
             throw new ClientException(e);
         }

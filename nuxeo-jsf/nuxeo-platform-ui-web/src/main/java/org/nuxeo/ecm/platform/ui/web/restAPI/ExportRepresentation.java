@@ -80,20 +80,18 @@ public abstract class ExportRepresentation extends OutputRepresentation {
      * @param documentManager a session
      * @param root the root of the export
      * @return the document reader
-     * @throws Exception
      */
     protected abstract DocumentReader makeDocumentReader(
-            CoreSession documentManager, DocumentModel root) throws Exception;
+            CoreSession documentManager, DocumentModel root) throws ClientException;
 
     /**
      * Create a {@link DocumentWriter} for the export.
      *
      * @param outputStream the stream to use
      * @return the document writer
-     * @throws Exception
      */
     protected abstract DocumentWriter makeDocumentWriter(
-            OutputStream outputStream) throws Exception;
+            OutputStream outputStream) throws IOException;
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
@@ -118,7 +116,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
                 pipe.setReader(documentReader);
                 pipe.setWriter(documentWriter);
                 pipe.run();
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Error during export", e);
                 throw new IOException("Error during export", e);
             } finally {

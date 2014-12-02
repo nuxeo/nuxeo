@@ -15,9 +15,10 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_AUTOMATION;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_ENTITY;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.client.AdapterFactory;
 import org.nuxeo.ecm.automation.client.AdapterManager;
-import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginCallback;
 import org.nuxeo.ecm.automation.client.LoginInfo;
@@ -96,7 +97,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return adapterManager.getAdapter(session, adapterType);
     }
 
-    protected OperationRegistry connect(Connector connector) {
+    protected OperationRegistry connect(Connector connector) throws IOException {
         Request req = new Request(Request.GET, url);
         req.put("Accept", CTYPE_AUTOMATION);
         // TODO handle authorization failure
@@ -109,7 +110,7 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         registry = null;
     }
 
-    public Session getSession() {
+    public Session getSession() throws IOException {
         Connector connector = newConnector();
         if (requestInterceptor != null) {
             connector = new ConnectorHandler(connector, requestInterceptor);
@@ -135,20 +136,22 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return login(connector);
     }
 
-    public Session getSession(final String username, final String password) {
+    public Session getSession(final String username, final String password)
+            throws IOException {
         return getSession(new BasicAuthInterceptor(username, password));
     }
 
-    public Session getSession(final String token) {
+    public Session getSession(final String token) throws IOException {
         return getSession(new TokenAuthInterceptor(token));
     }
 
-    protected Session getSession(RequestInterceptor interceptor) {
+    protected Session getSession(RequestInterceptor interceptor)
+            throws IOException {
         setRequestInterceptor(interceptor);
         return getSession();
     }
 
-    public Session getSession(TokenCallback cb) {
+    public Session getSession(TokenCallback cb) throws IOException {
         String token = cb.getLocalToken();
         if (token == null) {
             token = cb.getRemoteToken(cb.getTokenParams());
@@ -157,37 +160,12 @@ public abstract class AbstractAutomationClient implements AutomationClient {
         return getSession(token);
     }
 
-    public void getSession(final String username, final String password,
-            final AsyncCallback<Session> cb) {
-        setBasicAuth(username, password);
-        getSession(cb);
-    }
-
     @Override
     public Session getSession(LoginCallback loginCb) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void getSession(LoginCallback loginCb, AsyncCallback<Session> cb) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void getSession(final AsyncCallback<Session> cb) {
-        asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    Session session = getSession();
-                    // TODO handle failures
-                    cb.onSuccess(session);
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    protected Session login(Connector connector) {
+    protected Session login(Connector connector) throws IOException {
         Request request = new Request(Request.POST, url
                 + getRegistry().getPath("login"));
         request.put("Accept", CTYPE_ENTITY);

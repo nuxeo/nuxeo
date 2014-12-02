@@ -200,7 +200,7 @@ public class JsonMarshalling {
     }
 
     public static OperationRegistry readRegistry(String content)
-            throws Exception {
+            throws IOException {
         HashMap<String, OperationDocumentation> ops = new HashMap<String, OperationDocumentation>();
         HashMap<String, OperationDocumentation> chains = new HashMap<String, OperationDocumentation>();
         HashMap<String, String> paths = new HashMap<String, String>();
@@ -227,7 +227,7 @@ public class JsonMarshalling {
     }
 
     private static void readOperations(JsonParser jp,
-            Map<String, OperationDocumentation> ops) throws Exception {
+            Map<String, OperationDocumentation> ops) throws IOException {
         jp.nextToken(); // skip [
         JsonToken tok = jp.nextToken();
         while (tok != null && tok != JsonToken.END_ARRAY) {
@@ -238,7 +238,7 @@ public class JsonMarshalling {
     }
 
     private static void readChains(JsonParser jp,
-            Map<String, OperationDocumentation> chains) throws Exception {
+            Map<String, OperationDocumentation> chains) throws IOException {
         jp.nextToken(); // skip [
         JsonToken tok = jp.nextToken();
         while (tok != null && tok != JsonToken.END_ARRAY) {
@@ -249,7 +249,7 @@ public class JsonMarshalling {
     }
 
     private static void readPaths(JsonParser jp, Map<String, String> paths)
-            throws Exception {
+            throws IOException {
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -264,7 +264,7 @@ public class JsonMarshalling {
 
     }
 
-    public static Object readEntity(String content) throws Exception {
+    public static Object readEntity(String content) throws IOException {
         if (content.length() == 0) { // void response
             return null;
         }
@@ -308,7 +308,7 @@ public class JsonMarshalling {
         return jm.read(jp);
     }
 
-    public static String writeRequest(OperationRequest req) throws Exception {
+    public static String writeRequest(OperationRequest req) throws IOException {
         StringWriter writer = new StringWriter();
         Object input = req.getInput();
         JsonGenerator jg = factory.createJsonGenerator(writer);
@@ -344,7 +344,7 @@ public class JsonMarshalling {
     }
 
     public static void writeMap(JsonGenerator jg, Map<String, Object> map)
-            throws Exception {
+            throws IOException {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object obj = entry.getValue();
             if (obj instanceof String) {

@@ -229,14 +229,9 @@ public final class Functions {
         return principal.isMemberOf(groupName);
     }
 
-    private static UserManager getUserManager() throws ClientException {
+    private static UserManager getUserManager() {
         if (userManager == null) {
-            try {
-                // XXX this should not use a static variable to do the caching
-                userManager = Framework.getService(UserManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            userManager = Framework.getService(UserManager.class);
         }
         return userManager;
     }
@@ -301,7 +296,7 @@ public final class Functions {
             String groupLabel = group.getLabel();
             String groupName = group.getName();
             return groupDisplayName(groupName, groupLabel);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             return groupId;
         }
     }
@@ -702,39 +697,32 @@ public final class Functions {
 
     public static String userUrl(String patternName, String username,
             String viewId, boolean newConversation, HttpServletRequest req) {
-        try {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("username", username);
+        DocumentView docView = new DocumentViewImpl(null, viewId, parameters);
 
-            Map<String, String> parameters = new HashMap<String, String>();
-            parameters.put("username", username);
-            DocumentView docView = new DocumentViewImpl(null, viewId,
-                    parameters);
-
-            // generate url
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            if (patternName == null || patternName.length() == 0) {
-                patternName = service.getDefaultPatternName();
-            }
-
-            String baseURL = null;
-            if (req == null) {
-                baseURL = BaseURL.getBaseURL();
-            } else {
-                baseURL = BaseURL.getBaseURL(req);
-            }
-
-            String url = service.getUrlFromDocumentView(patternName, docView,
-                    baseURL);
-
-            // pass conversation info if needed
-            if (!newConversation && url != null) {
-                url = RestHelper.addCurrentConversationParameters(url);
-            }
-
-            return url;
-        } catch (Exception e) {
-            log.error("Could not generate user url", e);
+        // generate url
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        if (patternName == null || patternName.length() == 0) {
+            patternName = service.getDefaultPatternName();
         }
-        return null;
+
+        String baseURL = null;
+        if (req == null) {
+            baseURL = BaseURL.getBaseURL();
+        } else {
+            baseURL = BaseURL.getBaseURL(req);
+        }
+
+        String url = service.getUrlFromDocumentView(patternName, docView,
+                baseURL);
+
+        // pass conversation info if needed
+        if (!newConversation && url != null) {
+            url = RestHelper.addCurrentConversationParameters(url);
+        }
+
+        return url;
     }
 
     public static List<Object> combineLists(List<? extends Object>... lists) {

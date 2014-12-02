@@ -46,12 +46,7 @@ public class SimpleExternalDocumentModelFactory extends
             PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
 
-        PathSegmentService pss;
-        try {
-            pss = Framework.getService(PathSegmentService.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         doc.setPathInfo(targetNode.getPath(), "remote_doc_" + pss.generatePathSegment(doc));
         // We don't want to erase the current version
         final ScopedMap ctxData = doc.getContextData();

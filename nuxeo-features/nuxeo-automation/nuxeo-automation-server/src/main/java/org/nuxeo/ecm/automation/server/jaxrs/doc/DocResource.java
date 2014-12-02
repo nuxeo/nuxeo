@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.io.yaml.YamlWriter;
@@ -70,7 +71,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         try {
             service = Framework.getLocalService(AutomationService.class);
             ops = service.getDocumentation();
-        } catch (Exception e) {
+        } catch (OperationException e) {
             log.error("Failed to get automation service", e);
             throw WebException.wrap(e);
         }

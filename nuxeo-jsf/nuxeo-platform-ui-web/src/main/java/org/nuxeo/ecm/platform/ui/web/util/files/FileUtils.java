@@ -84,8 +84,6 @@ public class FileUtils {
                     filename), e);
         } catch (IOException e) {
             log.error(e);
-        } catch (Exception e) {
-            log.error(e);
         }
         return blob;
     }

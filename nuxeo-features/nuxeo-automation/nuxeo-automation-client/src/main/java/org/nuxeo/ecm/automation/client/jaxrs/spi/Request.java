@@ -17,12 +17,14 @@ import static org.nuxeo.ecm.automation.client.Constants.CTYPE_MULTIPART_MIXED;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.BodyPart;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -105,7 +107,7 @@ public class Request extends HashMap<String, String> {
      * {@link RemoteException} if server sent an error.
      */
     public Object handleResult(int status, String ctype, String disp,
-            InputStream stream) throws Exception {
+            InputStream stream) throws RemoteException, IOException {
         if (status == 204) { // no content
             return null;
         } else if (status >= 400) {
@@ -129,7 +131,7 @@ public class Request extends HashMap<String, String> {
     }
 
     protected static Blobs readBlobs(String ctype, InputStream in)
-            throws Exception {
+            throws IOException {
         Blobs files = new Blobs();
         // save the stream to a temporary file
         File file = IOUtils.copyToTempFile(in);
@@ -144,10 +146,12 @@ public class Request extends HashMap<String, String> {
                 files.add(readBlob(part.getContentType(), fname,
                         part.getInputStream()));
             }
+        } catch (MessagingException e) {
+            throw new IOException(e);
         } finally {
             try {
                 fin.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
             }
             file.delete();
         }
@@ -155,7 +159,7 @@ public class Request extends HashMap<String, String> {
     }
 
     protected static Blob readBlob(String ctype, String fileName, InputStream in)
-            throws Exception {
+            throws IOException {
         File file = IOUtils.copyToTempFile(in);
         file.deleteOnExit();
         FileBlob blob = new FileBlob(file);
@@ -175,13 +179,13 @@ public class Request extends HashMap<String, String> {
     }
 
     protected void handleException(int status, String ctype, InputStream stream)
-            throws Exception {
+            throws RemoteException, IOException {
         if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             String content = IOUtils.read(stream);
             RemoteException e = null;
             try {
                 e = ExceptionMarshaller.readException(content);
-            } catch (Throwable t) {
+            } catch (IOException t) {
                 throw new RemoteException(status, "ServerError",
                         "Server Error", content);
             }

@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.automation.client;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
 
 /**
@@ -46,37 +48,25 @@ public interface AutomationClient {
     /**
      * Creates a new session. If no interceptors configured connect anonymously.
      */
-    Session getSession();
-
-    /**
-     * Creates a new session. If no interceptors configured connect anonymously.
-     */
-    void getSession(AsyncCallback<Session> cb);
+    Session getSession() throws IOException;
 
     /**
      * Create a new session using the given login callback to gather login info.
      * The given callback will be notified after the session is created.
      */
-    Session getSession(LoginCallback loginCb);
-
-    /**
-     * Create asynchronously a new session using the given login callback to
-     * gather login info. The given callback will be notified after the session
-     * is created.
-     */
-    void getSession(LoginCallback loginCb, AsyncCallback<Session> cb);
+    Session getSession(LoginCallback loginCb) throws IOException;
 
     /**
      * Creates a new session using the given login.
      */
-    Session getSession(String username, String password);
+    Session getSession(String username, String password) throws IOException;
 
     /**
      * Creates a new session using the given token.
      *
      * @since 5.7
      */
-    Session getSession(String token);
+    Session getSession(String token) throws IOException;
 
     /**
      * Creates a new session using the given token callback by following these
@@ -94,13 +84,7 @@ public interface AutomationClient {
      *
      * @since 5.7
      */
-    Session getSession(TokenCallback cb);
-
-    /**
-     * Creates asynchronously a new session using the given login. The given
-     * callback will be notified after the session is created.
-     */
-    void getSession(String username, String password, AsyncCallback<Session> cb);
+    Session getSession(TokenCallback cb) throws IOException;
 
     /**
      * Adapts the given object to the given type. Return the adapter instance if

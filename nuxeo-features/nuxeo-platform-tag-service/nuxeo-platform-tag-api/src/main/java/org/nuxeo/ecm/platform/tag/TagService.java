@@ -41,7 +41,7 @@ public interface TagService {
      *
      * @return true if the underlying repository supports the tag feature
      */
-    boolean isEnabled() throws ClientException;
+    boolean isEnabled();
 
     /**
      * Tags a document with a given tag.

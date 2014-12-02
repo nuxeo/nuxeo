@@ -40,18 +40,14 @@ public class DocumentTypeWriter extends AbstractTypeDefWriter implements
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        try {
-            JsonGenerator jg = getGenerator(entityStream);
-            jg.writeStartObject();
-            writeDocType(jg, docType, true);
-            jg.writeEndObject();
-            // flush
-            jg.flush();
-            jg.close();
-            entityStream.flush();
-        } catch (Exception e) {
-            throw new IOException("Failed to return types as JSON", e);
-        }
+        JsonGenerator jg = getGenerator(entityStream);
+        jg.writeStartObject();
+        writeDocType(jg, docType, true);
+        jg.writeEndObject();
+        // flush
+        jg.flush();
+        jg.close();
+        entityStream.flush();
     }
 
     @Override

@@ -66,7 +66,7 @@ public class IMImageUtils implements ImageUtils {
                 Blob targetBlob = new FileBlob(targetFile);
                 Framework.trackFile(targetFile, targetBlob);
                 return targetBlob;
-            } catch (Exception e) {
+            } catch (CommandNotAvailable | CommandException | IOException e) {
                 log.error("ImageMagick failed on command: " + commandName, e);
                 return null;
             } finally {
@@ -76,7 +76,8 @@ public class IMImageUtils implements ImageUtils {
             }
         }
 
-        protected void makeFiles(Blob blob, String targetExt) throws Exception {
+        protected void makeFiles(Blob blob, String targetExt)
+                throws CommandNotAvailable, CommandException, IOException {
             sourceFile = BlobHelper.getFileFromBlob(blob);
 
             // check extension
@@ -126,7 +127,8 @@ public class IMImageUtils implements ImageUtils {
             return tmpFile;
         }
 
-        public abstract void callImageMagick() throws Exception;
+        public abstract void callImageMagick() throws CommandNotAvailable,
+                CommandException;
     }
 
     @Override
@@ -134,7 +136,8 @@ public class IMImageUtils implements ImageUtils {
             final int height) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable,
+                    CommandException {
                 ImageCropper.crop(sourceFile.getAbsolutePath(),
                         targetFile.getAbsolutePath(), width, height, x, y);
             }
@@ -146,7 +149,8 @@ public class IMImageUtils implements ImageUtils {
             final int height, final int depth) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable,
+                    CommandException {
                 ImageResizer.resize(sourceFile.getAbsolutePath(),
                         targetFile.getAbsolutePath(), width, height, depth);
             }

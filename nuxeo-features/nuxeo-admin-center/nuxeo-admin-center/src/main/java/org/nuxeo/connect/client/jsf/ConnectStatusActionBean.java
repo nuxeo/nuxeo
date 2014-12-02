@@ -40,7 +40,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.status.ConnectUpdateStatusInfo;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
@@ -51,6 +50,7 @@ import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
 import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
@@ -233,7 +233,7 @@ public class ConnectStatusActionBean implements Serializable {
         packageToUpload.transferTo(tmpFile);
         try {
             pus.addPackage(tmpFile);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.warn(e, e);
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
@@ -278,27 +278,22 @@ public class ConnectStatusActionBean implements Serializable {
     @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (connectionStatusCache == null) {
-            try {
-                if (!isRegistred()) {
-                    connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
-                } else {
-                    if (isConnectBannerEnabled() && isConnectServerReachable()) {
-                        if (getStatus().isError()) {
-                            connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
-                        } else {
-                            if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
-                                connectionStatusCache = ConnectUpdateStatusInfo.ok();
-                            } else {
-                                connectionStatusCache = ConnectUpdateStatusInfo.notValid();
-                            }
-                        }
-                    } else {
+            if (!isRegistred()) {
+                connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
+            } else {
+                if (isConnectBannerEnabled() && isConnectServerReachable()) {
+                    if (getStatus().isError()) {
                         connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
+                    } else {
+                        if (ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK) {
+                            connectionStatusCache = ConnectUpdateStatusInfo.ok();
+                        } else {
+                            connectionStatusCache = ConnectUpdateStatusInfo.notValid();
+                        }
                     }
+                } else {
+                    connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
                 }
-            } catch (Exception e) {
-                log.error(e);
-                connectionStatusCache = null;
             }
         }
         return connectionStatusCache;

@@ -49,6 +49,7 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
@@ -924,7 +925,6 @@ public class UIEditableList extends UIInput implements NamingContainer,
             rows = getRowCount();
         }
 
-        Exception exception = null;
         Object requestMapValue = saveRequestMapModelValue();
         try {
 
@@ -960,16 +960,11 @@ public class UIEditableList extends UIInput implements NamingContainer,
                 }
 
             }
-        } catch (Exception e) {
-            exception = e;
+        } catch (Exception e) { // TODO what is caught here?
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
-        }
-        if (exception != null) {
-            if (exception instanceof RuntimeException) {
-                throw (RuntimeException) exception;
-            }
         }
 
         return false;
@@ -1143,7 +1138,6 @@ public class UIEditableList extends UIInput implements NamingContainer,
 
     protected final void processFacetsAndChildren(final FacesContext context,
             final PhaseId phaseId) {
-        Exception exception = null;
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         int end = getRowCount();
@@ -1167,16 +1161,11 @@ public class UIEditableList extends UIInput implements NamingContainer,
                     break;
                 }
             }
-        } catch (Exception e) {
-            exception = e;
+        } catch (Exception e) { // TODO what is caught here?
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
-        }
-        if (exception != null) {
-            if (exception instanceof RuntimeException) {
-                throw (RuntimeException) exception;
-            }
         }
     }
 
@@ -1229,14 +1218,14 @@ public class UIEditableList extends UIInput implements NamingContainer,
                         UIComponent.getCompositeComponentParent(this));
                 callback.invokeContextCallback(context, this);
                 return true;
-            } catch (Exception e) {
+            } catch (Exception e) { // TODO what is caught here?
+                ExceptionUtils.checkInterrupt(e);
                 throw new FacesException(e);
             } finally {
                 this.popComponentFromEL(context);
             }
         }
 
-        Exception exception = null;
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
         int end = getRowCount();
@@ -1255,16 +1244,11 @@ public class UIEditableList extends UIInput implements NamingContainer,
                     break;
                 }
             }
-        } catch (Exception e) {
-            exception = e;
+        } catch (Exception e) { // TODO what is caught here?
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             setRowIndex(oldIndex);
             restoreRequestMapModelValue(requestMapValue);
-        }
-        if (exception != null) {
-            if (exception instanceof RuntimeException) {
-                throw (RuntimeException) exception;
-            }
         }
 
         return found;

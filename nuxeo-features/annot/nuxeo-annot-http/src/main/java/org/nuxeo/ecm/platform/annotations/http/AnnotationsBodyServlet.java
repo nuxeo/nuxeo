@@ -43,7 +43,7 @@ public class AnnotationsBodyServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             facade = new AnnotationServiceFacade();
-        } catch (Exception e) {
+        } catch (AnnotationException e) {
             throw new ServletException(e);
         }
     }

@@ -204,11 +204,7 @@ public class TilingPreviewPanel extends Composite implements
     }
 
     private void decorate() {
-        try {
-            controller.updateAnnotationDecoration();
-        } catch (Exception e) {
-            // do nothing
-        }
+        controller.updateAnnotationDecoration();
     }
 
     private void resetView() {

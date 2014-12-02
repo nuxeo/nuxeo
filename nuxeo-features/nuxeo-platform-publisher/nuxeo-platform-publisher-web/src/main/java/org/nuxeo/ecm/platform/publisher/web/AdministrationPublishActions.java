@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,8 +37,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
@@ -140,35 +137,18 @@ public class AdministrationPublishActions extends AbstractPublishActions
     protected DocumentTreeNode getDocumentTreeNode(DocumentModel documentModel) {
         DocumentTreeNode documentTreeNode = null;
         if (documentModel != null) {
-            Filter filter = null;
-            Sorter sorter = null;
-            try {
-                filter = getTreeManager().getFilter(
-                        PUBLICATION_TREE_PLUGIN_NAME);
-                sorter = getTreeManager().getSorter(
-                        PUBLICATION_TREE_PLUGIN_NAME);
-            } catch (Exception e) {
-                log.error(
-                        "Could not fetch filter, sorter or node type for tree ",
-                        e);
-            }
-
+            Filter filter = getTreeManager().getFilter(PUBLICATION_TREE_PLUGIN_NAME);
+            Sorter sorter = getTreeManager().getSorter(PUBLICATION_TREE_PLUGIN_NAME);
             documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
                     sorter);
         }
-
         return documentTreeNode;
     }
 
     protected TreeManager getTreeManager() {
         if (treeManager == null) {
-            try {
-                treeManager = Framework.getService(TreeManager.class);
-            } catch (Exception e) {
-                log.error("Could not fetch Tree Manager ", e);
-            }
+            treeManager = Framework.getService(TreeManager.class);
         }
-
         return treeManager;
     }
 
@@ -211,12 +191,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
     @Override
     protected DocumentModel getParentDocument(DocumentModel documentModel)
             throws ClientException {
-        try {
-            return documentManager.getDocument(documentModel.getParentRef());
-        } catch (Exception e) {
-            log.error("Error building path", e);
-        }
-        return null;
+        return documentManager.getDocument(documentModel.getParentRef());
     }
 
 }

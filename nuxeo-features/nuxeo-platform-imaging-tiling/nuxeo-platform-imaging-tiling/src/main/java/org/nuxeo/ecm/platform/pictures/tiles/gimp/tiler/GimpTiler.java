@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.gimp.tiler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class GimpTiler extends BasePictureTiler {
         try {
             result = exec("python-fu-nx-tiles", inputFilePath, outputDirPath,
                     tileWidth, tileHeight, maxTiles, xCenter, yCenter);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException("Error while calling gimp command line",
                     e);
         }
@@ -91,7 +92,7 @@ public class GimpTiler extends BasePictureTiler {
 
     protected Map<String, String> exec(String procName, String inputFilePath,
             String outputPath, int tileX, int tileY, int nbTiles,
-            int centerXTile, int centerYTile) throws Exception {
+            int centerXTile, int centerYTile) throws IOException {
 
         List<Object> params = new ArrayList<Object>();
 

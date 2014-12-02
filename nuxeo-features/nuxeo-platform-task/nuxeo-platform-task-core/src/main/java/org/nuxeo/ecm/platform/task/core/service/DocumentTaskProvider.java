@@ -266,8 +266,7 @@ public class DocumentTaskProvider implements TaskProvider {
                     document = coreSession.getDocument(new IdRef(id));
                     documents.add(document);
                 }
-
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error(
                         String.format(
                                 "Could not fetch document with id '%s:%s' for notification",

@@ -257,7 +257,7 @@ public class ObjectCodecService {
     }
 
     public Object readNode(JsonNode node, ClassLoader cl, CoreSession session)
-            throws IOException, ClassNotFoundException {
+            throws IOException {
         // Handle simple scalar types
         if (node.isNumber()) {
             return node.getNumberValue();
@@ -290,7 +290,7 @@ public class ObjectCodecService {
     }
 
     public Object readNode(JsonNode node, CoreSession session)
-            throws IOException, ClassNotFoundException {
+            throws IOException {
         return readNode(node, null, session);
     }
 
@@ -333,7 +333,7 @@ public class ObjectCodecService {
     }
 
     protected final Object readGenericObject(JsonParser jp, String name,
-            ClassLoader cl) throws IOException, ClassNotFoundException {
+            ClassLoader cl) throws IOException {
         if (jp.getCodec() == null) {
             jp.setCodec(new ObjectMapper());
         }
@@ -350,7 +350,12 @@ public class ObjectCodecService {
                 cl = ObjectCodecService.class.getClassLoader();
             }
         }
-        Class<?> clazz = cl.loadClass(name);
+        Class<?> clazz;
+        try {
+            clazz = cl.loadClass(name);
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
+        }
         return jp.readValueAs(clazz);
     }
 

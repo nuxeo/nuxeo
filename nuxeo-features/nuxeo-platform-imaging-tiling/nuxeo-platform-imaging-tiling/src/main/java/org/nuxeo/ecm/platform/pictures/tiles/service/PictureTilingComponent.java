@@ -306,7 +306,7 @@ public class PictureTilingComponent extends DefaultComponent implements
                 cacheInfo = new PictureTilingCacheInfo(cacheKey, wdirPath,
                         inputFilePath);
                 cache.put(cacheKey, cacheInfo);
-            } catch (Exception e) {
+            } catch (CommandNotAvailable | CommandException e) {
                 throw new ClientException(e);
             }
 

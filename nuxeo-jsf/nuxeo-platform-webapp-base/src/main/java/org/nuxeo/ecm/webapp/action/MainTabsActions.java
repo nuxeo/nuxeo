@@ -118,34 +118,30 @@ public class MainTabsActions implements Serializable {
     }
 
     protected String getCurrentMainTabFromRequest() {
-        try {
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            ServletRequest request = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            if (request instanceof HttpServletRequest) {
-                DocumentView docView = service.getDocumentViewFromRequest((HttpServletRequest) request);
-                if (docView == null) {
-                    return null;
-                }
-                String tabIds = docView.getParameter(WebActions.TAB_IDS_PARAMETER);
-                String mainTabId = docView.getParameter(WebActions.MAIN_TAB_ID_PARAMETER);
-                if (mainTabId != null && !mainTabId.isEmpty()) {
-                    tabIds = mainTabId;
-                }
-                if (tabIds != null
-                        && tabIds.contains(WebActions.MAIN_TABS_CATEGORY)) {
-                    String[] encodedActions = tabIds.split(",");
-                    for (String encodedAction : encodedActions) {
-                        if (encodedAction.startsWith(WebActions.MAIN_TABS_CATEGORY)) {
-                            String[] actionInfo = encodedAction.split(":");
-                            if (actionInfo != null && actionInfo.length > 1) {
-                                return actionInfo[1];
-                            }
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        ServletRequest request = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        if (request instanceof HttpServletRequest) {
+            DocumentView docView = service.getDocumentViewFromRequest((HttpServletRequest) request);
+            if (docView == null) {
+                return null;
+            }
+            String tabIds = docView.getParameter(WebActions.TAB_IDS_PARAMETER);
+            String mainTabId = docView.getParameter(WebActions.MAIN_TAB_ID_PARAMETER);
+            if (mainTabId != null && !mainTabId.isEmpty()) {
+                tabIds = mainTabId;
+            }
+            if (tabIds != null
+                    && tabIds.contains(WebActions.MAIN_TABS_CATEGORY)) {
+                String[] encodedActions = tabIds.split(",");
+                for (String encodedAction : encodedActions) {
+                    if (encodedAction.startsWith(WebActions.MAIN_TABS_CATEGORY)) {
+                        String[] actionInfo = encodedAction.split(":");
+                        if (actionInfo != null && actionInfo.length > 1) {
+                            return actionInfo[1];
                         }
                     }
                 }
             }
-        } catch (Exception e) {
-            // do nothing
         }
         return null;
     }
@@ -197,19 +193,15 @@ public class MainTabsActions implements Serializable {
     }
 
     public String getPatternFor(String mainTabId) throws ClientException {
-        try {
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            // FIXME: find some way to reference the pattern in the action,
-            // assume the pattern will be the same than the default one for
-            // now, or use the default one.
-            if (!WebActions.DOCUMENTS_MAIN_TAB_ID.equals(mainTabId)
-                    && service.hasPattern(mainTabId)) {
-                return mainTabId;
-            }
-            return service.getDefaultPatternName();
-        } catch (Exception e) {
-            throw new ClientException(e);
+        URLPolicyService service = Framework.getService(URLPolicyService.class);
+        // FIXME: find some way to reference the pattern in the action,
+        // assume the pattern will be the same than the default one for
+        // now, or use the default one.
+        if (!WebActions.DOCUMENTS_MAIN_TAB_ID.equals(mainTabId)
+                && service.hasPattern(mainTabId)) {
+            return mainTabId;
         }
+        return service.getDefaultPatternName();
     }
 
     public boolean isOnMainTab(String mainTabId) {

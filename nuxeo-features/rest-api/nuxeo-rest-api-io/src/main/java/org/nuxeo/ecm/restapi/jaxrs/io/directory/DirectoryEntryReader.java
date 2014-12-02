@@ -93,7 +93,7 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
 
         try {
             return readRequest(content, httpHeaders);
-        } catch (Exception e) {
+        } catch (IOException | ClientException e) {
             throw WebException.wrap(e);
         }
     }

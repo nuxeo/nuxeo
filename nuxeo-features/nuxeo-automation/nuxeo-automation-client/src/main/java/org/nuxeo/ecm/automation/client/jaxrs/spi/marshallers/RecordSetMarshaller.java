@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
     }
 
     @Override
-    public RecordSet read(JsonParser jp) throws Exception {
+    public RecordSet read(JsonParser jp) throws IOException {
         jp.nextToken();
         String key = jp.getCurrentName();
         if ("isPaginable".equals(key)) {
@@ -53,7 +54,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
         return readRecord(jp);
     }
 
-    protected RecordSet readPaginableRecordSet(JsonParser jp) throws Exception {
+    protected RecordSet readPaginableRecordSet(JsonParser jp) throws IOException {
         RecordSet record = new RecordSet();
         JsonToken tok = jp.getCurrentToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -77,7 +78,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
         return record;
     }
 
-    protected RecordSet readRecord(JsonParser jp) throws Exception {
+    protected RecordSet readRecord(JsonParser jp) throws IOException {
         RecordSet record = new RecordSet();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
@@ -92,7 +93,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
     }
 
     protected void readRecordEntries(JsonParser jp, RecordSet record)
-            throws Exception {
+            throws IOException {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
             @SuppressWarnings("unchecked")
@@ -103,7 +104,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
     }
 
 }

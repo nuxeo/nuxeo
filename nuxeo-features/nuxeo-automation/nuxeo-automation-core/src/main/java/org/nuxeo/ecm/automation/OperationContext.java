@@ -200,12 +200,7 @@ public class OperationContext implements Map<String, Object> {
         } else if (type.isAssignableFrom(Principal.class)) {
             return type.cast(getPrincipal());
         } else { // try nuxeo services
-            try {
-                return Framework.getService(type);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to lookup service: " + type,
-                        e);
-            }
+            return Framework.getService(type);
         }
     }
 
@@ -253,11 +248,7 @@ public class OperationContext implements Map<String, Object> {
         trace.clear();
         loginStack.clear();
         for (CleanupHandler handler : cleanupHandlers) {
-            try {
-                handler.cleanup();
-            } catch (Exception e) {
-                log.error(e, e);
-            }
+            handler.cleanup();
         }
     }
 

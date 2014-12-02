@@ -18,8 +18,6 @@ package org.nuxeo.theme.styling.service;
 
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
@@ -35,8 +33,6 @@ import org.nuxeo.theme.themes.ThemeManager;
  */
 public class ThemeStylingNotifier implements EventListener {
 
-    private static final Log log = LogFactory.getLog(ThemeStylingNotifier.class);
-
     @Override
     public boolean aboutToHandleEvent(Event event) {
         return false;
@@ -48,20 +44,12 @@ public class ThemeStylingNotifier implements EventListener {
             return;
         }
         if (ThemeManager.THEME_REGISTERED_EVENT_ID.equals(event.getId())) {
-            try {
-                ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-                service.themeRegistered((String) event.getData());
-            } catch (Exception e) {
-                log.error(e, e);
-            }
+            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+            service.themeRegistered((String) event.getData());
         }
         if (ResourceManager.GLOBAL_RESOURCES_REGISTERED_EVENT.equals(event.getId())) {
-            try {
-                ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-                service.themeGlobalResourcesRegistered((URL) event.getData());
-            } catch (Exception e) {
-                log.error(e, e);
-            }
+            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+            service.themeGlobalResourcesRegistered((URL) event.getData());
         }
     }
 

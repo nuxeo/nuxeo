@@ -81,8 +81,8 @@ public class UpdateServiceImpl extends StandaloneUpdateService implements
     public void restart() throws PackageException {
         try {
             NuxeoRestart.restart();
-        } catch (Throwable t) {
-            throw new PackageException("Failed to restart Nuxeo", t);
+        } catch (IOException e) {
+            throw new PackageException("Failed to restart Nuxeo", e);
         }
     }
 

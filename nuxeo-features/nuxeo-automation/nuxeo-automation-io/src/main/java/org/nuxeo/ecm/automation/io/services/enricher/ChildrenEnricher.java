@@ -43,24 +43,14 @@ public class ChildrenEnricher extends AbstractContentEnricher {
         DocumentModel doc = ec.getDocumentModel();
         CoreSession session = doc.getCoreSession();
         DocumentModelList children = session.getChildren(doc.getRef());
-
-        try {
-
-            List<String> props = ec.getHeaders().getRequestHeader(
-                    JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER);
-            String[] schemas = null;
-            if (props != null && !props.isEmpty()) {
-                schemas = StringUtils.split(props.get(0), ',', true);
-            }
-            JsonDocumentListWriter.writeDocuments(jg, children, schemas, ec.getRequest());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted", e);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        List<String> props = ec.getHeaders().getRequestHeader(
+                JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER);
+        String[] schemas = null;
+        if (props != null && !props.isEmpty()) {
+            schemas = StringUtils.split(props.get(0), ',', true);
         }
+        JsonDocumentListWriter.writeDocuments(jg, children, schemas,
+                ec.getRequest());
     }
 
 }

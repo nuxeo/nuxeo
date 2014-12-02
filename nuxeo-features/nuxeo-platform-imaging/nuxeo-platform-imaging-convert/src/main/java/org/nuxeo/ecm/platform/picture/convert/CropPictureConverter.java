@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -72,7 +73,7 @@ public class CropPictureConverter implements Converter {
             }
 
             return new SimpleCachableBlobHolder(results);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
             throw new ConversionException("Crop conversion has failed", e);
         }

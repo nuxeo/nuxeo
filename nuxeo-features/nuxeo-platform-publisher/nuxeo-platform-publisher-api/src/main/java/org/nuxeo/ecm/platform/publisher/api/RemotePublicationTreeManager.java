@@ -61,7 +61,7 @@ public interface RemotePublicationTreeManager {
             throws ClientException;
 
     Map<String, String> initRemoteSession(String treeConfigName,
-            Map<String, String> params) throws Exception;
+            Map<String, String> params) throws ClientException;
 
     /**
      * Sets the current document on which the tree will be based, if needed. Can

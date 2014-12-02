@@ -28,6 +28,7 @@ import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
@@ -88,7 +89,7 @@ public class DirectoryCacheRestlet extends BaseNuxeoRestlet {
                         directory.getName());
             }
 
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
             handleError(res, e);
             return;
         }

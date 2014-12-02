@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import javax.faces.component.UIComponent;
@@ -108,7 +109,7 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 writer.writeText(toWrite, null);
                 writer.flush();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("IOException trying to write on the response", e);
         }
     }

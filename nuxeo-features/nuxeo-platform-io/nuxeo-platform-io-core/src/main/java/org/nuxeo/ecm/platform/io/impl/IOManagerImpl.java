@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.io.impl;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -78,12 +77,6 @@ public class IOManagerImpl implements IOManager {
 
     public IOManagerImpl() {
         adaptersRegistry = new HashMap<String, IOResourceAdapter>();
-    }
-
-    private static void closeStream(Closeable stream) throws IOException {
-        if (stream != null) {
-            stream.close();
-        }
     }
 
     @Override
@@ -295,8 +288,7 @@ public class IOManagerImpl implements IOManager {
             try {
                 // we might have an undesired stream close in the client
                 zip.closeEntry();
-            } catch (Exception e) {
-                // TODO fix this
+            } catch (IOException e) {
                 log.error("Please check code handling entry " + entryName, e);
             }
         }
@@ -369,9 +361,9 @@ public class IOManagerImpl implements IOManager {
 
         Object factoryObj;
         try {
-            Class clazz = Class.forName(docWriterFactoryName);
+            Class<?> clazz = Class.forName(docWriterFactoryName);
             factoryObj = clazz.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new ClientException("cannot instantiate factory "
                     + docWriterFactoryName, e);
         }
@@ -397,9 +389,9 @@ public class IOManagerImpl implements IOManager {
 
         Object factoryObj;
         try {
-            Class clazz = Class.forName(docReaderFactoryName);
+            Class<?> clazz = Class.forName(docReaderFactoryName);
             factoryObj = clazz.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new ClientException("cannot instantiate factory "
                     + docReaderFactoryName, e);
         }

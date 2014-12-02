@@ -34,7 +34,6 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 
 /**
  * Manage JSON Marshalling for {@link RecordSet} objects
@@ -71,7 +70,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
             throws IOException, WebApplicationException {
         try {
             writeRecords(out, records);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to serialize recordset", e);
             throw new WebApplicationException(500);
         }
@@ -79,7 +78,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
     }
 
     protected void writeRecords(OutputStream out, RecordSet records)
-            throws Exception {
+            throws IOException {
 
         JsonGenerator jg = factory.createJsonGenerator(out, JsonEncoding.UTF8);
 

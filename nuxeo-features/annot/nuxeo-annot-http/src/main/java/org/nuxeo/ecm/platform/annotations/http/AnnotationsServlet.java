@@ -49,7 +49,7 @@ public class AnnotationsServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             facade = new AnnotationServiceFacade();
-        } catch (Exception e) {
+        } catch (AnnotationException e) {
             throw new ServletException(e);
         }
     }
@@ -78,7 +78,7 @@ public class AnnotationsServlet extends HttpServlet {
             try {
                 facade.query(w3c_annotates, resp.getOutputStream(),
                         (NuxeoPrincipal) req.getUserPrincipal());
-            } catch (Exception e) {
+            } catch (AnnotationException | IOException e) {
                 throw new ServletException(e);
             }
         }

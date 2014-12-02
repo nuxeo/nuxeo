@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.platform.ec.notification.email;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -30,12 +31,15 @@ import java.util.Properties;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
@@ -52,6 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 /**
  * Class EmailHelper.
@@ -85,12 +91,23 @@ public class EmailHelper {
     public EmailHelper() {
     }
 
+
     /**
      * Static Method: sendmail(Map mail).
      *
      * @param mail A map of the settings
      */
-    public void sendmail(Map<String, Object> mail) throws Exception {
+    public void sendmail(Map<String, Object> mail) throws MessagingException {
+        try {
+            sendmail0(mail);
+        } catch (LoginException | IOException | TemplateException
+                | RenderingException e) {
+            throw new MessagingException(e.getMessage(), e);
+        }
+    }
+
+    protected void sendmail0(Map<String, Object> mail) throws MessagingException,
+            IOException, TemplateException, LoginException, RenderingException {
 
         Session session = getSession();
         if (javaMailNotAvailable || session == null) {
@@ -185,7 +202,7 @@ public class EmailHelper {
                     NotificationService.NAME);
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
-        } catch (Exception ex) {
+        } catch (NamingException ex) {
             log.warn("Unable to find Java mail API", ex);
             javaMailNotAvailable = true;
         }
@@ -232,17 +249,11 @@ public class EmailHelper {
     public String evaluateMvelExpresssion(String expr,
             Map<String, Serializable> ctx) throws ClientException {
         // check to see if there is a dynamic MVEL expr
-        try {
-            Serializable compiledExpr = MVEL.compileExpression(expr);
-            Object result = MVEL.executeExpression(compiledExpr,
-                    initMvelBindings(ctx));
-            if (result instanceof String) {
-                return (String) result;
-            }
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException(e);
+        Serializable compiledExpr = MVEL.compileExpression(expr);
+        Object result = MVEL.executeExpression(compiledExpr,
+                initMvelBindings(ctx));
+        if (result instanceof String) {
+            return (String) result;
         }
         return null;
     }

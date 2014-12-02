@@ -125,7 +125,7 @@ public class JSONDocumentObject extends DocumentObject {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
             return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }
@@ -135,18 +135,14 @@ public class JSONDocumentObject extends DocumentObject {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
             return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }
 
     @Override
     public DocumentObject newDocument(DocumentModel doc) {
-        try {
-            return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        return (DocumentObject) ctx.newObject("Document", doc);
     }
 
     /**

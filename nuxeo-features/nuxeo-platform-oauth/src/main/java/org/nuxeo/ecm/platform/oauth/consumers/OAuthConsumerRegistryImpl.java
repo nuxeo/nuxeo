@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
@@ -51,7 +52,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
         try {
             NuxeoOAuthConsumer consumer = getEntry(consumerKey, keyType);
             return consumer;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to read consumer " + consumerKey
                     + " from Directory backend", e);
             return null;
@@ -64,7 +65,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
     }
 
     protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType)
-            throws Exception {
+            throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {
@@ -85,7 +86,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
 
     @Override
     public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer)
-            throws Exception {
+            throws ClientException {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
@@ -121,7 +122,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
                     session.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to delete consumer " + consumerKey, e);
         }
     }
@@ -145,7 +146,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
                     session.close();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while fetching consumer directory", e);
         }
         return result;

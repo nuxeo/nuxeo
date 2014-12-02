@@ -359,16 +359,13 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
     public void encodeFileIcon(FacesContext context, Blob blob)
             throws IOException {
         String iconPath = "";
-        try {
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            MimetypeEntry mimeEntry = mimeService.getMimetypeEntryByMimeType(blob.getMimeType());
-            if (mimeEntry != null) {
-                if (mimeEntry.getIconPath() != null) {
-                    // FIXME: above Context should find it
-                    iconPath = "/icons/" + mimeEntry.getIconPath();
-                }
+        MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
+        MimetypeEntry mimeEntry = mimeService.getMimetypeEntryByMimeType(blob.getMimeType());
+        if (mimeEntry != null) {
+            if (mimeEntry.getIconPath() != null) {
+                // FIXME: above Context should find it
+                iconPath = "/icons/" + mimeEntry.getIconPath();
             }
-        } catch (Exception err) {
         }
         if (iconPath.length() > 0) {
             ResponseWriter writer = context.getResponseWriter();

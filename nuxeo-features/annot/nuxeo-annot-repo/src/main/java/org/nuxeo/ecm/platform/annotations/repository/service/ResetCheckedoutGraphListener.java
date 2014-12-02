@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,22 +34,22 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author matic
- * 
+ *
  */
 public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
 
     protected final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
 
     protected final GraphManagerEventListener copyManager = new DocumentVersionnedGraphManager();
-   
+
     public void manage(Event event) {
 
         copyManager.manage(event);
-        
+
         if (!DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName())) {
             return;
         }
-        
+
         // reset checked-out graph
 
         final EventContext context = event.getContext();
@@ -61,7 +60,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
 
         try {
             removeGraphFor(session, repo, doc, (NuxeoPrincipal) context.getPrincipal());
-        } catch (Throwable e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(
                     "Cannot remove annotations from checked-out version of "
                             + doc.getPathAsString(), e);
@@ -69,7 +68,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
     }
 
     protected void removeGraphFor(CoreSession session, String repositoryName, DocumentModel doc,
-            NuxeoPrincipal user) throws URISyntaxException, ClientException {
+            NuxeoPrincipal user) throws ClientException {
         URI uri = translator.getNuxeoUrn(repositoryName, doc.getId());
         AnnotationsService service = Framework.getLocalService(AnnotationsService.class);
 

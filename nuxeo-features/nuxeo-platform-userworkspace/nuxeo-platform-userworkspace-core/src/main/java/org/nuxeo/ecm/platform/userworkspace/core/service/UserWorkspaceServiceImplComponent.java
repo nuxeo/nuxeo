@@ -61,7 +61,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
         if (adapter == UserWorkspaceService.class) {
             try {
                 return adapter.cast(getUserWorkspaceService());
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("error fetching UserWorkspaceManager: ", e);
             }
         }
@@ -107,7 +107,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     public String getTargetDomainName() {
         return descriptor.getTargetDomainName();
     }
-    
+
     public UserWorkspaceDescriptor getConfiguration() {
         return descriptor;
     }

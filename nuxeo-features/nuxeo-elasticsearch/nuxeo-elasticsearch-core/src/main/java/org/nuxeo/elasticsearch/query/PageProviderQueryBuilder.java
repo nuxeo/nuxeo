@@ -105,7 +105,7 @@ public class PageProviderQueryBuilder {
                                 fieldDef[fidx].getName());
                     }
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
             if (!isNonNullParam(values)) {

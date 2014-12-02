@@ -71,10 +71,10 @@ public class Call {
                                 ExpressionParameter(paramId,
                                 ((Expression) paramValue).eval(context));
                         this.parameters.put(paramId, expressionParameter);
-                    } catch (Exception e) {
-                        log.warn("Cannot evaluate mvel expression for parameter: " +
-
-                                paramId, e);
+                    } catch (RuntimeException e) {
+                        log.warn(
+                                "Cannot evaluate mvel expression for parameter: "
+                                        + paramId, e);
                     }
                 } else {
                     this.parameters.put(paramId, paramValue);

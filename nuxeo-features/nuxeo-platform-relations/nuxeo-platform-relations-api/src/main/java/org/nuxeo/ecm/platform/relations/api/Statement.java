@@ -73,6 +73,6 @@ public interface Statement extends Comparable<Statement>, Serializable,
 
     void addProperties(Resource property, Node[] values);
 
-    Object clone() throws CloneNotSupportedException;
+    Object clone();
 
 }

@@ -48,6 +48,7 @@ import javax.mail.FetchProfile;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Flags.Flag;
@@ -55,6 +56,7 @@ import javax.mail.Flags.Flag;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
@@ -90,45 +92,35 @@ public final class MailCoreHelper {
     private static MimetypeRegistry mimeService;
 
     public static final String IMAP_DEBUG = "org.nuxeo.mail.imap.debug";
-    
+
     protected static final CopyOnWriteArrayList<String> processingMailBoxes = new CopyOnWriteArrayList<String>();
-    
+
     private MailCoreHelper() {
     }
 
     private static MailService getMailService() {
         if (mailService == null) {
-            try {
-                mailService = Framework.getService(MailService.class);
-            } catch (Exception e) {
-                log.error("Exception in get mail service");
-            }
+            mailService = Framework.getService(MailService.class);
         }
-
         return mailService;
     }
 
     private static MimetypeRegistry getMimeService() {
         if (mimeService == null) {
-            try {
-                mimeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                log.error("Exception in get mime service");
-            }
+            mimeService = Framework.getService(MimetypeRegistry.class);
         }
-
         return mimeService;
     }
 
-    
+
     /**
      * Creates MailMessage documents for every unread mail found in the INBOX.
      * The parameters needed to connect to the email INBOX are retrieved from
      * the MailFolder document passed as a parameter.
-     */    
+     */
     public static void checkMail(DocumentModel currentMailFolder,
-            CoreSession coreSession) throws Exception {        
-                
+            CoreSession coreSession) throws MessagingException, ClientException {
+
         if (processingMailBoxes.addIfAbsent(currentMailFolder.getId())) {
             try {
                 doCheckMail(currentMailFolder, coreSession);
@@ -137,11 +129,11 @@ public final class MailCoreHelper {
             }
         } else {
             log.info("Mailbox " + currentMailFolder.getPathAsString() + " is already being processed");
-        }            
+        }
     }
 
     protected static void doCheckMail(DocumentModel currentMailFolder,
-            CoreSession coreSession) throws Exception {
+            CoreSession coreSession) throws MessagingException, ClientException {
         String email = (String) currentMailFolder.getPropertyValue(EMAIL_PROPERTY_NAME);
         String password = (String) currentMailFolder.getPropertyValue(PASSWORD_PROPERTY_NAME);
         if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(password)) {
@@ -181,9 +173,9 @@ public final class MailCoreHelper {
                 Long emailsLimit = (Long) currentMailFolder.getPropertyValue(EMAILS_LIMIT_PROPERTY_NAME);
                 long emailsLimitLongValue = emailsLimit == null ? EMAILS_LIMIT_DEFAULT
                         : emailsLimit.longValue();
-                
+
                 String imapDebug = Framework.getProperty(IMAP_DEBUG, "false");
-                
+
                 Properties properties = new Properties();
                 properties.put("mail.store.protocol", protocolType);
 //                properties.put("mail.host", host);
@@ -236,7 +228,7 @@ public final class MailCoreHelper {
                 String folderName = INBOX; // TODO should be an attribute in 'protocol' schema
                 rootFolder = store.getFolder(folderName);
 
-                // need RW access to update message flags 
+                // need RW access to update message flags
                 rootFolder.open(Folder.READ_WRITE);
 
                 Message[] allMessages = rootFolder.getMessages();
@@ -248,11 +240,11 @@ public final class MailCoreHelper {
                 fetchProfile.add(FetchProfile.Item.ENVELOPE);
                 fetchProfile.add(FetchProfile.Item.CONTENT_INFO);
                 fetchProfile.add("Message-ID");
-                fetchProfile.add("Content-Transfer-Encoding");                
-                
+                fetchProfile.add("Content-Transfer-Encoding");
+
                 rootFolder.fetch(allMessages, fetchProfile);
 
-                if (rootFolder instanceof IMAPFolder) {                    
+                if (rootFolder instanceof IMAPFolder) {
                     //((IMAPFolder)rootFolder).doCommand(FetchProfile)
                 }
 
@@ -268,24 +260,24 @@ public final class MailCoreHelper {
                     }
                 }
 
-                Message[] unreadMessagesArray =unreadMessagesList.toArray(new Message[unreadMessagesList.size()]); 
+                Message[] unreadMessagesArray =unreadMessagesList.toArray(new Message[unreadMessagesList.size()]);
 
                 // perform email import
                 visitor.visit(unreadMessagesArray,
-                        initialExecutionContext);                
-                
-                // perform flag update globally 
+                        initialExecutionContext);
+
+                // perform flag update globally
                 Flags flags = new Flags();
                 flags.add(Flag.SEEN);
-                
-                boolean leaveOnServer = (Boolean) initialExecutionContext.get(LEAVE_ON_SERVER_KEY);                
+
+                boolean leaveOnServer = (Boolean) initialExecutionContext.get(LEAVE_ON_SERVER_KEY);
                 if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
-                    flags.add(Flag.SEEN);                    
+                    flags.add(Flag.SEEN);
                 } else {
                     flags.add(Flag.DELETED);
                 }
                 rootFolder.setFlags(unreadMessagesArray, flags, true);
-                
+
             } finally {
                 if (rootFolder != null && rootFolder.isOpen()) {
                     rootFolder.close(true);

@@ -28,7 +28,7 @@ import freemarker.template.Configuration;
 public abstract class DocumentRenderingEngine extends FreemarkerRenderingEngine {
 
     @Override
-    public Configuration createConfiguration() throws Exception {
+    public Configuration createConfiguration() {
         Configuration cfg = super.createConfiguration();
         cfg.setObjectWrapper(new DocumentObjectWrapper());
         return cfg;

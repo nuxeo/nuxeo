@@ -55,7 +55,7 @@ public class OAuth2TokenStore implements CredentialStore {
         token.setNuxeoLogin(userId);
         try {
             storeTokenAsDirectoryEntry(token);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during token storage", e);
         }
     }
@@ -112,7 +112,7 @@ public class OAuth2TokenStore implements CredentialStore {
             credential.setRefreshToken(token.getRefreshToken());
             credential.setExpirationTimeMilliseconds(token.getExpirationTimeMilliseconds());
             return true;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error during token loading", e);
             return false;
         }

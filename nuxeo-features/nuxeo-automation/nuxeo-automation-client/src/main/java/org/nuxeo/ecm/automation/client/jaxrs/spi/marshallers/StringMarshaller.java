@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
@@ -34,14 +36,14 @@ public class StringMarshaller implements JsonMarshaller<String> {
     }
 
     @Override
-    public String read(JsonParser jp) throws Exception {
+    public String read(JsonParser jp) throws IOException {
         jp.nextToken();
         jp.nextToken();
         return jp.getText();
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         // wrap as a complex object to pass through the string input micro
         // parsing used for backward compatibility with OperationInput.
         jg.writeStartObject();

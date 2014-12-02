@@ -541,7 +541,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         MessageFactory.getLabel(context, this));
                 context.addMessage(getClientId(context), message);
                 setValid(false);
-            } catch (Exception e) {
+            } catch (ConverterException e) {
                 FacesMessage message = MessageFactory.getMessage(context,
                         UPDATE_MESSAGE_ID,
                         MessageFactory.getLabel(context, this));
@@ -600,7 +600,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 InputFileInfo fileInfo = getFileInfoValue();
                 blob = fileInfo.getConvertedBlob();
             }
-        } catch (Exception e) {
+        } catch (ConverterException e) {
             log.error(e);
         }
         return blob;
@@ -624,7 +624,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 InputFileInfo fileInfo = getFileInfoValue();
                 filename = fileInfo.getConvertedFilename();
             }
-        } catch (Exception e) {
+        } catch (ConverterException e) {
             log.error(e);
         }
         return filename;

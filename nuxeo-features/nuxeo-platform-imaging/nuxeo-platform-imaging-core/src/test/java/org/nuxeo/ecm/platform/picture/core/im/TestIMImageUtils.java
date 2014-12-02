@@ -68,7 +68,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         assertNotNull(blob);
         ImageMagickCaller imc = new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() {
                 return;
             }
         };

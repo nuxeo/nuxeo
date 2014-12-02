@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.automation.client.AdapterFactory;
 import org.nuxeo.ecm.automation.client.AdapterManager;
-import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginCallback;
 import org.nuxeo.ecm.automation.client.LoginInfo;
@@ -99,51 +98,6 @@ public abstract class JavaClient implements AutomationClient {
     @Override
     public void registerAdapter(AdapterFactory<?> factory) {
         adapters.registerAdapter(factory);
-    }
-
-    @Override
-    public void getSession(
-            final LoginCallback loginCb,
-            final AsyncCallback<Session> cb) {
-        asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    Session session = getSession(loginCb);
-                    cb.onSuccess(session);
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void getSession(final AsyncCallback<Session> cb) {
-        asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    Session session = getSession();
-                    cb.onSuccess(session);
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void getSession(final String username, final String password,
-            final AsyncCallback<Session> cb) {
-        asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    Session session = getSession(username, password);
-                    cb.onSuccess(session);
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
     }
 
     @Override

@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -42,7 +43,7 @@ public interface Session {
      * @param id the ID of the operation to be executed.
      * @return the operation request
      */
-    OperationRequest newRequest(String id) throws Exception;
+    OperationRequest newRequest(String id);
 
     /**
      * Create a new operation request given an operation ID and an operation
@@ -53,12 +54,9 @@ public interface Session {
      *            the server.
      * @return the operation request
      */
-    OperationRequest newRequest(String id, Map<String, Object> ctx)
-            throws Exception;
+    OperationRequest newRequest(String id, Map<String, Object> ctx);
 
-    Object execute(OperationRequest request) throws Exception;
-
-    void execute(OperationRequest request, AsyncCallback<Object> cb);
+    Object execute(OperationRequest request) throws IOException;
 
     /**
      * Get a file from the server given a path identifying the file.
@@ -66,7 +64,7 @@ public interface Session {
      * @param path the file path
      * @return a blob representation of the file
      */
-    Blob getFile(String path) throws Exception;
+    Blob getFile(String path) throws IOException;
 
     /**
      * Get a collection of files from the server given the path identifying the
@@ -75,11 +73,7 @@ public interface Session {
      * @param path the file path
      * @return a collection of files represented as blobs.
      */
-    Blobs getFiles(String path) throws Exception;
-
-    void getFile(String path, AsyncCallback<Blob> cb) throws Exception;
-
-    void getFiles(String path, AsyncCallback<Blobs> cb) throws Exception;
+    Blobs getFiles(String path) throws IOException;
 
     OperationDocumentation getOperation(String id);
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -97,7 +98,7 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
                     } else {
                         newParams = new Object[] { uuid };
                     }
-                } catch (Exception e) {
+                } catch (ClientException e) {
                     log.error(
                             "Error while fetching additional parameters for audit query",
                             e);

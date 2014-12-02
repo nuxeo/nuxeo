@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.io;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * Encodes and decodes to and from Base64 notation.
  *
@@ -363,34 +365,10 @@ public class Base64
       }   // end catch
       finally
       {
-         try
-         {
-            oos.close();
-         }
-         catch (Exception e)
-         {
-         }
-         try
-         {
-            gzos.close();
-         }
-         catch (Exception e)
-         {
-         }
-         try
-         {
-            b64os.close();
-         }
-         catch (Exception e)
-         {
-         }
-         try
-         {
-            baos.close();
-         }
-         catch (Exception e)
-         {
-         }
+         IOUtils.closeQuietly(oos);
+         IOUtils.closeQuietly(gzos);
+         IOUtils.closeQuietly(b64os);
+         IOUtils.closeQuietly(baos);
       }   // end finally
 
       // Return value according to relevant encoding.
@@ -646,7 +624,7 @@ public class Base64
 
             return 3;
          }
-         catch (Exception e)
+         catch (ArrayIndexOutOfBoundsException e)
          {
             System.out.println("" + source[srcOffset] + ": " + (DECODABET[source[srcOffset]]));
             System.out.println("" + source[srcOffset + 1] + ": " + (DECODABET[source[srcOffset + 1]]));
@@ -777,27 +755,9 @@ public class Base64
             }   // end catch
             finally
             {
-               try
-               {
-                  baos.close();
-               }
-               catch (Exception e)
-               {
-               }
-               try
-               {
-                  gzis.close();
-               }
-               catch (Exception e)
-               {
-               }
-               try
-               {
-                  bais.close();
-               }
-               catch (Exception e)
-               {
-               }
+               IOUtils.closeQuietly(baos);
+               IOUtils.closeQuietly(gzis);
+               IOUtils.closeQuietly(bais);
             }   // end finally
 
          }   // end if: gzipped
@@ -843,20 +803,8 @@ public class Base64
       }   // end catch
       finally
       {
-         try
-         {
-            bais.close();
-         }
-         catch (Exception e)
-         {
-         }
-         try
-         {
-            ois.close();
-         }
-         catch (Exception e)
-         {
-         }
+         IOUtils.closeQuietly(bais);
+         IOUtils.closeQuietly(ois);
       }   // end finally
 
       return obj;
@@ -889,13 +837,7 @@ public class Base64
       }   // end catch: IOException
       finally
       {
-         try
-         {
-            bos.close();
-         }
-         catch (Exception e)
-         {
-         }
+         IOUtils.closeQuietly(bos);
       }   // end finally
 
       return success;
@@ -927,13 +869,7 @@ public class Base64
       }   // end catch: IOException
       finally
       {
-         try
-         {
-            bos.close();
-         }
-         catch (Exception e)
-         {
-         }
+         IOUtils.closeQuietly(bos);
       }   // end finally
 
       return success;
@@ -988,13 +924,7 @@ public class Base64
       }   // end catch: IOException
       finally
       {
-         try
-         {
-            bis.close();
-         }
-         catch (Exception e)
-         {
-         }
+         IOUtils.closeQuietly(bis);
       }   // end finally
 
       return decodedData;
@@ -1040,13 +970,7 @@ public class Base64
       }   // end catch: IOException
       finally
       {
-         try
-         {
-            bis.close();
-         }
-         catch (Exception e)
-         {
-         }
+         IOUtils.closeQuietly(bis);
       }   // end finally
 
       return encodedData;

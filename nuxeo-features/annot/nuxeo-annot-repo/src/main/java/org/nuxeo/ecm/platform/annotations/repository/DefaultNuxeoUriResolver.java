@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -54,11 +55,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
     private DocumentViewCodecManager viewCodecManager;
 
     public DefaultNuxeoUriResolver() {
-        try {
-            viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
-        } catch (Exception e) {
-            log.error(e);
-        }
+        viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
     }
 
     public List<URI> getSearchURI(URI uri) throws AnnotationException {
@@ -71,7 +68,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
                 idRef = docModel.getRef();
             }
             translatedUri = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
         return Collections.singletonList(translatedUri);
@@ -112,7 +109,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
                 idRef = docModel.getRef();
             }
             result = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
         return result;

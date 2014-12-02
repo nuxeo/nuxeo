@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.mail.BodyPart;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -126,7 +127,7 @@ public class MultiPartFormRequestReader implements
                 }
                 tmp.delete();
             }
-        } catch (Throwable e) {
+        } catch (MessagingException | IOException e) {
             throw WebException.newException(
                     "Failed to parse multipart request", e);
         }
@@ -134,7 +135,7 @@ public class MultiPartFormRequestReader implements
     }
 
     public static Blob readBlob(HttpServletRequest request, BodyPart part)
-            throws Exception {
+            throws MessagingException, IOException {
         String ctype = part.getContentType();
         String fname = part.getFileName();
         InputStream pin = part.getInputStream();

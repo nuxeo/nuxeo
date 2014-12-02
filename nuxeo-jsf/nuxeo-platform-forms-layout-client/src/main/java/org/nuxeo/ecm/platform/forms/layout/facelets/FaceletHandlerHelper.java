@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
-import javax.faces.FacesException;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
@@ -411,15 +410,7 @@ public final class FaceletHandlerHelper {
             Map<String, Serializable> properties,
             List<String> excludedProperties, boolean useReferenceProperties,
             String widgetType, String widgetTypeCategory, String widgetMode) {
-        WebLayoutManager service = null;
-        try {
-            service = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new FacesException(e);
-        }
-        if (service == null) {
-            throw new FacesException("Layout service not found");
-        }
+        WebLayoutManager service = Framework.getService(WebLayoutManager.class);
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         if (properties != null) {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {

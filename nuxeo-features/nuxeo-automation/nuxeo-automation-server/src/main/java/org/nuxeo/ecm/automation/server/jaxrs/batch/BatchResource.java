@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -45,6 +47,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -207,7 +210,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
                         getCoreSession(request), ctx, params);
             }
             return ResponseHelper.getResponse(result, request);
-        } catch (Exception e) {
+        } catch (ClientException | MessagingException | IOException e) {
             log.error("Error while executing automation batch ", e);
             if (WebException.isSecurityError(e)) {
                 return Response.status(Status.FORBIDDEN).entity(

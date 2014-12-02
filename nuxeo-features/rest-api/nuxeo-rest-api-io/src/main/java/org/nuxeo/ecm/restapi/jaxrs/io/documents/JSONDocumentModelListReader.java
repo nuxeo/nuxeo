@@ -72,25 +72,18 @@ public class JSONDocumentModelListReader implements
             }
 
         }
-
-        try {
-            return readRequest(content, httpHeaders, request);
-        } catch (Exception e) {
-            throw new WebApplicationException(
-                    Response.Status.INTERNAL_SERVER_ERROR);
-        }
+        return readRequest(content, httpHeaders, request);
     }
 
     /**
      * @param content
      * @param httpHeaders
      * @return
-     * @throws Exception
      * @since 5.7.3
      */
     public DocumentModelList readRequest(String content,
             MultivaluedMap<String, String> httpHeaders,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws IOException {
 
         JsonParser jp = factory.createJsonParser(content);
         return readRequest(jp, httpHeaders, request);
@@ -102,12 +95,11 @@ public class JSONDocumentModelListReader implements
      * @param httpHeaders
      * @param request2
      * @return
-     * @throws Exception
      * @since TODO
      */
     public static DocumentModelList readRequest(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws IOException {
         DocumentModelList result = null;
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
@@ -138,12 +130,11 @@ public class JSONDocumentModelListReader implements
      * @param httpHeaders
      * @param request
      * @return
-     * @throws Exception
      * @since 5.7.3
      */
     private static DocumentModelList readDocumentEntriesFromJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws IOException {
 
         DocumentModelList entries = new DocumentModelListImpl();
 

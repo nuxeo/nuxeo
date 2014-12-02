@@ -14,8 +14,10 @@ package org.nuxeo.ecm.automation.core.operations.login;
 import java.security.Principal;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -39,7 +41,7 @@ public class LoginAs {
     protected String name;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws LoginException, OperationException {
         LoginContext lc = null;
         if (name == null) {
             Principal origPrincipal = ctx.getPrincipal();

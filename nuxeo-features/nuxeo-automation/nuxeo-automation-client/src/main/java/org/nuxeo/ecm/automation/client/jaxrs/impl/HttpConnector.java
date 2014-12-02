@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
+import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -32,7 +34,6 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
@@ -118,15 +119,13 @@ public class HttpConnector implements Connector {
         }
         try {
             return execute(request, httpRequest);
-        } catch (RemoteException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Cannot execute " + request, e);
         }
     }
 
     protected Object execute(Request request, HttpUriRequest httpReq)
-            throws Exception {
+            throws RemoteException, IOException {
         for (Map.Entry<String, String> entry : request.entrySet()) {
             httpReq.setHeader(entry.getKey(), entry.getValue());
         }
@@ -159,8 +158,7 @@ public class HttpConnector implements Connector {
     }
 
     protected HttpResponse executeRequestWithTimeout(HttpUriRequest httpReq)
-            throws Exception {
-
+            throws IOException {
         // Set timeout for the socket, connection manager
         // and connection itself
         if (httpConnectionTimeout > 0) {

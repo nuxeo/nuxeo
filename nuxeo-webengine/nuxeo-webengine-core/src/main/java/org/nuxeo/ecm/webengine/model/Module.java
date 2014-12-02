@@ -181,6 +181,4 @@ public interface Module extends MessagesProvider {
 
     boolean isDerivedFrom(String moduleName);
 
-    Validator getValidator(String docType);
-
 }

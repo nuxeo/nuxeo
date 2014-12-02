@@ -44,7 +44,7 @@ public class VocabularyHelper {
             String schema = ds.getDirectory(dirName).getSchema();
             DocumentModelList entries = session.getEntries();
             return convertToSelectOptions(entries, schema, dirName, lang);
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
             log.error("Error while getting content of directory " + dirName, e);
             return Collections.emptyList();
         } finally {
@@ -103,7 +103,7 @@ public class VocabularyHelper {
                 }
             }
             return result;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while getting content of directories "
                     + parentDirName + "/" + childDirName, e);
             return result;

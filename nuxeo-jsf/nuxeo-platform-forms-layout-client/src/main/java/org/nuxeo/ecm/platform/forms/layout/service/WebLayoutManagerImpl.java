@@ -191,7 +191,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         try {
             // Thread context loader is not working in isolated EARs
             handler = (WidgetTypeHandler) type.getWidgetTypeClass().newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Caught error when instanciating widget type handler", e);
             return null;
         }

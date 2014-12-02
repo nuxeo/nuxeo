@@ -1,5 +1,6 @@
 package org.nuxeo.elasticsearch.audit.io;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerator;
@@ -11,7 +12,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 public class AuditEntryJSONWriter {
 
     public static void asJSON(JsonGenerator jg, LogEntry logEntry)
-            throws Exception {
+            throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "logEntry");
 
@@ -50,7 +51,7 @@ public class AuditEntryJSONWriter {
     }
 
     protected static void writeField(JsonGenerator jg, String name, String value)
-            throws Exception {
+            throws IOException {
         if (value == null) {
             jg.writeNullField(name);
         } else {

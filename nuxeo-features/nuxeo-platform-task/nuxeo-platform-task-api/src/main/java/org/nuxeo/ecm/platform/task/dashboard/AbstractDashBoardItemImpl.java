@@ -103,7 +103,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
             }
             return Boolean.parseBoolean(getTask().getVariable(
                     Task.TaskVariableName.needi18n.name()));
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error while testing Task variables", e);
             return false;
         }

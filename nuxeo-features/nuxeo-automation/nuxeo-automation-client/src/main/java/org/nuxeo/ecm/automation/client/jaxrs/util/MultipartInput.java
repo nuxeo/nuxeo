@@ -11,9 +11,11 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.util;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
@@ -30,41 +32,49 @@ public class MultipartInput extends MimeMultipart {
         super("related");
     }
 
-    public void setRequest(String content) throws Exception {
+    public void setRequest(String content) throws IOException {
         MimeBodyPart part = new MimeBodyPart();
-        part.setText(content, "UTF-8");
-        part.setContentID("request");
-        part.setHeader("Content-Type", Constants.CTYPE_REQUEST);
-        part.setHeader("Content-Transfer-Encoding", "8bit");
-        part.setHeader("Content-Length", Integer.toString(content.length()));
-        addBodyPart(part);
+        try {
+            part.setText(content, "UTF-8");
+            part.setContentID("request");
+            part.setHeader("Content-Type", Constants.CTYPE_REQUEST);
+            part.setHeader("Content-Transfer-Encoding", "8bit");
+            part.setHeader("Content-Length", Integer.toString(content.length()));
+            addBodyPart(part);
+        } catch (MessagingException e) {
+            throw new IOException(e);
+        }
     }
 
-    public void setBlob(Blob blob) throws Exception {
+    public void setBlob(Blob blob) throws IOException {
         setBlob(blob, "input");
     }
 
-    protected void setBlob(Blob blob, String id) throws Exception {
-        MimeBodyPart part = new MimeBodyPart();
-        if (blob instanceof HasFile) {
-            part.attachFile(((HasFile) blob).getFile());
-        } else {
-            part.setDataHandler(new DataHandler(new BlobDataSource(blob)));
-            if (blob.getFileName() != null) {
-                part.setFileName(blob.getFileName());
+    protected void setBlob(Blob blob, String id) throws IOException {
+        try {
+            MimeBodyPart part = new MimeBodyPart();
+            if (blob instanceof HasFile) {
+                part.attachFile(((HasFile) blob).getFile());
+            } else {
+                part.setDataHandler(new DataHandler(new BlobDataSource(blob)));
+                if (blob.getFileName() != null) {
+                    part.setFileName(blob.getFileName());
+                }
             }
+            part.setHeader("Content-Type", blob.getMimeType());
+            part.setHeader("Content-Transfer-Encoding", "binary");
+            int length = blob.getLength();
+            if (length > -1) {
+                part.setHeader("Content-Length", Integer.toString(length));
+            }
+            part.setContentID(id);
+            addBodyPart(part);
+        } catch (MessagingException e) {
+            throw new IOException(e);
         }
-        part.setHeader("Content-Type", blob.getMimeType());
-        part.setHeader("Content-Transfer-Encoding", "binary");
-        int length = blob.getLength();
-        if (length > -1) {
-            part.setHeader("Content-Length", Integer.toString(length));
-        }
-        part.setContentID(id);
-        addBodyPart(part);
     }
 
-    public void setBlobs(List<Blob> blobs) throws Exception {
+    public void setBlobs(List<Blob> blobs) throws IOException {
         for (int i = 0, size = blobs.size(); i < size; i++) {
             setBlob(blobs.get(i), "input#" + i);
         }

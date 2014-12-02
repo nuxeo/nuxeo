@@ -63,7 +63,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
 
     private final AnnotationManager annotationManager = new AnnotationManager();
 
-    public AnnotationsServiceImpl() throws Exception {
+    public AnnotationsServiceImpl() {
         relationManager = Framework.getService(RelationManager.class);
         configuration = Framework.getService(AnnotationConfigurationService.class);
         idGenerator = configuration.getIDGenerator();
@@ -87,7 +87,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
             annotation.setSubject(resource);
             mapper.updateMetadata(annotation, user);
             graph.add(annotation.getStatements());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
         return annotation;
@@ -99,7 +99,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         try {
             Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
             graph.remove(annotation.getStatements());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
     }
@@ -144,7 +144,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
                 statements.add(statement);
             }
             annotation = annotationManager.getAnnotation(statements);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
         return annotation;
@@ -158,7 +158,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
             List<Node> result = graph.getObjects(new ResourceImpl(uri),
                     AnnotationsConstants.nx_body_content);
             return ((Literal) result.get(0)).getValue();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
     }
@@ -185,7 +185,7 @@ public class AnnotationsServiceImpl implements AnnotationsService {
             String id = annotation.getId();
             deleteAnnotation(annotation, user);
             return addAnnotation(annotation, user, baseUrl, id);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
     }

@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.audit;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -142,7 +143,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
         }
@@ -164,7 +165,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         }
         try {
             return AuditEntryJSONReader.read(hits.getAt(0).getSourceAsString());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Unable to read Entry for id " + id, e);
         }
     }
@@ -231,7 +232,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
         }
@@ -315,7 +316,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
         }
@@ -369,7 +370,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ClientException("Error while indexing Audit entries", e);
         }
 
@@ -438,7 +439,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
                                 fieldDef[fidx].getName());
                     }
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
 

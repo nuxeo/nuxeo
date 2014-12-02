@@ -25,6 +25,7 @@ import java.io.ObjectOutput;
 import java.io.Serializable;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
@@ -112,7 +113,7 @@ public class MetaValueExpression extends ValueExpression implements
                             context, expression, Object.class);
                     try {
                         res = newExpr.getValue(context);
-                    } catch (Exception err) {
+                    } catch (ELException err) {
                         log.error(String.format(
                                 "Error processing expression %s: %s",
                                 expression, err));

@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
-import javax.faces.FacesException;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
@@ -159,15 +158,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 eFactory.createValueExpression(ctx, computedValue, Object.class));
 
         // expose widget properties too
-        WebLayoutManager layoutService;
-        try {
-            layoutService = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new FacesException(e);
-        }
-        if (layoutService == null) {
-            throw new FacesException("Layout service not found");
-        }
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
         Map<String, ValueExpression> mappedExpressions = new HashMap<String, ValueExpression>();
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();

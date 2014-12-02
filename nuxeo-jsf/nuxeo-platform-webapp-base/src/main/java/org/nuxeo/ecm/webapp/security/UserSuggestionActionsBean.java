@@ -155,8 +155,6 @@ public class UserSuggestionActionsBean implements Serializable {
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
-        } catch (Exception e) {
-            throw new ClientException("error searching for groups", e);
         }
     }
 
@@ -175,8 +173,6 @@ public class UserSuggestionActionsBean implements Serializable {
         } catch (SizeLimitExceededException e) {
             addSearchOverflowMessage();
             return Collections.emptyList();
-        } catch (Exception e) {
-            throw new ClientException("error searching for principals", e);
         }
     }
 

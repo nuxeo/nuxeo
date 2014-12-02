@@ -48,7 +48,7 @@ import org.restlet.resource.OutputRepresentation;
 
 /**
  * Restlet to provide a REST API on top of the PictureTilingService.
- * 
+ *
  * @author tiry
  */
 public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
@@ -185,7 +185,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         Blob image;
         try {
             image = tiles.getTile(x, y);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             handleError(res, e);
             return;
         }

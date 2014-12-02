@@ -187,26 +187,21 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                         SecurityConstants.READ, filter, sorterToUse);
             } else {
                 // use page providers
-                try {
-                    PageProviderService ppService = Framework.getService(PageProviderService.class);
-                    List<SortInfo> sortInfos = null;
-                    Map<String, Serializable> props = new HashMap<String, Serializable>();
-                    props.put(
-                            CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                            (Serializable) session);
-                    if (isOrderable) {
-                        // override sort infos to get default sort
-                        sortInfos = new ArrayList<SortInfo>();
-                        sortInfos.add(new SortInfo("ecm:pos", true));
-                    }
-                    PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                            pageProviderName, sortInfos, null, null, props,
-                            new Object[] { getId() });
-                    documents = pp.getCurrentPage();
-                    documents = filterAndSort(documents, !isOrderable);
-                } catch (Exception e) {
-                    throw new ClientException(e);
+                PageProviderService ppService = Framework.getService(PageProviderService.class);
+                List<SortInfo> sortInfos = null;
+                Map<String, Serializable> props = new HashMap<String, Serializable>();
+                props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                        (Serializable) session);
+                if (isOrderable) {
+                    // override sort infos to get default sort
+                    sortInfos = new ArrayList<SortInfo>();
+                    sortInfos.add(new SortInfo("ecm:pos", true));
                 }
+                PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                        pageProviderName, sortInfos, null, null, props,
+                        new Object[] { getId() });
+                documents = pp.getCurrentPage();
+                documents = filterAndSort(documents, !isOrderable);
             }
             // build the children nodes
             for (DocumentModel child : documents) {

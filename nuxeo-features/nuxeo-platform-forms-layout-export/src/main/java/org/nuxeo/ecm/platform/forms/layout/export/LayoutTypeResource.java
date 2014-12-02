@@ -31,7 +31,6 @@ import javax.ws.rs.core.UriInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutTypeDefinitionComparator;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
@@ -49,14 +48,10 @@ public class LayoutTypeResource {
 
     public LayoutTypeResource(String category) throws Exception {
         this.category = category;
-        try {
-            service = Framework.getService(LayoutStore.class);
-            layoutTypes = service.getLayoutTypeDefinitions(category);
-            // sort so that order is deterministic
-            Collections.sort(layoutTypes, new LayoutTypeDefinitionComparator());
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to initialize WebLayoutManager", e);
-        }
+        service = Framework.getService(LayoutStore.class);
+        layoutTypes = service.getLayoutTypeDefinitions(category);
+        // sort so that order is deterministic
+        Collections.sort(layoutTypes, new LayoutTypeDefinitionComparator());
     }
 
     @GET

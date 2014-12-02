@@ -251,13 +251,9 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public void updateUser() throws ClientException {
-        try {
-            userManager.updateUser(selectedUser);
-            detailsMode = DETAILS_VIEW_MODE;
-            fireSeamEvent(USERS_LISTING_CHANGED);
-        } catch (Exception t) {
-            throw ClientException.wrap(t);
-        }
+        userManager.updateUser(selectedUser);
+        detailsMode = DETAILS_VIEW_MODE;
+        fireSeamEvent(USERS_LISTING_CHANGED);
     }
 
     public String changePassword() throws ClientException {
@@ -273,14 +269,10 @@ public class UserManagementActions extends AbstractUserGroupManagement
     }
 
     public void deleteUser() throws ClientException {
-        try {
-            userManager.deleteUser(selectedUser);
-            selectedUser = null;
-            showUserOrGroup = false;
-            fireSeamEvent(USERS_LISTING_CHANGED);
-        } catch (Exception t) {
-            throw ClientException.wrap(t);
-        }
+        userManager.deleteUser(selectedUser);
+        selectedUser = null;
+        showUserOrGroup = false;
+        fireSeamEvent(USERS_LISTING_CHANGED);
     }
 
     public void validateUserName(FacesContext context, UIComponent component,
@@ -468,7 +460,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
         return !Framework.isBooleanPropertyTrue("org.nuxeo.ecm.webapp.readonly.mode");
     }
 
-    public List<String> getUserVirtualGroups(String userId) throws Exception {
+    public List<String> getUserVirtualGroups(String userId)
+            throws ClientException {
         NuxeoPrincipal principal = userManager.getPrincipal(userId);
         if (principal instanceof NuxeoPrincipalImpl) {
             NuxeoPrincipalImpl user = (NuxeoPrincipalImpl) principal;

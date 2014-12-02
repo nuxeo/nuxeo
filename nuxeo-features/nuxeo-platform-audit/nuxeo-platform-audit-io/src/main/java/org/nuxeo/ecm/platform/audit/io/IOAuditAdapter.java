@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
@@ -72,25 +71,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     public void setProperties(Map<String, Serializable> properties) {
     }
 
-    protected static Logs getLogService() throws AuditException {
-        Logs logService;
-        try {
-            logService = Framework.getService(Logs.class);
-        } catch (Exception e) {
-            throw new AuditException(e);
-        }
-        return logService;
-    }
-
-    public static Logs getNXAuditEventsService() {
-        try {
-            return Framework.getService(Logs.class);
-        } catch (Exception e) {
-            log.error("Failed to lookup Audit Logs service");
-            return null;
-        }
-    }
-
     /**
      * Extract logs involving given documents.
      * <p>
@@ -105,7 +85,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<DocumentRef, List<LogEntry>>();
 
-            Logs logService = getLogService();
+            Logs logService = Framework.getService(Logs.class);
 
             for (DocumentRef docRef : sources) {
                 try {
@@ -127,7 +107,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
                 }
             }
             return new IOAuditResources(docLogs);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e, e);
             return null;
         }
@@ -186,22 +166,16 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         if (!(newResources instanceof IOAuditResources)) {
             return;
         }
-
+        Logs logService = Framework.getService(Logs.class);
         IOAuditResources auditResources = (IOAuditResources) newResources;
         Map<DocumentRef, List<LogEntry>> docLogs = auditResources.getLogsMap();
-        try {
-            for (Map.Entry<DocumentRef, List<LogEntry>> mapEntry : docLogs.entrySet()) {
-
-                DocumentRef docRef = mapEntry.getKey();
-                List<LogEntry> logs = mapEntry.getValue();
-
-                // need to set the given docRef - so transfer with the help of
-                // IOLogEntryBase (subclass eventually)
-                List<LogEntry> newLogs = IOLogEntryBase.translate(logs, docRef);
-                getLogService().addLogEntries(newLogs);
-            }
-        } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot store log entries for " + newResources, e);
+        for (Map.Entry<DocumentRef, List<LogEntry>> mapEntry : docLogs.entrySet()) {
+            DocumentRef docRef = mapEntry.getKey();
+            List<LogEntry> logs = mapEntry.getValue();
+            // need to set the given docRef - so transfer with the help of
+            // IOLogEntryBase (subclass eventually)
+            List<LogEntry> newLogs = IOLogEntryBase.translate(logs, docRef);
+            logService.addLogEntries(newLogs);
         }
     }
 

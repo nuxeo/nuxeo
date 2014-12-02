@@ -79,17 +79,12 @@ public class ProxySubscriptionPropagationListener implements EventListener {
         for (String replacedProxyId : replacedProxyIds) {
             // there should be only one replaced proxy, but just in case,
             // iterate over them
-            try {
-                propagateSubscription(replacedProxyId,
-                        publishedDoc.getRef().toString());
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            propagateSubscription(replacedProxyId,
+                    publishedDoc.getRef().toString());
         }
     }
 
-    protected void propagateSubscription(String fromDocId, String toDocId)
-            throws Exception {
+    protected void propagateSubscription(String fromDocId, String toDocId) {
         PlacefulService service = NotificationServiceHelper.getPlacefulService();
         String className = service.getAnnotationRegistry().get(
                 NotificationService.SUBSCRIPTION_NAME);

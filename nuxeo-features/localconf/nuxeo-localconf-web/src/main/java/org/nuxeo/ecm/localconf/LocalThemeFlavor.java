@@ -71,25 +71,21 @@ public class LocalThemeFlavor implements Scheme {
                 Negotiator.NEGOTIATION_RESULT_PREFIX
                         + Negotiator.NEGOTIATION_OBJECT.theme.name());
         if (theme != null) {
-            try {
-                ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-                if (service == null) {
-                    log.error("Could not find the ThemeStylingService");
-                    return null;
+            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
+            if (service == null) {
+                log.error("Could not find the ThemeStylingService");
+                return null;
+            }
+            List<String> flavors = service.getFlavorNames(theme);
+            if (flavors != null && flavors.contains(flavor)) {
+                return flavor;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Local configuration: current theme page "
+                                    + "'%s' does not accept the flavor '%s'",
+                            theme, flavor));
                 }
-                List<String> flavors = service.getFlavorNames(theme);
-                if (flavors != null && flavors.contains(flavor)) {
-                    return flavor;
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Local configuration: current theme page "
-                                        + "'%s' does not accept the flavor '%s'",
-                                theme, flavor));
-                    }
-                }
-            } catch (Exception e) {
-                log.error(e);
             }
         }
         return null;

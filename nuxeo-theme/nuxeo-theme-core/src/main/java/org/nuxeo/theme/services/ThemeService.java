@@ -194,7 +194,7 @@ public class ThemeService extends DefaultComponent {
             try {
                 registry = (Registrable) context.loadClass(
                         registryType.getClassName()).newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.warn("Could not create registry: " + registryType.getName()
                         + "(" + registryType.getClassName() + ")");
             }
@@ -421,7 +421,7 @@ public class ThemeService extends DefaultComponent {
             String src = null;
             try {
                 src = String.format("file://%s", file.getCanonicalPath());
-            } catch (Exception e) {
+            } catch (IOException e) {
                 themeDescriptor.setLoadingFailed(true);
                 log.error("Could not read theme file: " + src);
                 continue;

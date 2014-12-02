@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -57,6 +57,8 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
+import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
+import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -101,7 +103,7 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().crop(blob, x, y,
                     width, height);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
         return blob;
@@ -113,7 +115,7 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().resize(blob,
                     finalFormat, width, height, depth);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
         return blob;
@@ -124,7 +126,7 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getImageUtils().rotate(blob,
                     angle);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
         return blob;
@@ -135,7 +137,7 @@ public class ImagingComponent extends DefaultComponent implements
         try {
             return getLibrarySelectorService().getMetadataUtils().getImageMetadata(
                     blob);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error(e.getMessage(), e);
         }
         return null;
@@ -151,7 +153,8 @@ public class ImagingComponent extends DefaultComponent implements
             } else {
                 return mimetypeRegistry.getMimetypeFromFile(file);
             }
-        } catch (Exception e) {
+        } catch (ClientException | MimetypeNotFoundException
+                | MimetypeDetectionException e) {
             log.error("Unable to retrieve mime type", e);
         }
         return null;
@@ -167,20 +170,9 @@ public class ImagingComponent extends DefaultComponent implements
             } else {
                 return mimetypeRegistry.getMimetypeFromBlob(blob);
             }
-        } catch (Exception e) {
+        } catch (ClientException | MimetypeNotFoundException
+                | MimetypeDetectionException e) {
             log.error("Unable to retrieve mime type", e);
-        }
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public String getImageMimeType(InputStream in) {
-        try {
-            return getLibrarySelectorService().getMimeUtils().getImageMimeType(
-                    in);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
         }
         return null;
     }
@@ -508,12 +500,7 @@ public class ImagingComponent extends DefaultComponent implements
                 viewBlob = wrapBlob(blob);
             }
             return viewBlob;
-        } catch (InterruptedException e) {
-            // restore the interrupted status
-            Thread.currentThread().interrupt();
-            // abort
-            throw new RuntimeException("interrupted", e);
-        } catch (Exception e) {
+        } catch (OperationException | IOException e) {
             throw new ClientRuntimeException(e);
         }
     }

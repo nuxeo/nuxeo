@@ -92,7 +92,7 @@ public class TaskDashBoardActions implements Serializable {
                                             + "missing or deleted document",
                                     currentUser.getName(), task.getName()));
                         }
-                    } catch (Exception e) {
+                    } catch (ClientException e) {
                         log.error(e);
                     }
                 }

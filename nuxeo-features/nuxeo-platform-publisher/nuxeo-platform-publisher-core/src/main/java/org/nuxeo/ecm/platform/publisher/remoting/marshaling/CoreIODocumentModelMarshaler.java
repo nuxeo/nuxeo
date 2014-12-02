@@ -20,7 +20,9 @@ package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
+import org.dom4j.DocumentException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -85,7 +87,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             reader.close();
             br.close();
             return sb.toString();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new PublishingMarshalingException(
                     "Unable to marshal DocumentModel", e);
         } finally {
@@ -107,7 +109,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             pipe.setWriter(writer);
             pipe.run();
             return ((SingleShadowDocumentWriter) writer).getShadowDocument();
-        } catch (Exception e) {
+        } catch (IOException | DocumentException e) {
             throw new PublishingMarshalingException(
                     "Unable to unmarshal DocumentModel", e);
         }

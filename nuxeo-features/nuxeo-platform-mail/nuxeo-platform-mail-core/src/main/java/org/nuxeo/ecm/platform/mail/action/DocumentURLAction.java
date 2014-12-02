@@ -46,7 +46,7 @@ public class DocumentURLAction implements MessageAction {
         this.baseUrl = baseUrl;
     }
 
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) {
         DocumentModel documentModel = (DocumentModel) context.get("document");
         if (log.isDebugEnabled()) {
             log.debug("Document url computing for doc: " + documentModel);
@@ -58,7 +58,7 @@ public class DocumentURLAction implements MessageAction {
         return true;
     }
 
-    public void reset(ExecutionContext context) throws Exception {
+    public void reset(ExecutionContext context) {
         //do nothing
     }
 

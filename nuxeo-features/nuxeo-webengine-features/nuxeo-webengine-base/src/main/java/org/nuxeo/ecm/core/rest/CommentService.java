@@ -32,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -81,7 +82,7 @@ public class CommentService extends DefaultAdapter {
             publishComment(session, pageDoc, comment);
 
             return redirect(getTarget().getPath());
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }
@@ -99,9 +100,7 @@ public class CommentService extends DefaultAdapter {
             DocumentModel comment = session.getDocument(new IdRef(commentId));
             rejectComment(session, pageDoc, comment);
             return redirect(dobj.getPath());
-        } catch (WebException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to reject comment", e);
         }
     }
@@ -119,9 +118,7 @@ public class CommentService extends DefaultAdapter {
             DocumentModel comment = session.getDocument(new IdRef(commentId));
             approveComent(session, pageDoc, comment);
             return redirect(dobj.getPath());
-        } catch (WebException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to approve comment", e);
         }
     }
@@ -131,15 +128,13 @@ public class CommentService extends DefaultAdapter {
     public Response remove() {
         try {
             return deleteComment();
-        } catch (WebException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }
 
     @DELETE
-    public Response deleteComment() throws Exception {
+    public Response deleteComment() throws ClientException {
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
         FormData form = ctx.getForm();
@@ -149,22 +144,12 @@ public class CommentService extends DefaultAdapter {
         return redirect(dobj.getPath());
     }
 
-    public static CommentManager getCommentManager() throws Exception {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
-        if (commentManager == null) {
-            throw new WebException("Unable to get commentManager");
-        }
-        return commentManager;
+    public static CommentManager getCommentManager() {
+        return Framework.getService(CommentManager.class);
     }
 
-    public static CommentsModerationService getCommentsModerationService()
-            throws Exception {
-        CommentsModerationService commentsModerationService =
-                Framework.getService(CommentsModerationService.class);
-        if (commentsModerationService == null) {
-            throw new WebException("Unable to get CommentsModerationService ");
-        }
-        return commentsModerationService;
+    public static CommentsModerationService getCommentsModerationService() {
+        return Framework.getService(CommentsModerationService.class);
     }
 
     /**
@@ -177,7 +162,7 @@ public class CommentService extends DefaultAdapter {
      * @return the comment created
      */
     protected DocumentModel createCommentDocument(CoreSession session,
-            DocumentModel target, DocumentModel comment) throws Exception {
+            DocumentModel target, DocumentModel comment) throws ClientException {
         return getCommentManager().createComment(target, comment);
     }
 
@@ -189,7 +174,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void publishComment(CoreSession session, DocumentModel target,
-            DocumentModel comment) throws Exception {
+            DocumentModel comment) throws ClientException {
         getCommentsModerationService().publishComment(session, comment);
     }
 
@@ -200,7 +185,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void deleteComment(DocumentModel target, DocumentModel comment)
-            throws Exception {
+            throws ClientException {
         getCommentManager().deleteComment(target, comment);
     }
 
@@ -211,7 +196,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void rejectComment(CoreSession session, DocumentModel target,
-            DocumentModel comment) throws Exception {
+            DocumentModel comment) throws ClientException {
         getCommentsModerationService().rejectComment(session, target, comment.getId());
         getCommentManager().deleteComment(target, comment);
     }
@@ -224,7 +209,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void approveComent(CoreSession session, DocumentModel target,
-            DocumentModel comment) throws Exception {
+            DocumentModel comment) throws ClientException {
         getCommentsModerationService().approveComent(session, target, comment.getId());
     }
 

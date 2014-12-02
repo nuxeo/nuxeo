@@ -110,19 +110,13 @@ public class NotificationEventListener implements
             }
             List<Notification> notifs = notificationService.getNotificationsForEvents(event.getName());
             if (notifs != null && !notifs.isEmpty()) {
-                try {
-                    handleNotifications(event, notifs);
-                } catch (Exception e) {
-                    log.error("Error during Notification processing for event "
-                            + event.getName(), e);
-                }
+                handleNotifications(event, notifs);
             }
         }
 
     }
 
-    protected void handleNotifications(Event event, List<Notification> notifs)
-            throws Exception {
+    protected void handleNotifications(Event event, List<Notification> notifs) {
 
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = null;
@@ -205,12 +199,7 @@ public class NotificationEventListener implements
 
     protected UserManager getUserManager() {
         if (userManager == null) {
-            try {
-                userManager = Framework.getService(UserManager.class);
-            } catch (Exception e) {
-                throw new IllegalStateException(
-                        "UserManager service not deployed.", e);
-            }
+            userManager = Framework.getService(UserManager.class);
         }
         return userManager;
     }
@@ -358,8 +347,6 @@ public class NotificationEventListener implements
                             + notif.getTemplateExpr() + "' in that context "
                             + eventInfo, pae);
                 }
-            } catch (Exception e) {
-                log.error(e);
             }
         }
         // if there is no mailTemplate evaluated, use the defined one
@@ -408,16 +395,6 @@ public class NotificationEventListener implements
             }
             log.warn("Failed to send notification email to '" + email + "': "
                     + e.getClass().getName() + ": " + e.getMessage() + cause);
-        } catch (Exception e) {
-            if (log.isDebugEnabled()) {
-                StringBuilder sb = new StringBuilder(
-                        "Failed to send email with these properties:\n");
-                for (String key : mail.keySet()) {
-                    sb.append("\t " + key + ": " + mail.get(key) + "\n");
-                }
-                log.debug(sb.toString());
-            }
-            throw new ClientException("Failed to send notification email ", e);
         }
     }
 
@@ -427,7 +404,7 @@ public class NotificationEventListener implements
      */
     private void gatherConcernedUsersForDocument(CoreSession coreSession,
             DocumentModel doc, List<Notification> notifs,
-            Map<Notification, List<String>> targetUsers) throws Exception {
+            Map<Notification, List<String>> targetUsers) {
         if (doc.getPath().segmentCount() > 1) {
             log.debug("Searching document: " + doc.getName());
             getInterstedUsers(doc, notifs, targetUsers);
@@ -449,7 +426,7 @@ public class NotificationEventListener implements
 
     private void getInterstedUsers(DocumentModel doc,
             List<Notification> notifs,
-            Map<Notification, List<String>> targetUsers) throws Exception {
+            Map<Notification, List<String>> targetUsers) {
         for (Notification notification : notifs) {
             if (!notification.getAutoSubscribed()) {
                 List<String> userGroup = notificationService.getSubscribers(
@@ -508,14 +485,7 @@ public class NotificationEventListener implements
 
     public DocumentViewCodecManager getDocLocator() {
         if (docLocator == null) {
-            try {
-                docLocator = Framework.getService(DocumentViewCodecManager.class);
-                if (docLocator == null) {
-                    log.warn("Could not get service for document view manager");
-                }
-            } catch (Exception e) {
-                log.info("Could not get service for document view manager");
-            }
+            docLocator = Framework.getService(DocumentViewCodecManager.class);
         }
         return docLocator;
     }

@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
-import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
@@ -143,16 +142,8 @@ public class WidgetTypeTagHandler extends TagHandler {
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, ELException {
-        WebLayoutManager layoutService;
-        try {
-            layoutService = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new FacesException(e);
-        }
-        if (layoutService == null) {
-            throw new FacesException("Layout service not found");
-        }
+            throws IOException, ELException {
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         // compute field definitions
         List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();

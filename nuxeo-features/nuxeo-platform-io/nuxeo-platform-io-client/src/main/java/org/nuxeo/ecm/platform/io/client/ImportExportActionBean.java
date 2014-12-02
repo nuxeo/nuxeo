@@ -236,11 +236,7 @@ public class ImportExportActionBean implements Serializable {
                     + filename + "\";");
             response.setHeader("Content-Type", "application/zip");
             FacesContext.getCurrentInstance().responseComplete();
-        } catch (ClientException e) {
-            log.error("Error during XML export " + e.getMessage());
-        } catch (IOException e) {
-            log.error("Error during XML export " + e.getMessage());
-        } catch (Exception e) {
+        } catch (ClientException | IOException e) {
             log.error("Error during XML export " + e.getMessage());
         } finally {
             if (reader != null) {

@@ -41,25 +41,20 @@ public class FacetsWriter extends AbstractTypeDefWriter implements
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        try {
+        JsonGenerator jg = getGenerator(entityStream);
 
-            JsonGenerator jg = getGenerator(entityStream);
-
-            jg.writeStartArray();
-            for (CompositeType facet : facets.facets) {
-                jg.writeStartObject();
-                writeFacet(jg, facet, true);
-                jg.writeEndObject();
-            }
-            jg.writeEndArray();
-
-            // flush
-            jg.flush();
-            jg.close();
-            entityStream.flush();
-        } catch (Exception e) {
-            throw new IOException("Failed to return types as JSON", e);
+        jg.writeStartArray();
+        for (CompositeType facet : facets.facets) {
+            jg.writeStartObject();
+            writeFacet(jg, facet, true);
+            jg.writeEndObject();
         }
+        jg.writeEndArray();
+
+        // flush
+        jg.flush();
+        jg.close();
+        entityStream.flush();
     }
 
     @Override

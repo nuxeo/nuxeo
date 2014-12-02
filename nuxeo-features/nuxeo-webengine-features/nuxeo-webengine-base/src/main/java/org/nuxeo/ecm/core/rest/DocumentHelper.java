@@ -26,8 +26,6 @@ import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.Module;
-import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,12 +40,7 @@ public class DocumentHelper {
 
     public static DocumentModel createDocument(WebContext context, DocumentModel parent, String name) {
         try {
-            PathSegmentService pss;
-            try {
-                pss = Framework.getService(PathSegmentService.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            PathSegmentService pss = Framework.getService(PathSegmentService.class);
             CoreSession session = context.getCoreSession();
             FormData form = context.getForm();
             String type = form.getDocumentType();
@@ -59,11 +52,6 @@ public class DocumentHelper {
             if (name != null) {
                 newDoc.setPropertyValue("dc:title", name);
             }
-            Module module = context.getModule();
-            Validator v = module.getValidator(newDoc.getType());
-            if (v != null) {
-                newDoc = v.validate(newDoc);
-            }
             newDoc.setPathInfo(parent.getPathAsString(),
                     pss.generatePathSegment(newDoc));
             newDoc = session.createDocument(newDoc);
@@ -71,7 +59,7 @@ public class DocumentHelper {
             session.saveDocument(newDoc);
             session.save();
             return newDoc;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to create document: " + name, e);
         }
     }
@@ -82,16 +70,10 @@ public class DocumentHelper {
             form.fillDocument(doc);
             doc.putContextData(VersioningService.VERSIONING_OPTION,
                     form.getVersioningOption());
-            Module module = ctx.getModule();
-            Validator v = module.getValidator(doc.getType());
-            if (v != null) {
-                doc = v.validate(doc);
-            }
-
             doc = ctx.getCoreSession().saveDocument(doc);
             ctx.getCoreSession().save();
             return doc;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to update document", e);
         }
     }

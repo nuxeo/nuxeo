@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -72,27 +71,15 @@ public class SectionPublicationTree extends AbstractBasePublicationTree
             log.debug("Root section " + rootPath + " doesn't exist. Check " +
                     "publicationTreeConfig with name " + configName);
         }
-        try {
-            if (exists && coreSession.hasPermission(ref, SecurityConstants.READ)) {
-                treeRoot = coreSession.getDocument(new PathRef(rootPath));
-                rootNode = new CoreFolderPublicationNode(treeRoot,
-                        getConfigName(), sid, factory);
-            } else {
-                rootNode = new VirtualCoreFolderPublicationNode(
-                        coreSession.getSessionId(), rootPath, getConfigName(),
-                        sid, factory);
-                sessionId = coreSession.getSessionId();
-            }
-        } catch (Throwable e) {
-            Throwable cause = e.getCause();
-            if (cause != null
-                    && cause instanceof WrappedException
-                    && "org.nuxeo.ecm.core.model.NoSuchDocumentException".equals(((WrappedException) cause).getClassName())) {
-                rootNode = new EmptyRoot(getConfigName(), sid, factory);
-                sessionId = coreSession.getSessionId();
-            } else {
-                throw new ClientException("Unable to initTree", e);
-            }
+        if (exists && coreSession.hasPermission(ref, SecurityConstants.READ)) {
+            treeRoot = coreSession.getDocument(new PathRef(rootPath));
+            rootNode = new CoreFolderPublicationNode(treeRoot, getConfigName(),
+                    sid, factory);
+        } else {
+            rootNode = new VirtualCoreFolderPublicationNode(
+                    coreSession.getSessionId(), rootPath, getConfigName(), sid,
+                    factory);
+            sessionId = coreSession.getSessionId();
         }
     }
 

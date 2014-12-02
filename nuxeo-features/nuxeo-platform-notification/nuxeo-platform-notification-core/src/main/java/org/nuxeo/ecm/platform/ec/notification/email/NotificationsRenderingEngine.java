@@ -41,7 +41,7 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
     }
 
     @Override
-    public Configuration createConfiguration() throws Exception {
+    public Configuration createConfiguration() {
         Configuration cfg = super.createConfiguration();
         cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod() );
         return cfg;

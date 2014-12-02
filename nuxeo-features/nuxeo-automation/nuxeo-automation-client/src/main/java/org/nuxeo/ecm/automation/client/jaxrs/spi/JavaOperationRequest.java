@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
@@ -152,10 +151,6 @@ public class JavaOperationRequest implements OperationRequest {
 
     public Object execute() throws Exception {
         return session.execute(this);
-    }
-
-    public void execute(AsyncCallback<Object> cb) {
-        session.execute(this, cb);
     }
 
     public OperationRequest setHeader(String key, String value) {

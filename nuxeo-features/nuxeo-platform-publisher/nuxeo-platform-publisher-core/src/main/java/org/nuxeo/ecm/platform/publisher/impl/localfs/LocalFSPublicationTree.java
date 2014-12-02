@@ -295,13 +295,14 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree
         for (File child : container.listFiles()) {
             try {
                 unpublish(doc, child);
-            } catch (Exception e) {
+            } catch (ClientException | NotFSPublishedDocumentException e) {
                 // NOP
             }
         }
     }
 
-    private void unpublish(DocumentModel doc, File file) throws ClientException {
+    private void unpublish(DocumentModel doc, File file)
+            throws ClientException, NotFSPublishedDocumentException {
         FSPublishedDocument pubDoc = new FSPublishedDocument(file);
         if (pubDoc.getSourceRepositoryName().equals(doc.getRepositoryName())
                 && pubDoc.getSourceDocumentRef().equals(doc.getRef())) {

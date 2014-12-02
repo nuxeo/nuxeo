@@ -92,7 +92,7 @@ public class UrlEncodedFormRequestReader implements
         try {
             return JsonRequestReader.readRequest(jp, httpHeaders,
                     getCoreSession());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new WebApplicationException(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         }

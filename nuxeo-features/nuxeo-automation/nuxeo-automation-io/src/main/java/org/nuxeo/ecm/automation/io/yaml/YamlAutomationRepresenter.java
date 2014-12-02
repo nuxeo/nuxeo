@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.io.yaml;
 
 import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -96,7 +97,7 @@ public class YamlAutomationRepresenter extends Representer {
                                 Properties props = new Properties(
                                         param.getValue());
                                 subs.put(param.getName(), props);
-                            } catch (Exception e) {
+                            } catch (IOException e) {
                                 subs.put(param.getName(), param.getValue());
                             }
                         }

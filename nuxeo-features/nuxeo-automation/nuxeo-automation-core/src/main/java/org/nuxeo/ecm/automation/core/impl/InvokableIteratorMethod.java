@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.OutputCollector;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -71,7 +72,7 @@ public class InvokableIteratorMethod extends InvokableMethod {
         // must modify the produced type to fit the real produced type.
         try {
             produce = (Class<?>)ctypes[1];
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             throw new IllegalStateException("Invalid output collector: "
                     + collector + ". No getOutput method found.");
         }
@@ -96,7 +97,8 @@ public class InvokableIteratorMethod extends InvokableMethod {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Object doInvoke(OperationContext ctx, Map<String, Object> args,
-            Object input) throws Exception {
+            Object input) throws OperationException,
+            ReflectiveOperationException {
         if (!(input instanceof Iterable)) {
             throw new IllegalStateException(
                     "An iterable method was called in a non iterable context");

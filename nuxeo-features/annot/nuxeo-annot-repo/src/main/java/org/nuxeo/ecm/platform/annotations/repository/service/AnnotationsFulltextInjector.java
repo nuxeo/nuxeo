@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,22 +76,22 @@ public class AnnotationsFulltextInjector {
         return false;
     }
 
-    
+
     public void setAnnotationText(DocumentModel doc, String annotationId,
             String annotationBody) throws ClientException {
         if (annotationBody == null) {
             return;
         }
-        try {
-            // strip HTML markup if any
-            BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody,
-                    "text/html"));
-            ConversionService service = Framework.getService(ConversionService.class);
-            if (service != null) {
+        // strip HTML markup if any
+        BlobHolder bh = new SimpleBlobHolder(new StringBlob(annotationBody,
+                "text/html"));
+        ConversionService service = Framework.getService(ConversionService.class);
+        if (service != null) {
+            try {
                 annotationBody = service.convert("html2text", bh, null).getBlob().getString();
+            } catch (IOException e) {
+                throw new ClientException(e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(

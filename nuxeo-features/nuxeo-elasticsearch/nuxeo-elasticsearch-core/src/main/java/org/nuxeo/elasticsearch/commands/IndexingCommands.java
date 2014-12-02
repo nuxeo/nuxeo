@@ -149,13 +149,13 @@ public class IndexingCommands {
             } finally {
                 jp.close();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw ClientException.wrap(e);
         }
     }
 
     public static IndexingCommands fromJSON(CoreSession session, JsonParser jp)
-            throws Exception {
+            throws IOException {
         IndexingCommands cmds = new IndexingCommands();
         JsonToken token = jp.nextToken();
         if (token != JsonToken.START_ARRAY) {

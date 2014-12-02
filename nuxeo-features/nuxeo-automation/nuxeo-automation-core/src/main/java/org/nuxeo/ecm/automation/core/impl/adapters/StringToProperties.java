@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
@@ -26,7 +28,7 @@ public class StringToProperties implements TypeAdapter {
         String content = (String) objectToAdapt;
         try {
             return new Properties(content);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new TypeAdaptException(e);
         }
     }

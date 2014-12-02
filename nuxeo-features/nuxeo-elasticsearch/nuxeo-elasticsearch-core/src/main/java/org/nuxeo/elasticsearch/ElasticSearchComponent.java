@@ -17,6 +17,7 @@
  */
 package org.nuxeo.elasticsearch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -191,7 +192,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                         }
                     }.runUnrestricted();
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error(
                         "Unable to flush pending indexing commands: "
                                 + e.getMessage(), e);
@@ -312,7 +313,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (indexingEvent != null) {
                 evtProducer.fireEvent(indexingEvent);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw ClientException.wrap(e);
         }
     }

@@ -374,24 +374,19 @@ public final class ComponentUtils {
             log.error("Cannot retrieve component with a null id");
             return null;
         }
-        try {
-            UIComponent component = ComponentRenderUtils.getComponent(base,
-                    componentId);
-            if (component == null) {
-                log.error("Could not find component with id: " + componentId);
-            } else {
-                try {
-                    return (T) component;
-                } catch (ClassCastException e) {
-                    log.error(String.format(
-                            "Invalid component with id %s: %s, expected a "
-                                    + "component with interface %s",
-                            componentId, component, expectedComponentClass));
-                }
+        UIComponent component = ComponentRenderUtils.getComponent(base,
+                componentId);
+        if (component == null) {
+            log.error("Could not find component with id: " + componentId);
+        } else {
+            try {
+                return (T) component;
+            } catch (ClassCastException e) {
+                log.error(String.format(
+                        "Invalid component with id %s: %s, expected a "
+                                + "component with interface %s", componentId,
+                        component, expectedComponentClass));
             }
-        } catch (Exception e) {
-            log.error("Error when trying to retrieve component with id "
-                    + componentId, e);
         }
         return null;
     }

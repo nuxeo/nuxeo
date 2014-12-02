@@ -62,7 +62,7 @@ public class RenderingServiceImpl extends DefaultComponent implements
             try {
                 RenderingEngine engine = desc.newInstance();
                 engines.put(desc.getFormat(), engine);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Cannot register rendering engine for "
                         + desc.getFormat(), e);
             }

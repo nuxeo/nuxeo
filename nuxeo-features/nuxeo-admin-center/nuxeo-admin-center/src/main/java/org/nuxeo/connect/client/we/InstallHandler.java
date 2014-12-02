@@ -32,13 +32,13 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.Version;
@@ -102,7 +102,7 @@ public class InstallHandler extends DefaultObject {
             String content = pkg.getTermsAndConditionsContent();
             return getView("termsAndConditions").arg("pkg", pkg).arg("source",
                     source).arg("content", content).arg("depCheck", depCheck);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during terms and conditions phase ", e);
             return getView("installError").arg("e", e).arg("source", source);
         }
@@ -177,7 +177,7 @@ public class InstallHandler extends DefaultObject {
             return getView("startInstall").arg("status", status).arg(
                     "needWizard", needWizard).arg("installTask", installTask).arg(
                     "pkg", pkg).arg("source", source);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during first step of installation", e);
             return getView("installError").arg("e", e).arg("source", source);
         }
@@ -203,7 +203,7 @@ public class InstallHandler extends DefaultObject {
             return getView("showInstallForm").arg("form", forms[formId]).arg(
                     "pkg", pkg).arg("source", source).arg("step", formId + 1).arg(
                     "steps", forms.length);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during displaying Form nb " + formId, e);
             return getView("installError").arg("e", e).arg("source", source);
         }
@@ -244,7 +244,7 @@ public class InstallHandler extends DefaultObject {
             } else {
                 return showInstallForm(pkgId, formId + 1, source);
             }
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during processing Form nb " + formId, e);
             return getView("installError").arg("e", e).arg("source", source);
         }
@@ -326,7 +326,7 @@ public class InstallHandler extends DefaultObject {
                         "descs", descs).arg("source", source).arg("pkgId",
                         pkgId);
             }
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during installation of " + pkgId, e);
             return getView("installError").arg("e", e).arg("source", source);
         }
@@ -356,7 +356,7 @@ public class InstallHandler extends DefaultObject {
             Map<String, String> params = getInstallParameters(pkgId);
             try {
                 installTask.run(params);
-            } catch (Throwable e) {
+            } catch (PackageException e) {
                 log.error("Error during installation of " + pkgId, e);
                 installTask.rollback();
                 return getView("installError").arg("e", e).arg("source", source);
@@ -364,7 +364,7 @@ public class InstallHandler extends DefaultObject {
             clearInstallParameters(pkgId);
             return getView("installedOK").arg("installTask", installTask).arg(
                     "pkg", pkg).arg("source", source);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             log.error("Error during installation of " + pkgId, e);
             return getView("installError").arg("e", e).arg("source", source);
         }

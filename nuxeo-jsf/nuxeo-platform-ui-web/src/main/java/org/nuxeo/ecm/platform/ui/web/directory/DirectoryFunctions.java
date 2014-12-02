@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -82,7 +83,7 @@ public final class DirectoryFunctions {
     }
 
     public static DocumentModel getDirectoryEntry(String directoryName,
-            String entryId) throws Exception {
+            String entryId) throws ClientException {
         if (entryId == null) {
             return null;
         }
@@ -99,7 +100,7 @@ public final class DirectoryFunctions {
     }
 
     public static DocumentModelList getDirectoryEntries(String directoryName,
-            String... entryIds) throws Exception {
+            String... entryIds) throws ClientException {
         if (entryIds == null) {
             return null;
         }
@@ -123,7 +124,8 @@ public final class DirectoryFunctions {
     }
 
     public static DocumentModelList getDirectoryListEntries(
-            String directoryName, Collection<String> entryIds) throws Exception {
+            String directoryName, Collection<String> entryIds)
+            throws ClientException {
         if (entryIds == null) {
             return null;
         }

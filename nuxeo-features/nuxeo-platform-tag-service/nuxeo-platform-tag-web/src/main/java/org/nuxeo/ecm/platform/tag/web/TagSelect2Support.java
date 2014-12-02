@@ -180,16 +180,8 @@ public class TagSelect2Support {
         label = null;
     }
 
-    protected TagService getTagService() throws ClientException {
-        TagService tagService;
-        try {
-            tagService = Framework.getService(TagService.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        if (tagService == null) {
-            return null;
-        }
+    protected TagService getTagService() {
+        TagService tagService = Framework.getService(TagService.class);
         return tagService.isEnabled() ? tagService : null;
     }
 

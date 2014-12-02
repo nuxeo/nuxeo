@@ -25,6 +25,6 @@ import org.nuxeo.ecm.core.event.Event;
  */
 public interface NotificationListenerVeto {
 
-    boolean accept(Event event) throws Exception;
+    boolean accept(Event event);
 
 }

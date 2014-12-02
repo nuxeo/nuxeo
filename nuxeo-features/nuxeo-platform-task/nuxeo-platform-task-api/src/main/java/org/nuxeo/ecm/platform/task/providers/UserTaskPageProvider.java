@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -136,12 +137,12 @@ public class UserTaskPageProvider extends
                                             + "missing or deleted document",
                                     pal.getName(), task.getName()));
                         }
-                    } catch (Exception e) {
+                    } catch (ClientException e) {
                         log.error(e);
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             error = e;
             errorMessage = e.getMessage();
             log.warn(e.getMessage(), e);

@@ -92,7 +92,8 @@ public class NuxeoCtlManager {
             try {
                 fout = new FileOutputStream(out);
                 ferr = new FileOutputStream(err);
-            } catch (Exception e) {
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             new ThreadedStreamGobbler(p1.getInputStream(), fout).start();
             new ThreadedStreamGobbler(p1.getErrorStream(), ferr).start();

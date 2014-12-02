@@ -550,16 +550,8 @@ public class ClipboardActionsBean extends InputController implements
      */
     protected boolean isPublishSpace(DocumentModel container)
             throws ClientException {
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        Set<String> publishSpaces = null;
-        if (schemaManager != null) {
-            publishSpaces = schemaManager.getDocumentTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
-        }
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        Set<String> publishSpaces = schemaManager.getDocumentTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
         if (publishSpaces == null || publishSpaces.isEmpty()) {
             publishSpaces = new HashSet<String>();
         }

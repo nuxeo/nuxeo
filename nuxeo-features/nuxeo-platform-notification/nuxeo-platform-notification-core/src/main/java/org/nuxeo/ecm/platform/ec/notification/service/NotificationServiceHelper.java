@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ec.notification.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -50,31 +49,13 @@ public final class NotificationServiceHelper {
 //        return Framework.getService(PlacefulService.class);
     }
 
-    public static PlacefulService getPlacefulServiceBean()
-            throws ClientException {
-        PlacefulService placefulService;
-        try {
-            placefulService = Framework.getService(PlacefulService.class);
-        } catch (Exception e) {
-            final String errMsg = "Error connecting to PlacefulService. "
-                    + e.getMessage();
-            // log.error(errMsg, e);
-            throw new ClientException(errMsg, e);
-        }
-
-        if (null == placefulService) {
-            throw new ClientException("PlacefulService service not bound");
-        }
-        return placefulService;
+    public static PlacefulService getPlacefulServiceBean() {
+        return Framework.getService(PlacefulService.class);
     }
 
-    public static UserManager getUsersService() throws ClientException {
+    public static UserManager getUsersService() {
         if (userManager == null) {
-            try {
-                userManager = Framework.getService(UserManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            userManager = Framework.getService(UserManager.class);
         }
         return userManager;
     }

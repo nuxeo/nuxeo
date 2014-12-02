@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
@@ -35,14 +37,14 @@ public class NumberMarshaller implements JsonMarshaller<Number> {
     }
 
     @Override
-    public Number read(JsonParser jp) throws Exception {
+    public Number read(JsonParser jp) throws IOException {
         jp.nextToken();
         jp.nextToken();
         return jp.readValueAs(Number.class);
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         Number number = (Number) value;
         if (number instanceof Double || number instanceof Float) {
             jg.writeNumber(number.doubleValue());

@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -73,7 +74,6 @@ public class RunOperationOnListInNewTransaction {
     protected boolean isolate = true;
 
     @OperationMethod
-    @SuppressWarnings("unchecked")
     public void run() throws Exception {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
@@ -94,15 +94,17 @@ public class RunOperationOnListInNewTransaction {
         // execute on list in separate transactions
         for (Object value : list) {
             TransactionHelper.startTransaction();
+            boolean completedAbruptly = true;
             try {
                 OperationContext subctx = new OperationContext(session, vars);
                 subctx.setInput(ctx.getInput());
                 subctx.put(itemName, value);
                 service.run(subctx, chainId, null);
-            } catch (Exception e) { // no InterruptedException
-                log.error("Cannot proceed on " + value, e);
-                TransactionHelper.setTransactionRollbackOnly();
+                completedAbruptly = false;
             } finally {
+                if (completedAbruptly) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
                 TransactionHelper.commitOrRollbackTransaction();
             }
         }

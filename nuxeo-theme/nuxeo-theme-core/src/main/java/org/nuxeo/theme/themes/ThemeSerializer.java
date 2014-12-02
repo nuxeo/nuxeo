@@ -15,6 +15,7 @@
 package org.nuxeo.theme.themes;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import org.nuxeo.theme.presets.PresetManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
 import org.nuxeo.theme.uids.Identifiable;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 
 public class ThemeSerializer {
@@ -58,7 +60,9 @@ public class ThemeSerializer {
 
     private List<Element> elements;
 
-    public Document serialize(final String src) throws Exception {
+    public Document serialize(final String src)
+            throws ParserConfigurationException, DOMException, ThemeException,
+            ThemeIOException {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             dbf.setFeature("http://xml.org/sax/features/validation", false);
@@ -173,7 +177,8 @@ public class ThemeSerializer {
     }
 
     private void serializeProperties(final Element parent,
-            final org.w3c.dom.Element domParent) throws Exception {
+            final org.w3c.dom.Element domParent) throws DOMException,
+            ThemeIOException {
         final org.w3c.dom.Element domProperties = doc.createElement("properties");
         domProperties.setAttribute("element", parent.computeXPath());
         for (Map.Entry<Object, Object> entry : FieldIO.dumpFieldsToProperties(
@@ -377,7 +382,8 @@ public class ThemeSerializer {
             XMLSerializer serializer = new XMLSerializer(output, format);
             serializer.serialize(doc);
             return sw.toString();
-        } catch (Exception e) {
+        } catch (IOException | DOMException | ParserConfigurationException
+                | ThemeException e) {
             throw new ThemeIOException(e);
         }
 

@@ -89,7 +89,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                     thumbnailBlob = bh.getBlob();
                 }
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.warn("Cannot compute document thumbnail", e);
         }
         return thumbnailBlob;

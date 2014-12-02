@@ -66,11 +66,7 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     protected RemotePublicationTreeManager getTreeService()
             throws ClientException {
         if (treeService == null) {
-            try {
-                treeService = Framework.getService(RemotePublicationTreeManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            treeService = Framework.getService(RemotePublicationTreeManager.class);
         }
         return treeService;
     }

@@ -146,7 +146,7 @@ public class DocumentsListsPersistenceManager {
         if (dirSession != null) {
             try {
                 dirSession.close();
-            } catch (Exception e) {
+            } catch (DirectoryException e) {
                 // do nothing
             }
         }
@@ -233,7 +233,7 @@ public class DocumentsListsPersistenceManager {
                         if (FIX_SANITY_ERROR) {
                             try {
                                 dirSession.deleteEntry(entry.getId());
-                            } catch (Exception e) {
+                            } catch (ClientException e) {
                                 log.warn("Sanity fix failed " + e.getMessage());
                             }
                         }
@@ -247,7 +247,7 @@ public class DocumentsListsPersistenceManager {
                 // not found => do the remove
                 try {
                     dirSession.deleteEntry(entry.getId());
-                } catch (Exception e) {
+                } catch (ClientException e) {
                     releasePersistenceService();
                     log.error("Unable to remove non existing document model entry : ", e);
                 }
@@ -286,7 +286,7 @@ public class DocumentsListsPersistenceManager {
                 }
             }
             dirSession.createEntry(fields);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to create entry : " + e.getMessage());
             releasePersistenceService();
             return false;
@@ -307,7 +307,7 @@ public class DocumentsListsPersistenceManager {
 
         try {
             dirSession.deleteEntry(entryId);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             releasePersistenceService();
             log.error("Unable to delete entry : " + e.getMessage());
             return false;
@@ -332,7 +332,7 @@ public class DocumentsListsPersistenceManager {
             for (DocumentModel entry : entriesToDelete) {
                 dirSession.deleteEntry(entry.getId());
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Unable to clear DocumentList : " + e.getMessage());
             releasePersistenceService();
             return false;

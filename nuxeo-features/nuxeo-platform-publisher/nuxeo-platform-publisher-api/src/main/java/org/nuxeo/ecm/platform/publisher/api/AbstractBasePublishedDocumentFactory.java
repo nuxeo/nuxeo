@@ -184,11 +184,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements
 
     protected EventProducer getEventProducer() throws ClientException {
         if (eventProducer == null) {
-            try {
-                eventProducer = Framework.getService(EventProducer.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            eventProducer = Framework.getService(EventProducer.class);
         }
         return eventProducer;
     }

@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -248,7 +249,7 @@ public class EventHandler {
      *            {@link ShallowDocumentModel} instances
      */
     public boolean isEnabled(OperationContext ctx, EventContext eventCtx,
-            boolean quick) throws Exception {
+            boolean quick) throws ClientException {
         Object obj = ctx.getInput();
         DocumentModel doc = null;
         if (obj instanceof DocumentModel) {

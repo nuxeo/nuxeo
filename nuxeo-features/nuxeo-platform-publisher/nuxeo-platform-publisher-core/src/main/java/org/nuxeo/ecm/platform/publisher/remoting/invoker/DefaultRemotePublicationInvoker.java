@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.publisher.remoting.invoker;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -92,7 +91,7 @@ public class DefaultRemotePublicationInvoker implements
             if (baseURL.startsWith("http")) {
                 try {
                     return doHttpCall(methodName, marshaledData);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw new ClientException("Error in http communication", e);
                 }
             }
@@ -101,7 +100,7 @@ public class DefaultRemotePublicationInvoker implements
     }
 
     protected String doHttpCall(String methodName, String marshaledData)
-            throws ClientException, ClientProtocolException, IOException {
+            throws ClientException, IOException {
 
         HttpClient httpClient = new DefaultHttpClient();
 

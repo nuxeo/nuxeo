@@ -30,7 +30,7 @@ public final class StandaloneFilterFactory {
         try {
             filter = (StandaloneFilter) Thread.currentThread().getContextClassLoader().loadClass(
                     filterType.getClassName()).newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error(e, e);
         }
         return filter;

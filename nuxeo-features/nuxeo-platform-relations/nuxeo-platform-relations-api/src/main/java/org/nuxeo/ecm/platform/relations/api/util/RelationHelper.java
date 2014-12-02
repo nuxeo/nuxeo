@@ -17,9 +17,7 @@
 
 package org.nuxeo.ecm.platform.relations.api.util;
 
-import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,12 +50,7 @@ public class RelationHelper {
     }
 
     public static RelationManager getRelationManager() {
-        try {
-            return Framework.getService(RelationManager.class);
-        } catch (Exception e) {
-            log.error(e, e);
-        }
-        return null;
+        return Framework.getService(RelationManager.class);
     }
 
     /**

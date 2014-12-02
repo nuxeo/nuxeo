@@ -274,7 +274,7 @@ public class RelationService extends DefaultComponent implements
                         adapterClassName).newInstance();
                 adapter.setNamespace(namespace);
                 return adapter;
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 String msg = String.format(
                         "Cannot instantiate generator with namespace '%s': %s",
                         namespace, e);
@@ -309,7 +309,7 @@ public class RelationService extends DefaultComponent implements
             // instance
             try {
                 graph = (Graph) klass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
             graphRegistry.put(name, graph);
@@ -318,7 +318,7 @@ public class RelationService extends DefaultComponent implements
             GraphFactory factory;
             try {
                 factory = (GraphFactory) klass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
             graphFactories.put(name, factory);
@@ -351,7 +351,7 @@ public class RelationService extends DefaultComponent implements
         try {
             Class<?> klass = getClass().getClassLoader().loadClass(className);
             return (Graph) klass.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -362,7 +362,7 @@ public class RelationService extends DefaultComponent implements
         if (Graph.class.isAssignableFrom(klass)) {
             try {
                 return (Graph) klass.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
         }

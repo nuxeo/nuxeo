@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -63,11 +63,7 @@ public class JobHistoryHelper {
 
     protected AuditLogger getLogger() {
         if (logger == null) {
-            try {
             logger = Framework.getService(AuditLogger.class);
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to lookup AuditLogger", e);
-            }
         }
         return logger;
     }

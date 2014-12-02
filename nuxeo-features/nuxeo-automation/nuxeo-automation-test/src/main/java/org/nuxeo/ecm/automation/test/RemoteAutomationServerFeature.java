@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
@@ -87,8 +89,12 @@ public class RemoteAutomationServerFeature extends SimpleFeature {
                     client = new HttpAutomationClient(automationUrl);
                 }
                 if (session == null) {
-                    session = client.getSession("Administrator",
-                            "Administrator");
+                    try {
+                        session = client.getSession("Administrator",
+                                "Administrator");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 return session;
             }

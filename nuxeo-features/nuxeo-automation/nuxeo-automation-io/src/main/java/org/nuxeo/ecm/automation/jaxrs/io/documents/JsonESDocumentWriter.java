@@ -20,8 +20,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.core.util.Paginable;
-import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -54,7 +52,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
 
     public static void writeDoc(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers) throws Exception {
+            HttpHeaders headers) throws IOException {
 
         jg.writeStartObject();
         jg.writeStringField("ecm:repository", doc.getRepositoryName());
@@ -146,14 +144,14 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
     @Override
     public void writeDocument(OutputStream out, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
-            throws Exception {
+            throws IOException {
         writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
                 schemas, contextParameters, headers);
     }
 
     public static void writeESDocument(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
-            throws Exception {
+            throws IOException {
         writeDoc(jg, doc, schemas, contextParameters, null);
     }
 

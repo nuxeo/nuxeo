@@ -22,9 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -38,8 +37,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguint</a>
  */
 public class RotationPictureConverter implements Converter {
-
-    private static final Log log = LogFactory.getLog(RotationPictureConverter.class);
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
@@ -58,7 +55,7 @@ public class RotationPictureConverter implements Converter {
                 }
             }
             return new SimpleCachableBlobHolder(results);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ConversionException("Rotation conversion has failed", e);
         }
     }

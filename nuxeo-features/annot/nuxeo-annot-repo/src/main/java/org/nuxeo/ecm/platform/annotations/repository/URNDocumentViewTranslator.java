@@ -34,15 +34,21 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  *
  */
 public class URNDocumentViewTranslator {
-    public URI getNuxeoUrn(String server, String id) throws URISyntaxException {
-        return new URI("urn:nuxeo:" + server + ":" + id);
+
+    public URI getNuxeoUrn(String server, String id) {
+        try {
+            return new URI("urn:nuxeo:" + server + ":" + id);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public URI getUriFromDocumentView(String serverName, DocumentRef docRef)
-            throws URISyntaxException {
-        return new URI("urn:nuxeo:"
-                + serverName + ":"
-                + docRef);
+    public URI getUriFromDocumentView(String serverName, DocumentRef docRef) {
+        try {
+            return new URI("urn:nuxeo:" + serverName + ":" + docRef);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public DocumentView getDocumentViewFromUri(URI uri) {

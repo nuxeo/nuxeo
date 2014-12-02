@@ -27,8 +27,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
@@ -114,7 +115,7 @@ public class PictureTilingCacheInfo {
     }
 
     public PictureTilingCacheInfo(String cacheKey, String workingDir,
-            String filePath) throws Exception {
+            String filePath) throws CommandNotAvailable, CommandException {
         this.cacheKey = cacheKey;
         this.workingDir = workingDir;
         originalPictureInfos = ImageIdentifier.getInfo(filePath);
@@ -208,7 +209,7 @@ public class PictureTilingCacheInfo {
                                     new Integer(shrinked.getWidth()), shrinked);
 
                             return shrinked;
-                        } catch (Exception e) {
+                        } catch (CommandNotAvailable | CommandException e) {
                             return originalPictureInfos;
                         }
                     }

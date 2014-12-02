@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 
 /**
  * Descriptor to configure / contribute a Backend for Audit service
- * 
+ *
  * @author tiry
  *
  */
@@ -32,16 +32,20 @@ import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 public class AuditBackendDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @XNode("@class")
     protected Class<AuditBackend> klass;
 
     public Class<AuditBackend> getKlass() {
         return klass;
     }
-    
-    public AuditBackend newInstance() throws Exception {
-        return klass.newInstance();
+
+    public AuditBackend newInstance() {
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
-    
+
 }

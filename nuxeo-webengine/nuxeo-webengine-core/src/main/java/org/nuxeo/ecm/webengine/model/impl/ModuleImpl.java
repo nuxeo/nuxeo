@@ -47,7 +47,6 @@ import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TypeNotFoundException;
-import org.nuxeo.ecm.webengine.model.Validator;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -279,14 +278,6 @@ public class ModuleImpl implements Module {
             return superModule.isDerivedFrom(moduleName);
         }
         return false;
-    }
-
-    @Override
-    public Validator getValidator(String docType) {
-        if (configuration.validators != null) {
-            return configuration.validators.get(docType);
-        }
-        return null;
     }
 
     public void loadConfiguration() {

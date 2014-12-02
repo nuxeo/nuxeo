@@ -27,6 +27,7 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.UndeployPlaceholder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
+import org.osgi.framework.BundleException;
 
 /**
  * Undeploy a runtime bundle, or a directory containing runtime bundles.
@@ -56,7 +57,7 @@ public class Undeploy extends UndeployPlaceholder {
         }
         try {
             service.undeployBundle(file, true);
-        } catch (Exception e) {
+        } catch (BundleException e) {
             throw new PackageException("Failed to undeploy bundle " + file, e);
         }
     }
@@ -85,7 +86,7 @@ public class Undeploy extends UndeployPlaceholder {
             } else {
                 undeployFile(file, srv);
             }
-        } catch (Exception e) {
+        } catch (PackageException e) {
             // ignore uninstall -> this may break the entire chain. Usually
             // uninstall is done only when rollbacking or uninstalling => force
             // restart required

@@ -29,6 +29,7 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.standalone.commands.UninstallPlaceholder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -61,7 +62,7 @@ public class Uninstall extends UninstallPlaceholder {
                             if (bundle.getState() == Bundle.ACTIVE) {
                                 bundle.uninstall();
                             }
-                        } catch (Throwable t) {
+                        } catch (BundleException e) {
                             // ignore uninstall -> this may break the entire
                             // chain. Usually uninstall is done only when
                             // rollbacking or uninstalling - force restart

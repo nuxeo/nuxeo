@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.client.annotations.EntityType;
@@ -52,14 +54,14 @@ public class PojoMarshaller<T> implements JsonMarshaller<T> {
     }
 
     @Override
-    public T read(JsonParser jp) throws Exception {
+    public T read(JsonParser jp) throws IOException {
         jp.nextToken();
         jp.nextToken();
         return jp.readValueAs(type);
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", getType());
         jg.writeObjectField("value", value);

@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -77,8 +79,12 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
                     client = getHttpAutomationClient();
                 }
                 if (session == null) {
-                    session = client.getSession("Administrator",
-                            "Administrator");
+                    try {
+                        session = client.getSession("Administrator",
+                                "Administrator");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 return session;
             }

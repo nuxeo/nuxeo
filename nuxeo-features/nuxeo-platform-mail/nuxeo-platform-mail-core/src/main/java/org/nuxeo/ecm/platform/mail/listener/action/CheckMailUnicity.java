@@ -47,7 +47,7 @@ public class CheckMailUnicity extends AbstractMailAction {
             + "WHERE mail:messageId = %s AND ecm:path STARTSWITH %s AND ecm:isProxy = 0 ";
 
     @Override
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) {
 
         CoreSession session = getCoreSession(context);
         if (session == null) {

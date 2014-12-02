@@ -32,7 +32,7 @@ public class MvelTemplate implements Expression {
         this.expr = expr;
     }
 
-    public Object eval(OperationContext ctx) throws Exception {
+    public Object eval(OperationContext ctx) {
         if (compiled == null) {
             compiled = TemplateCompiler.compileTemplate(expr);
         }

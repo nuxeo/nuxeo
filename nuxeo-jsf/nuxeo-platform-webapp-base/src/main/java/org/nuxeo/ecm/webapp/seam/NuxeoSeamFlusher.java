@@ -60,7 +60,7 @@ public class NuxeoSeamFlusher implements EventListener {
             SeamHotReloadHelper.flush();
             try {
                 invalidateWebSessions();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Cannot invalidate seam web sessions", e);
             }
         } else if (ReloadEventNames.RELOAD_SEAM_EVENT_ID.equals(id)) {
@@ -91,11 +91,16 @@ public class NuxeoSeamFlusher implements EventListener {
 
     }
 
-    protected void invalidateWebSessions() throws IOException,
-            MalformedObjectNameException {
+    protected void invalidateWebSessions() throws IOException {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        for (ObjectInstance oi : mbs.queryMBeans(new ObjectName(
-                "Catalina:type=Manager,context=/nuxeo,host=*"), null)) {
+        ObjectName name;
+        try {
+            name = new ObjectName(
+                    "Catalina:type=Manager,context=/nuxeo,host=*");
+        } catch (MalformedObjectNameException e) {
+            throw new IOException(e);
+        }
+        for (ObjectInstance oi : mbs.queryMBeans(name, null)) {
             WebSessionFlusher flusher = JMX.newMBeanProxy(mbs,
                     oi.getObjectName(), WebSessionFlusher.class);
             StringTokenizer tokenizer = new StringTokenizer(

@@ -47,12 +47,7 @@ public class URLPolicyServiceCacheFlusher implements EventListener {
         if (!ReloadEventNames.FLUSH_EVENT_ID.equals(event.getId())) {
             return;
         }
-        try {
-            URLPolicyService service = Framework.getService(URLPolicyService.class);
-            service.flushCache();
-        } catch (Exception e) {
-            log.error("Error while flushing the URLPolicyService cache", e);
-        }
+        Framework.getService(URLPolicyService.class).flushCache();
     }
 
 }

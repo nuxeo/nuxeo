@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
@@ -108,12 +109,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     protected static DocumentViewCodecManager getDocumentViewCodecService() {
-        try {
-            return Framework.getService(DocumentViewCodecManager.class);
-        } catch (Exception e) {
-            log.error("Could not retrieve the document view service", e);
-        }
-        return null;
+        return Framework.getService(DocumentViewCodecManager.class);
     }
 
     protected URLPatternDescriptor getURLPatternDescriptor(String patternName) {
@@ -402,7 +398,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                             expr, Object.class);
                     try {
                         ve.setValue(context, value);
-                    } catch (Exception e) {
+                    } catch (ELException e) {
                         log.error(String.format(
                                 "Could not apply request parameter %s "
                                         + "to expression %s", value, expr), e);
@@ -445,7 +441,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                         if (Boolean.TRUE.equals(res)) {
                             applies = true;
                         }
-                    } catch (Exception e) {
+                    } catch (ELException e) {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
                                     "Error executing expression '%s' for "
@@ -511,7 +507,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                             } else {
                                 httpRequest.setAttribute(paramName, value);
                             }
-                        } catch (Exception e) {
+                        } catch (ELException e) {
                             log.error(
                                     String.format(
                                             "Could not get parameter %s from expression %s",

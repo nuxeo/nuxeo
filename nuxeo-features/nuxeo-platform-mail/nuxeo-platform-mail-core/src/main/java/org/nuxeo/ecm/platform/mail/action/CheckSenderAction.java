@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.mail.Address;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
@@ -49,7 +50,7 @@ public class CheckSenderAction implements MessageAction {
 
     private static final Log log = LogFactory.getLog(CheckSenderAction.class);
 
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) throws MessagingException {
         Message message = context.getMessage();
         Address[] addresses = message.getFrom();
         if (addresses == null || addresses.length == 0 || !(addresses[0] instanceof InternetAddress)) {
@@ -66,7 +67,7 @@ public class CheckSenderAction implements MessageAction {
         return true;
     }
 
-    private static String getPrincipal(String address) throws Exception {
+    private static String getPrincipal(String address) {
         Session session = null;
         String principal = null;
         try {
@@ -87,7 +88,7 @@ public class CheckSenderAction implements MessageAction {
         return principal;
     }
 
-    public void reset(ExecutionContext context) throws Exception {
+    public void reset(ExecutionContext context) {
         //do nothing
     }
 

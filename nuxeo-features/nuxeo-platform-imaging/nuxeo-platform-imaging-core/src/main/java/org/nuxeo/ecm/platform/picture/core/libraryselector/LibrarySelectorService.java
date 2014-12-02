@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
-import org.nuxeo.ecm.platform.picture.core.MimeUtils;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -39,13 +38,10 @@ public class LibrarySelectorService extends DefaultComponent implements
 
     protected MetadataUtils metadataUtils;
 
-    protected MimeUtils mimeUtils;
-
     @Override
     public void deactivate(ComponentContext context) {
         imageUtils = null;
         metadataUtils = null;
-        mimeUtils = null;
     }
 
     @Override
@@ -64,18 +60,13 @@ public class LibrarySelectorService extends DefaultComponent implements
             LibrarySelectorServiceDescriptor libraryDescriptor) {
         registerImageUtils(libraryDescriptor.getImageUtils());
         registerMetadataUtils(libraryDescriptor.getMetadataUtils());
-        registerMimeUtils(libraryDescriptor.getMimeUtils());
     }
 
     protected void registerImageUtils(ImageUtilsDescriptor imageUtilsDescriptor) {
         if (imageUtilsDescriptor == null) {
             return;
         }
-
-        try {
-            imageUtils = imageUtilsDescriptor.getNewInstance();
-        } catch (Exception e) {
-        }
+        imageUtils = imageUtilsDescriptor.getNewInstance();
         log.debug("Using " + imageUtils.getClass().getName()
                 + " for ImageUtils.");
     }
@@ -85,36 +76,14 @@ public class LibrarySelectorService extends DefaultComponent implements
         if (metadataUtilsDescriptor == null) {
             return;
         }
-
-        try {
-            metadataUtils = metadataUtilsDescriptor.getNewInstance();
-        } catch (Exception e) {
-        }
+        metadataUtils = metadataUtilsDescriptor.getNewInstance();
         log.debug("Using " + metadataUtils.getClass().getName()
                 + " for MetadataUtils.");
-    }
-
-    protected void registerMimeUtils(MimeUtilsDescriptor mimeUtilsDescriptor) {
-        if (mimeUtilsDescriptor == null) {
-            return;
-        }
-
-        try {
-            mimeUtils = mimeUtilsDescriptor.getNewInstance();
-        } catch (Exception e) {
-        }
-        log.debug("Using " + mimeUtils.getClass().getName() + " for MimeUtils.");
     }
 
     @Override
     public ImageUtils getImageUtils() {
         return imageUtils;
-    }
-
-    @Deprecated
-    @Override
-    public MimeUtils getMimeUtils() {
-        return mimeUtils;
     }
 
     @Override

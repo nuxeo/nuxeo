@@ -34,51 +34,9 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
  */
 public class CommentConverterImpl implements CommentConverter {
 
-    /*protected String getSchema() {
-        return "comment";
-    }*/
-
-    /*protected Class getCommentClass() {
-        return CommentImpl.class;
-    }*/
-
     public String getDocumentType() {
         return CommentsConstants.COMMENT_DOC_TYPE;
     }
-
-    /*public Comment getComment(DocumentModel docModel) throws ClientException {
-        CommentImpl comment;
-        try {
-            comment = (CommentImpl) getCommentClass().newInstance();
-            String schema = getSchema();
-
-            comment.setId(docModel.getId());
-            Map<String, Object> props = docModel.getProperties(schema);
-            comment.setAuthor((String) props.get("author"));
-
-            String content = (String) props.get("text");
-            if(content!=null) {
-                comment.setContent(content.trim());
-            }
-
-            Calendar cal = (Calendar) props.get("creationDate");
-            if (cal != null) {
-                comment.setCreationDate(cal.getTime());
-            }
-            Blob fileContent = (Blob)props.get("fileContent");
-            if(fileContent!=null) {
-                String filename = (String) props.get("filename");
-                if(filename!=null) {
-                    comment.setFileContent(fileContent);
-                    comment.setFilename(filename);
-                }
-
-            }
-        } catch (Exception e) {
-            throw new ClientException("failed to create comment", e);
-        }
-        return comment;
-    }*/
 
     public void updateDocumentModel(DocumentModel docModel, DocumentModel comment) {
 
@@ -93,15 +51,7 @@ public class CommentConverterImpl implements CommentConverter {
             } catch (ClientException e) {
                 continue;
             }
-            /*if(docModel.hasSchema(schema)) {
-                docModel.setProperties(schema,dataModel.getMap());
-            }*/
         }
-        /*docModel.setProperty(schema, "text", comment.getContent());
-        docModel.setProperty(schema, "creationDate", comment.getCreationDate());
-        docModel.setProperty(schema, "author", comment.getAuthor());
-        docModel.setProperty(schema, "fileContent", comment.getFileContent());
-        docModel.setProperty(schema, "filename", comment.getFilename());*/
     }
 
 }

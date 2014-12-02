@@ -20,6 +20,6 @@ package org.nuxeo.ecm.automation;
  */
 public interface CleanupHandler {
 
-    void cleanup() throws Exception;
+    void cleanup();
 
 }

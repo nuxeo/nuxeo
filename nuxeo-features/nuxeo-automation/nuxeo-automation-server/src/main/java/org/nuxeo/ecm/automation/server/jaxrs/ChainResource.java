@@ -15,6 +15,7 @@ import javax.ws.rs.GET;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 
 /**
@@ -36,7 +37,7 @@ public class ChainResource extends ExecutableResource {
     }
 
     @Override
-    public Object execute(ExecutionRequest xreq) throws Exception {
+    public Object execute(ExecutionRequest xreq) throws OperationException {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
         // Copy params in the Chain context
         ctx.putAll(xreq.getParams());

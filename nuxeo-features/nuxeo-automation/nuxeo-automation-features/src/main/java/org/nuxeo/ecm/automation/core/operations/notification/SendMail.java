@@ -173,7 +173,7 @@ public class SendMail {
             addMailBoxInfo(msg);
 
             msg.send();
-        } catch (Exception e) {
+        } catch (ClientException | MessagingException e) {
             if (rollbackOnError) {
                 throw e;
             } else {

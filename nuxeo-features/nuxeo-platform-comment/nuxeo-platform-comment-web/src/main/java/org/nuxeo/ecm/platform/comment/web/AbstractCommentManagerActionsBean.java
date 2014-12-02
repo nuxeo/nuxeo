@@ -158,47 +158,41 @@ public abstract class AbstractCommentManagerActionsBean implements
 
     public DocumentModel addComment(DocumentModel comment,
             DocumentModel docToComment) throws ClientException {
-        try {
-            comment = initializeComment(comment);
-            UIComment parentComment = null;
-            if (savedReplyCommentId != null) {
-                parentComment = commentMap.get(savedReplyCommentId);
-            }
-            if (docToComment != null) {
-                commentableDoc = getCommentableDoc(docToComment);
-            }
-            if (commentableDoc == null) {
-                commentableDoc = getCommentableDoc();
-            }
-            // what if commentableDoc is still null? shouldn't, but...
-            if (commentableDoc == null) {
-                throw new ClientException("Can't comment on null document");
-            }
-            DocumentModel newComment;
-            if (parentComment != null) {
-                newComment = commentableDoc.addComment(
-                        parentComment.getComment(), comment);
-            } else {
-                newComment = commentableDoc.addComment(comment);
-            }
-
-            // automatically validate the comments
-            if (CommentsConstants.COMMENT_LIFECYCLE.equals(newComment.getLifeCyclePolicy())) {
-                new FollowTransitionUnrestricted(documentManager,
-                        newComment.getRef(),
-                        CommentsConstants.TRANSITION_TO_PUBLISHED_STATE).runUnrestricted();
-            }
-
-            // Events.instance().raiseEvent(CommentEvents.COMMENT_ADDED, null,
-            // newComment);
-            cleanContextVariable();
-
-            return newComment;
-
-        } catch (Throwable t) {
-            log.error("failed to add comment", t);
-            throw ClientException.wrap(t);
+        comment = initializeComment(comment);
+        UIComment parentComment = null;
+        if (savedReplyCommentId != null) {
+            parentComment = commentMap.get(savedReplyCommentId);
         }
+        if (docToComment != null) {
+            commentableDoc = getCommentableDoc(docToComment);
+        }
+        if (commentableDoc == null) {
+            commentableDoc = getCommentableDoc();
+        }
+        // what if commentableDoc is still null? shouldn't, but...
+        if (commentableDoc == null) {
+            throw new ClientException("Can't comment on null document");
+        }
+        DocumentModel newComment;
+        if (parentComment != null) {
+            newComment = commentableDoc.addComment(parentComment.getComment(),
+                    comment);
+        } else {
+            newComment = commentableDoc.addComment(comment);
+        }
+
+        // automatically validate the comments
+        if (CommentsConstants.COMMENT_LIFECYCLE.equals(newComment.getLifeCyclePolicy())) {
+            new FollowTransitionUnrestricted(documentManager,
+                    newComment.getRef(),
+                    CommentsConstants.TRANSITION_TO_PUBLISHED_STATE).runUnrestricted();
+        }
+
+        // Events.instance().raiseEvent(CommentEvents.COMMENT_ADDED, null,
+        // newComment);
+        cleanContextVariable();
+
+        return newComment;
     }
 
     @Override
@@ -383,17 +377,12 @@ public abstract class AbstractCommentManagerActionsBean implements
             log.error("Can't delete comments of null document");
             return null;
         }
-        try {
-            UIComment selectedComment = commentMap.get(commentId);
-            commentableDoc.removeComment(selectedComment.getComment());
-            cleanContextVariable();
-            // Events.instance().raiseEvent(CommentEvents.COMMENT_REMOVED, null,
-            // selectedComment.getComment());
-            return null;
-        } catch (Throwable t) {
-            log.error("failed to delete comment", t);
-            throw ClientException.wrap(t);
-        }
+        UIComment selectedComment = commentMap.get(commentId);
+        commentableDoc.removeComment(selectedComment.getComment());
+        cleanContextVariable();
+        // Events.instance().raiseEvent(CommentEvents.COMMENT_REMOVED, null,
+        // selectedComment.getComment());
+        return null;
     }
 
     @Override

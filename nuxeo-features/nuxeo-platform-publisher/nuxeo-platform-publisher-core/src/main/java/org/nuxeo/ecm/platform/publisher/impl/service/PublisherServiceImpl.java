@@ -102,11 +102,14 @@ public class PublisherServiceImpl extends DefaultComponent implements
     @Override
     public void applicationStarted(ComponentContext context) {
         if (TransactionHelper.startTransaction()) {
+            boolean completedAbruptly = true;
             try {
                 doApplicationStarted();
-            } catch (Throwable e) {
-                TransactionHelper.setTransactionRollbackOnly();
+                completedAbruptly = false;
             } finally {
+                if (completedAbruptly) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
                 TransactionHelper.commitOrRollbackTransaction();
             }
         } else {
@@ -121,8 +124,6 @@ public class PublisherServiceImpl extends DefaultComponent implements
             Thread.currentThread().setContextClassLoader(nuxeoCL);
             log.info("Publisher Service initialization");
             registerPendingDescriptors();
-        } catch (Exception e) {
-            log.error("Unable to register pending descriptors", e);
         } finally {
             Thread.currentThread().setContextClassLoader(jbossCL);
             log.debug("JBoss ClassLoader restored");
@@ -170,7 +171,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
             RootSectionFinderFactoryDescriptor desc = (RootSectionFinderFactoryDescriptor) contribution;
             try {
                 rootSectionFinderFactory = desc.getFactory().newInstance();
-            } catch (Throwable t) {
+            } catch (ReflectiveOperationException t) {
                 log.error("Unable to load custom RootSectionFinderFactory", t);
             }
         }
@@ -350,14 +351,14 @@ public class PublisherServiceImpl extends DefaultComponent implements
         PublishedDocumentFactory factory;
         try {
             factory = factoryDesc.getKlass().newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new PublisherException("Error while creating factory "
                     + factoryDesc.getName(), e);
         }
 
         try {
             factory.init(coreSession, validatorsRule, params);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new PublisherException("Error during Factory init", e);
         }
         return factory;
@@ -376,7 +377,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
             }
             try {
                 validatorsRule = validatorsRuleDesc.getKlass().newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new PublisherException(
                         "Error while creating validatorsRule "
                                 + validatorsRuleName, e);
@@ -427,7 +428,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         PublicationTree treeImpl;
         try {
             treeImpl = treeDescriptor.getKlass().newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new PublisherException(
                     "Error while creating tree implementation", e);
         }
@@ -435,7 +436,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
         try {
             treeImpl.initTree(sid, coreSession, parameters, factory,
                     configName, treeTitle);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new PublicationTreeNotAvailable("Error during tree init", e);
         }
         return treeImpl;

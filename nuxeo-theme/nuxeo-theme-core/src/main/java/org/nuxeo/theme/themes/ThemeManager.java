@@ -798,7 +798,7 @@ public final class ThemeManager implements Registrable {
             try {
                 FieldIO.updateFieldsFromProperties(duplicate,
                         FieldIO.dumpFieldsToProperties(element));
-            } catch (Exception e) {
+            } catch (ThemeIOException e) {
                 log.warn("Could not copy the fields of: " + element);
                 log.debug(e.getMessage(), e);
             }

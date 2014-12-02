@@ -27,6 +27,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.intercept.AbstractInterceptor;
 import org.jboss.seam.intercept.InvocationContext;
 import org.jboss.seam.international.StatusMessage.Severity;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
@@ -34,7 +35,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
  * Intercepts Seam Bean call during the INVOKE_APPLICATION phase to see if a
  * {@link RecoverableClientException} is raised. If this is the case, the INVOKE
  * call returns null and the associated FacesMessage is generated.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -77,7 +78,8 @@ public class NuxeoExceptionInterceptor extends AbstractInterceptor {
             throws Exception {
         try {
             return invocationContext.proceed();
-        } catch (Exception t) {
+        } catch (Exception t) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(t);
             RecoverableClientException ce = null;
             if (t instanceof RecoverableClientException) {
                 ce = (RecoverableClientException) t;

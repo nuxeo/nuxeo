@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -149,9 +151,10 @@ public class WebException extends WebApplicationException {
     }
 
     public static WebException wrap(String message, Throwable exception) {
-        if (exception instanceof DocumentSecurityException
-                || "javax.ejb.EJBAccessException".equals(exception.getClass()
-                .getName())) {
+        if (exception instanceof Exception) {
+            ExceptionUtils.checkInterrupt((Exception) exception);
+        }
+        if (exception instanceof DocumentSecurityException) {
             return new WebSecurityException(message, exception);
         } else if (exception instanceof WebException) {
             return (WebException) exception;

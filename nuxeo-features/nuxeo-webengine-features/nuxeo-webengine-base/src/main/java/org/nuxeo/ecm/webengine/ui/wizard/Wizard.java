@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.forms.validation.ValidationException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -224,8 +225,9 @@ public abstract class Wizard extends DefaultObject {
             }
         } catch (ValidationException e) {
             return handleValidationError(e);
-        } catch (Throwable t) {
-            return handleError(t);
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            return handleError(e);
         }
     }
 
@@ -253,8 +255,9 @@ public abstract class Wizard extends DefaultObject {
             return redirectOnOk();
         } catch (ValidationException e) {
             return handleValidationError(e);
-        } catch (Throwable t) {
-            return handleError(t);
+        } catch (Exception e) { // deals with interrupt below
+            ExceptionUtils.checkInterrupt(e);
+            return handleError(e);
         }
     }
 

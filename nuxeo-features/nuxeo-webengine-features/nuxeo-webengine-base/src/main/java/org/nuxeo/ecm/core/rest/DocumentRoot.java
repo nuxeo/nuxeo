@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.rest;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -42,7 +43,7 @@ public class DocumentRoot extends DocumentObject {
             initialize(ctx, ctx.getModule().getType(doc.getType()), doc);
             setRoot(true);
             ctx.push(this);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap(e);
         }
     }

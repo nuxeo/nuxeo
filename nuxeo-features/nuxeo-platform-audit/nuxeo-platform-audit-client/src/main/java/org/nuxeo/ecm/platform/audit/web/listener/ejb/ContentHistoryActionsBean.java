@@ -213,7 +213,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                 if (log.isDebugEnabled()) {
                     log.debug("logEntries computed .................!");
                 }
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 String message = "An error occurred while grabbing log entries for "
                         + document.getId();
                 throw new AuditException(message, e);

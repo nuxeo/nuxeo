@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.platform.picture.convert.operation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -89,7 +90,7 @@ public class CreatePicture {
                 }
                 templates.add(map);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Error while parsing picture templates", e);
         }
 

@@ -98,26 +98,26 @@ public class JSONDocumentModelReader implements
 
         try {
             return readRequest(content, httpHeaders);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw WebException.wrap(e);
         }
     }
 
     private DocumentModel readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders) throws Exception {
+            MultivaluedMap<String, String> httpHeaders) throws IOException {
         return readRequest(content, httpHeaders, request);
     }
 
     protected DocumentModel readRequest(String content,
             MultivaluedMap<String, String> httpHeaders,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws IOException {
         JsonParser jp = factory.createJsonParser(content);
         return readJson(jp, httpHeaders, request);
     }
 
     public static DocumentModel readJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws IOException {
         JsonToken tok = jp.nextToken();
 
         // skip {
@@ -179,7 +179,7 @@ public class JSONDocumentModelReader implements
 
     }
 
-    static Properties readProperties(JsonParser jp) throws Exception {
+    static Properties readProperties(JsonParser jp) throws IOException {
         JsonNode node = jp.readValueAsTree();
         return new Properties(node);
 
@@ -196,15 +196,6 @@ public class JSONDocumentModelReader implements
         } else {
             return null;
         }
-    }
-
-    /**
-     * Check that a serialized data is not null.
-     *
-     * @since 5.9.1
-     */
-    private static boolean isNull(Serializable data) {
-        return data == null || "null".equals(data);
     }
 
     public static void applyPropertyValues(DocumentModel src, DocumentModel dst)

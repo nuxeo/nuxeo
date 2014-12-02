@@ -70,22 +70,14 @@ public class DomainEventsListener implements EventListener {
 
     protected void registerNewPublicationTrees(DocumentModel doc)
             throws ClientException {
-        try {
-            PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
-            service.registerTreeConfigFor(doc);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
+        service.registerTreeConfigFor(doc);
     }
 
     protected void unregisterPublicationTrees(DocumentModel doc)
             throws ClientException {
-        try {
-            PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
-            service.unRegisterTreeConfigFor(doc);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
+        service.unRegisterTreeConfigFor(doc);
     }
 
     protected void handleDomainLifeCycleChanged(DocumentEventContext docCtx,

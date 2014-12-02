@@ -36,7 +36,7 @@ public interface OperationType {
     Class<?> getType();
 
     Object newInstance(OperationContext ctx, Map<String, Object> args)
-            throws Exception;
+            throws OperationException;
 
     /**
      * Gets the service that registered that type.

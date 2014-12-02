@@ -28,7 +28,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -153,12 +153,8 @@ public class DownloadHandler extends DefaultObject {
             pm.download(pkgId);
         } catch (ConnectServerError e) {
             return getView("downloadError").arg("e", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) { // TODO fix connect-client API
+            throw ExceptionUtils.runtimeException(e);
         }
         return getView("downloadStarted").arg("pkg",
                 getDownloadingPackage(pkgId)).arg("source", source).arg("over",
@@ -181,12 +177,8 @@ public class DownloadHandler extends DefaultObject {
                     pm.download(Arrays.asList(pkgs));
                 } catch (ConnectServerError e) {
                     log.error(e, e);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                } catch (Exception e) { // TODO fix connect-client API
+                    throw ExceptionUtils.runtimeException(e);
                 }
                 // here we generate a fake progress report so that if some
                 // download are very fast, they will still be visible on the

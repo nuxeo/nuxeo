@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -152,7 +153,7 @@ public class AnnotationManager {
         try {
             RelationManager service = Framework.getService(RelationManager.class);
             graph = service.getTransientGraph(TRANSIENT_GRAPH_TYPE);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new AnnotationException(e);
         }
         return graph;

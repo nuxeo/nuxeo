@@ -127,7 +127,7 @@ public final class ViewType implements Type {
         try {
             view = (View) Class.forName(className).newInstance();
             view.setViewType(this);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Could not create view for: " + className);
             return null;
         }

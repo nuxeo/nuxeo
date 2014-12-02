@@ -19,13 +19,10 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginInfo;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 
@@ -73,52 +70,11 @@ public abstract class JavaSession implements Session {
         return client.getAdapter(this, type);
     }
 
-    public void execute(final OperationRequest request,
-            final AsyncCallback<Object> cb) {
-        client.asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    cb.onSuccess(execute(request));
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-
-    public void getFile(final String path, final AsyncCallback<Blob> cb)
-            throws Exception {
-        client.asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    cb.onSuccess(getFile(path));
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    public void getFiles(final String path, final AsyncCallback<Blobs> cb)
-            throws Exception {
-        client.asyncExec(new Runnable() {
-            public void run() {
-                try {
-                    cb.onSuccess(getFiles(path));
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    public OperationRequest newRequest(String id) throws Exception {
+    public OperationRequest newRequest(String id) {
         return newRequest(id, new HashMap<String, Object>());
     }
 
-    public OperationRequest newRequest(String id, Map<String, Object> ctx)
-            throws Exception {
+    public OperationRequest newRequest(String id, Map<String, Object> ctx) {
         OperationDocumentation op = getOperation(id);
         if (op == null) {
             throw new IllegalArgumentException("No such operation: " + id);

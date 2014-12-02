@@ -61,13 +61,9 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
 
         DocumentModelList containers = null;
         String docType = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
-        try {
-            FileManager fileManager = Framework.getService(FileManager.class);
-            containers = fileManager.getCreationContainers(
-                    getUserPrincipal(req), docType);
-        } catch (Exception e) {
-            handleError(res, e);
-        }
+        FileManager fileManager = Framework.getService(FileManager.class);
+        containers = fileManager.getCreationContainers(getUserPrincipal(req),
+                docType);
 
         // build the XML response document holding the containers info
         DOMDocumentFactory domFactory = new DOMDocumentFactory();

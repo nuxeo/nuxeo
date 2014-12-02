@@ -1,5 +1,6 @@
 package org.nuxeo.elasticsearch.audit.io;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,14 +16,14 @@ import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 
 public class AuditEntryJSONReader {
-   
-    public static LogEntry read(String content) throws Exception {
+
+    public static LogEntry read(String content) throws IOException {
 
         JsonFactory factory = new JsonFactory();
-            
+
         factory.setCodec(new ObjectMapper());
         JsonParser jp = factory.createJsonParser(content);
-        
+
         JsonToken tok = jp.nextToken();
 
         // skip {
@@ -30,8 +31,8 @@ public class AuditEntryJSONReader {
             tok = jp.nextToken();
         }
 
-        LogEntryImpl entry = new LogEntryImpl();        
-        
+        LogEntryImpl entry = new LogEntryImpl();
+
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             JsonToken token = jp.nextToken();
@@ -54,7 +55,7 @@ public class AuditEntryJSONReader {
                     entry.setEventId(jp.getText());
                 } else if ("repositoryId".equals(key)) {
                     entry.setRepositoryId(jp.getText());
-                } else if ("id".equals(key)) {                
+                } else if ("id".equals(key)) {
                     entry.setId(jp.getLongValue());
                 } else if ("eventDate".equals(key)) {
                     entry.setEventDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
@@ -65,29 +66,30 @@ public class AuditEntryJSONReader {
                 };
             }
             tok = jp.nextToken();
-        }        
+        }
         return entry;
-    }    
+    }
 
-    public static Map<String, ExtendedInfo> readExtendedInfo(LogEntryImpl entry, JsonParser jp) throws Exception {
+    public static Map<String, ExtendedInfo> readExtendedInfo(
+            LogEntryImpl entry, JsonParser jp) throws IOException {
         JsonToken tok = jp.nextToken();
-        
+
         // skip {
         if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
             tok = jp.nextToken();
         }
-        
+
         Map<String, ExtendedInfo> info = new HashMap<String, ExtendedInfo>();
-        
+
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if (tok != JsonToken.VALUE_NULL) {
                 info.put(key,  ExtendedInfoImpl.createExtendedInfo((Serializable)jp.getText()));
-            }            
+            }
             tok = jp.nextToken();
         }
-        return info;        
+        return info;
     }
 
 }

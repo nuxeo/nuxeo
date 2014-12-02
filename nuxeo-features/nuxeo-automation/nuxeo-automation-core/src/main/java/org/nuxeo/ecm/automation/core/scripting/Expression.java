@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.core.scripting;
 
 import java.io.Serializable;
 
+import org.mvel2.CompileException;
 import org.nuxeo.ecm.automation.OperationContext;
 
 /**
@@ -20,6 +21,6 @@ import org.nuxeo.ecm.automation.OperationContext;
  */
 public interface Expression extends Serializable {
 
-    Object eval(OperationContext ctx) throws Exception;
+    Object eval(OperationContext ctx) throws CompileException, RuntimeException;
 
 }

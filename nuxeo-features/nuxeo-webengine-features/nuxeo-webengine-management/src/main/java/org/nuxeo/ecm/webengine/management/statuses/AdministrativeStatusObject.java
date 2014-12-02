@@ -23,7 +23,6 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.management.ManagementObject;
 import org.nuxeo.ecm.webengine.model.Access;
@@ -49,20 +48,17 @@ public class AdministrativeStatusObject extends ManagementObject {
     @Override
     public void initialize(Object... args) {
         super.initialize(args);
-        AdministrativeStatusManager mgr = Framework.getLocalService(AdministrativeStatusManager.class);
-        administrativeStatus =mgr.getNuxeoInstanceStatus();
+        AdministrativeStatusManager mgr = Framework.getService(AdministrativeStatusManager.class);
+        administrativeStatus = mgr.getNuxeoInstanceStatus();
     }
 
     @PUT
     public Object doPut() {
         FormData form = ctx.getForm();
-        try {
-            AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
-            manager.setNuxeoInstanceStatus(form.getString("status"), "assigned from rest interface", ctx.getPrincipal().getName());
-            return redirect(getPath());
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        AdministrativeStatusManager manager = Framework.getService(AdministrativeStatusManager.class);
+        manager.setNuxeoInstanceStatus(form.getString("status"),
+                "assigned from rest interface", ctx.getPrincipal().getName());
+        return redirect(getPath());
     }
 
     @GET
@@ -75,25 +71,19 @@ public class AdministrativeStatusObject extends ManagementObject {
     @GET
     @Path("/@activate")
     public Object doActivate() {
-        try {
-            AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
-            manager.setNuxeoInstanceStatus(AdministrativeStatus.ACTIVE, "", ctx.getPrincipal().getName());
-            return redirect(getPath());
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        AdministrativeStatusManager manager = Framework.getService(AdministrativeStatusManager.class);
+        manager.setNuxeoInstanceStatus(AdministrativeStatus.ACTIVE, "",
+                ctx.getPrincipal().getName());
+        return redirect(getPath());
     }
 
     @GET
     @Path("/@passivate")
     public Object passivate() {
-        try {
-            AdministrativeStatusManager manager = Framework.getLocalService(AdministrativeStatusManager.class);
-            manager.setNuxeoInstanceStatus(AdministrativeStatus.PASSIVE, "", ctx.getPrincipal().getName());
-            return redirect(getPath());
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
+        AdministrativeStatusManager manager = Framework.getService(AdministrativeStatusManager.class);
+        manager.setNuxeoInstanceStatus(AdministrativeStatus.PASSIVE, "",
+                ctx.getPrincipal().getName());
+        return redirect(getPath());
     }
 
 }

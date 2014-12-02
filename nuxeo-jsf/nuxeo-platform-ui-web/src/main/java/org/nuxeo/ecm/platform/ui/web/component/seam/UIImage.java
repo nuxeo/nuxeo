@@ -163,7 +163,7 @@ public class UIImage extends org.jboss.seam.pdf.ui.UIRectangle {
             } else {
                 seamImage.setInput(value);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Cannot resolve image for value " + value, e);
             return;
         }

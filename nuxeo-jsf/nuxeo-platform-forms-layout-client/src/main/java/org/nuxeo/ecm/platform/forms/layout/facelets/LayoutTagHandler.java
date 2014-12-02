@@ -165,15 +165,7 @@ public class LayoutTagHandler extends TagHandler {
     // TODO: add javadoc about variables exposed
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
-        WebLayoutManager layoutService;
-        try {
-            layoutService = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new FacesException(e);
-        }
-        if (layoutService == null) {
-            throw new FacesException("Layout service not found");
-        }
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         // add additional properties put on tag
         Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();

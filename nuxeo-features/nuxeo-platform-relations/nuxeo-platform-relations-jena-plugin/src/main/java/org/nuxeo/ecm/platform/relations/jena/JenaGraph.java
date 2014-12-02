@@ -162,11 +162,6 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings( { "ThrowableInstanceNeverThrown" })
-    protected static RuntimeException wrapException(Exception e) {
-        return new RuntimeException(e);
-    }
-
     /**
      * Generates the Jena graph using options.
      *
@@ -562,8 +557,6 @@ public class JenaGraph implements Graph {
                     graph.add(stmts);
                 }
             }
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -604,8 +597,6 @@ public class JenaGraph implements Graph {
                 graph.removeAllReifications(jenaStmt);
                 // graph.removeReification(reifiedStmt);
             }
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -626,8 +617,6 @@ public class JenaGraph implements Graph {
             graph.enterCriticalSection(Lock.READ);
             StmtIterator it = graph.listStatements();
             return getNXRelationsStatements(graph, it.toList());
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -655,8 +644,6 @@ public class JenaGraph implements Graph {
             SimpleSelector selector = getJenaSelector(graph, statement);
             StmtIterator it = graph.listStatements(selector);
             return getNXRelationsStatements(graph, it.toList());
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -684,8 +671,6 @@ public class JenaGraph implements Graph {
                 res.add(getNXRelationsNode(it.nextResource().asNode()));
             }
             return res;
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -718,8 +703,6 @@ public class JenaGraph implements Graph {
                 }
             }
             return res;
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -747,8 +730,6 @@ public class JenaGraph implements Graph {
                 res.add(getNXRelationsNode(it.nextNode().asNode()));
             }
             return res;
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -773,8 +754,6 @@ public class JenaGraph implements Graph {
             SimpleSelector selector = getJenaSelector(graph, statement);
             return graph.contains(selector.getSubject(),
                     selector.getPredicate(), selector.getObject());
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -799,8 +778,6 @@ public class JenaGraph implements Graph {
             com.hp.hpl.jena.graph.Node jenaNodeInst = getJenaNode(resource);
             RDFNode jenaNode = graph.asRDFNode(jenaNodeInst);
             return graph.containsResource(jenaNode);
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -828,8 +805,6 @@ public class JenaGraph implements Graph {
             graph = graphConnection.getGraph();
             graph.enterCriticalSection(Lock.READ);
             return graph.size();
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -858,8 +833,6 @@ public class JenaGraph implements Graph {
             for (ReifiedStatement rs : rss) {
                 graph.removeReification(rs);
             }
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -906,8 +879,6 @@ public class JenaGraph implements Graph {
                 count++;
             }
             res = new QueryResultImpl(count, variableNames, nuxResults);
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (qe != null) {
                 // Important - free up resources used running the query
@@ -935,8 +906,6 @@ public class JenaGraph implements Graph {
             graph.read(in, base, lang);
             // default to true
             return true;
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -954,8 +923,8 @@ public class JenaGraph implements Graph {
         try {
             in = new FileInputStream(path);
             return read(in, lang, base);
-        } catch (Exception e) {
-            throw wrapException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
             if (in != null) {
                 try {
@@ -977,8 +946,6 @@ public class JenaGraph implements Graph {
             graph.write(out, lang, base);
             // default to true
             return true;
-        } catch (Exception e) {
-            throw wrapException(e);
         } finally {
             if (graph != null) {
                 graph.leaveCriticalSection();
@@ -996,8 +963,8 @@ public class JenaGraph implements Graph {
             File file = new File(path);
             out = new FileOutputStream(file);
             return write(out, lang, base);
-        } catch (Exception e) {
-            throw wrapException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
             if (out != null) {
                 try {

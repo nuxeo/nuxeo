@@ -22,7 +22,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConver
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -48,14 +47,10 @@ public class LayoutResource {
 
     public LayoutResource(String category) throws Exception {
         this.category = category;
-        try {
-            service = Framework.getService(LayoutStore.class);
-            registeredLayoutNames = service.getLayoutDefinitionNames(category);
-            // sort so that order is deterministic
-            Collections.sort(registeredLayoutNames);
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to initialize WebLayoutsManager", e);
-        }
+        service = Framework.getService(LayoutStore.class);
+        registeredLayoutNames = service.getLayoutDefinitionNames(category);
+        // sort so that order is deterministic
+        Collections.sort(registeredLayoutNames);
     }
 
     protected TemplateView getTemplate(String name, UriInfo uriInfo) {

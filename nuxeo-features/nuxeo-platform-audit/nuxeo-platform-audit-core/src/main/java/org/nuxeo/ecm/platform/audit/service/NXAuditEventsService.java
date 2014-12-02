@@ -93,24 +93,11 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     protected void doRegisterBackend(AuditBackendDescriptor desc) {
-        if (backend!=null) {
-            try {
-                backend.deactivate();
-            } catch (Exception e) {
-                log.error("Unable to properly deactivate previous backend");
-            }
+        if (backend != null) {
+            backend.deactivate();
         }
-        try {
-            backend = desc.newInstance();
-        } catch (Exception e ) {
-            log.error("Unable to instanciate Backend", e);
-            return;
-        }
-        try {
-            backend.activate(this);
-        } catch (Exception e) {
-            log.error("Unable to init Backend", e);
-        }
+        backend = desc.newInstance();
+        backend.activate(this);
     }
 
     protected void doRegisterEvent(EventDescriptor desc) {

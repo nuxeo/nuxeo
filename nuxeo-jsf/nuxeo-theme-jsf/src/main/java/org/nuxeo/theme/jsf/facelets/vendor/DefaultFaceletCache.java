@@ -53,6 +53,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.facelets.Facelet;
 import javax.faces.view.facelets.FaceletCache;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.ui.web.application.NuxeoUnknownResource;
 
 import com.sun.faces.util.ConcurrentCache;
@@ -336,7 +337,8 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         public Record get(final URL key) throws ExecutionException {
             try {
                 return this.getFactory().newInstance(key);
-            } catch (Exception e) {
+            } catch (Exception e) { // stupid Faces API throws Exception
+                ExceptionUtils.checkInterrupt(e);
                 throw new ExecutionException(e);
             }
         }

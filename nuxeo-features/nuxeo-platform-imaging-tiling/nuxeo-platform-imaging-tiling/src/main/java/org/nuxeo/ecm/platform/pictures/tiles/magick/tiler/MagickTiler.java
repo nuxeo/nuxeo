@@ -22,10 +22,10 @@ package org.nuxeo.ecm.platform.pictures.tiles.magick.tiler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
@@ -42,8 +42,6 @@ import org.nuxeo.ecm.platform.pictures.tiles.tilers.PictureTiler;
  *
  */
 public class MagickTiler implements PictureTiler {
-
-    private static final Log log = LogFactory.getLog(MagickTiler.class);
 
     /** @since 5.9.5. */
     public static final String CMYK_MAP_COMPONENTS = "cmyk";
@@ -144,7 +142,7 @@ public class MagickTiler implements PictureTiler {
                     outputFilePath, cropCoords[2], cropCoords[3],
                     cropCoords[0], cropCoords[1], cropCoords[6], cropCoords[7],
                     mapComponents);
-        } catch (Exception e) {
+        } catch (CommandNotAvailable | CommandException e) {
             throw new ClientException(e);
         }
 

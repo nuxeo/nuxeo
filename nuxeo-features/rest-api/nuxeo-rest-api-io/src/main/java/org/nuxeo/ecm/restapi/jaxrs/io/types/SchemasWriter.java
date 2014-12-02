@@ -41,20 +41,16 @@ public class SchemasWriter extends AbstractTypeDefWriter implements
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        try {
-            JsonGenerator jg = getGenerator(entityStream);
-            jg.writeStartArray();
-            for (Schema schema : schemas.schemas) {
-                writeSchemaObject(jg, schema);
-            }
-            jg.writeEndArray();
-            // flush
-            jg.flush();
-            jg.close();
-            entityStream.flush();
-        } catch (Exception e) {
-            throw new IOException("Failed to return types as JSON", e);
+        JsonGenerator jg = getGenerator(entityStream);
+        jg.writeStartArray();
+        for (Schema schema : schemas.schemas) {
+            writeSchemaObject(jg, schema);
         }
+        jg.writeEndArray();
+        // flush
+        jg.flush();
+        jg.close();
+        entityStream.flush();
     }
 
     @Override

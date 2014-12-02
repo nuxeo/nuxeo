@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.pictures.tiles.gimp;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
@@ -55,10 +56,19 @@ public class GimpExecutor {
         useQuickExec = quickExec;
     }
 
-    protected static Map<String, String> execCmd(String[] cmd) throws Exception {
+    protected static Map<String, String> execCmd(String[] cmd)
+            throws IOException {
         long t0 = System.currentTimeMillis();
         Process p1 = Runtime.getRuntime().exec(cmd);
-        int exitValue = p1.waitFor();
+        int exitValue;
+        try {
+            exitValue = p1.waitFor();
+        } catch (InterruptedException e) {
+            // reset interrupted status
+            Thread.currentThread().interrupt();
+            // continue interrupt
+            throw new RuntimeException(e);
+        }
 
         Map<String, String> result = new HashMap<String, String>();
 
@@ -83,7 +93,7 @@ public class GimpExecutor {
     }
 
     protected static Map<String, String> quickExecCmd(String[] cmd)
-            throws Exception {
+            throws IOException {
         long t0 = System.currentTimeMillis();
         Process p1 = Runtime.getRuntime().exec(cmd);
 
@@ -122,7 +132,7 @@ public class GimpExecutor {
     }
 
     public static Map<String, String> exec(String procName, List<Object> params)
-            throws Exception {
+            throws IOException {
 
         StringBuffer procStringBuf = new StringBuffer();
 

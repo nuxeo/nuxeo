@@ -42,7 +42,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener
     @Override
     protected void doProcess(CoreSession coreSession,
             RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docMessage) throws Exception {
+            DocumentModel docMessage) throws ClientException {
         log.debug("Processing relations cleanup on Comment removal");
         String typeName = docMessage.getType();
         if (CommentsConstants.COMMENT_DOC_TYPE.equals(typeName) || "Post".equals(typeName)) {

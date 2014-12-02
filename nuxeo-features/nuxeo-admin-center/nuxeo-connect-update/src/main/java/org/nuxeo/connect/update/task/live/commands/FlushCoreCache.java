@@ -38,11 +38,7 @@ public class FlushCoreCache extends FlushCoreCachePlaceholder {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).reloadRepository();
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload repository", e);
-        }
+        Framework.getService(ReloadService.class).reloadRepository();
         return new FlushCoreCache();
     }
 

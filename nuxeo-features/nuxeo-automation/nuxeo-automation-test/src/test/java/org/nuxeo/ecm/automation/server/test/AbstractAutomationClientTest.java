@@ -109,7 +109,7 @@ public abstract class AbstractAutomationClientTest {
     // ------ Tests comes here --------
 
     @Test
-    public void testInvalidLogin() {
+    public void testInvalidLogin() throws Exception {
         try {
             client.getSession("foo", "bar");
             fail("login is supposed to fail");

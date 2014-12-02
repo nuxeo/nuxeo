@@ -166,7 +166,7 @@ public class RemotePublicationTreeManagerRestProxy implements
     }
 
     public Map<String, String> initRemoteSession(String treeConfigName,
-            Map<String, String> params) throws Exception {
+            Map<String, String> params) throws ClientException {
 
         List<Object> cparams = new ArrayList<Object>();
         cparams.add(treeConfigName);

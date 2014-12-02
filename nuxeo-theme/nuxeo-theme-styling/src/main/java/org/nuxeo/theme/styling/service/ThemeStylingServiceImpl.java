@@ -39,6 +39,8 @@ import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.presets.PaletteIdentifyException;
+import org.nuxeo.theme.presets.PaletteParseException;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.resources.ResourceManager;
@@ -305,7 +307,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements
                         } else {
                             presetsByCat.put(cat, allEntries);
                         }
-                    } catch (Exception e) {
+                    } catch (PaletteIdentifyException | PaletteParseException e) {
                         log.error(String.format("Could not parse palette for "
                                 + "preset with source '%s' in flavor '%s'",
                                 myPreset.getSrc(), flavorName), e);

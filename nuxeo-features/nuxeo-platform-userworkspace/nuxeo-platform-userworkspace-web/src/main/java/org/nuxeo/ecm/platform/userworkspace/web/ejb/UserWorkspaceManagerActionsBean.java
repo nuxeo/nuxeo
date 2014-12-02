@@ -95,17 +95,8 @@ public class UserWorkspaceManagerActionsBean implements
 
     public void initialize() {
         log.debug("Initializing user workspace manager actions bean");
-        try {
-            // Rux INA-252: use a getter
-            // userWorkspaceService =
-            // Framework.getLocalService(UserWorkspaceService.class);
-            showingPersonalWorkspace = false;
-            initialized = true;
-        } catch (Exception e) {
-            log.error(
-                    "There was an error while trying to get UserWorkspaceService",
-                    e);
-        }
+        showingPersonalWorkspace = false;
+        initialized = true;
     }
 
     @Destroy

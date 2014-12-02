@@ -11,11 +11,13 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.IOException;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface Connector {
 
-    Object execute(Request request);
+    Object execute(Request request) throws IOException;
 
 }

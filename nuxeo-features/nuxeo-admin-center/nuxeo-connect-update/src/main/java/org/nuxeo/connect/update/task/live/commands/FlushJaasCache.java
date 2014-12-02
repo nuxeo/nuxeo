@@ -37,11 +37,7 @@ public class FlushJaasCache extends FlushJaasCachePlaceholder {
     @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
-        try {
-            Framework.getLocalService(ReloadService.class).flushJaasCache();
-        } catch (Exception e) {
-            throw new PackageException("Failed to reload repository", e);
-        }
+        Framework.getService(ReloadService.class).flushJaasCache();
         return new FlushJaasCache();
     }
 

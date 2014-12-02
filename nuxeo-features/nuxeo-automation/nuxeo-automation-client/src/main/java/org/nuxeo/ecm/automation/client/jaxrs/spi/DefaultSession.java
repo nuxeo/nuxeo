@@ -15,10 +15,10 @@ import static org.nuxeo.ecm.automation.client.Constants.CTYPE_REQUEST_NOCHARSET;
 import static org.nuxeo.ecm.automation.client.Constants.REQUEST_ACCEPT_HEADER;
 import static org.nuxeo.ecm.automation.client.Constants.HEADER_NX_SCHEMAS;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.LoginInfo;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -79,7 +79,7 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public Object execute(OperationRequest request) throws Exception {
+    public Object execute(OperationRequest request) throws IOException {
         Request req;
         String content = JsonMarshalling.writeRequest(request);
         String ctype;
@@ -116,70 +116,24 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public void execute(final OperationRequest request,
-            final AsyncCallback<Object> cb) {
-        client.asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    cb.onSuccess(execute(request));
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    @Override
-    public Blob getFile(String path) throws Exception {
+    public Blob getFile(String path) throws IOException {
         Request req = new Request(Request.GET, path);
         return (Blob) connector.execute(req);
     }
 
     @Override
-    public Blobs getFiles(String path) throws Exception {
+    public Blobs getFiles(String path) throws IOException {
         Request req = new Request(Request.GET, client.getBaseUrl() + path);
         return (Blobs) connector.execute(req);
     }
 
     @Override
-    public void getFile(final String path, final AsyncCallback<Blob> cb)
-            throws Exception {
-        client.asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    cb.onSuccess(getFile(path));
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void getFiles(final String path, final AsyncCallback<Blobs> cb)
-            throws Exception {
-        client.asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    cb.onSuccess(getFiles(path));
-                } catch (Throwable t) {
-                    cb.onError(t);
-                }
-            }
-        });
-    }
-
-    @Override
-    public OperationRequest newRequest(String id) throws Exception {
+    public OperationRequest newRequest(String id) {
         return newRequest(id, new HashMap<String, Object>());
     }
 
     @Override
-    public OperationRequest newRequest(String id, Map<String, Object> ctx)
-            throws Exception {
+    public OperationRequest newRequest(String id, Map<String, Object> ctx) {
         OperationDocumentation op = getOperation(id);
         if (op == null) {
             throw new IllegalArgumentException("No such operation: " + id);

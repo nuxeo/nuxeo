@@ -69,13 +69,9 @@ public class DeleteRelationsListener implements EventListener {
         }
     }
 
-    public RelationManager getRelationManager() throws ClientException {
+    public RelationManager getRelationManager() {
         if (relationManager == null) {
-            try {
-                relationManager = Framework.getService(RelationManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            relationManager = Framework.getService(RelationManager.class);
         }
         return relationManager;
     }

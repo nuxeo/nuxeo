@@ -42,7 +42,7 @@ public class DocumentRemovedCommentEventListener extends
     @Override
     protected void doProcess(CoreSession coreSession,
             RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docMessage) throws Exception {
+            DocumentModel docMessage) throws ClientException {
         log.debug("Processing relations cleanup on Document removal");
         onDocumentRemoved(coreSession, relationManager, config, docMessage);
     }
@@ -72,7 +72,7 @@ public class DocumentRemovedCommentEventListener extends
                 try {
                     coreSession.removeDocument(docModel.getRef());
                     log.debug("comment removal succeded for id: " + commentId);
-                } catch (Exception e) {
+                } catch (ClientException e) {
                     log.error("comment removal failed", e);
                 }
             } else {

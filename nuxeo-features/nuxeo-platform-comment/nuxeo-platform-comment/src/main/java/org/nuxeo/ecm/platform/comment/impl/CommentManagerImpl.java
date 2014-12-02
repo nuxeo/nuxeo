@@ -89,21 +89,12 @@ public class CommentManagerImpl implements CommentManager {
         commentConverter = config.getCommentConverter();
     }
 
-    private static RelationManager getRelationManager() throws Exception {
-        return Framework.getService(RelationManager.class);
-    }
-
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
                 ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                 docModel.getCoreSession());
-        RelationManager relationManager;
-        try {
-            relationManager = getRelationManager();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        RelationManager relationManager = Framework.getService(RelationManager.class);
         Graph graph = relationManager.getGraphByName(config.graphName);
         Resource docResource = relationManager.getResource(
                 config.documentNamespace, docModel, ctxMap);
@@ -131,7 +122,7 @@ public class CommentManagerImpl implements CommentManager {
             try {
                 commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(
                         config.commentNamespace, subject, ctxMap);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("failed to retrieve commentDocModel from relations");
             }
             if (commentDocModel == null) {
@@ -208,32 +199,27 @@ public class CommentManagerImpl implements CommentManager {
         String author = updateAuthor(docModel, comment);
         DocumentModel createdComment;
 
-        try {
-            createdComment = createCommentDocModel(session, docModel, comment,
-                    path);
+        createdComment = createCommentDocModel(session, docModel, comment, path);
 
-            RelationManager relationManager = getRelationManager();
+        RelationManager relationManager = Framework.getService(RelationManager.class);
 
-            Resource commentRes = relationManager.getResource(
-                    config.commentNamespace, createdComment, null);
+        Resource commentRes = relationManager.getResource(
+                config.commentNamespace, createdComment, null);
 
-            Resource documentRes = relationManager.getResource(
-                    config.documentNamespace, docModel, null);
+        Resource documentRes = relationManager.getResource(
+                config.documentNamespace, docModel, null);
 
-            if (commentRes == null || documentRes == null) {
-                throw new ClientException(
-                        "Could not adapt document model to relation resource ; "
-                                + "check the service relation adapters configuration");
-            }
-
-            Resource predicateRes = new ResourceImpl(config.predicateNamespace);
-
-            Statement stmt = new StatementImpl(commentRes, predicateRes,
-                    documentRes);
-            relationManager.getGraphByName(config.graphName).add(stmt);
-        } catch (Exception e) {
-            throw new ClientException("failed to create comment", e);
+        if (commentRes == null || documentRes == null) {
+            throw new ClientException(
+                    "Could not adapt document model to relation resource ; "
+                            + "check the service relation adapters configuration");
         }
+
+        Resource predicateRes = new ResourceImpl(config.predicateNamespace);
+
+        Statement stmt = new StatementImpl(commentRes, predicateRes,
+                documentRes);
+        relationManager.getGraphByName(config.graphName).add(stmt);
 
         NuxeoPrincipal principal = null;
         try {
@@ -244,7 +230,7 @@ public class CommentManagerImpl implements CommentManager {
             } else {
                 principal = userManager.getPrincipal(author);
             }
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error building principal for notification", e);
         }
         if (principal != null) {
@@ -301,12 +287,7 @@ public class CommentManagerImpl implements CommentManager {
         String pathStr = parent.getPathAsString();
         String commentName = getCommentName(docModel, comment);
         CommentConverter converter = config.getCommentConverter();
-        PathSegmentService pss;
-        try {
-            pss = Framework.getService(PathSegmentService.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel commentDocModel = mySession.createDocumentModel(comment.getType());
         commentDocModel.setProperty("dublincore", "title", commentName);
         converter.updateDocumentModel(commentDocModel, comment);
@@ -340,12 +321,8 @@ public class CommentManagerImpl implements CommentManager {
         ctx.setProperties(props);
         Event event = ctx.newEvent(eventType);
 
-        try {
-            EventProducer evtProducer = Framework.getService(EventProducer.class);
-            evtProducer.fireEvent(event);
-        } catch (Exception e) {
-            log.error("Error while send message", e);
-        }
+        EventProducer evtProducer = Framework.getService(EventProducer.class);
+        evtProducer.fireEvent(event);
         // send also a synchronous Seam message so the CommentManagerActionBean
         // can rebuild its list
         // Events.instance().raiseEvent(eventType, docModel);
@@ -474,7 +451,7 @@ public class CommentManagerImpl implements CommentManager {
                     "dublincore", "contributors");
             UserManager userManager = Framework.getService(UserManager.class);
             return userManager.getPrincipal(contributors[0]);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("Error building principal for comment author", e);
             return null;
         }
@@ -482,11 +459,7 @@ public class CommentManagerImpl implements CommentManager {
 
     public List<DocumentModel> getComments(DocumentModel docModel,
             DocumentModel parent) throws ClientException {
-        try {
-            return getComments(parent);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        return getComments(parent);
     }
 
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment)
@@ -494,12 +467,7 @@ public class CommentManagerImpl implements CommentManager {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
                 ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                 comment.getCoreSession());
-        RelationManager relationManager;
-        try {
-            relationManager = getRelationManager();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        RelationManager relationManager = Framework.getService(RelationManager.class);
         Graph graph = relationManager.getGraphByName(config.graphName);
         Resource commentResource = relationManager.getResource(
                 config.commentNamespace, comment, ctxMap);
@@ -523,13 +491,8 @@ public class CommentManagerImpl implements CommentManager {
         List<DocumentModel> docList = new ArrayList<DocumentModel>();
         for (Statement stmt : statementList) {
             QNameResourceImpl subject = (QNameResourceImpl) stmt.getObject();
-            DocumentModel docModel = null;
-            try {
-                docModel = (DocumentModel) relationManager.getResourceRepresentation(
-                        config.documentNamespace, subject, ctxMap);
-            } catch (Exception e) {
-                log.error("failed to retrieve documents from relations");
-            }
+            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
+                    config.documentNamespace, subject, ctxMap);
             if (docModel == null) {
                 log.warn("Could not adapt comment relation subject to a document "
                         + "model; check the service relation adapters configuration");

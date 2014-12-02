@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.invalidations;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.logging.Log;
@@ -57,24 +56,22 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
         Object target = invocationContext.getTarget();
         for (Method meth : target.getClass().getMethods()) {
             if (meth.isAnnotationPresent(DocumentContextInvalidation.class)) {
-                try {
-                    doInvalidationCall(target, meth);
-                } catch (Exception e) {
-                    log.error("Error during Invalidation method call", e);
-                }
+                doInvalidationCall(target, meth);
             }
         }
     }
 
-    private void doInvalidationCall(Object target, Method meth)
-            throws IllegalArgumentException, IllegalAccessException,
-            InvocationTargetException {
-        if (meth.getParameterTypes().length == 0) {
-            meth.invoke(target);
-        } else {
-            DocumentModel currentDoc = getCurrentDocumentModel();
-            // currentDoc may be null, it's ok
-            meth.invoke(target, currentDoc);
+    private void doInvalidationCall(Object target, Method meth) {
+        try {
+            if (meth.getParameterTypes().length == 0) {
+                meth.invoke(target);
+            } else {
+                DocumentModel currentDoc = getCurrentDocumentModel();
+                // currentDoc may be null, it's ok
+                meth.invoke(target, currentDoc);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
         }
     }
 

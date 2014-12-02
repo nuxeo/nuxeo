@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.platform.mail.web.utils.MailWebConstants.CURRENT_PAG
 
 import java.io.Serializable;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -65,12 +67,12 @@ public class MailActionsBean implements Serializable {
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    public String checkCurrentInbox() throws ClientException {
+    public String checkCurrentInbox() {
         DocumentModel mailFolder = navigationContext.getCurrentDocument();
 
         try {
             MailCoreHelper.checkMail(mailFolder, documentManager);
-        } catch (Exception e) {
+        } catch (MessagingException | ClientException e) {
             log.debug(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
@@ -83,7 +85,7 @@ public class MailActionsBean implements Serializable {
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.check.mail.success"));
-        Events.instance().raiseEvent("documentChildrenChanged");   
+        Events.instance().raiseEvent("documentChildrenChanged");
 
         return CURRENT_PAGE;
     }

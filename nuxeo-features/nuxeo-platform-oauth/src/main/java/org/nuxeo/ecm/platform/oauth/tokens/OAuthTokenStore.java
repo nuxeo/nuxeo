@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.oauth.tokens;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
+
 /**
  * Service interface for managing {@link OAuthToken} used both :
  *  - in the OAuth the Filter (Server side Tokens) : where Nuxeo is the provider
@@ -72,7 +74,7 @@ public interface OAuthTokenStore {
     /**
      * Deletes an ACCESS Token from the storage.
      */
-    void removeAccessToken(String token) throws Exception;
+    void removeAccessToken(String token) throws ClientException;
 
     /**
      * Lists ACCESS Token associated to a User.
@@ -94,11 +96,11 @@ public interface OAuthTokenStore {
     /**
      * Get a Access token for the Shindig Client.
      */
-    NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws Exception;
+    NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws ClientException;
 
     /**
      * Deletes a Client side Access Token.
      */
-    void removeClientAccessToken(String appId, String owner) throws Exception;
+    void removeClientAccessToken(String appId, String owner) throws ClientException;
 
 }

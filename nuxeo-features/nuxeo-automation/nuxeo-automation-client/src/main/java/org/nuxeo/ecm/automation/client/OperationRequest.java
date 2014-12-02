@@ -41,8 +41,6 @@ public interface OperationRequest {
 
     Object execute() throws Exception;
 
-    void execute(AsyncCallback<Object> cb);
-
     Map<String, Object> getParameters();
 
     Map<String, Object> getContextParameters();

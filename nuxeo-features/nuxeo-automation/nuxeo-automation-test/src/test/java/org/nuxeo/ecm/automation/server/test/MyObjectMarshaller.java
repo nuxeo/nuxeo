@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -40,7 +42,7 @@ public class MyObjectMarshaller implements JsonMarshaller<MyObject> {
     }
 
     @Override
-    public MyObject read(JsonParser jp) throws Exception {
+    public MyObject read(JsonParser jp) throws IOException {
         if (jp.getCodec() == null) {
             jp.setCodec(new ObjectMapper());
         }
@@ -48,7 +50,7 @@ public class MyObjectMarshaller implements JsonMarshaller<MyObject> {
         return jp.readValueAs(MyObject.class);
     }
 
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         throw new UnsupportedOperationException();
     }
 

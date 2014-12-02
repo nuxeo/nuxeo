@@ -37,6 +37,7 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SUBJECT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.TEXT_PROPERTY_NAME;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,7 +72,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean execute(ExecutionContext context) throws Exception {
+    public boolean execute(ExecutionContext context) {
         CoreSession session = getCoreSession(context);
         if (session == null) {
             log.error("Could not open CoreSession");
@@ -127,10 +128,15 @@ public class CreateDocumentsAction extends AbstractMailAction {
             Map<String, Serializable> parameters = new HashMap<String, Serializable>();
             parameters.put("tagFilter", "body");
             BlobHolder simpleTextBH = conversionService.convert("html2text", simpleBlobHolder, parameters);
-            String simpleText = simpleTextBH.getBlob().getString();
-            documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);            
+            String simpleText;
+            try {
+                simpleText = simpleTextBH.getBlob().getString();
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
+            documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);
         }
-        
+
         UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(
                 documentModel, session);
         unrestrictedCreateDocument.runUnrestricted();

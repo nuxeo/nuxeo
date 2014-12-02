@@ -52,11 +52,12 @@ public class MailBoxActionsImpl implements MailBoxActions {
         pipe.addAll(actions);
     }
 
-    public void execute() throws Exception {
+    public void execute() throws MessagingException {
         execute(null);
     }
 
-    public void execute(ExecutionContext initialContext) throws Exception {
+    public void execute(ExecutionContext initialContext)
+            throws MessagingException {
         visitor.visit(folder, initialContext);
         folder.close(expunge);
     }

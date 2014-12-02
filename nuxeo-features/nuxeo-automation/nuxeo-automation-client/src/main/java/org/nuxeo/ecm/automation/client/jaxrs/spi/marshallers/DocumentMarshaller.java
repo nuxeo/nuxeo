@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
@@ -37,11 +39,11 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
     }
 
     @Override
-    public Document read(JsonParser jp) throws Exception {
+    public Document read(JsonParser jp) throws IOException {
         return readDocument(jp);
     }
 
-    protected static Document readDocument(JsonParser jp) throws Exception {
+    protected static Document readDocument(JsonParser jp) throws IOException {
         String uid = null;
         String type = null;
         String path = null;
@@ -109,7 +111,8 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, isCheckedOut, props, null);
     }
 
-    protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {
+    protected static void readProperties(JsonParser jp, PropertyMap props)
+            throws IOException {
         PropertyMapSetter setter = new PropertyMapSetter(props);
         JsonToken tok = jp.nextToken();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -132,13 +135,15 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         }
     }
 
-    protected static PropertyMap readObjectProperty(JsonParser jp) throws Exception {
+    protected static PropertyMap readObjectProperty(JsonParser jp)
+            throws IOException {
         PropertyMap map = new PropertyMap();
         readProperties(jp, map);
         return map;
     }
 
-    protected static PropertyList readArrayProperty(JsonParser jp) throws Exception {
+    protected static PropertyList readArrayProperty(JsonParser jp)
+            throws IOException {
         PropertyList list = new PropertyList();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
@@ -155,7 +160,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
     }
 
     @Override
-    public void write(JsonGenerator jg, Object value) throws Exception {
+    public void write(JsonGenerator jg, Object value) throws IOException {
         // TODO: extend the server json API to allow for document refs passed as
         // JSON data-structures instead of the input ref microsyntax used by
         throw new UnsupportedOperationException();

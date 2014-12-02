@@ -42,39 +42,34 @@ public class DocumentTypesWriter extends AbstractTypeDefWriter implements
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        try {
+        JsonGenerator jg = getGenerator(entityStream);
 
-            JsonGenerator jg = getGenerator(entityStream);
+        // start root
+        jg.writeStartObject();
 
-            // start root
-            jg.writeStartObject();
-
-            // write types
-            jg.writeObjectFieldStart("doctypes");
-            for (DocumentType doctype : typesDef.getDocTypes()) {
-                jg.writeObjectFieldStart(doctype.getName());
-                writeDocType(jg, doctype, false);
-                jg.writeEndObject();
-            }
+        // write types
+        jg.writeObjectFieldStart("doctypes");
+        for (DocumentType doctype : typesDef.getDocTypes()) {
+            jg.writeObjectFieldStart(doctype.getName());
+            writeDocType(jg, doctype, false);
             jg.writeEndObject();
-
-            // write schemas
-            jg.writeObjectFieldStart("schemas");
-            for (Schema schema : typesDef.getSchemas()) {
-                writeSchema(jg, schema);
-            }
-            jg.writeEndObject();
-
-            // end root
-            jg.writeEndObject();
-
-            // flush
-            jg.flush();
-            jg.close();
-            entityStream.flush();
-        } catch (Exception e) {
-            throw new IOException("Failed to return types as JSON", e);
         }
+        jg.writeEndObject();
+
+        // write schemas
+        jg.writeObjectFieldStart("schemas");
+        for (Schema schema : typesDef.getSchemas()) {
+            writeSchema(jg, schema);
+        }
+        jg.writeEndObject();
+
+        // end root
+        jg.writeEndObject();
+
+        // flush
+        jg.flush();
+        jg.close();
+        entityStream.flush();
     }
 
     @Override

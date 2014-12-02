@@ -69,13 +69,8 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
         // put outcome in request params
         httpRequest.setAttribute(URLPolicyService.POST_OUTCOME_REQUEST_KEY,
                 outcome);
-        URLPolicyService pservice = null;
-        try {
-            pservice = Framework.getService(URLPolicyService.class);
-            pservice.appendParametersToRequest(context);
-        } catch (Exception e) {
-            log.error("error occured while appending params to request: ", e);
-        }
+        URLPolicyService pservice = Framework.getService(URLPolicyService.class);
+        pservice.appendParametersToRequest(context);
         // get old root to check if it's changed
         UIViewRoot oldRoot = context.getViewRoot();
         parent.handleNavigation(context, fromAction, outcome);

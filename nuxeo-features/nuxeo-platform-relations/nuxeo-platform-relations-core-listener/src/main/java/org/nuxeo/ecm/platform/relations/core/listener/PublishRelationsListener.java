@@ -75,13 +75,9 @@ public class PublishRelationsListener implements EventListener {
     protected List<String> graphNamesForCopyFromReplacedProxy = Arrays.asList(
             RelationConstants.GRAPH_NAME, "documentComments");
 
-    public RelationManager getRelationManager() throws ClientException {
+    public RelationManager getRelationManager() {
         if (rmanager == null) {
-            try {
-                rmanager = Framework.getService(RelationManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            rmanager = Framework.getService(RelationManager.class);
         }
         return rmanager;
     }

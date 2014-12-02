@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.task.CreateTask.OperationTaskVariableName;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -79,7 +80,7 @@ public class TaskEndedEventListener implements EventListener {
                 } catch (InvalidChainException e) {
                     log.error("Unknown chain: " + chain);
                 }
-            } catch (Throwable t) {
+            } catch (OperationException t) {
                 log.error(t, t);
             }
         }

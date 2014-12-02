@@ -56,7 +56,7 @@ public final class NegotiationType implements Type {
                 Scheme scheme = null;
                 try {
                     scheme = (Scheme) Class.forName(schemeClassName).newInstance();
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Could not create instance: " + schemeClassName);
                     continue;
                 }

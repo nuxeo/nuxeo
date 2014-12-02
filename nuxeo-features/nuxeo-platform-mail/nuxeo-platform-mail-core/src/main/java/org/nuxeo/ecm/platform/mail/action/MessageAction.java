@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.mail.action;
 
+import javax.mail.MessagingException;
+
 /**
  * Object method for a message action.
  *
@@ -33,8 +35,8 @@ public interface MessageAction {
      *
      * @see ExecutionContext
      */
-    boolean execute(ExecutionContext context) throws Exception;
+    boolean execute(ExecutionContext context) throws MessagingException;
 
-    void reset(ExecutionContext context) throws Exception;
+    void reset(ExecutionContext context);
 
 }

@@ -45,9 +45,11 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
+import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
@@ -382,160 +384,160 @@ public class AppCenterViewsManager implements Serializable {
 
         @Override
         public void run() {
-            try {
-                if (validate) {
-                    ValidationStatus status = new ValidationStatus();
+            if (validate) {
+                ValidationStatus status = new ValidationStatus();
 
-                    pm.flushCache();
-                    DownloadablePackage remotePkg = pm.findRemotePackageById(packageId);
-                    if (remotePkg == null) {
+                pm.flushCache();
+                DownloadablePackage remotePkg = pm.findRemotePackageById(packageId);
+                if (remotePkg == null) {
+                    status.addError(String.format(
+                            "Cannot perform validation: remote package '%s' not found",
+                            packageId));
+                    return;
+                }
+                PackageDependency[] pkgDeps = remotePkg.getDependencies();
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("%s target platforms: %s",
+                            remotePkg,
+                            ArrayUtils.toString(remotePkg.getTargetPlatforms())));
+                    log.debug(String.format("%s dependencies: %s", remotePkg,
+                            ArrayUtils.toString(pkgDeps)));
+                }
+
+                // TODO NXP-11776: replace errors by internationalized
+                // labels
+                String targetPlatform = PlatformVersionHelper.getPlatformFilter();
+                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
+                        remotePkg, targetPlatform)) {
+                    status.addError(String.format(
+                            "This package is not validated for your current platform: %s",
+                            targetPlatform));
+                }
+                // check deps requirements
+                if (pkgDeps != null && pkgDeps.length > 0) {
+                    DependencyResolution resolution = pm.resolveDependencies(
+                            packageId, targetPlatform);
+                    if (resolution.isFailed() && targetPlatform != null) {
+                        // retry without PF filter in case it gives more
+                        // information
+                        resolution = pm.resolveDependencies(packageId, null);
+                    }
+                    if (resolution.isFailed()) {
                         status.addError(String.format(
-                                "Cannot perform validation: remote package '%s' not found",
-                                packageId));
-                        return;
-                    }
-                    PackageDependency[] pkgDeps = remotePkg.getDependencies();
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "%s target platforms: %s",
-                                remotePkg,
-                                ArrayUtils.toString(remotePkg.getTargetPlatforms())));
-                        log.debug(String.format("%s dependencies: %s",
-                                remotePkg, ArrayUtils.toString(pkgDeps)));
-                    }
-
-                    // TODO NXP-11776: replace errors by internationalized
-                    // labels
-                    String targetPlatform = PlatformVersionHelper.getPlatformFilter();
-                    if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
-                            remotePkg, targetPlatform)) {
-                        status.addError(String.format(
-                                "This package is not validated for your current platform: %s",
-                                targetPlatform));
-                    }
-                    // check deps requirements
-                    if (pkgDeps != null && pkgDeps.length > 0) {
-                        DependencyResolution resolution = pm.resolveDependencies(
-                                packageId, targetPlatform);
-                        if (resolution.isFailed() && targetPlatform != null) {
-                            // retry without PF filter in case it gives more
-                            // information
-                            resolution = pm.resolveDependencies(packageId, null);
+                                "Dependency check has failed for package '%s' (%s)",
+                                packageId, resolution));
+                    } else {
+                        List<String> pkgToInstall = resolution.getInstallPackageIds();
+                        if (pkgToInstall != null && pkgToInstall.size() == 1
+                                && packageId.equals(pkgToInstall.get(0))) {
+                            // ignore
+                        } else if (resolution.requireChanges()) {
+                            // do not install needed deps: they may not be
+                            // hot-reloadable and that's not what the
+                            // "update snapshot" button is for.
+                            status.addError(resolution.toString().trim().replaceAll(
+                                    "\n", "<br />"));
                         }
-                        if (resolution.isFailed()) {
-                            status.addError(String.format(
-                                    "Dependency check has failed for package '%s' (%s)",
-                                    packageId, resolution));
-                        } else {
-                            List<String> pkgToInstall = resolution.getInstallPackageIds();
-                            if (pkgToInstall != null
-                                    && pkgToInstall.size() == 1
-                                    && packageId.equals(pkgToInstall.get(0))) {
-                                // ignore
-                            } else if (resolution.requireChanges()) {
-                                // do not install needed deps: they may not be
-                                // hot-reloadable and that's not what the
-                                // "update snapshot" button is for.
-                                status.addError(resolution.toString().trim().replaceAll(
-                                        "\n", "<br />"));
-                            }
-                        }
-                    }
-
-                    if (status.hasErrors()) {
-                        setStatus(
-                                SnapshotStatus.error,
-                                translate("label.studio.update.validation.error"),
-                                status);
-                        return;
                     }
                 }
 
-                // Effective install
-                if (Framework.isDevModeSet()) {
+                if (status.hasErrors()) {
+                    setStatus(SnapshotStatus.error,
+                            translate("label.studio.update.validation.error"),
+                            status);
+                    return;
+                }
+            }
+
+            // Effective install
+            if (Framework.isDevModeSet()) {
+                try {
+                    PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+                    LocalPackage pkg = pus.getPackage(packageId);
+
+                    // Uninstall and/or remove if needed
+                    if (pkg != null) {
+                        log.info(String.format("Updating package %s...", pkg));
+                        if (pkg.getPackageState().isInstalled()) {
+                            // First remove it to allow SNAPSHOT upgrade
+                            log.info("Uninstalling " + packageId);
+                            Task uninstallTask = pkg.getUninstallTask();
+                            try {
+                                performTask(uninstallTask);
+                            } catch (PackageException e) {
+                                uninstallTask.rollback();
+                                throw e;
+                            }
+                        }
+                        pus.removePackage(packageId);
+                    }
+
+                    // Download
+                    setStatus(SnapshotStatus.downloading, null);
+                    DownloadingPackage downloadingPkg;
                     try {
-                        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-                        LocalPackage pkg = pus.getPackage(packageId);
-
-                        // Uninstall and/or remove if needed
-                        if (pkg != null) {
-                            log.info(String.format("Updating package %s...",
-                                    pkg));
-                            if (pkg.getPackageState().isInstalled()) {
-                                // First remove it to allow SNAPSHOT upgrade
-                                log.info("Uninstalling " + packageId);
-                                Task uninstallTask = pkg.getUninstallTask();
-                                try {
-                                    performTask(uninstallTask);
-                                } catch (PackageException e) {
-                                    uninstallTask.rollback();
-                                    throw e;
-                                }
-                            }
-                            pus.removePackage(packageId);
+                        downloadingPkg = pm.download(packageId);
+                    } catch (ConnectServerError e) {
+                        setStatus(SnapshotStatus.error, e.getMessage());
+                        return;
+                    } catch (Exception e) { // TODO fix connect-client API
+                        ExceptionUtils.checkInterrupt(e);
+                        setStatus(SnapshotStatus.error, e.getMessage());
+                        return;
+                    }
+                    try {
+                        while (!downloadingPkg.isCompleted()) {
+                            studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
+                            Thread.sleep(100);
+                            log.debug("downloading studio snapshot package");
                         }
-
-                        // Download
-                        setStatus(SnapshotStatus.downloading, null);
-                        DownloadingPackage downloadingPkg = pm.download(packageId);
-                        try {
-                            while (!downloadingPkg.isCompleted()) {
-                                studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
-                                Thread.sleep(100);
-                                log.debug("downloading studio snapshot package");
-                            }
-                            log.debug("studio snapshot package download completed, starting installation");
-                            Thread.sleep(200);
-                            setStatus(SnapshotStatus.saving, null);
-                            // FIXME JC: Is this a workaround for some issue?
-                            // downloadingPkg.isCompleted() is true!
-                            while (pus.getPackage(downloadingPkg.getId()) == null) {
-                                studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
-                                Thread.sleep(50);
-                                log.debug("downloading studio snapshot package");
-                            }
-                        } catch (PackageException | InterruptedException e) {
-                            log.error(
-                                    "Error while downloading studio snapshot",
-                                    e);
-                            setStatus(
-                                    SnapshotStatus.error,
-                                    translate(
-                                            "label.studio.update.downloading.error",
-                                            e.getMessage()));
-                            return;
+                        log.debug("studio snapshot package download completed, starting installation");
+                        Thread.sleep(200);
+                        setStatus(SnapshotStatus.saving, null);
+                        // FIXME JC: Is this a workaround for some issue?
+                        // downloadingPkg.isCompleted() is true!
+                        while (pus.getPackage(downloadingPkg.getId()) == null) {
+                            studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
+                            Thread.sleep(50);
+                            log.debug("downloading studio snapshot package");
                         }
-
-                        // Install
-                        setStatus(SnapshotStatus.installing, null);
-                        log.info("Installing " + packageId);
-                        pkg = pus.getPackage(packageId);
-                        Task installTask = pkg.getInstallTask();
-                        try {
-                            performTask(installTask);
-                        } catch (PackageException e) {
-                            installTask.rollback();
-                            throw e;
-                        }
-                        // Refresh state
-                        pkg = pus.getPackage(packageId);
-                        lastUpdate = pus.getInstallDate(packageId);
-                        setStatus(SnapshotStatus.completed, null);
-                    } catch (PackageException e) {
-                        log.error("Error while installing studio snapshot", e);
+                    } catch (PackageException | InterruptedException e) {
+                        ExceptionUtils.checkInterrupt(e);
+                        log.error("Error while downloading studio snapshot", e);
                         setStatus(
                                 SnapshotStatus.error,
                                 translate(
-                                        "label.studio.update.installation.error",
+                                        "label.studio.update.downloading.error",
                                         e.getMessage()));
+                        return;
                     }
-                } else {
-                    InstallAfterRestart.addPackageForInstallation(packageId);
-                    setStatus(SnapshotStatus.restartNeeded, null);
-                    setupWizardAction.setNeedsRestart(true);
+
+                    // Install
+                    setStatus(SnapshotStatus.installing, null);
+                    log.info("Installing " + packageId);
+                    pkg = pus.getPackage(packageId);
+                    Task installTask = pkg.getInstallTask();
+                    try {
+                        performTask(installTask);
+                    } catch (PackageException e) {
+                        installTask.rollback();
+                        throw e;
+                    }
+                    // Refresh state
+                    pkg = pus.getPackage(packageId);
+                    lastUpdate = pus.getInstallDate(packageId);
+                    setStatus(SnapshotStatus.completed, null);
+                } catch (PackageException e) {
+                    log.error("Error while installing studio snapshot", e);
+                    setStatus(
+                            SnapshotStatus.error,
+                            translate("label.studio.update.installation.error",
+                                    e.getMessage()));
                 }
-            } catch (Exception e) {
-                setStatus(SnapshotStatus.error, e.getMessage());
+            } else {
+                InstallAfterRestart.addPackageForInstallation(packageId);
+                setStatus(SnapshotStatus.restartNeeded, null);
+                setupWizardAction.setNeedsRestart(true);
             }
         }
 

@@ -103,7 +103,7 @@ public class TestInvokationHandler implements PublicationInvokationHandler {
                         + methodName);
             }
 
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientException("Error during invocation of method "
                     + methodName, e);
         } finally {

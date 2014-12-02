@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 import java.util.Set;
 
 import javax.management.InstanceNotFoundException;
+import javax.management.JMException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -65,13 +66,13 @@ public class SeamHotReloadHelper {
             Field f = Seam.class.getDeclaredField("CLASSLOADERS_LOADED");
             f.setAccessible(true);
             ((Set<?>) f.get(null)).clear();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.warn("Can't flush seam class loader cache", e);
         }
         try {
             // TODO: check if this would be needed for Studio hot reload (?)
             flushWebResources();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | JMException e) {
             log.error(
                     "Cannot flush web resources, did you start with the sdk profile active ?",
                     e);
@@ -111,8 +112,7 @@ public class SeamHotReloadHelper {
      * @since 5.5
      */
     protected static void flushWebResources()
-            throws MalformedObjectNameException, ReflectionException,
-            InstanceNotFoundException, MBeanException {
+            throws ReflectiveOperationException, JMException {
         ObjectName on = new ObjectName("org.nuxeo:type=sdk,name=web-resources");
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         if (mbs.isRegistered(on)) {

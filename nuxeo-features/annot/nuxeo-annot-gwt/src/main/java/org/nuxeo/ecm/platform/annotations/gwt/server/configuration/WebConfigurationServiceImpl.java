@@ -61,21 +61,15 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
     private static final Log log = LogFactory.getLog(WebConfigurationServiceImpl.class);
 
-    private static WebAnnotationConfigurationService webAnnotationConfigurationService;
+    private WebAnnotationConfigurationService webAnnotationConfigurationService;
 
     protected DocumentViewCodecManager documentViewCodecManager;
 
     private NuxeoPrincipal currentUser;
 
-    protected static WebAnnotationConfigurationService getConfig() {
-        if (webAnnotationConfigurationService==null) {
-            try {
-                webAnnotationConfigurationService = Framework.getService(WebAnnotationConfigurationService.class);
-            } catch (Exception e) {
-                log.error(
-                        "Unable to find WebAnnotationConfigurationService service",
-                        e);
-            }
+    protected WebAnnotationConfigurationService getConfig() {
+        if (webAnnotationConfigurationService == null) {
+            webAnnotationConfigurationService = Framework.getService(WebAnnotationConfigurationService.class);
         }
         return webAnnotationConfigurationService;
     }
@@ -143,11 +137,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
 
     protected DocumentViewCodecManager getDocumentViewCodecManager() {
         if (documentViewCodecManager == null) {
-            try {
-                documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
-            } catch (Exception e) {
-                log.error("Unable to get DocumentViewCodecManager", e);
-            }
+            documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
         }
         return documentViewCodecManager;
     }

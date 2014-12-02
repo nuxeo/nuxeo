@@ -235,13 +235,9 @@ public class UITypesConfigurationActions implements Serializable {
         return Collections.unmodifiableList(types);
     }
 
-    protected SchemaManager getSchemaManager() throws ClientException {
+    protected SchemaManager getSchemaManager() {
         if (schemaManager == null) {
-            try {
-                schemaManager = Framework.getService(SchemaManager.class);
-            } catch (Exception e) {
-                throw new ClientException("can NOT obtain schema manager", e);
-            }
+            schemaManager = Framework.getService(SchemaManager.class);
         }
         return schemaManager;
     }

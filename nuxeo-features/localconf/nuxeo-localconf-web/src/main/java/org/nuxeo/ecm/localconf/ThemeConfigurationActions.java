@@ -135,7 +135,7 @@ public class ThemeConfigurationActions implements Serializable {
     }
 
     public List<Flavor> getAvailableFlavors(String themePage) {
-        ThemeStylingService service = getStylingService();
+        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
         if (service == null) {
             return null;
         }
@@ -143,7 +143,7 @@ public class ThemeConfigurationActions implements Serializable {
     }
 
     public String getDefaultFlavorName(String themePage) {
-        ThemeStylingService service = getStylingService();
+        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
         if (service == null) {
             return null;
         }
@@ -151,7 +151,7 @@ public class ThemeConfigurationActions implements Serializable {
     }
 
     public Flavor getDefaultFlavor(String themePage) {
-        ThemeStylingService service = getStylingService();
+        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
         if (service == null) {
             return null;
         }
@@ -160,20 +160,6 @@ public class ThemeConfigurationActions implements Serializable {
             return service.getFlavor(flavorName);
         }
         return null;
-    }
-
-    protected ThemeStylingService getStylingService() {
-        try {
-            ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-            if (service == null) {
-                log.error("Missing ThemeStylingService");
-                return null;
-            }
-            return service;
-        } catch (Exception e) {
-            log.error(e);
-            return null;
-        }
     }
 
     public String getCurrentLocalFlavorName() throws ClientException {

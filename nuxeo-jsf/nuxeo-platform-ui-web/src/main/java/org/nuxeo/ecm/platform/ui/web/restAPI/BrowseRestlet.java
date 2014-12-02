@@ -94,7 +94,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements
             Element current = result.createElement("document");
             try {
                 current.setAttribute("title", dm.getTitle());
-            } catch (Exception e) {
+            } catch (DOMException | ClientException e) {
                 handleError(res, e);
             }
             current.setAttribute("type", dm.getType());

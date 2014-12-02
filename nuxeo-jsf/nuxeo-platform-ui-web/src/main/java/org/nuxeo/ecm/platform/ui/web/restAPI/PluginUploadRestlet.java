@@ -21,11 +21,13 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -104,8 +106,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements
             List<Blob> blobs;
             try {
                 blobs = FileUploadHelper.parseRequest(req);
-
-            } catch (Exception e) {
+            } catch (FileUploadException | IOException e) {
                 handleError(res, e);
                 return;
             }

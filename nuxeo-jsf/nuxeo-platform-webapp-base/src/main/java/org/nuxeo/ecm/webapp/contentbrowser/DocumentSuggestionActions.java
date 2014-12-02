@@ -109,40 +109,34 @@ public class DocumentSuggestionActions implements Serializable {
         if (pageProviderName != null && !StringUtils.isEmpty(pageProviderName)) {
             ppName = pageProviderName;
         }
-        try {
-            PageProviderService ppService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
-            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                    (Serializable) documentManager);
-            // resolve additional parameters
-            PageProviderDefinition ppDef = ppService.getPageProviderDefinition(ppName);
-            String[] params = ppDef.getQueryParameters();
-            if (params == null) {
-                params = new String[0];
-            }
-            FacesContext context = FacesContext.getCurrentInstance();
-            Object[] resolvedParams = new Object[params.length + 1];
-
-            if (Boolean.TRUE.equals(prefixSearch) && !pattern.endsWith(" ")) {
-                pattern += "*";
-            }
-
-            resolvedParams[0] = pattern;
-            for (int i = 0; i < params.length; i++) {
-                resolvedParams[i + 1] = ComponentTagUtils.resolveElExpression(
-                        context, params[i]);
-            }
-            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    ppName, null, null, null, props, resolvedParams);
-            if (pp == null) {
-                throw new ClientException("Page provider not found: " + ppName);
-            }
-            return pp;
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException("Error searching for documents", e);
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) documentManager);
+        // resolve additional parameters
+        PageProviderDefinition ppDef = ppService.getPageProviderDefinition(ppName);
+        String[] params = ppDef.getQueryParameters();
+        if (params == null) {
+            params = new String[0];
         }
+        FacesContext context = FacesContext.getCurrentInstance();
+        Object[] resolvedParams = new Object[params.length + 1];
+
+        if (Boolean.TRUE.equals(prefixSearch) && !pattern.endsWith(" ")) {
+            pattern += "*";
+        }
+
+        resolvedParams[0] = pattern;
+        for (int i = 0; i < params.length; i++) {
+            resolvedParams[i + 1] = ComponentTagUtils.resolveElExpression(
+                    context, params[i]);
+        }
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                ppName, null, null, null, props, resolvedParams);
+        if (pp == null) {
+            throw new ClientException("Page provider not found: " + ppName);
+        }
+        return pp;
     }
 
     public boolean getDocumentExistsAndIsVisibleWithId(String id)

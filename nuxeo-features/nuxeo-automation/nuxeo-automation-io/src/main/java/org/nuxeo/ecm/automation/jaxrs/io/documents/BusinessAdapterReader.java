@@ -93,12 +93,13 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
             return readRequest0(content, headers);
         } catch (WebApplicationException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new WebApplicationException(e);
         }
     }
 
-    public BusinessAdapter readRequest0(String content, MultivaluedMap<String, String> headers) throws Exception {
+    public BusinessAdapter readRequest0(String content,
+            MultivaluedMap<String, String> headers) throws IOException {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
 
         JsonParser jp = factory.createJsonParser(content);
