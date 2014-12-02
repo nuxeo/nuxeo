@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mvel2.CompileException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
@@ -281,7 +282,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             document.setPropertyValue(PROP_TASKS_INFO,
                     new ArrayList<TaskInfo>());
             saveDocument();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -292,7 +293,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             document.setPropertyValue(PROP_NODE_END_DATE,
                     Calendar.getInstance());
             saveDocument();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -549,13 +550,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         AutomationService automationService = Framework.getLocalService(AutomationService.class);
         try {
             automationService.run(context, chainId);
-            // stupid run() method throws generic Exception
-        } catch (InterruptedException e) {
-            // restore interrupted state
-            Thread.currentThread().interrupt();
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (OperationException e) {
             throw new DocumentRouteException("Error running chain: " + chainId,
                     e);
         }
@@ -602,12 +597,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 try {
                     res = expr.eval(context);
                     // stupid eval() method throws generic Exception
-                } catch (InterruptedException e) {
-                    // restore interrupted state
-                    Thread.currentThread().interrupt();
                 } catch (RuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
                     throw new DocumentRouteException(
                             "Error evaluating condition: " + t.condition, e);
                 }
@@ -650,12 +640,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         Object res = null;
         try {
             res = expr.eval(context);
-        } catch (InterruptedException e) {
-            // restore interrupted state
-            Thread.currentThread().interrupt();
         } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
             throw new DocumentRouteException(
                     "Error evaluating task assignees: " + taskAssigneesVar, e);
         }
@@ -687,26 +672,22 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     @Override
     public boolean canMerge() {
-        try {
-            int n = 0;
-            List<Transition> inputTransitions = getInputTransitions();
+        int n = 0;
+        List<Transition> inputTransitions = getInputTransitions();
 
-            for (Transition t : inputTransitions) {
-                if (t.result) {
-                    n++;
-                }
+        for (Transition t : inputTransitions) {
+            if (t.result) {
+                n++;
             }
-            String merge = (String) getProperty(PROP_MERGE);
-            if (MERGE_ONE.equals(merge)) {
-                return n > 0;
-            } else if (MERGE_ALL.equals(merge)) {
-                return n == inputTransitions.size();
-            } else {
-                throw new ClientRuntimeException("Illegal merge mode '" + merge
-                        + "' for node " + this);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        }
+        String merge = (String) getProperty(PROP_MERGE);
+        if (MERGE_ONE.equals(merge)) {
+            return n > 0;
+        } else if (MERGE_ALL.equals(merge)) {
+            return n == inputTransitions.size();
+        } else {
+            throw new ClientRuntimeException("Illegal merge mode '" + merge
+                    + "' for node " + this);
         }
     }
 
@@ -757,7 +738,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             document.setPropertyValue(PROP_NODE_BUTTON, status);
             saveDocument();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -767,7 +748,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             document.setPropertyValue(PROP_NODE_LAST_ACTOR, actor);
             saveDocument();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -779,7 +760,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             document.setPropertyValue(PROP_TASK_ASSIGNEES,
                     (Serializable) allTasksAssignees);
             saveDocument();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -803,12 +784,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         Object res = null;
         try {
             res = expr.eval(context);
-        } catch (InterruptedException e) {
-            // restore interrupted state
-            Thread.currentThread().interrupt();
         } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
             throw new DocumentRouteException("Error evaluating task due date: "
                     + taskDueDateExpr, e);
         }
@@ -834,7 +810,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             document.setPropertyValue(PROP_TASK_DUE_DATE, dueDate);
             CoreSession session = document.getCoreSession();
             session.saveDocument(document);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
         return dueDate;
@@ -938,15 +914,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             res = expr.eval(context);
             // stupid eval() method throws generic Exception
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // restore interrupted state
-            throw new RuntimeException(e);
-        } catch (CompileException e) {
-            throw new DocumentRouteException("Error evaluating expression: "
-                    + v, e);
         } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
             throw new DocumentRouteException("Error evaluating expression: "
                     + v, e);
         }
@@ -1009,11 +977,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 Object res = null;
                 try {
                     res = expr.eval(context);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
                 } catch (RuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
                     throw new DocumentRouteException(
                             "Error evaluating condition: " + rule.condition, e);
                 }
