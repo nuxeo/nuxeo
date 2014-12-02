@@ -764,8 +764,7 @@ public class TestDefaultFileSystemItemFactory {
                 (Serializable) adaptableChildBlob);
         adaptableChild = session.createDocument(adaptableChild);
         // Create another child not adaptable as a FileSystemItem => should
-        // not
-        // be retrieved
+        // not be retrieved
         session.createDocument(session.createDocumentModel("/syncRoot/aFolder",
                 "notAdaptableChild", "NotSynchronizable"));
         session.save();
