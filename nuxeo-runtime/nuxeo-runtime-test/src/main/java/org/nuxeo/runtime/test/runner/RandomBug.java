@@ -18,6 +18,7 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -119,6 +120,7 @@ public class RandomBug {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.TYPE })
+    @Inherited
     public @interface Repeat {
         /**
          * Reference in issue management system. Recommendation is to use a
