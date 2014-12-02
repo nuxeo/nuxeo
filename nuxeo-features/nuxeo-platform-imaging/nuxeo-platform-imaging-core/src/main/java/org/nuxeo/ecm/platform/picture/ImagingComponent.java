@@ -497,7 +497,8 @@ public class ImagingComponent extends DefaultComponent implements
 
         OperationContext context = new OperationContext();
         if (doc != null) {
-            context.put("docId", doc.getId());
+            doc.detach(true);
+            context.put("pictureDocument", doc);
         }
         context.setInput(blob);
 
