@@ -41,36 +41,27 @@ import org.junit.runners.model.Statement;
 
 /**
  * Define execution rules for an annotated random bug.
- *
  * <p>
- * Principle is to increase consistency on tests which have a random behavior.
- * Such test is a headache because:
+ * Principle is to increase consistency on tests which have a random behavior. Such test is a headache because:
  * <ul>
- * <li>some developers may ask to ignore a random test since it's not reliable
- * and produces useless noise most of the time,</li>
- * <li>however, the test may still be useful in continuous integration for
- * checking the non-random part of code it covers,</li>
+ * <li>some developers may ask to ignore a random test since it's not reliable and produces useless noise most of the
+ * time,</li>
+ * <li>however, the test may still be useful in continuous integration for checking the non-random part of code it
+ * covers,</li>
  * <li>and, after all, there's a random bug which should be fixed!</li>
  * </ul>
  * </p>
- *
  * <p>
- * Compared to the @{@link Ignore} JUnit annotation, the advantage is to provide
- * different behaviors for different use cases. The wanted behavior depending on
- * whereas:
+ * Compared to the @{@link Ignore} JUnit annotation, the advantage is to provide different behaviors for different use
+ * cases. The wanted behavior depending on whereas:
  * <ul>
- * <li>we are working on something else and don't want being bothered by an
- * unreliable test,</li>
- * <li>we are working on the covered code and want to be warned in case of
- * regression,</li>
+ * <li>we are working on something else and don't want being bothered by an unreliable test,</li>
+ * <li>we are working on the covered code and want to be warned in case of regression,</li>
  * <li>we are working on the random bug and want to reproduce it.</li>
  * </ul>
  * </p>
- *
- * That means that a random bug cannot be ignored. But must attempt to reproduce
- * or hide its random aspect, depending on its execution context.
- *
- * For instance: <blockquote>
+ * That means that a random bug cannot be ignored. But must attempt to reproduce or hide its random aspect, depending on
+ * its execution context. For instance: <blockquote>
  *
  * <pre>
  * <code>
@@ -90,20 +81,15 @@ import org.junit.runners.model.Statement;
  * </pre>
  *
  * </blockquote>
- *
  * <p>
- * In the above example, the test fails sometimes. With the
- * {@link RandomBug.Repeat} annotation, it will be repeated in case of failure
- * up to 5 times until success. This is the default {@link Mode#RELAX} mode. In
- * order to reproduce the bug, use the {@link Mode#STRICT} mode. It will be
- * repeated in case of success up to 50 times until failure. In
+ * In the above example, the test fails sometimes. With the {@link RandomBug.Repeat} annotation, it will be repeated in
+ * case of failure up to 5 times until success. This is the default {@link Mode#RELAX} mode. In order to reproduce the
+ * bug, use the {@link Mode#STRICT} mode. It will be repeated in case of success up to 50 times until failure. In
  * {@link Mode#BYPASS} mode, the test is ignored.
  * </p>
- *
  * <p>
- * You may also repeat a whole suite in the same way by annotating the class
- * itself. You may want also want to skip some tests, then you should then
- * annotate the tests method with the {@link NoRepeat} annotation.
+ * You may also repeat a whole suite in the same way by annotating the class itself. You may want also want to skip some
+ * tests, then you should then annotate the tests method with the {@link NoRepeat} annotation.
  * </p>
  *
  * @see Mode
@@ -123,9 +109,8 @@ public class RandomBug {
     @Inherited
     public @interface Repeat {
         /**
-         * Reference in issue management system. Recommendation is to use a
-         * constant which name is the issue reference and value is a description
-         * or comment.
+         * Reference in issue management system. Recommendation is to use a constant which name is the issue reference
+         * and value is a description or comment.
          */
         String issue();
 
@@ -146,7 +131,6 @@ public class RandomBug {
     }
 
     public static class Feature extends SimpleFeature {
-
         @ClassRule
         public static TestRule onClass() {
             return self.onTest();
@@ -159,7 +143,6 @@ public class RandomBug {
     }
 
     public class RepeatRule implements TestRule, MethodRule {
-
         @Inject
         protected RunNotifier notifier;
 
@@ -175,8 +158,7 @@ public class RandomBug {
         }
 
         @Override
-        public Statement apply(Statement base, FrameworkMethod method,
-                Object target) {
+        public Statement apply(Statement base, FrameworkMethod method, Object target) {
             final Repeat actual = method.getAnnotation(Repeat.class);
             if (actual == null) {
                 return base;
@@ -184,7 +166,6 @@ public class RandomBug {
             return statement = onRepeat(actual, notifier, base);
         }
     }
-
 
     protected RepeatRule onTest() {
         return new RepeatRule();
@@ -198,19 +179,14 @@ public class RandomBug {
 
     /**
      * <ul>
-     * <li>BYPASS: the test is ignored. Like with @{@link Ignore} JUnit
-     * annotation.</li>
-     * <li>STRICT: the test must fail. On success, the test is repeated until
-     * failure or the limit number of tries {@link Repeat#onSuccess()} is
-     * reached. If it does not fail during the tries, then the whole test class
-     * is marked as failed.</li>
-     * <li>RELAX: the test must succeed. On failure, the test is repeated until
-     * success or the limit number of tries {@link Repeat#onFailure()} is
-     * reached.</li>
+     * <li>BYPASS: the test is ignored. Like with @{@link Ignore} JUnit annotation.</li>
+     * <li>STRICT: the test must fail. On success, the test is repeated until failure or the limit number of tries
+     * {@link Repeat#onSuccess()} is reached. If it does not fail during the tries, then the whole test class is marked
+     * as failed.</li>
+     * <li>RELAX: the test must succeed. On failure, the test is repeated until success or the limit number of tries
+     * {@link Repeat#onFailure()} is reached.</li>
      * </ul>
-     *
-     * Could be set by the environment using the
-     * <em>nuxeo.tests.random.mode</em>T system property.
+     * Could be set by the environment using the <em>nuxeo.tests.random.mode</em>T system property.
      */
     public static enum Mode {
         BYPASS, STRICT, RELAX
@@ -244,8 +220,7 @@ public class RandomBug {
 
         protected int serial;
 
-        protected RepeatStatement(Repeat someParams, RunNotifier aNotifier,
-                Statement aStatement) {
+        protected RepeatStatement(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
             params = someParams;
             notifier = aNotifier;
             base = aStatement;
@@ -300,20 +275,16 @@ public class RandomBug {
     }
 
     protected class RepeatOnFailure extends RepeatStatement {
-
         protected String issue;
 
-        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier,
-                Statement aStatement) {
+        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
             super(someParams, aNotifier, aStatement);
         }
 
         @Override
         protected Error error() {
-            return new AssertionError(String.format(
-                    "No success after %d tries. Either the bug is not random "
-                            + "or you should increase the 'onFailure' value.\n"
-                            + "Issue: %s", params.onFailure(), issue));
+            return new AssertionError(String.format("No success after %d tries. Either the bug is not random "
+                    + "or you should increase the 'onFailure' value.\n" + "Issue: %s", params.onFailure(), issue));
         }
 
         @Override
@@ -330,24 +301,18 @@ public class RandomBug {
         protected boolean returnOnSuccess() {
             return true;
         }
-
     }
 
     protected class RepeatOnSuccess extends RepeatStatement {
-
-
-        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier,
-                Statement aStatement) {
+        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
             super(someParams, aNotifier, aStatement);
         }
 
-
         @Override
         protected Error error() {
-           return new AssertionError(String.format(
-                    "No failure after %d tries. Either the bug is fixed "
-                            + "or you should increase the 'onSuccess' value.\n"
-                            + "Issue: %s", params.onSuccess(), params.issue()));
+            return new AssertionError(String.format("No failure after %d tries. Either the bug is fixed "
+                    + "or you should increase the 'onSuccess' value.\n" + "Issue: %s", params.onSuccess(),
+                    params.issue()));
         }
 
         @Override
@@ -360,7 +325,6 @@ public class RandomBug {
             return false;
         }
 
-
         @Override
         protected int retryCount() {
             return params.onSuccess();
@@ -368,16 +332,13 @@ public class RandomBug {
     }
 
     protected class Bypass extends RepeatStatement {
-
-        public Bypass(Repeat someParams, RunNotifier aNotifier,
-                Statement aStatement) {
+        public Bypass(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
             super(someParams, aNotifier, aStatement);
         }
 
         @Override
         public void evaluate() throws Throwable {
-            throw new AssumptionViolatedException(
-                    "Random bug ignored (bypass mode): " + params.issue());
+            throw new AssumptionViolatedException("Random bug ignored (bypass mode): " + params.issue());
         }
 
         @Override
@@ -397,14 +358,11 @@ public class RandomBug {
 
         @Override
         protected boolean returnOnFailure() {
-            // TODO Auto-generated method stub
             return false;
         }
-
     }
 
-    protected RepeatStatement onRepeat(Repeat someParams,
-            RunNotifier aNotifier, Statement aStatement) {
+    protected RepeatStatement onRepeat(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
         if (someParams.bypass()) {
             return new Bypass(someParams, aNotifier, aStatement);
         }
@@ -418,7 +376,5 @@ public class RandomBug {
         }
         throw new IllegalArgumentException("no such mode");
     }
-
-
 
 }
