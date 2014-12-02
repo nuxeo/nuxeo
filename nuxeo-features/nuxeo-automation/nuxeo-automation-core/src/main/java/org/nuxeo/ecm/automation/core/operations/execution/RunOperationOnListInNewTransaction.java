@@ -116,7 +116,8 @@ public class RunOperationOnListInNewTransaction {
                     ctx.put(varName, vars.get(varName));
                 } else {
                     Object value = vars.get(varName);
-                    if (value != null && value instanceof DocumentModel) {
+                    if (session != null && value != null
+                            && value instanceof DocumentModel) {
                         ctx.getVars().put(
                                 varName,
                                 session.getDocument(((DocumentModel) value).getRef()));
