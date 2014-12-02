@@ -50,6 +50,16 @@ public interface ElasticSearchAdmin {
     void initIndexes(boolean dropIfExists);
 
     /**
+     * Reinitialize the index of a repository.
+     *
+     * This will drop the existing index, recreate it with its settings and mapping,
+     * the index will be empty.
+     *
+     * @since 7.1
+     */
+    void dropAndInitRepositoryIndex(String repositoryName);
+
+    /**
      * List repository names that has Elasticsearch support.
      *
      * @since 7.1

@@ -304,6 +304,18 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public void dropAndInitRepositoryIndex(String repositoryName) {
+        log.info("Drop and init index of repository: " + repositoryName);
+        indexInitDone = false;
+        for (ElasticSearchIndexConfig conf : indexConfig.values()) {
+            if (conf.getRepositoryName().equals(repositoryName)) {
+                initIndex(conf, true);
+            }
+        }
+        indexInitDone = true;
+    }
+
+    @Override
     public List<String> getRepositoryNames() {
         return Collections.unmodifiableList(new ArrayList<String>(indexNames
                 .keySet()));
