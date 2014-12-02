@@ -33,6 +33,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -59,7 +60,8 @@ public class ElasticSearchManager {
     private static final Log log = LogFactory
             .getLog(ElasticSearchManager.class);
 
-    private static final String DEFAULT_NXQL_QUERY = "SELECT ecm:uuid FROM Document";
+    private static final String DEFAULT_NXQL_QUERY = "SELECT * FROM Document";
+    private static final String JSON_DELETE_CMD = "{\"id\":\"IndexingCommand-reindex\",\"name\":\"ES_DELETE\",\"docId\":\"%s\",\"repo\":\"%s\",\"recurse\":true,\"sync\":true}";
 
     @In(create = true)
     protected ElasticSearchAdmin esa;
@@ -102,25 +104,37 @@ public class ElasticSearchManager {
         return health.toString();
     }
 
-    public void startReindex() {
-        if (dropIndex) {
-            esa.initIndexes(dropIndex);
-        }
+   public void startReindexAll() throws Exception {
+        log.warn("Re-indexing the entire repository: " + repositoryName);
+        esa.dropAndInitRepositoryIndex(repositoryName);
+        esi.reindex(repositoryName, "SELECT ecm:uuid FROM Document");
+    }
+
+    public void startReindexNxql() throws Exception {
+        log.warn(String.format("Re-indexing from a NXQL query: %s on repository: %s",
+                getNxql(), repositoryName));
         esi.reindex(repositoryName, getNxql());
     }
 
-    public void startReindexFrom() {
-        if (dropIndex) {
-            esa.initIndexes(dropIndex);
-        }
+    public void startReindexFrom() throws Exception {
         try (CoreSession session = CoreInstance
                 .openCoreSessionSystem(repositoryName)) {
-            DocumentModel doc = session.getDocument(new IdRef(rootId));
             log.warn(String.format(
-                    "Start re-indexing repository %s root document: %s, %s",
-                    repositoryName, doc.getId(), doc));
-            IndexingCommand cmd = new IndexingCommand(doc, false, true);
-            esi.scheduleIndexing(cmd);
+                    "Try to remove %s and its children from %s repository index", rootId,
+                    repositoryName));
+            String jsonCmd = String.format(JSON_DELETE_CMD, rootId, repositoryName);
+            IndexingCommand rmCmd = IndexingCommand.fromJSON(session, jsonCmd);
+            esi.indexNow(rmCmd);
+
+            DocumentRef ref = new IdRef(rootId);
+            if (session.exists(ref)) {
+                DocumentModel doc = session.getDocument(ref);
+                log.warn(String.format(
+                        "Re-indexing document: %s and its children on repository: %s",
+                        doc, repositoryName));
+                IndexingCommand cmd = new IndexingCommand(doc, false, true);
+                esi.scheduleIndexing(cmd);
+            }
         }
     }
 

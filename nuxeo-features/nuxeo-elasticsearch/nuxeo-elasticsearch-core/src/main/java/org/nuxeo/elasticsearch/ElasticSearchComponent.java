@@ -219,6 +219,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
+    public void dropAndInitRepositoryIndex(String repositoryName) {
+        esa.dropAndInitRepositoryIndex(repositoryName);
+    }
+
+    @Override
     public List<String> getRepositoryNames() {
         return esa.getRepositoryNames();
     }

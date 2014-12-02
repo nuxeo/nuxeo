@@ -34,14 +34,15 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
   </pre>
 
   <h3>Bulk indexing rates</h3>
-  <div class="detail">Exponentially-weighted moving average rate of indexing last 1, 5 and 15 minutes in bulk commands/s.</div>
+  <div class="detail">Exponentially-weighted moving average rate of bulk indexing last 1, 5 and 15 minutes in bulk commands/s. A bulk command
+  contains a list of documents to index, the default size used when re-indexing is 50 documents per bulk command.</div>
   <pre class="bubbleBox">
     <h:outputText
       value="#{esAdmin.bulkIndexingRates}"/>
   </pre>
 
   <h3>Elasticsearch documents</h3>
-  <div class="detail">Number of documents in the Elasticsearch index.</div>
+  <div class="detail">Number of documents in the Elasticsearch index. Elasticsearch will clean up deleted documents in the background as you continue to index more data.</div>
   <pre class="bubbleBox">
 <h:outputText value="#{esAdmin.numberOfDocuments}"/> (deleted: <h:outputText value="#{esAdmin.numberOfDeletedDocuments}"/>)
   </pre>
