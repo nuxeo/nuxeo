@@ -117,7 +117,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                     scriptContent);
             writer.writeText(ajaxScriptContent, null);
             String scriptContent2 = String.format(
-                    "jQuery(document.getElementById('%s')).closest('form').bind('ajaxsubmit', function() {tinyMCE.execCommand('mceRemoveEditor', false, tinyMCE.editors['%s'].id);});",
+                    "jQuery(document.getElementById('%s')).closest('form').bind('ajaxsubmit', function() {tinyMCE.editors['%s'].save();});",
                     clientId, clientId);
             writer.writeText(scriptContent2, null);
             writer.endElement("script");
