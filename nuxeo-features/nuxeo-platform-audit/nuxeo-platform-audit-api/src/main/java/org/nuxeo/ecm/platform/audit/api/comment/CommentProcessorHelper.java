@@ -60,10 +60,12 @@ public class CommentProcessorHelper {
         String newComment = oldComment;
         boolean targetDocExists = false;
         try {
-            String strDocRef = oldComment.split(":")[1];
-
-            DocumentRef docRef = new IdRef(strDocRef);
-            targetDocExists = documentManager.exists(docRef);
+            String[] split = oldComment.split(":");
+            if (split.length >= 2) {
+                String strDocRef = split[1];
+                DocumentRef docRef = new IdRef(strDocRef);
+                targetDocExists = documentManager.exists(docRef);
+            }
         } catch (ClientException e) {
             // ignore
         }
@@ -92,25 +94,29 @@ public class CommentProcessorHelper {
         LinkedDocument linkedDoc = null;
 
         try {
-            String repoName = oldComment.split(":")[0];
-            String strDocRef = oldComment.split(":")[1];
+            String[] split = oldComment.split(":");
+            if (split.length >= 2) {
+                String repoName = split[0];
+                String strDocRef = split[1];
 
-            // test if strDocRef is a document uuid to continue
-            if (IdUtils.isValidUUID(strDocRef)) {
-                DocumentRef docRef = new IdRef(strDocRef);
-                RepositoryLocation repoLoc = new RepositoryLocation(repoName);
+                // test if strDocRef is a document uuid to continue
+                if (IdUtils.isValidUUID(strDocRef)) {
+                    DocumentRef docRef = new IdRef(strDocRef);
+                    RepositoryLocation repoLoc = new RepositoryLocation(
+                            repoName);
 
-                // create linked doc, broken by default
-                linkedDoc = new LinkedDocument();
-                linkedDoc.setDocumentRef(docRef);
-                linkedDoc.setRepository(repoLoc);
+                    // create linked doc, broken by default
+                    linkedDoc = new LinkedDocument();
+                    linkedDoc.setDocumentRef(docRef);
+                    linkedDoc.setRepository(repoLoc);
 
-                // try to resolve target document
-                // XXX multi-repository management
-                DocumentModel targetDoc = documentManager.getDocument(docRef);
-                if (targetDoc != null) {
-                    linkedDoc.setDocument(targetDoc);
-                    linkedDoc.setBrokenDocument(false);
+                    // try to resolve target document
+                    // XXX multi-repository management
+                    DocumentModel targetDoc = documentManager.getDocument(docRef);
+                    if (targetDoc != null) {
+                        linkedDoc.setDocument(targetDoc);
+                        linkedDoc.setBrokenDocument(false);
+                    }
                 }
             }
         } catch (ClientException e) {
