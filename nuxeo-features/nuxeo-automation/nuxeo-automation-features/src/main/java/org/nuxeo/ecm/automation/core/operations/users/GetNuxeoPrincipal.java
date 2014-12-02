@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * Fetch a user from {@link UserManager} and return it as a
  * {@link DocumentModel}. Using the DocumentModel rather that a POJO allow to
  * also fetch custom properties.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
@@ -45,7 +45,7 @@ public class GetNuxeoPrincipal extends AbstractDirectoryOperation {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
 
         if (login == null || login.isEmpty()) {
             return umgr.getUserModel(ctx.getPrincipal().getName());

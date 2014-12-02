@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.webengine.loader;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -60,9 +60,7 @@ public class WebLoader {
         try {
             classLoader.addResourceStore(new FileResourceStore(container));
             gScripting.getGroovyClassLoader().addURL(container.toURI().toURL());
-        } catch (MalformedURLException e) {
-            log.error("Failed to convert file to url: "+container, e);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to create file store: "+container, e);
         }
     }

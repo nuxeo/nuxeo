@@ -263,7 +263,7 @@ public class NotificationService extends DefaultComponent implements
     }
 
     public List<String> getSubscriptionsForUserOnDocument(String username,
-            String docId) throws ClassNotFoundException, ClientException {
+            String docId) {
         PlacefulService service = NotificationServiceHelper.getPlacefulService();
         String className = service.getAnnotationRegistry().get(
                 SUBSCRIPTION_NAME);

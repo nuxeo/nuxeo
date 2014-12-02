@@ -48,7 +48,7 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
                 + Constants.CTYPE_REQUEST_NOCHARSET + "\"; start=\"request\"");
     }
 
-    public void setRequest(String content) throws Exception {
+    public void setRequest(String content) throws MessagingException {
         MimeBodyPart part = new MimeBodyPart();
         part.setText(content, "UTF-8");
         part.setContentID("request");
@@ -58,11 +58,12 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
         mp.addBodyPart(part);
     }
 
-    public void setBlob(Blob blob) throws Exception {
+    public void setBlob(Blob blob) throws MessagingException, IOException {
         setBlob(blob, "input");
     }
 
-    protected void setBlob(Blob blob, String id) throws Exception {
+    protected void setBlob(Blob blob, String id) throws MessagingException,
+            IOException {
         MimeBodyPart part = new MimeBodyPart();
         if (blob instanceof HasFile) {
             part.attachFile(((HasFile) blob).getFile());
@@ -80,7 +81,8 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
         mp.addBodyPart(part);
     }
 
-    public void setBlobs(List<Blob> blobs) throws Exception {
+    public void setBlobs(List<Blob> blobs) throws MessagingException,
+            IOException {
         for (int i = 0, size = blobs.size(); i < size; i++) {
             setBlob(blobs.get(i), "input#" + i);
         }

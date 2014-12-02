@@ -46,7 +46,7 @@ public class DownloadFile {
     protected OperationContext ctx;
 
     @OperationMethod
-    public void run(Blob blob) throws Exception {
+    public void run(Blob blob) throws OperationException, IOException {
         if (blob == null) {
             throw new OperationException("there is no file content available");
         }

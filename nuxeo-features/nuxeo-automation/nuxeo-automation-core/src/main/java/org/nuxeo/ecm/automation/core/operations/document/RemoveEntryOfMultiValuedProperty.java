@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -57,7 +58,7 @@ public class RemoveEntryOfMultiValuedProperty extends
     protected boolean isRemoveAll = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws OperationException {
 
         Property p = doc.getProperty(xpath);
         Type type = p.getType();

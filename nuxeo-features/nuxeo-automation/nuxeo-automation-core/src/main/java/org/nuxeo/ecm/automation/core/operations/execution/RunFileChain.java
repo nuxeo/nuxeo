@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.core.operations.execution;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -80,7 +81,7 @@ public class RunFileChain {
 
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(
                 ctx.getVars()) : ctx.getVars();
@@ -117,7 +118,7 @@ public class RunFileChain {
     }
 
     @OperationMethod
-    public BlobList run(BlobList blobs) throws Exception {
+    public BlobList run(BlobList blobs) throws OperationException {
         BlobList result = new BlobList(blobs.size());
         for (Blob blob : blobs) {
             result.add(run(blob));

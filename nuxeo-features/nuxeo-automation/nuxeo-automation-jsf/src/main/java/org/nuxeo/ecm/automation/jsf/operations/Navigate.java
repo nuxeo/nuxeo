@@ -35,7 +35,7 @@ public class Navigate {
     protected String view;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         String outcome = null;
 
         if (view == null) {

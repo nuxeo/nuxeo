@@ -39,7 +39,7 @@ public class RestoreDocumentsInput {
     protected String name;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() throws OperationException {
         Object obj = ctx.get(name);
         if (obj instanceof DocumentModelList) {
             return (DocumentModelList) obj;

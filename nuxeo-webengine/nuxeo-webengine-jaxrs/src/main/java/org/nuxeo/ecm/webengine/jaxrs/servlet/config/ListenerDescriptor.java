@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -38,8 +38,9 @@ public class ListenerDescriptor {
         return ref;
     }
 
-    public ServletContextListener getListener() throws Exception {
-        return (ServletContextListener)getClassRef().get().newInstance();
+    public ServletContextListener getListener()
+            throws ReflectiveOperationException, BundleNotFoundException {
+        return (ServletContextListener) getClassRef().get().newInstance();
     }
 
     @Override

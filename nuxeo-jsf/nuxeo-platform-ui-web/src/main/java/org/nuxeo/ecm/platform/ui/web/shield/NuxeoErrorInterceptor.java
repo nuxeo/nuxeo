@@ -29,6 +29,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +69,7 @@ public class NuxeoErrorInterceptor implements Serializable {
 
     @AroundInvoke
     public Object invokeAndWrapExceptions(InvocationContext invocation)
-            throws Exception {
+            throws SystemException, DocumentSecurityException, ClientException {
         try {
             // log.debug("Before invocation...");
             return invocation.proceed();

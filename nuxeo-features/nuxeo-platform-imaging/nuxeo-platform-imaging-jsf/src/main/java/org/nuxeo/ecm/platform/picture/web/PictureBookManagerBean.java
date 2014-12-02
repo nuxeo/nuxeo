@@ -111,7 +111,7 @@ public class PictureBookManagerBean extends InputController implements
 
     @Override
     @Create
-    public void initialize() throws Exception {
+    public void initialize() {
         log.debug("Initializing...");
         initViews();
     }
@@ -158,7 +158,7 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     @Override
-    public String createPictureBook() throws Exception {
+    public String createPictureBook() {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
 

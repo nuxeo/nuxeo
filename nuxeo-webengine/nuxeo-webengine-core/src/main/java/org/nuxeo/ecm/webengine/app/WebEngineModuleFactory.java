@@ -49,7 +49,8 @@ public class WebEngineModuleFactory {
     }
 
     public static WebEngineModule getApplication(WebEngineModule app,
-            Bundle bundle, Map<String, String> attrs) throws Exception {
+            Bundle bundle, Map<String, String> attrs)
+            throws ReflectiveOperationException, IOException {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
 
         boolean explode = true;

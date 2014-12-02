@@ -15,6 +15,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.doc;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -154,7 +155,7 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
 
     @GET
     @Path("/toggleTraces")
-    public Object toggleTraces() throws Exception {
+    public Object toggleTraces() {
         if (!canManageTraces()) {
             return "You can not manage traces";
         }
@@ -162,13 +163,17 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         tracerFactory.toggleRecording();
         HttpServletRequest request = RequestContext.getActiveContext().getRequest();
         String url = request.getHeader("Referer");
-        return Response.seeOther(new URI(url)).build();
+        try {
+            return Response.seeOther(new URI(url)).build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GET
     @Path("/toggleStackDisplay")
     @Produces("text/plain")
-    public Object toggleStackDisplay() throws Exception {
+    public Object toggleStackDisplay() {
         if (!canManageTraces()) {
             return "You can not manage json exception stack display";
         }

@@ -11,7 +11,10 @@
  */
 package org.nuxeo.ecm.automation.core.rendering.operations;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -21,7 +24,10 @@ import org.nuxeo.ecm.automation.core.rendering.RenderingService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.runtime.services.resource.ResourceService;
+
+import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,7 +60,8 @@ public class RenderDocumentFeed {
 
 
     @OperationMethod
-    public Blob run(DocumentModelList docs) throws Exception {
+    public Blob run(DocumentModelList docs) throws OperationException,
+            RenderingException, TemplateException, IOException {
         String content = RenderingService.getInstance().render(type, template, ctx);
         StringBlob blob = new StringBlob(content);
         blob.setFilename(name);

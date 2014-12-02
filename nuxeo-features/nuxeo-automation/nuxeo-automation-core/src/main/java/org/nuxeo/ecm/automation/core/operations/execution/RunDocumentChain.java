@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.core.operations.execution;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -81,7 +82,7 @@ public class RunDocumentChain {
 
     @OperationMethod
     @SuppressWarnings("unchecked")
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(
                 ctx.getVars()) : ctx.getVars();
@@ -118,7 +119,7 @@ public class RunDocumentChain {
     }
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
+    public DocumentModelList run(DocumentModelList docs) throws OperationException {
         DocumentModelList result = new DocumentModelListImpl(docs.size());
         for (DocumentModel doc : docs) {
             result.add(run(doc));

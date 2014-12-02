@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -50,7 +51,7 @@ public class RunOperation {
     protected Properties chainParameters;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws OperationException {
         OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
         service.run(subctx, chainId, (Map) chainParameters);
     }

@@ -138,12 +138,9 @@ public class RestPublishingHandler extends DefaultObject {
         }
     }
 
-    // Map<String,String> initRemoteSession(String treeConfigName, Map<String,
-    // String> params) throws Exception;
     @POST
     @Path("initRemoteSession")
-    public RemotePubResult initRemoteSession(RemotePubParam param)
-            throws Exception {
+    public RemotePubResult initRemoteSession(RemotePubParam param) {
         return new RemotePubResult(getPublisher().initRemoteSession(
                 (String) param.getParams().get(0),
                 (Map<String, String>) param.getParams().get(1)));

@@ -50,7 +50,7 @@ public class UserInvitationObject extends ModuleRoot {
 
     @POST
     @Path("validate")
-    public Object validateTrialForm() throws Exception {
+    public Object validateTrialForm() {
         UserInvitationService usr = fetchService();
 
         FormData formData = getContext().getForm();
@@ -137,7 +137,7 @@ public class UserInvitationObject extends ModuleRoot {
     @Path("enterpassword/{configurationName}/{requestId}")
     public Object validatePasswordForm(@PathParam("requestId")
     String requestId, @PathParam("configurationName")
-    String configurationName) throws Exception {
+    String configurationName) {
 
         UserInvitationService usr = fetchService();
         try {

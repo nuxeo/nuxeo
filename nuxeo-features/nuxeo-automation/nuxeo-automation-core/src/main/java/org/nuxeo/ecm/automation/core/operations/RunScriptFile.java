@@ -11,9 +11,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.AutomationComponent;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -44,7 +46,7 @@ public class RunScriptFile {
     protected URL script;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws OperationException, IOException {
         Scripting.run(ctx, script);
     }
 

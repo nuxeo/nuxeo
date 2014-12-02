@@ -102,14 +102,14 @@ public class ElasticSearchManager {
         return health.toString();
     }
 
-    public void startReindex() throws Exception {
+    public void startReindex() {
         if (dropIndex) {
             esa.initIndexes(dropIndex);
         }
         esi.reindex(repositoryName, getNxql());
     }
 
-    public void startReindexFrom() throws Exception {
+    public void startReindexFrom() {
         if (dropIndex) {
             esa.initIndexes(dropIndex);
         }
@@ -128,7 +128,7 @@ public class ElasticSearchManager {
         esa.flush();
     }
 
-    protected void introspectPageProviders() throws Exception {
+    protected void introspectPageProviders() {
 
         ppStatuses = new ArrayList<>();
 
@@ -145,7 +145,7 @@ public class ElasticSearchManager {
         Collections.sort(ppStatuses);
     }
 
-    public List<PageProviderStatus> getContentViewStatus() throws Exception {
+    public List<PageProviderStatus> getContentViewStatus() {
         if (ppStatuses == null) {
             introspectPageProviders();
         }

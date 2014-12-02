@@ -40,7 +40,7 @@ public class GetDocumentBlobs {
     protected String xpath = "files:files";
 
     @OperationMethod(collector=BlobListCollector.class)
-    public BlobList run(DocumentModel doc) throws Exception {
+    public BlobList run(DocumentModel doc) {
         BlobList blobs = new BlobList();
         ListProperty list = (ListProperty) doc.getProperty(xpath);
         if (list == null) {

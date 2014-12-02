@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.task;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
@@ -106,8 +107,13 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         json.put("pageCount", Long.valueOf(pageProvider.getNumberOfPages()));
 
         json.put("entries", processes);
-        return new InputStreamBlob(new ByteArrayInputStream(
-                json.toString().getBytes("UTF-8")), "application/json");
+        try {
+            return new InputStreamBlob(new ByteArrayInputStream(
+                    json.toString().getBytes("UTF-8")), "application/json");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -44,6 +44,8 @@ import org.nuxeo.runtime.api.Framework;
 
 import javax.el.ELContext;
 import javax.el.ValueExpression;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -156,7 +158,7 @@ public class DocumentPageProviderOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public PaginableDocumentModelListImpl run() throws Exception {
+    public PaginableDocumentModelListImpl run() throws IOException {
 
         PageProviderService pps = Framework.getLocalService
                 (PageProviderService.class);

@@ -48,7 +48,7 @@ public class UserService extends DefaultObject {
 
     @GET
     public Object getIndex(@QueryParam("query") String query,
-            @QueryParam("group") String group) throws Exception {
+            @QueryParam("group") String group) {
         if (query != null && !query.isEmpty()) {
             UserManager userManager = Framework.getService(UserManager.class);
             if (group != null) {
@@ -63,7 +63,7 @@ public class UserService extends DefaultObject {
     }
 
     @Path("user/{user}")
-    public Object searchUsers(@PathParam("user") String user) throws Exception {
+    public Object searchUsers(@PathParam("user") String user) {
         UserManager userManager = Framework.getService(UserManager.class);
         NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl)userManager.getPrincipal(user);
         if (principal == null) {
@@ -73,7 +73,7 @@ public class UserService extends DefaultObject {
     }
 
     @Path("group/{group}")
-    public Object searchGroups(@PathParam("group") String group) throws Exception {
+    public Object searchGroups(@PathParam("group") String group) {
         UserManager userManager = Framework.getService(UserManager.class);
         // FIXME: find better name for it
         NuxeoGroup principal = userManager.getGroup(group);
@@ -85,7 +85,7 @@ public class UserService extends DefaultObject {
 
     @POST
     @Path("user")
-    public Response postUser() throws Exception {
+    public Response postUser() {
         HttpServletRequest req = ctx.getRequest();
         String username = req.getParameter("username");
         UserManager userManager = Framework.getService(UserManager.class);
@@ -126,7 +126,7 @@ public class UserService extends DefaultObject {
 
     @POST
     @Path("group")
-    public Response postGroup() throws Exception {
+    public Response postGroup() {
         String groupName = ctx.getRequest().getParameter("groupName");
         UserManager userManager = Framework.getService(UserManager.class);
         if (groupName != null && !groupName.equals("")) {
@@ -138,11 +138,11 @@ public class UserService extends DefaultObject {
         return null;
     }
 
-    public List<NuxeoGroup> getGroups() throws Exception {
+    public List<NuxeoGroup> getGroups() {
         return Framework.getService(UserManager.class).getAvailableGroups();
     }
 
-    public List<NuxeoPrincipal> getUsers() throws Exception {
+    public List<NuxeoPrincipal> getUsers() {
         return Framework.getService(UserManager.class).getAvailablePrincipals();
     }
 

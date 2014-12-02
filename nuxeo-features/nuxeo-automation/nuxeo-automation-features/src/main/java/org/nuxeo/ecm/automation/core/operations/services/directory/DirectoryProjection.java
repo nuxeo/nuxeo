@@ -72,7 +72,7 @@ public class DirectoryProjection {
     protected StringList fulltextFields;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         Directory directory = directoryService.getDirectory(directoryName);
         Session session = null;
         try {

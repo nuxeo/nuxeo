@@ -32,10 +32,9 @@ public interface DocumentHistoryReader {
      * @param pageIndex
      * @param pageSize
      * @return
-     * @throws Exception
      */
     List<LogEntry> getDocumentHistory(DocumentModel doc, long pageIndex,
-            long pageSize) throws Exception;
+            long pageSize);
 
     /**
      * Retrieve the {@link PageProvider} of {@link LogEntry} for the history of
@@ -45,8 +44,7 @@ public interface DocumentHistoryReader {
      * @param pageIndex
      * @param pageSize
      * @return
-     * @throws Exception
      */
     PageProvider<LogEntry> getPageProvider(DocumentModel doc, long pageIndex,
-            long pageSize) throws Exception;
+            long pageSize);
 }

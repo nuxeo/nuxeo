@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.webengine.oauth2;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -46,7 +48,6 @@ public class Root extends ModuleRoot {
      * @param serviceProviderName
      * @param serviceProviderURL
      * @return the rendered page.
-     * @throws Exception
      */
     @GET
     @Path("{serviceProviderName}/callback")
@@ -56,7 +57,7 @@ public class Root extends ModuleRoot {
             String code, @QueryParam(WEOAuthConstants.ERROR_URL_PARAMETER)
             String error, @DefaultValue("false")
             @QueryParam(WEOAuthConstants.INSTALLED_APP_PARAMETER)
-            boolean isInstalledApp) throws Exception {
+            boolean isInstalledApp) throws IOException {
 
         // Checking if there was an error such as the user denied access
         if (error != null && error.length() > 0) {
@@ -96,7 +97,7 @@ public class Root extends ModuleRoot {
     }
 
     protected static NuxeoOAuth2ServiceProvider getServiceProvider(
-            String serviceName) throws Exception {
+            String serviceName) {
         OAuth2ServiceProviderRegistry registry = Framework.getService(OAuth2ServiceProviderRegistry.class);
         return registry.getProvider(serviceName);
     }

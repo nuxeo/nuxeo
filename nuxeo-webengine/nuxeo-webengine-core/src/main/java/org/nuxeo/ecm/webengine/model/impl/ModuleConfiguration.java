@@ -25,14 +25,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -44,8 +41,6 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
  */
 @XObject("module")
 public class ModuleConfiguration implements Cloneable {
-
-    private static final Log log = LogFactory.getLog(ModuleConfiguration.class);
 
     /**
      * A web module may have multiple roots
@@ -187,25 +182,20 @@ public class ModuleConfiguration implements Cloneable {
 
     public Module get() {
         if (module == null) {
-            try {
-                Module superModule = null;
-                if (base != null) { // make sure super modules are resolved
-                    ModuleConfiguration superM = engine.getModuleManager().getModule(
-                            base);
-                    if (superM == null) {
-                        throw new WebResourceNotFoundException(
-                                "The module '"
-                                        + name
-                                        + "' cannot be loaded since it's super module '"
-                                        + base + "' cannot be found");
-                    }
-                    // force super module loading
-                    superModule = superM.get();
+            Module superModule = null;
+            if (base != null) { // make sure super modules are resolved
+                ModuleConfiguration superM = engine.getModuleManager().getModule(
+                        base);
+                if (superM == null) {
+                    throw new WebResourceNotFoundException("The module '"
+                            + name
+                            + "' cannot be loaded since it's super module '"
+                            + base + "' cannot be found");
                 }
-                module = new ModuleImpl(engine, (ModuleImpl) superModule, this);
-            } catch (Exception e) {
-                throw WebException.wrap(e);
+                // force super module loading
+                superModule = superM.get();
             }
+            module = new ModuleImpl(engine, (ModuleImpl) superModule, this);
         }
         return module;
     }

@@ -40,7 +40,7 @@ public class CopyDocument {
     protected String name;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         String n = name;
         if (name == null || name.length() == 0) {
             n = doc.getName();
@@ -49,7 +49,7 @@ public class CopyDocument {
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef ref) throws Exception {
+    public DocumentModel run(DocumentRef ref) {
         String n = name;
         if (name == null || name.length() == 0) {
             n = session.getDocument(ref).getName();

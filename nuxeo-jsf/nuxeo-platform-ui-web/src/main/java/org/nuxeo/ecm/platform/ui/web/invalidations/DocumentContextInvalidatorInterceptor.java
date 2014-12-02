@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.invalidations;
 
 import java.lang.reflect.Method;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.intercept.Interceptor;
@@ -43,11 +41,9 @@ public class DocumentContextInvalidatorInterceptor extends AbstractInterceptor {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(DocumentContextInvalidatorInterceptor.class);
-
     @Override
     public Object aroundInvoke(InvocationContext invocationContext)
-            throws Exception {
+            throws Exception { // stupid Seam API
         beforeInvocation(invocationContext);
         return invocationContext.proceed();
     }

@@ -32,7 +32,7 @@ public class SaveDocument {
     protected CoreSession session;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         return session.saveDocument(doc);
     }
 

@@ -91,7 +91,7 @@ public class NXThemesFragmentDirective implements TemplateDirectiveModel {
 
         try {
             env.include(tpl);
-        } catch (Exception e) {
+        } catch (TemplateException | IOException e) {
             log.error("Rendering of Freemarker template failed: \n" + rendered, e);
         } finally {
             reader.close();

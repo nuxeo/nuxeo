@@ -134,7 +134,7 @@ public class UsersActivityManager implements Serializable {
     }
 
     @Factory(value = "userLoginEvents", scope = ScopeType.EVENT)
-    public List<LogEntry> getLoginInfo() throws Exception {
+    public List<LogEntry> getLoginInfo() {
 
         AuditReader reader = Framework.getService(AuditReader.class);
 

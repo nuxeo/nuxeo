@@ -52,7 +52,7 @@ public class CheckInDocument {
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         if (session.isCheckedOut(doc)) {
             DocumentRef ver = session.checkIn(doc, getVersioningOption(),
                     comment);
@@ -68,7 +68,7 @@ public class CheckInDocument {
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         if (doc.isCheckedOut()) {
             DocumentRef ver = session.checkIn(doc.getRef(),
                     getVersioningOption(), comment);

@@ -31,7 +31,7 @@ public class PullBlobList {
     protected OperationContext ctx;
 
     @OperationMethod
-    public BlobList run() throws Exception {
+    public BlobList run() throws OperationException {
         Object obj = ctx.pull(Constants.O_BLOBS);
         if (obj instanceof BlobList) {
             return (BlobList) obj;

@@ -75,7 +75,7 @@ public class NuxeoExceptionInterceptor extends AbstractInterceptor {
 
     @Override
     public Object aroundInvoke(InvocationContext invocationContext)
-            throws Exception {
+            throws Exception { // stupid Seam API
         try {
             return invocationContext.proceed();
         } catch (Exception t) { // deals with interrupt below

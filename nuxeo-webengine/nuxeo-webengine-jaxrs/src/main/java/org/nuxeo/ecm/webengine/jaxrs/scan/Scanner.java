@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.scan;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class Scanner {
     }
 
     @SuppressWarnings("unchecked")
-    public void scan() throws Exception {
+    public void scan() throws ReflectiveOperationException, IOException {
         Enumeration<URL> urls = bundle.findEntries(packageBase, "*.class", true);
         if (urls == null) {
             return;

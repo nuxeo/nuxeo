@@ -45,7 +45,7 @@ public class CreateVersion {
     protected boolean saveDocument = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         if (!doc.hasFacet(FacetNames.VERSIONABLE)) {
             throw new ClientException(
                     String.format(

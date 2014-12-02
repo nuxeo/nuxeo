@@ -14,26 +14,15 @@
 
 package org.nuxeo.theme.webengine.negotiation.perspective;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 
 public class CookieValue implements Scheme {
 
-    private static final Log log = LogFactory.getLog(CookieValue.class);
-
     public String getOutcome(final Object context) {
         final WebContext webContext = (WebContext) context;
-        String perspectiveName = null;
-        // FIXME AbstractContext.getCookie triggers a NullPointerException
-        // (WEB-157)
-        try {
-            perspectiveName = webContext.getCookie("nxthemes.perspective");
-        } catch (Exception e) {
-            log.error(e, e);
-        }
+        String perspectiveName = webContext.getCookie("nxthemes.perspective");
         if (perspectiveName == null) {
             return null;
         }

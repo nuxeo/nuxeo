@@ -36,12 +36,12 @@ public class FetchContextDocument {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         return doc;
     }
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws Exception {
+    public DocumentModelList run(DocumentModelList docs) {
         return docs;
     }
 

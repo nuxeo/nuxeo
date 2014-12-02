@@ -57,7 +57,7 @@ public class RepoStat {
         pool.execute(task);
     }
 
-    public void run(DocumentRef root) throws Exception {
+    public void run(DocumentRef root) {
         info = new RepoStatInfo();
         StatsTask task = new StatsTask(repoName, root, includeBlob, this);
         exec(task);

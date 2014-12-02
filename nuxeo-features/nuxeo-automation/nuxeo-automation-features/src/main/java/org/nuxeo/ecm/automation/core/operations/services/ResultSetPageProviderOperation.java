@@ -139,7 +139,7 @@ public class ResultSetPageProviderOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public RecordSet run() throws Exception {
+    public RecordSet run() {
 
         PageProviderService pps = Framework.getLocalService
                 (PageProviderService.class);

@@ -48,7 +48,7 @@ public class Query {
     protected String lang = NXQL.NXQL;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() {
         return session.query(query, lang, null, 0, 0, false);
     }
 

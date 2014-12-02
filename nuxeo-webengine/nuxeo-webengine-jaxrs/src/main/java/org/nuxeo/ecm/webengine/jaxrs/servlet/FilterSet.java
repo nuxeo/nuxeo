@@ -21,6 +21,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.FilterDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.FilterSetDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.mapping.Path;
@@ -66,7 +67,7 @@ public class FilterSet {
                 filter.init(new FilterConfigAdapter(fd, config));
                 filters[i] = filter;
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | BundleNotFoundException e) {
             throw new ServletException("Failed to initialize filter set", e);
         }
     }

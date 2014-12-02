@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TaskServiceBusinessDelegate {
 
     @Factory(value = "taskService", scope = ScopeType.APPLICATION)
-    public TaskService getJbpmTaskService() throws Exception {
+    public TaskService getJbpmTaskService() {
         return Framework.getService(TaskService.class);
     }
 

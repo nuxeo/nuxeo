@@ -43,7 +43,7 @@ public class SaveDocumentInUI {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         ctx.put(SeamOperation.OUTCOME,
                 OperationHelper.getDocumentActions().updateCurrentDocument());
         return OperationHelper.getNavigationContext().getCurrentDocument();

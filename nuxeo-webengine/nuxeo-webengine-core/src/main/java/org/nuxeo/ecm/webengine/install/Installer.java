@@ -97,7 +97,9 @@ public class Installer {
             Bundle bundle = ctx.getBundle();
             File file = getBundleFile(bundle);
             if (file == null) {
-                throw new UnsupportedOperationException("Couldn't transform the bundle location into a file");
+                throw new IOException(
+                        "Couldn't transform the bundle location into a file "
+                                + bundle);
             }
             if (file.isDirectory()) {
                 bundleDir = file;
@@ -116,12 +118,7 @@ public class Installer {
                     append.run(this, bundleDir, installDir);
                 }
             }
-// TODO remove this modules are lazy loaded now
-//            if (module != null) {
-//                WebEngine engine = Framework.getService(WebEngine.class);
-//                engine.getModuleManager().loadModule(new File(engine.getRootDirectory(), module), module);
-//            }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new WebDeployException("Installation failed for bundle: "+ctx.getBundle().getSymbolicName(), e);
         } finally {
             if (deleteDir && bundleDir != null) {

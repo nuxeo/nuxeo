@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -37,13 +38,13 @@ public class BlobHolderAttach {
     @Param(name="useMainBlob", required=false)
     protected boolean useMainBlob=true;
 
-    protected DocumentModel getCurrentDocument() throws Exception {
+    protected DocumentModel getCurrentDocument() throws OperationException {
         String cdRef = (String) context.get("currentDocument");
         return as.getAdaptedValue(context, cdRef, DocumentModel.class);
     }
 
     @OperationMethod
-    public DocumentModel run(Blob blob) throws Exception {
+    public DocumentModel run(Blob blob) throws OperationException {
         DocumentModel currentDocument = getCurrentDocument();
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
         if (bh==null) {
@@ -56,7 +57,7 @@ public class BlobHolderAttach {
     }
 
     @OperationMethod
-    public DocumentModel run(BlobList blobs) throws Exception {
+    public DocumentModel run(BlobList blobs) throws OperationException {
         DocumentModel currentDocument=null;
         if (useMainBlob) {
             Blob mainBlob = blobs.remove(0);

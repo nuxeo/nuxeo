@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -149,7 +150,7 @@ public class JavaOperationRequest implements OperationRequest {
         return params;
     }
 
-    public Object execute() throws Exception {
+    public Object execute() throws IOException {
         return session.execute(this);
     }
 

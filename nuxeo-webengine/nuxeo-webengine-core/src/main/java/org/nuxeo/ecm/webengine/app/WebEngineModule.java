@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,7 +59,9 @@ public class WebEngineModule extends Application implements ApplicationFactory {
 
     protected ModuleConfiguration cfg;
 
-    void init(WebEngine engine, Bundle bundle, File configuration, Map<String,String> attrs) throws Exception {
+    void init(WebEngine engine, Bundle bundle, File configuration,
+            Map<String, String> attrs) throws ReflectiveOperationException,
+            IOException {
         this.bundle = bundle;
         loadModuleConfigurationFile(engine, configuration);
         if (attrs != null) {
@@ -83,7 +84,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         initTypes(bundle, attrs.get("package"), engine);
     }
 
-    private void initTypes(Bundle bundle, String packageBase, WebEngine engine) throws Exception {
+    private void initTypes(Bundle bundle, String packageBase, WebEngine engine)
+            throws ReflectiveOperationException, IOException {
         cfg.types = getWebTypes();
         if (cfg.types == null) {
             // try the META-INF/web-types file
@@ -102,7 +104,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
     }
 
-    private void scan(Bundle bundle, String packageBase) throws Exception {
+    private void scan(Bundle bundle, String packageBase)
+            throws ReflectiveOperationException, IOException {
         if (packageBase == null) {
             packageBase = "/";
         }
@@ -131,7 +134,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
     }
 
-    private void loadMetaTypeFile(WebEngine engine) throws Exception {
+    private void loadMetaTypeFile(WebEngine engine)
+            throws ReflectiveOperationException, IOException {
         URL url = bundle.getEntry(DefaultTypeLoader.WEB_TYPES_FILE);
         if (url != null) {
             InputStream in = url.openStream();
@@ -143,7 +147,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         }
     }
 
-    private static Class<?>[] readWebTypes(WebLoader loader, InputStream in) throws Exception {
+    private static Class<?>[] readWebTypes(WebLoader loader, InputStream in)
+            throws ReflectiveOperationException, IOException {
         HashSet<Class<?>> types = new HashSet<Class<?>>();
         BufferedReader reader = null;
         try {
@@ -172,7 +177,7 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         return types.toArray(new Class<?>[types.size()]);
     }
 
-    private void initRoots(WebEngine engine) throws Exception {
+    private void initRoots(WebEngine engine) {
         ArrayList<Class<?>> roots = new ArrayList<Class<?>>();
         for (Class<?> cl : cfg.types) {
             if (cl.isAnnotationPresent(Path.class)) {
@@ -192,7 +197,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         cfg.roots = roots.toArray(new Class<?>[roots.size()]);
     }
 
-    private ModuleConfiguration loadModuleConfigurationFile(WebEngine engine, File file) throws Exception {
+    private ModuleConfiguration loadModuleConfigurationFile(WebEngine engine,
+            File file) throws IOException {
         if (file != null && file.isFile()) {
             cfg = ModuleManager.readConfiguration(
                     engine, file);
@@ -237,7 +243,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     }
 
     @Override
-    public Application getApplication(Bundle bundle, Map<String, String> args) throws Exception {
+    public Application getApplication(Bundle bundle, Map<String, String> args)
+            throws ReflectiveOperationException, IOException {
         return WebEngineModuleFactory.getApplication(this, bundle, args);
     }
 

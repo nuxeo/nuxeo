@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -18,6 +18,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 import org.nuxeo.ecm.webengine.jaxrs.Utils;
 
 /**
@@ -31,7 +32,8 @@ public class CompositeAuthenticationHandler implements AuthenticationHandler {
 
     protected AuthenticationHandler[] handlers;
 
-    public CompositeAuthenticationHandler(String classRefs) throws Exception {
+    public CompositeAuthenticationHandler(String classRefs)
+            throws ReflectiveOperationException, BundleNotFoundException {
         handlers = Utils.newInstances(AuthenticationHandler.class, classRefs);
     }
 

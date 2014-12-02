@@ -35,7 +35,7 @@ public class RestoreBlobInput {
     protected String name;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws OperationException {
         Object obj = ctx.get(name);
         if (obj instanceof Blob) {
             return (Blob) obj;

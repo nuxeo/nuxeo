@@ -49,7 +49,7 @@ public interface CommentManagerActions {
     /**
      * Bean initialization method.
      */
-    void initialize() throws Exception;
+    void initialize();
 
     /**
      * Clean all the bean's context variables.

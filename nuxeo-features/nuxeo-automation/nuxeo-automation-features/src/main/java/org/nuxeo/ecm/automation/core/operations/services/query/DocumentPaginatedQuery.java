@@ -102,7 +102,7 @@ public class DocumentPaginatedQuery {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() {
         // Ordered parameters
         Object[] orderedParameters = null;
         if (strParameters != null && !strParameters.isEmpty()) {

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -73,7 +74,7 @@ public class DefaultTypeLoader {
             if (file.isFile()) {
                 try {
                     loadTypesFile(file);
-                } catch (Exception e) {
+                } catch (IOException | ClassNotFoundException e) {
                     log.error("Failed to load web types from file "
                             + WEB_TYPES_FILE, e);
                 }
@@ -102,7 +103,8 @@ public class DefaultTypeLoader {
     /**
      * Old method to load types from a web-types file generated at build time
      */
-    protected void loadTypesFile(File file) throws Exception {
+    protected void loadTypesFile(File file) throws IOException,
+            ClassNotFoundException {
         List<String> lines = FileUtils.readLines(file);
         for (String line : lines) {
             line = line.trim();

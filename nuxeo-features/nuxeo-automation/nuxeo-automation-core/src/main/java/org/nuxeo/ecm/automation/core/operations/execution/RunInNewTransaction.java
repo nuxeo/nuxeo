@@ -71,7 +71,7 @@ public class RunInNewTransaction {
     protected Integer timeout = Integer.valueOf(60);
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws OperationException {
         // if the current transaction was already marked for rollback, do nothing
         if (TransactionHelper.isTransactionMarkedRollback()) {
             return;

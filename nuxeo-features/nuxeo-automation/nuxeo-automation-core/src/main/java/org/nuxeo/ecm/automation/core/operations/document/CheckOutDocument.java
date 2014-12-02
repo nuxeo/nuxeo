@@ -32,7 +32,7 @@ public class CheckOutDocument {
     protected CoreSession session;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         if (!session.isCheckedOut(doc)) {
             session.checkOut(doc);
         }
@@ -40,7 +40,7 @@ public class CheckOutDocument {
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         if (!doc.isCheckedOut()) {
             session.checkOut(doc.getRef());
         }

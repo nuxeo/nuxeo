@@ -21,6 +21,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -60,7 +61,7 @@ public class GetDocumentsFromFavoritesOperation {
 
     @OperationMethod
     public DocumentModelList run(DocumentModel context)
-            throws Exception {
+            throws OperationException {
 
         DocumentModel favorites = favoritesManager.getFavorites(
                 context, session);

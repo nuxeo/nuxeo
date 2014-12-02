@@ -37,7 +37,7 @@ public class GetPictureView {
     protected String viewName;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) {
 
         MultiviewPicture mvp = doc.getAdapter(MultiviewPicture.class);
 

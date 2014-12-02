@@ -116,7 +116,7 @@ public class LinkDescriptor implements Cloneable, LinkHandler {
                 }
             }
             return handler.getCode(this, resource);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw WebException.wrap("Failed to instantiate link handler", e);
         }
     }

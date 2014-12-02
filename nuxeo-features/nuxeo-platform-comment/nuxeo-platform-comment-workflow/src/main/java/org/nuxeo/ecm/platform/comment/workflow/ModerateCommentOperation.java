@@ -46,13 +46,13 @@ public class ModerateCommentOperation {
     protected Boolean accept;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         moderate(doc.getRef());
         return doc;
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef docRef) throws Exception {
+    public DocumentModel run(DocumentRef docRef) {
         moderate(docRef);
         return session.getDocument(docRef);
     }

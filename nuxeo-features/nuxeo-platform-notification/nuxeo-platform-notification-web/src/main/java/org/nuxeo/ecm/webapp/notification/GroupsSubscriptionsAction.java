@@ -164,13 +164,8 @@ public class GroupsSubscriptionsAction extends InputController implements
             throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
-        List<String> subscriptions;
-        try {
-            subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
-                    "user:" + principal.getName(), currentDoc.getId());
-        } catch (ClassNotFoundException e) {
-            throw new ClientException(e);
-        }
+        List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
+                "user:" + principal.getName(), currentDoc.getId());
         return subscriptions;
     }
 

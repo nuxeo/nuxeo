@@ -63,7 +63,7 @@ public class BlobToFile {
     }
 
     @OperationMethod(collector=BlobCollector.class)
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws IOException {
         init();
         writeFile(blob);
         return blob;

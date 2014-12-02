@@ -33,7 +33,7 @@ public class AutomationClientActivator implements AutomationClientFactory,
     protected BundleContext context;
 
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
+    public void start(BundleContext bundleContext) {
         bundleContext.registerService(AutomationClientFactory.class.getName(),
                 this, null);
         this.instance = this;
@@ -41,7 +41,7 @@ public class AutomationClientActivator implements AutomationClientFactory,
     }
 
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    public void stop(BundleContext bundleContext) {
         this.instance = null;
         this.context = null;
     }

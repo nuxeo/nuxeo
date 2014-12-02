@@ -11,7 +11,13 @@
  */
 package org.nuxeo.ecm.automation.core.rendering;
 
+import java.io.IOException;
 import java.util.Map;
+
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+
+import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -20,6 +26,8 @@ public interface Renderer {
 
     String TEMPLATE_PREFIX = "template:";
 
-    String render(String uriOrContent, Map<String, Object> root) throws Exception;
+    String render(String uriOrContent, Map<String, Object> root)
+            throws OperationException, RenderingException, TemplateException,
+            IOException;
 
 }

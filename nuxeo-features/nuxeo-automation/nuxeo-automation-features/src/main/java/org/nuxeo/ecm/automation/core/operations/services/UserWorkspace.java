@@ -45,7 +45,7 @@ public class UserWorkspace {
     protected OperationContext context;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         UserWorkspaceService uws = Framework.getLocalService(UserWorkspaceService.class);
         DocumentModel home = uws.getUserPersonalWorkspace(
                 session.getPrincipal().getName(), session.getRootDocument());

@@ -11,7 +11,10 @@
  */
 package org.nuxeo.ecm.automation.core.rendering.operations;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -22,7 +25,10 @@ import org.nuxeo.ecm.automation.core.rendering.RenderingService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.runtime.services.resource.ResourceService;
+
+import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,7 +57,8 @@ public class RenderDocument {
     protected String mimeType = "text/xml";
 
     @OperationMethod(collector = BlobCollector.class)
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) throws OperationException,
+            RenderingException, TemplateException, IOException {
         String content = RenderingService.getInstance().render(type, template, ctx);
         StringBlob blob = new StringBlob(content);
         blob.setFilename(name);

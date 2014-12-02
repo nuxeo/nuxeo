@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.notification;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,8 +48,11 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+
+import freemarker.template.TemplateException;
 
 /**
  * Save the session - TODO remove this?
@@ -122,12 +126,14 @@ public class SendMail {
     protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws TemplateException,
+            RenderingException, OperationException, MessagingException,
+            IOException {
         send(doc);
         return doc;
     }
 
-    protected String getContent() throws Exception {
+    protected String getContent() throws OperationException, IOException {
         message = message.trim();
         if (message.startsWith("template:")) {
             String name = message.substring("template:".length()).trim();
@@ -142,7 +148,9 @@ public class SendMail {
         }
     }
 
-    protected void send(DocumentModel doc) throws Exception {
+    protected void send(DocumentModel doc) throws TemplateException,
+            RenderingException, OperationException, MessagingException,
+            IOException {
         // TODO should sent one by one to each recipient? and have the template
         // rendered for each recipient? Use: "mailto" var name?
         try {
@@ -173,7 +181,8 @@ public class SendMail {
             addMailBoxInfo(msg);
 
             msg.send();
-        } catch (ClientException | MessagingException e) {
+        } catch (ClientException | TemplateException | RenderingException
+                | OperationException | MessagingException | IOException e) {
             if (rollbackOnError) {
                 throw e;
             } else {
@@ -220,7 +229,8 @@ public class SendMail {
     }
 
     protected Mailer.Message createMessage(DocumentModel doc, String message,
-            Map<String, Object> map) throws Exception {
+            Map<String, Object> map) throws MessagingException,
+            TemplateException, RenderingException, IOException {
         if (blobXpath == null) {
             if (asHtml) {
                 return COMPOSER.newHtmlMessage(message, map);

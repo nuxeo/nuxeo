@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.webengine.model.view;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -24,6 +25,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
@@ -98,7 +100,7 @@ public class TemplateView {
     public void render(Writer writer) {
         try {
             ctx.getEngine().getRendering().render(url.toExternalForm(), bindings, writer);
-        } catch (Exception e) {
+        } catch (RenderingException e) {
             throw WebException.wrap(e);
         }
     }
@@ -108,7 +110,11 @@ public class TemplateView {
         try {
             render(writer);
         } finally{
-            try { writer.flush(); } catch (Exception e) { throw WebException.wrap(e); }
+            try {
+                writer.flush();
+            } catch (IOException e) {
+                throw WebException.wrap(e);
+            }
         }
     }
 

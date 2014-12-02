@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.admin.repo.RepoStat;
 import org.nuxeo.ecm.admin.repo.RepoStatInfo;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
@@ -178,7 +179,7 @@ public class SystemInfoManager implements Serializable {
     // *********************************
     // Repo settings Management
 
-    public boolean isMultiRepo() throws Exception {
+    public boolean isMultiRepo() {
         return listAvailableRepositories().size() > 1;
     }
 
@@ -191,14 +192,14 @@ public class SystemInfoManager implements Serializable {
         return repositories;
     }
 
-    public String getCurrentRepositoryName() throws Exception {
+    public String getCurrentRepositoryName() {
         if (currentRepositoryName == null) {
             listAvailableRepositories();
         }
         return currentRepositoryName;
     }
 
-    public void setCurrentRepositoryName(String name) throws Exception {
+    public void setCurrentRepositoryName(String name) {
         currentRepositoryName = name;
     }
 
@@ -214,7 +215,7 @@ public class SystemInfoManager implements Serializable {
     // *********************************
     // Repo stats Management
 
-    public void startRepoStats() throws Exception {
+    public void startRepoStats() {
         if (runningStat != null) {
             return;
         }
@@ -251,7 +252,7 @@ public class SystemInfoManager implements Serializable {
         return statResult;
     }
 
-    public String getRepoUsage() throws Exception {
+    public String getRepoUsage() {
         StringBuilder sb = new StringBuilder();
 
         int nbSessions = CoreInstance.getInstance().getNumberOfSessions();
@@ -261,11 +262,15 @@ public class SystemInfoManager implements Serializable {
 
         RepoStat stat = new RepoStat("default", 5, true);
         stat.run(new PathRef("/"));
-        Thread.sleep(100);
 
-        do {
-            Thread.sleep(1000);
-        } while (stat.isRunning());
+        try {
+            Thread.sleep(100);
+            do {
+                Thread.sleep(1000);
+            } while (stat.isRunning());
+        } catch (InterruptedException e) {
+            throw ExceptionUtils.runtimeException(e);
+        }
 
         sb.append(stat.getInfo().toString());
 

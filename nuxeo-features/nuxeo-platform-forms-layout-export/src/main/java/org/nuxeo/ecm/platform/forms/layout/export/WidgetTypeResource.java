@@ -58,7 +58,7 @@ public class WidgetTypeResource {
 
     protected final Map<String, List<WidgetTypeDefinition>> widgetTypesByCat;
 
-    public WidgetTypeResource(String category) throws Exception {
+    public WidgetTypeResource(String category) {
         this.category = category;
         service = Framework.getService(LayoutStore.class);
         widgetTypes = service.getWidgetTypeDefinitions(category);

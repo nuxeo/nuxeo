@@ -60,7 +60,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
         return Framework.getLocalService(AutomationService.class);
     }
 
-    public String getOperationsListAsJson() throws Exception {
+    public String getOperationsListAsJson() throws OperationException, IOException {
         return JsonWriter.exportOperations();
     }
 
@@ -73,7 +73,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Produces("text/plain")
     @Path("/doc")
-    public Object doGetText() throws Exception {
+    public Object doGetText() throws OperationException, IOException {
         return getOperationsListAsJson();
     }
 
@@ -83,13 +83,13 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Produces("text/plain")
     @Path("/studioDoc")
-    public Object doGetStudioDoc() throws Exception {
+    public Object doGetStudioDoc() throws OperationException, IOException {
         return JsonWriter.exportOperations(true);
     }
 
     @GET
     @Produces("application/json")
-    public Object doGetJSON() throws Exception {
+    public Object doGetJSON() throws OperationException, IOException {
         return getOperationsListAsJson();
     }
 

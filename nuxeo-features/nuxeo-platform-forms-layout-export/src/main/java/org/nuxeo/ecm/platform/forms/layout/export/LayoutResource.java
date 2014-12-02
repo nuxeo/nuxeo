@@ -45,7 +45,7 @@ public class LayoutResource {
 
     protected List<String> registeredLayoutNames;
 
-    public LayoutResource(String category) throws Exception {
+    public LayoutResource(String category) {
         this.category = category;
         service = Framework.getService(LayoutStore.class);
         registeredLayoutNames = service.getLayoutDefinitionNames(category);

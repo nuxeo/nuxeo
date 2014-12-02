@@ -45,7 +45,7 @@ public abstract class DirectoryTree extends JSonTree {
         this.dir = dir;
     }
 
-    protected DirectoryTree(String directory) throws Exception {
+    protected DirectoryTree(String directory) throws DirectoryException {
         this(Framework.getService(DirectoryService.class).getDirectory(directory));
     }
 

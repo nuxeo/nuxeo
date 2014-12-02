@@ -33,11 +33,11 @@ public class FetchContextBlob {
     protected OperationContext ctx;
 
     @OperationMethod(collector=BlobCollector.class)
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) {
         return blob;
     }
 
-    public BlobList run(BlobList blobs) throws Exception {
+    public BlobList run(BlobList blobs) {
         return blobs;
     }
 

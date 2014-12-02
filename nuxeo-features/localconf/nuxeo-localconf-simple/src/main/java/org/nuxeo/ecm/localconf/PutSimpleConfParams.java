@@ -64,7 +64,7 @@ public class PutSimpleConfParams {
     protected boolean save = true;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         if (!doc.hasFacet(SIMPLE_CONFIGURATION_FACET)) {
             doc.addFacet(SIMPLE_CONFIGURATION_FACET);
             doc = session.saveDocument(doc);

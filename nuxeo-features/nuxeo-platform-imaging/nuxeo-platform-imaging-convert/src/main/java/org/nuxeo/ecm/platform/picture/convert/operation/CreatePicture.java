@@ -98,7 +98,7 @@ public class CreatePicture {
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws IOException {
         if (name == null) {
             name = "Untitled";
         }
@@ -131,7 +131,7 @@ public class CreatePicture {
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) throws IOException {
         return run(session.getDocument(doc));
     }
 

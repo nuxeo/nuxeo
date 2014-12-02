@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -43,7 +45,7 @@ public class RunInputScript {
     protected String type = "mvel";
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws OperationException, IOException {
         if (!((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
             throw new OperationException(
                     "Not allowed. You must be administrator to run scripts");

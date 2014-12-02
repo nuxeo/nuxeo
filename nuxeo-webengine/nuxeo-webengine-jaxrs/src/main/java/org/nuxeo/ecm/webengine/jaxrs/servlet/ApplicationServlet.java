@@ -26,6 +26,7 @@ import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationHost;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
+import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 import org.nuxeo.ecm.webengine.jaxrs.Reloadable;
 import org.nuxeo.ecm.webengine.jaxrs.Utils;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor;
@@ -41,9 +42,9 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 /**
  * A hot re-loadable JAX-RS servlet.
- * 
- * This servlet is building a Jersey JAX-RS Application. If you need to support 
- * other JAX-RS containers than Jersey you need to write your own servlet. 
+ *
+ * This servlet is building a Jersey JAX-RS Application. If you need to support
+ * other JAX-RS containers than Jersey you need to write your own servlet.
  * <p>
  * Use it as the webengine servlet in web.xml if you want hot reload, otherwise
  * directly use the Jersey servlet: {@link ServletContainer}.
@@ -191,7 +192,7 @@ public class ApplicationServlet extends HttpServlet implements ManagedServlet, R
             }
             rendering.setResourceLocator(this);
             return rendering;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | BundleNotFoundException e) {
             throw new ServletException(e);
         }
     }

@@ -40,7 +40,7 @@ public class RemoveProperty {
     protected boolean save = true;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         DocumentHelper.removeProperty(doc, xpath);
         if (save) {
             doc = session.saveDocument(doc);

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
@@ -126,7 +127,7 @@ public abstract class AbstractResource<T extends ResourceType> implements
                 }
             }
             return Response.seeOther(new URI(uri)).build();
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
             throw WebException.wrap(e);
         }
     }

@@ -33,7 +33,7 @@ public class DeleteDocument {
     protected CoreSession session;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         // if (soft) {
         // //TODO impl safe delete
         // throw new UnsupportedOperationException("Safe delete not yet
@@ -45,7 +45,7 @@ public class DeleteDocument {
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         // if (soft) {
         // //TODO impl safe delete
         // throw new UnsupportedOperationException("Safe delete not yet

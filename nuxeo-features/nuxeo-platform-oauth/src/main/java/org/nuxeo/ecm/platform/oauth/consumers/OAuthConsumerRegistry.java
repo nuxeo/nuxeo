@@ -56,5 +56,5 @@ public interface OAuthConsumerRegistry {
     /**
      * Store a new Consumer
      */
-    NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) throws Exception;
+    NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer);
 }

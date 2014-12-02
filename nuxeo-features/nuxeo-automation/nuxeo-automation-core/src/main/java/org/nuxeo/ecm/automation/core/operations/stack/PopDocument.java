@@ -38,7 +38,7 @@ public class PopDocument {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() throws OperationException {
         Object obj = ctx.pop(Constants.O_DOCUMENT);
         if (obj instanceof DocumentModel) {
             return (DocumentModel) obj;

@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.blob;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -37,7 +38,7 @@ public class PostBlob {
     protected String url;
 
     @OperationMethod(collector=BlobCollector.class)
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws IOException {
         URL target = new URL(url);
         URLConnection conn = target.openConnection();
         conn.setDoOutput(true);

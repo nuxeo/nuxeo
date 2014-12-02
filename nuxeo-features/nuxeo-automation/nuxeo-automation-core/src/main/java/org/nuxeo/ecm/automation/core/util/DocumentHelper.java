@@ -136,7 +136,7 @@ public class DocumentHelper {
      * supported
      */
     public static void setProperties(CoreSession session, DocumentModel doc,
-            Map<String, String> values) throws Exception {
+            Map<String, String> values) throws ClientException, IOException {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();

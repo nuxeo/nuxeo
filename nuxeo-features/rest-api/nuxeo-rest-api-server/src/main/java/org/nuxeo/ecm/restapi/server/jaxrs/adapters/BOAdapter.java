@@ -59,7 +59,7 @@ public class BOAdapter extends DefaultAdapter {
     @GET
     @Path("{adapterName}")
     public Object doGetAdapter(@PathParam("adapterName")
-    String adapterName) throws Exception {
+    String adapterName) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         if (doc != null) {
             BusinessAdapter adapter = getAdapter(adapterName, doc);
@@ -107,7 +107,7 @@ public class BOAdapter extends DefaultAdapter {
     @Path("{adapterName}")
     @Consumes({ "application/json+nxentity", "application/json" })
     public Object doPostAdapter(@PathParam("adapterName")
-    String adapterName, BusinessAdapter input) throws Exception {
+    String adapterName, BusinessAdapter input) {
         ctx.getCoreSession().saveDocument(input.getDocument());
 
         ctx.getCoreSession().save();
@@ -119,7 +119,7 @@ public class BOAdapter extends DefaultAdapter {
     @Path("{adapterName}/{docName}")
     public Object doPutAdapter(@PathParam("adapterName")
     String adapterName, @PathParam("docName")
-    String docName, BusinessAdapter input) throws Exception {
+    String docName, BusinessAdapter input) {
         DocumentModel document = input.getDocument();
 
         DocumentObject dobj = (DocumentObject) getTarget();

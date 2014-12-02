@@ -22,8 +22,6 @@ import java.util.Set;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.WebEngineApplication;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -42,8 +40,6 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 @Provider
 public class JerseyApplication extends WebEngineApplication implements InjectableProvider<Context, Type> {
 
-    private static final Log log = LogFactory.getLog(JerseyApplication.class);
-
     @Override
     public Set<Object> getSingletons() {
         Set<Object> set = super.getSingletons();
@@ -59,21 +55,15 @@ public class JerseyApplication extends WebEngineApplication implements Injectabl
         if (!(t instanceof Class<?>)) {
             return null;
         }
-
-        try {
-            Class<?> c = (Class<?>)t;
-            if (c == WebContext.class) {
-                return new Injectable<Object>() {
-                    public Object getValue() {
-                        return WebEngine.getActiveContext();
-                    }
-                };
-            }
-            return null;
-        } catch (Exception e) {
-            log.error(e, e);
-            return null;
+        Class<?> c = (Class<?>) t;
+        if (c == WebContext.class) {
+            return new Injectable<Object>() {
+                public Object getValue() {
+                    return WebEngine.getActiveContext();
+                }
+            };
         }
+        return null;
     }
 
 }

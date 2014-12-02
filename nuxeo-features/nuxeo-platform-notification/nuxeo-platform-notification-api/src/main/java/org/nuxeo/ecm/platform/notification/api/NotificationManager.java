@@ -43,8 +43,7 @@ public interface NotificationManager {
      * Gets the notifications for which a user subscribed for a certain
      * document.
      */
-    List<String> getSubscriptionsForUserOnDocument(String username,
-            String docId) throws ClassNotFoundException, ClientException;
+    List<String> getSubscriptionsForUserOnDocument(String username, String docId);
 
     /**
      * Gets all users and groups that subscribed to a notification on a document

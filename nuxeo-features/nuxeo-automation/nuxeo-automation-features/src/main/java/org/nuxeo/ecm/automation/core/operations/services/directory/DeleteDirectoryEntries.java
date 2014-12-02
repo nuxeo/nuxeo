@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.automation.core.operations.services.directory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
     protected boolean markObsolete = false;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws IOException {
         validateCanManageDirectories(ctx);
 
         ObjectMapper mapper = new ObjectMapper();

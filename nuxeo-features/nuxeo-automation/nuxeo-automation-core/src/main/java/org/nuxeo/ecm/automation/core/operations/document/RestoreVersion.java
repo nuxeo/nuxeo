@@ -45,7 +45,7 @@ public class RestoreVersion {
     protected boolean checkout = false;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel version) throws Exception {
+    public DocumentModel run(DocumentModel version) {
         DocumentModel liveDoc = session.getSourceDocument(version.getRef());
         return session.restoreToVersion(liveDoc.getRef(), version.getRef(),
                 !createVersion, !checkout);

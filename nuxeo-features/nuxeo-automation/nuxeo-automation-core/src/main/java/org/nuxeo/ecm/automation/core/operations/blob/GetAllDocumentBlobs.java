@@ -31,7 +31,7 @@ public class GetAllDocumentBlobs {
     public static final String ID = "Blob.GetAll";
 
     @OperationMethod(collector = BlobListCollector.class)
-    public BlobList run(DocumentModel doc) throws Exception {
+    public BlobList run(DocumentModel doc) {
         BlobList blobs = new BlobList();
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {

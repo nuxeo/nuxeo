@@ -51,7 +51,7 @@ public class WebEngineGwtServlet extends RemoteServiceServlet {
         try {
             Class.forName("com.google.gwt.dev.HostedMode");
             HOSTED_MODE = true;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             HOSTED_MODE = false;
         }
     }

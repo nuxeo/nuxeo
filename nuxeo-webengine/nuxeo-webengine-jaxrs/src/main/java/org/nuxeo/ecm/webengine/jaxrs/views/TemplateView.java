@@ -12,13 +12,16 @@
 package org.nuxeo.ecm.webengine.jaxrs.views;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.osgi.framework.Bundle;
@@ -40,7 +43,7 @@ public class TemplateView {
         }
         try {
             return file.toURI().toURL();
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             throw new ViewNotFoundException(e, null, file.getAbsolutePath());
         }
     }
@@ -124,7 +127,7 @@ public class TemplateView {
     }
 
 
-    public void render(Writer writer) throws Exception {
+    public void render(Writer writer) throws RenderingException, IOException {
         String id = addLocator(this);
         try {
             engine.render(id, vars, writer);
@@ -134,7 +137,7 @@ public class TemplateView {
         }
     }
 
-    public void render(OutputStream out) throws Exception {
+    public void render(OutputStream out) throws RenderingException, IOException {
         render(new OutputStreamWriter(out, "UTF-8"));
     }
 

@@ -17,8 +17,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -26,6 +29,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -58,19 +62,20 @@ public class FileManagerImport {
     @Param(name = "overwite", required = false)
     protected Boolean overwite = false;
 
-    protected DocumentModel getCurrentDocument() throws Exception {
+    protected DocumentModel getCurrentDocument() throws OperationException {
         String cdRef = (String) context.get("currentDocument");
         return as.getAdaptedValue(context, cdRef, DocumentModel.class);
     }
 
     @OperationMethod
-    public DocumentModel run(Blob blob) throws Exception {
+    public DocumentModel run(Blob blob) throws OperationException, IOException {
         DocumentModel currentDocument = getCurrentDocument();
         return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(),overwite , blob.getFilename());
     }
 
     @OperationMethod
-    public DocumentModelList run(BlobList blobs) throws Exception {
+    public DocumentModelList run(BlobList blobs) throws OperationException,
+            IOException {
         DocumentModelList result = new DocumentModelListImpl();
         for (Blob blob : blobs) {
             result.add(run(blob));

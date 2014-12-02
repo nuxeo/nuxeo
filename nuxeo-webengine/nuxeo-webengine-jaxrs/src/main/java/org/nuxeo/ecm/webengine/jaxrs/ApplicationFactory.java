@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.ws.rs.core.Application;
@@ -30,7 +31,7 @@ public interface ApplicationFactory {
      * @param bundle the bundle defining the application
      * @param args the arguments parsed from manifest WebModule entry.
      */
-    Application getApplication(Bundle bundle, Map<String, String> args) throws Exception;
-
+    Application getApplication(Bundle bundle, Map<String, String> args)
+            throws ReflectiveOperationException, IOException;
 
 }

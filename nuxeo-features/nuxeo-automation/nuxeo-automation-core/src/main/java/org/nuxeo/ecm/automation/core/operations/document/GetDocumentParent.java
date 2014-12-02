@@ -37,7 +37,7 @@ public class GetDocumentParent {
     protected String type;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         if (type == null) {
             return session.getParentDocument(doc);
         }

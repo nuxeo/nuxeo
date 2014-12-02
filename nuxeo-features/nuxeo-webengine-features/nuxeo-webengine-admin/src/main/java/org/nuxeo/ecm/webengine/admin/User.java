@@ -60,7 +60,7 @@ public class User extends DefaultObject {
     }
 
     @PUT
-    public Response doPut() throws Exception {
+    public Response doPut() {
         UserManager userManager = Framework.getService(UserManager.class);
         HttpServletRequest req = ctx.getRequest();
         // update
@@ -78,7 +78,7 @@ public class User extends DefaultObject {
     }
 
     @DELETE
-    public Response doDelete() throws Exception {
+    public Response doDelete() {
         UserManager userManager = Framework.getService(UserManager.class);
         userManager.deletePrincipal(principal);
         return redirect(getPrevious().getPath());
@@ -86,13 +86,13 @@ public class User extends DefaultObject {
 
     @POST
     @Path("@put")
-    public Response simulatePut() throws Exception {
+    public Response simulatePut() {
         return doPut();
     }
 
     @GET
     @Path("@delete")
-    public Response simulateDelete() throws Exception {
+    public Response simulateDelete() {
         return doDelete();
     }
 

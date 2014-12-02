@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.automation.core.operations.services;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -76,13 +78,13 @@ public class GetActions {
     @Param(name = "lang", required = false)
     protected String lang;
 
-    protected DocumentModel getCurrentDocumentFromContext() throws Exception {
+    protected DocumentModel getCurrentDocumentFromContext() throws OperationException {
         String cdRef = (String) ctx.get("currentDocument");
         return automation.getAdaptedValue(ctx, cdRef, DocumentModel.class);
     }
 
     protected ActionContext getActionContext(DocumentModel currentDocument)
-            throws Exception {
+            throws OperationException {
         if (ctx.containsKey(SEAM_ACTION_CONTEXT)) {
             // if Seam Context has been initialized, use it
             return (ActionContext) ctx.get(SEAM_ACTION_CONTEXT);
@@ -119,13 +121,12 @@ public class GetActions {
     }
 
     @OperationMethod
-    public Blob run() throws Exception {
-
+    public Blob run() throws OperationException {
         return run(null);
     }
 
     @OperationMethod
-    public Blob run(DocumentModel currentDocument) throws Exception {
+    public Blob run(DocumentModel currentDocument) throws OperationException {
 
         ActionContext actionContext = getActionContext(currentDocument);
         List<Action> actions = actionService.getActions(category, actionContext);
@@ -151,7 +152,12 @@ public class GetActions {
             obj.element("properties", properties);
             rows.add(obj);
         }
-        return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),
-                "application/json");
+        try {
+            return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),
+                    "application/json");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen
+            throw new RuntimeException(e);
+        }
     }
 }

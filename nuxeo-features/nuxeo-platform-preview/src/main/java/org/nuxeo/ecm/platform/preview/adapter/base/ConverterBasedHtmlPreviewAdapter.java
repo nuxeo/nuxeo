@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -79,13 +78,6 @@ public class ConverterBasedHtmlPreviewAdapter extends
         }
         return srcMT;
     }
-
-    /*
-     * protected static boolean canHaveHtmlPreview(Blob blob) throws Exception {
-     * if (blob == null) { return false; } String srcMT = getMimeType(blob);
-     * return getTransformService().getPluginByMimeTypes(srcMT, "text/html") !=
-     * null; }
-     */
 
     protected String getDefaultPreviewFieldXPath() {
         return defaultFieldXPath;

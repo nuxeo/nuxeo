@@ -28,10 +28,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
-import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
  * Used to store user session. This object is cached in a the HTTP session
@@ -75,48 +73,6 @@ public final class UserSession extends HashMap<String, Object> {
             }
         }
         return us;
-    }
-
-
-    /**
-     * Gets a core session.
-     * <p>
-     * If it does not already exist, it will be opened against the given
-     * repository.
-     *
-     * @param repoName
-     * @return the core session
-     *
-     * @deprecated use {@link SessionFactory#getSession(HttpServletRequest, String)}
-     */
-    public CoreSession getCoreSession(String repoName) {
-        try {
-            return SessionFactory.getSession(request, repoName);
-        } catch (Exception e) {
-            log.error(
-                    "Failed to open core session for repository: " + repoName,
-                    e);
-            return null;
-        }
-    }
-
-    /**
-     * Gets a core session.
-     * <p>
-     * If not already opened, opens a new core session against the default
-     * repository.
-     *
-     * @deprecated use {@link SessionFactory#getSession(HttpServletRequest)}
-     */
-    public CoreSession getCoreSession() {
-        try {
-            return SessionFactory.getSession(request);
-        } catch (Exception e) {
-            log.error(
-                    "Failed to open core session for default repository",
-                    e);
-            return null;
-        }
     }
 
     public Principal getPrincipal() {
@@ -183,7 +139,7 @@ public final class UserSession extends HashMap<String, Object> {
         // component not found
         try {
             comp = type.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new SessionException("Failed to instantiate component: "
                     + type, e);
         }

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.scripting;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovyRuntimeException;
 import groovy.lang.Script;
 
 import java.io.File;
@@ -81,23 +82,31 @@ public class GroovyScripting {
     }
 
     //TODO add debug mode :  return new GroovyShell(new Binding(args)).evaluate(script.getFile()); ?
-    public Object eval(File file, Map<String,Object> context) throws IOException {
-        return eval(file, context == null ? new Binding() : new Binding(context));
+    public Object eval(File file, Map<String, Object> context)
+            throws GroovyRuntimeException {
+        return eval(file, context == null ? new Binding()
+                : new Binding(context));
     }
 
-    public Object eval(File file, Binding context) throws IOException {
+    public Object eval(File file, Binding context)
+            throws GroovyRuntimeException {
         // convenience out global variable (for compatibility with scripts on webengine 1.0 beta)
         context.setVariable("out", System.out);
         return getScript(file, context).run();
     }
 
-    public Class<?> compile(File file) throws IOException {
-        GroovyCodeSource codeSource = new GroovyCodeSource(file);
+    public Class<?> compile(File file) throws GroovyRuntimeException {
+        GroovyCodeSource codeSource;
+        try {
+            codeSource = new GroovyCodeSource(file);
+        } catch (IOException e) {
+            throw new GroovyRuntimeException(e);
+        }
          // do not use cache - we are maintaining our proper cache -  based on lastModified
         return loader.parseClass(codeSource, false);
     }
 
-    public Script getScript(File file, Binding context) throws IOException {
+    public Script getScript(File file, Binding context) throws GroovyRuntimeException {
         Class<?> klass = null;
         long lastModified = file.lastModified();
         Entry entry = cache.get(file);

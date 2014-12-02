@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -81,7 +82,7 @@ public class SuggestCollectionEntry {
     protected String searchTerm;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws OperationException {
         JSONArray result = new JSONArray();
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,

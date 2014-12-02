@@ -108,17 +108,17 @@ public class NuxeoLauncherGUI {
         initFrame();
         dumpedConfigMonitor = new DefaultFileMonitor(new FileListener() {
             @Override
-            public void fileDeleted(FileChangeEvent event) throws Exception {
+            public void fileDeleted(FileChangeEvent event) {
                 // Ignore
             }
 
             @Override
-            public void fileCreated(FileChangeEvent event) throws Exception {
+            public void fileCreated(FileChangeEvent event) {
                 updateNuxeoFrame();
             }
 
             @Override
-            public void fileChanged(FileChangeEvent event) throws Exception {
+            public void fileChanged(FileChangeEvent event) {
                 updateNuxeoFrame();
             }
 

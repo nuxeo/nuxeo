@@ -47,7 +47,7 @@ public class FetchByProperty {
     protected String query;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() {
         if (values.isEmpty()) {
             return new DocumentModelListImpl();
         }

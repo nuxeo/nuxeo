@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,7 +49,7 @@ public class CreateZip {
     protected String fileName;
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws IOException {
         if (fileName == null || (fileName = fileName.trim()).length() == 0) {
             fileName = blob.getFilename();
         }
@@ -65,7 +66,7 @@ public class CreateZip {
     }
 
     @OperationMethod
-    public Blob run(BlobList blobs) throws Exception {
+    public Blob run(BlobList blobs) throws IOException {
         if (fileName == null || (fileName = fileName.trim()).length() == 0) {
             fileName = blobs.isEmpty() ? null : blobs.get(0).getFilename();
         }
@@ -89,7 +90,7 @@ public class CreateZip {
         return entry;
     }
 
-    protected void zip(Blob blob, ZipOutputStream out) throws Exception {
+    protected void zip(Blob blob, ZipOutputStream out) throws IOException {
         String entry = getFileName(blob);
         InputStream in = blob.getStream();
         try {
@@ -99,7 +100,7 @@ public class CreateZip {
         }
     }
 
-    protected void zip(BlobList blobs, ZipOutputStream out) throws Exception {
+    protected void zip(BlobList blobs, ZipOutputStream out) throws IOException {
         // use a set to avoid zipping entries with same names
         Collection<String> names = new HashSet<String>();
         int cnt = 1;

@@ -46,7 +46,7 @@ public class LayoutTypeResource {
 
     protected final List<LayoutTypeDefinition> layoutTypes;
 
-    public LayoutTypeResource(String category) throws Exception {
+    public LayoutTypeResource(String category) {
         this.category = category;
         service = Framework.getService(LayoutStore.class);
         layoutTypes = service.getLayoutTypeDefinitions(category);

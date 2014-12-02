@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.convert.ConvertHelper;
 
 /**
  * Convert the given blob to a file with given mimetype.
- * 
+ *
  * @author ldoguin
  */
 @Operation(id = ConvertBlob.ID, category = Constants.CAT_CONVERSION, label = "Convert to given mime-type", description = "Convert the input file to a file of the given mime-type and return the new file.", since = "5.7")
@@ -42,7 +42,7 @@ public class ConvertBlob {
     protected String mimeType;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             return null;
@@ -51,13 +51,13 @@ public class ConvertBlob {
     }
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) {
         Blob result = convertHelper.convertBlob(blob, mimeType);
         return result;
     }
 
     @OperationMethod
-    public BlobList run(BlobList blobs) throws Exception {
+    public BlobList run(BlobList blobs) {
         BlobList bl = new BlobList();
         for (Blob blob : blobs) {
             bl.add(this.run(blob));

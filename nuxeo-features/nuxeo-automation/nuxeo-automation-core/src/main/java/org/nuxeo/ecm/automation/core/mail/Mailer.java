@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.mail;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -196,7 +197,7 @@ public class Mailer {
         this.config = config;
     }
 
-    public void loadConfiguration(InputStream in) throws Exception {
+    public void loadConfiguration(InputStream in) throws IOException {
         config.load(in);
     }
 

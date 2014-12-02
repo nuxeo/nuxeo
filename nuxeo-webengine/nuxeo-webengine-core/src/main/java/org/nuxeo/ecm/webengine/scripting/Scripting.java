@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
+import groovy.lang.GroovyRuntimeException;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -99,23 +101,29 @@ public class Scripting {
     }
 
 
-    public Object runScript(ScriptFile script) throws Exception {
+    public Object runScript(ScriptFile script) throws ScriptException {
         return runScript(script, null);
     }
 
-    public Object runScript(ScriptFile script, Map<String, Object> args) throws Exception {
+    public Object runScript(ScriptFile script, Map<String, Object> args)
+            throws ScriptException {
         if (log.isDebugEnabled()) {
             log.debug("## Running Script: "+script.getFile());
         }
         if ("groovy".equals(script.getExtension())) {
-            return loader.getGroovyScripting().eval(script.file, args);
+            try {
+                return loader.getGroovyScripting().eval(script.file, args);
+            } catch (GroovyRuntimeException e) {
+                throw new ScriptException(e);
+            }
         } else {
             return _runScript(script, args);
         }
     }
 
     //TODO: add an output stream to use as arg?
-    protected Object _runScript(ScriptFile script, Map<String, Object> args) throws Exception {
+    protected Object _runScript(ScriptFile script, Map<String, Object> args)
+            throws ScriptException {
         SimpleBindings bindings = new SimpleBindings();
         if (args != null) {
             bindings.putAll(args);
@@ -147,19 +155,6 @@ public class Scripting {
         }
         return null;
     }
-
-//TODO move this in a python scripting adapter
-//    @SuppressWarnings("unchecked")
-//    public static Map convertPythonMap(PyDictionary dict) {
-//        PyList list = dict.items();
-//        Map<String, PyObject> table = new HashMap();
-//        for(int i = list.__len__(); i-- >  0; ) {
-//            PyTuple tup = (PyTuple) list.__getitem__(i);
-//            String key = tup.__getitem__(0).toString();
-//            table.put(key, tup.__getitem__(1));
-//        }
-//        return table;
-//    }
 
     public CompiledScript getCompiledScript(ScriptEngine engine, File file) throws ScriptException {
         Entry entry = cache.get(file);

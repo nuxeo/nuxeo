@@ -48,7 +48,7 @@ public class LazyClassProxy implements ClassProxy {
         if (clazz == null) {
             try {
                 clazz = loader.loadClass(className);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw WebException.wrap("Failed to load class "+className, e);
             }
         }

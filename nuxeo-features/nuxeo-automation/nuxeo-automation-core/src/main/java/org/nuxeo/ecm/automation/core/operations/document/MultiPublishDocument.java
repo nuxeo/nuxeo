@@ -41,7 +41,7 @@ public class MultiPublishDocument {
     protected boolean override = true;
 
     @OperationMethod(collector=DocumentModelListCollector.class)
-    public DocumentModelList run(DocumentModel doc) throws Exception {
+    public DocumentModelList run(DocumentModel doc) {
         DocumentModelListImpl docs = new DocumentModelListImpl();
         for (DocumentModel t : target) {
             docs.add(session.publishDocument(doc, t, override));

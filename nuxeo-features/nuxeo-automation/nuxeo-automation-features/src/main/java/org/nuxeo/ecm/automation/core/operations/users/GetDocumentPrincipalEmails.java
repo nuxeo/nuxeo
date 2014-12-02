@@ -66,7 +66,7 @@ public class GetDocumentPrincipalEmails {
     protected boolean ignoreGroups = false;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel input) throws Exception {
+    public DocumentModel run(DocumentModel input) {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getEmailsForPermission(input, permission,
                 ignoreGroups);

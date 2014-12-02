@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Set;
@@ -106,7 +108,7 @@ public abstract class AbstractResourceType implements ResourceType {
     public <T extends Resource> T newInstance() {
         try {
             return (T)clazz.get().newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw WebException.wrap("Failed to instantiate web object: "+clazz, e);
         }
     }
@@ -145,7 +147,7 @@ public abstract class AbstractResourceType implements ResourceType {
                 if (gc != null) {
                     try {
                         guard = (Guard) gc.newInstance();
-                    } catch (Exception e) {
+                    } catch (ReflectiveOperationException e) {
                         throw WebException.wrap(
                                 "Failed to instantiate guard handler: "+gc.getName()
                                 +" on WebObject "+c.getName(), e);
@@ -205,7 +207,7 @@ public abstract class AbstractResourceType implements ResourceType {
             }
             try {
                 return new ScriptFile(new File(url.toURI()));
-            } catch (Exception e) {
+            } catch (IOException | URISyntaxException e) {
                 throw WebException.wrap("Failed to convert URL to URI: "+url, e);
             }
         }

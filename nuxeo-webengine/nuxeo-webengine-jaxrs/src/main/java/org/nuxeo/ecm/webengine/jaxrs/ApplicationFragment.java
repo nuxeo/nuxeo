@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -71,10 +72,13 @@ public class ApplicationFragment extends Application {
             } else if (obj instanceof Application) {
                 app = (Application)obj;
             } else {
-                throw new IllegalArgumentException("Expecting an Application or ApplicationFactory class: "+appClass);
+                throw new IllegalArgumentException(
+                        "Expecting an Application or ApplicationFactory class: "
+                                + appClass);
             }
-        } catch (Exception e) {
-            String msg = "Cannot instantiate JAX-RS application "+appClass+" from bundle "+bundle.getSymbolicName();
+        } catch (ReflectiveOperationException | IOException e) {
+            String msg = "Cannot instantiate JAX-RS application " + appClass
+                    + " from bundle " + bundle.getSymbolicName();
             throw new RuntimeException(msg, e);
         }
     }

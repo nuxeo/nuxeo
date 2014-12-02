@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations;
 
+import org.mvel2.CompileException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -39,7 +40,7 @@ public class RunScript {
     private volatile Expression expr;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws CompileException, RuntimeException {
         if (expr == null) {
             String text = script.replaceAll("&lt;", "<");
             text = text.replaceAll("&gt;", ">");

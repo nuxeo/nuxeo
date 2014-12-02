@@ -70,7 +70,7 @@ public class GetDirectoryEntries {
     protected String lang;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) {
         Directory directory = directoryService.getDirectory(directoryName, doc);
         Session session = null;
         try {
@@ -105,7 +105,7 @@ public class GetDirectoryEntries {
     }
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         return run(null);
     }
 

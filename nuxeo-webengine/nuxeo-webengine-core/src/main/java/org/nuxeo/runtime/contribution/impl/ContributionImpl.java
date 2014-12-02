@@ -161,31 +161,26 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
     }
 
     public T getValue() {
-        try {
-            if (!isResolved) {
-                throw new IllegalStateException(
-                        "Cannot compute merged values for not resolved contributions");
-            }
-            if (mainFragments.isEmpty() || value != null) {
-                return value;
-            }
-            // clone the last registered main fragment.
-            T result = registry.clone(mainFragments.get(mainFragments.size()-1));
-            // first apply its super objects if any
-            for (Contribution<K,T> key : dependencies) {
-                T superObject = registry.getContribution(key.getId()).getValue();
-                registry.applySuperFragment(result, superObject);
-            }
-            // and now apply fragments
-            for (T fragment : this) {
-                registry.applyFragment(result, fragment);
-            }
-            value = result;
-            return result;
-        } catch (Exception e) {
-            log.error(e);
-            return null; //TODO
+        if (!isResolved) {
+            throw new IllegalStateException(
+                    "Cannot compute merged values for not resolved contributions");
         }
+        if (mainFragments.isEmpty() || value != null) {
+            return value;
+        }
+        // clone the last registered main fragment.
+        T result = registry.clone(mainFragments.get(mainFragments.size() - 1));
+        // first apply its super objects if any
+        for (Contribution<K, T> key : dependencies) {
+            T superObject = registry.getContribution(key.getId()).getValue();
+            registry.applySuperFragment(result, superObject);
+        }
+        // and now apply fragments
+        for (T fragment : this) {
+            registry.applyFragment(result, fragment);
+        }
+        value = result;
+        return result;
     }
 
     public boolean isPhantom() {

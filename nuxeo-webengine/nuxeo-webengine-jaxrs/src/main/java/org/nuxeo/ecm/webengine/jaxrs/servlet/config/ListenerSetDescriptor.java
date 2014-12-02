@@ -19,6 +19,7 @@ import javax.servlet.ServletContextListener;
 
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,7 +39,8 @@ public class ListenerSetDescriptor {
         return event != null;
     }
 
-    public synchronized void init(ServletConfig config) throws Exception {
+    public synchronized void init(ServletConfig config)
+            throws ReflectiveOperationException, BundleNotFoundException {
         if (event == null && !listenerDescriptors.isEmpty()) {
             event = new ServletContextEvent(config.getServletContext());
             listeners = new ServletContextListener[listenerDescriptors.size()];

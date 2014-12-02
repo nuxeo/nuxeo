@@ -11,10 +11,15 @@
  */
 package org.nuxeo.ecm.automation.core.rendering;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+
+import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,10 +38,11 @@ public class RenderingService {
 
     protected FreemarkerRender ftl = new FreemarkerRender();
 
-
-    public String render(String type, String uriOrContent, OperationContext ctx) throws Exception {
+    public String render(String type, String uriOrContent, OperationContext ctx)
+            throws OperationException, RenderingException, TemplateException,
+            IOException {
         Map<String, Object> map = Scripting.initBindings(ctx);
-        //map.put("DocUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
+        // map.put("DocUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
         return getRenderer(type).render(uriOrContent, map);
     }
 

@@ -90,12 +90,12 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
                 "Content-Length", message.length()).build();
     }
 
-    protected Response buildFromMap(Map<String, String> map) throws Exception {
+    protected Response buildFromMap(Map<String, String> map) throws IOException {
         return buildFromMap(map, false);
     }
 
     protected Response buildFromMap(Map<String, String> map, boolean html)
-            throws Exception {
+            throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ByteArrayOutputStream out = new ByteArrayOutputStream(128);
         mapper.writeValue(out, map);
@@ -123,7 +123,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Path("/upload")
     public Object doPost(@Context
-    HttpServletRequest request) throws Exception {
+    HttpServletRequest request) throws IOException {
 
         boolean useIFrame = false;
 
@@ -175,7 +175,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("/execute")
     public Object exec(@Context
-    HttpServletRequest request, ExecutionRequest xreq) throws Exception {
+    HttpServletRequest request, ExecutionRequest xreq) {
 
         Map<String, Object> params = xreq.getParams();
         String batchId = (String) params.get(REQUEST_BATCH_ID);
@@ -224,8 +224,8 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
     @GET
     @Path("/files/{batchId}")
-    public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID)
-    String batchId) throws Exception {
+    public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
+            throws IOException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         List<Blob> blobs = bm.getBlobs(batchId);
 
@@ -245,8 +245,8 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
     @GET
     @Path("/drop/{batchId}")
-    public Object dropBatch(@PathParam(REQUEST_BATCH_ID)
-    String batchId) throws Exception {
+    public Object dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
+            throws IOException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
 

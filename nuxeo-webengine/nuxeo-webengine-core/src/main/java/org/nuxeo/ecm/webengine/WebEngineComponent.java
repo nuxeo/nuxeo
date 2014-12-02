@@ -113,7 +113,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor) contribution;
             try {
                 engine.registerRenderingExtension(fed.name, fed.newInstance());
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeServiceException(
                         "Deployment Error. Failed to contribute freemarker template extension: "
                                 + fed.name);

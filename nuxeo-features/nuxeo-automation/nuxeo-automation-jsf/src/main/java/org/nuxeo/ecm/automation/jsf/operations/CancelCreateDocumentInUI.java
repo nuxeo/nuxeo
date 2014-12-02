@@ -41,7 +41,7 @@ public class CancelCreateDocumentInUI {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() {
         ctx.put(SeamOperation.OUTCOME,
                 OperationHelper.getNavigationContext().goBack());
         return OperationHelper.getNavigationContext().getCurrentDocument();

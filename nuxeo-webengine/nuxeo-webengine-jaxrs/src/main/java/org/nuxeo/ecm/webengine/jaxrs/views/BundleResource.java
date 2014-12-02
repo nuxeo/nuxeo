@@ -95,7 +95,7 @@ public class BundleResource {
             T res = clazz.newInstance();
             res.setContext(context);
             return res;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new WebApplicationException(e, 500);
         }
     }

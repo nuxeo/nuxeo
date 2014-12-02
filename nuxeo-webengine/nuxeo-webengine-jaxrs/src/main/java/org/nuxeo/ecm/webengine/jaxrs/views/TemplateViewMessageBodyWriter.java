@@ -27,6 +27,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,8 +47,8 @@ public class TemplateViewMessageBodyWriter implements MessageBodyWriter<Template
             OutputStream entityStream) throws IOException {
         try {
             t.render(entityStream);
-        } catch (Throwable e) {
-            log.error("Failed to render view: "+t.getUrl(), e);
+        } catch (RenderingException | IOException e) {
+            log.error("Failed to render view: " + t.getUrl(), e);
             throw new IOException("Failed to render view: "+t.getUrl(), e);
         }
     }

@@ -40,6 +40,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.status.ConnectUpdateStatusInfo;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
@@ -48,6 +49,7 @@ import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
+import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.registration.ConnectRegistrationService;
 import org.nuxeo.connect.update.PackageException;
@@ -92,7 +94,7 @@ public class ConnectStatusActionBean implements Serializable {
 
     protected ConnectUpdateStatusInfo connectionStatusCache;
 
-    public String getRegistredCLID() throws Exception {
+    public String getRegistredCLID() throws NoCLID {
         if (isRegistred()) {
             return LogicalInstanceIdentifier.instance().getCLID();
         } else {
@@ -181,8 +183,12 @@ public class ConnectStatusActionBean implements Serializable {
         }
     }
 
-    public String getCTID() throws Exception {
-        return TechnicalInstanceIdentifier.instance().getCTID();
+    public String getCTID() {
+        try {
+            return TechnicalInstanceIdentifier.instance().getCTID();
+        } catch (Exception e) { // stupid API
+            throw ExceptionUtils.runtimeException(e);
+        }
     }
 
     public String localRegister() {
@@ -222,7 +228,7 @@ public class ConnectStatusActionBean implements Serializable {
         this.packageToUpload = packageToUpload;
     }
 
-    public void uploadPackage() throws Exception {
+    public void uploadPackage() throws IOException {
         if (packageToUpload == null) {
             facesMessages.add(StatusMessage.Severity.WARN,
                     "label.connect.nofile");

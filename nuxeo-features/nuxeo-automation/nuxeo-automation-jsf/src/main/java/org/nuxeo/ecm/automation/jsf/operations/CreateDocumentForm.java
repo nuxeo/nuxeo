@@ -31,7 +31,7 @@ public class CreateDocumentForm {
     protected String type;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         ctx.put(SeamOperation.OUTCOME,
                 OperationHelper.getDocumentActions().createDocument(type));
     }

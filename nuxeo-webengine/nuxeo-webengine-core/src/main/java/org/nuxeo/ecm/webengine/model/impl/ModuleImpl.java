@@ -164,16 +164,10 @@ public class ModuleImpl implements Module {
     @Override
     @Deprecated
     public Resource getRootObject(WebContext ctx) {
-        try {
-            ((AbstractWebContext) ctx).setModule(this);
-            Resource obj = ctx.newObject(getRootType());
-            obj.setRoot(true);
-            return obj;
-        } catch (Exception e) {
-            throw WebException.wrap(
-                    "Failed to instantiate the root resource for module "
-                            + getName(), e);
-        }
+        ((AbstractWebContext) ctx).setModule(this);
+        Resource obj = ctx.newObject(getRootType());
+        obj.setRoot(true);
+        return obj;
     }
 
     @Override
@@ -332,11 +326,10 @@ public class ModuleImpl implements Module {
         if (configuration.resources != null) { // reregister resources
             for (ResourceBinding rb : configuration.resources) {
                 try {
-                    System.out.println("Reloading JAX-RS resource: " + rb);
                     engine.removeResourceBinding(rb);
                     rb.reload(engine);
                     engine.addResourceBinding(rb);
-                } catch (Exception e) {
+                } catch (ClassNotFoundException e) {
                     log.error("Failed to reload resource", e);
                 }
             }
@@ -435,7 +428,6 @@ public class ModuleImpl implements Module {
      */
     public TypeRegistry createTypeRegistry() {
         // double s = System.currentTimeMillis();
-        GlobalTypes gtypes = engine.getGlobalTypes();
         TypeRegistry typeReg = null;
         // install types from super modules
         if (superModule != null) { // TODO add type reg listener on super
@@ -443,7 +435,8 @@ public class ModuleImpl implements Module {
             typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine,
                     this);
         } else {
-            typeReg = new TypeRegistry(gtypes.getTypeRegistry(), engine, this);
+            typeReg = new TypeRegistry(new TypeRegistry(engine, null), engine,
+                    this);
         }
         if (configuration.directory.isDirectory()) {
             DefaultTypeLoader loader = new DefaultTypeLoader(this, typeReg,

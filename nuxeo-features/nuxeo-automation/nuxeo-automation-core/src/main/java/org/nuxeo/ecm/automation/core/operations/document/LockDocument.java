@@ -39,13 +39,13 @@ public class LockDocument {
     protected String owner;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         session.setLock(doc);
         return session.getDocument(doc);
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         session.setLock(doc.getRef());
         return session.getDocument(doc.getRef());
     }

@@ -56,7 +56,7 @@ public class FilterSetDescriptor {
         return path;
     }
 
-    public List<FilterDescriptor> getFilters() throws Exception {
+    public List<FilterDescriptor> getFilters() {
         return filters;
     }
 

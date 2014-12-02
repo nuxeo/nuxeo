@@ -17,8 +17,11 @@
  */
 package org.nuxeo.ecm.platform.userworkspace.operations;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -57,13 +60,13 @@ public class UserWorkspaceCreateFromBlob {
     @Context
     protected AutomationService as;
 
-    protected DocumentModel getCurrentDocument() throws Exception {
+    protected DocumentModel getCurrentDocument() throws OperationException {
         String cdRef = (String) context.get("currentDocument");
         return as.getAdaptedValue(context, cdRef, DocumentModel.class);
     }
 
     @OperationMethod
-    public DocumentModel run(Blob blob) throws Exception {
+    public DocumentModel run(Blob blob) throws OperationException, IOException {
         DocumentModel userws = userWorkspace.getCurrentUserPersonalWorkspace(
                 session, getCurrentDocument());
         DocumentModel doc = fileManager.createDocumentFromBlob(session, blob,
@@ -72,7 +75,8 @@ public class UserWorkspaceCreateFromBlob {
     }
 
     @OperationMethod
-    public DocumentModelList run(BlobList blobs) throws Exception {
+    public DocumentModelList run(BlobList blobs) throws OperationException,
+            IOException {
         DocumentModelList result = new DocumentModelListImpl();
         for (Blob blob : blobs) {
             result.add(run(blob));

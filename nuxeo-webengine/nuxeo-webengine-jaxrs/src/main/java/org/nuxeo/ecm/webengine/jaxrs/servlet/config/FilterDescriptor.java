@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -48,8 +48,9 @@ public class FilterDescriptor {
         return classRef;
     }
 
-    public Filter getFilter() throws Exception {
-        return (Filter)getClassRef().get().newInstance();
+    public Filter getFilter() throws ReflectiveOperationException,
+            BundleNotFoundException {
+        return (Filter) getClassRef().get().newInstance();
     }
 
     public HashMap<String, String> getInitParams() {

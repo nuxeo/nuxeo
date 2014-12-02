@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -80,7 +80,11 @@ public class AuthenticationFilter extends HttpFilter {
             ClientLoginModule.getThreadLocalLogin().clear();
             if (lc != null) {
                 // a null lc may indicate an anonymous login
-                try { lc.logout(); } catch (Exception e) {}
+                try {
+                    lc.logout();
+                } catch (LoginException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

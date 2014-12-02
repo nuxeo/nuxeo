@@ -22,7 +22,9 @@ package org.nuxeo.ecm.webengine.model.impl;
 import static org.nuxeo.ecm.webengine.WebEngine.SKIN_PATH_PREFIX_KEY;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
+import java.net.SocketException;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -33,17 +35,20 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
+import javax.script.ScriptException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -565,7 +570,7 @@ public abstract class AbstractWebContext implements WebContext {
                     if (file.isFile()) {
                         return new ScriptFile(file);
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     throw WebException.wrap(e);
                 }
                 // try using stacked roots
@@ -649,7 +654,12 @@ public abstract class AbstractWebContext implements WebContext {
             }
             pushScriptFile(script.getFile());
             engine.getRendering().render(template, bindings, writer);
-        } catch (Exception e) {
+        } catch (IOException | RenderingException e) {
+            Throwable cause = ExceptionUtils.getRootCause(e);
+            if (cause instanceof SocketException) {
+                log.debug("Output socket closed: failed to write response", e);
+                return;
+            }
             throw WebException.wrap("Failed to render template: "
                     + (script == null ? script : script.getAbsolutePath()), e);
         } finally {
@@ -682,7 +692,7 @@ public abstract class AbstractWebContext implements WebContext {
             return engine.getScripting().runScript(script, createBindings(args));
         } catch (WebException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (ScriptException e) {
             throw WebException.wrap("Failed to run script " + script, e);
         } finally {
             if (!scriptExecutionStack.isEmpty()) {
@@ -751,11 +761,7 @@ public abstract class AbstractWebContext implements WebContext {
             }
         }
         if (!isRepositoryDisabled && getPrincipal() != null) {
-            try {
-                bindings.put("Session", getCoreSession());
-            } catch (Exception e) {
-                throw WebException.wrap("Failed to get a core session", e);
-            }
+            bindings.put("Session", getCoreSession());
         }
     }
 

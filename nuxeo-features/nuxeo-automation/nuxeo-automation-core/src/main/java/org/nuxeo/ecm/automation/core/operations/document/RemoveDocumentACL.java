@@ -39,13 +39,13 @@ public class RemoveDocumentACL {
     protected String aclName;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         deleteACL(doc.getRef());
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         deleteACL(doc);
         return session.getDocument(doc);
     }

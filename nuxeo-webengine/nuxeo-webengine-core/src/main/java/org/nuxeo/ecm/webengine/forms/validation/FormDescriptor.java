@@ -42,7 +42,7 @@ public class FormDescriptor {
     protected Map<String, Field> fields = new HashMap<String, Field>();
     protected HashSet<String> requiredFields = new HashSet<String>();
 
-    public FormDescriptor(Class<?> type) throws Exception {
+    public FormDescriptor(Class<?> type) throws ReflectiveOperationException {
         Method[] methods = type.getMethods(); // get all inherited public methods
         int mod = type.getModifiers();
         if (!Modifier.isInterface(mod)) {
@@ -76,7 +76,7 @@ public class FormDescriptor {
         boolean notnull;
         String defaultValue;
         TypeConvertor<?> convertor;
-        Field(Method m, String name) throws Exception {
+        Field(Method m, String name) throws ReflectiveOperationException {
             validator = new CompositeValidator();
             // not null
             NotNull nn = m.getAnnotation(NotNull.class);

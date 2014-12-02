@@ -35,7 +35,7 @@ public class RenderingExtensionDescriptor {
     @XNode("@class")
     public Class<?> klass;
 
-    public Object newInstance() throws Exception {
+    public Object newInstance() throws ReflectiveOperationException {
         Object obj = klass.newInstance();
         if (obj instanceof RenderingExtensionFactory) {
             obj = ((RenderingExtensionFactory) obj).createTemplate();

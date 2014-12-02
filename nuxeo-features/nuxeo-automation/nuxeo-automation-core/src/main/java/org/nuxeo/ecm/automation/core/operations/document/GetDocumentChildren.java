@@ -34,12 +34,12 @@ public class GetDocumentChildren {
     protected CoreSession session;
 
     @OperationMethod(collector=DocumentModelListCollector.class)
-    public DocumentModelList run(DocumentModel doc) throws Exception {
+    public DocumentModelList run(DocumentModel doc) {
         return session.getChildren(doc.getRef());
     }
 
     @OperationMethod(collector=DocumentModelListCollector.class)
-    public DocumentModelList run(DocumentRef doc) throws Exception {
+    public DocumentModelList run(DocumentRef doc) {
         return session.getChildren(doc);
     }
 

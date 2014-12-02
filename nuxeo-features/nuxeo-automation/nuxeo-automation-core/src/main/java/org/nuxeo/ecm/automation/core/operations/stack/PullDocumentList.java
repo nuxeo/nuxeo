@@ -36,7 +36,7 @@ public class PullDocumentList {
     protected OperationContext ctx;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception {
+    public DocumentModelList run() throws OperationException {
         Object obj = ctx.pull(Constants.O_DOCUMENTS);
         if (obj instanceof DocumentModelList) {
             return (DocumentModelList) obj;

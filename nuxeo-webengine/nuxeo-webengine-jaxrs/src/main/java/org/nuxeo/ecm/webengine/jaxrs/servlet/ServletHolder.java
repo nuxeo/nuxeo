@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.webengine.jaxrs.BundleNotFoundException;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ListenerSetDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistry;
@@ -72,7 +73,7 @@ public class ServletHolder extends HttpServlet {
             //lazy chain.init(descriptor, config);
         } catch (ServletException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | BundleNotFoundException e) {
             throw new ServletException("Initialization exception for servlet "+config.getServletName(), e);
         }
     }

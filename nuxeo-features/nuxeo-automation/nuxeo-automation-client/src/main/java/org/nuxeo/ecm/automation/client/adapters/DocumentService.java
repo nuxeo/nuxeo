@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client.adapters;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
@@ -99,7 +100,7 @@ public class DocumentService {
         return session;
     }
 
-    public Document getDocument(String ref) throws Exception {
+    public Document getDocument(String ref) throws IOException {
         return getDocument(DocRef.newRef(ref), null);
     }
 
@@ -108,19 +109,18 @@ public class DocumentService {
      * @param document document to fetch
      * @param schemas schemas related to the document to fetch (* for all)
      * @return the document returned by server
-     * @throws Exception
      */
     public Document getDocument(Document document, String... schemas)
-            throws Exception {
+            throws IOException {
         return getDocument(new DocRef(document.getId()),
                 StringUtils.join(Arrays.asList(schemas), ","));
     }
 
-    public Document getDocument(DocRef ref) throws Exception {
+    public Document getDocument(DocRef ref) throws IOException {
         return getDocument(ref, null);
     }
 
-    public Document getDocument(DocRef ref, String schemas) throws Exception {
+    public Document getDocument(DocRef ref, String schemas) throws IOException {
         OperationRequest req = session.newRequest(FetchDocument).set("value",
                 ref);
         if (schemas != null) {
@@ -129,7 +129,7 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Document getRootDocument() throws Exception {
+    public Document getRootDocument() throws IOException {
         return getDocument(new PathRef("/"));
     }
 
@@ -138,21 +138,20 @@ public class DocumentService {
      * @param parent can be PathRef or IdRef
      * @param document the document to create
      * @return the document created
-     * @throws Exception
      */
     public Document createDocument(String parent, Document document)
-            throws Exception {
+            throws IOException {
         return createDocument(DocRef.newRef(parent), document.getType(),
                 document.getId(), document.getDirties());
     }
 
     public Document createDocument(DocRef parent, String type, String name)
-            throws Exception {
+            throws IOException {
         return createDocument(parent, type, name, null);
     }
 
     public Document createDocument(DocRef parent, String type, String name,
-            PropertyMap properties) throws Exception {
+            PropertyMap properties) throws IOException {
         OperationRequest req = session.newRequest(CreateDocument).setInput(
                 parent).set("type", type).set("name", name);
         if (properties != null && !properties.isEmpty()) {
@@ -164,26 +163,25 @@ public class DocumentService {
     /**
      * @since 5.7
      * @param document the document to remove
-     * @throws Exception
      */
-    public void remove(Document document) throws Exception {
+    public void remove(Document document) throws IOException {
         remove(new DocRef(document.getId()));
     }
 
-    public void remove(DocRef doc) throws Exception {
+    public void remove(DocRef doc) throws IOException {
         session.newRequest(DeleteDocument).setInput(doc).execute();
     }
 
-    public void remove(String ref) throws Exception {
+    public void remove(String ref) throws IOException {
         session.newRequest(DeleteDocument).setInput(DocRef.newRef(ref)).execute();
     }
 
-    public Document copy(DocRef src, DocRef targetParent) throws Exception {
+    public Document copy(DocRef src, DocRef targetParent) throws IOException {
         return copy(src, targetParent, null);
     }
 
     public Document copy(DocRef src, DocRef targetParent, String name)
-            throws Exception {
+            throws IOException {
         OperationRequest req = session.newRequest(CopyDocument).setInput(src).set(
                 "target", targetParent);
         if (name != null) {
@@ -192,12 +190,12 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Document move(DocRef src, DocRef targetParent) throws Exception {
+    public Document move(DocRef src, DocRef targetParent) throws IOException {
         return move(src, targetParent, null);
     }
 
     public Document move(DocRef src, DocRef targetParent, String name)
-            throws Exception {
+            throws IOException {
         OperationRequest req = session.newRequest(MoveDocument).setInput(src).set(
                 "target", targetParent);
         if (name != null) {
@@ -206,41 +204,41 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Documents getChildren(DocRef docRef) throws Exception {
+    public Documents getChildren(DocRef docRef) throws IOException {
         return (Documents) session.newRequest(GetDocumentChildren).setInput(
                 docRef).execute();
     }
 
-    public Document getChild(DocRef docRef, String name) throws Exception {
+    public Document getChild(DocRef docRef, String name) throws IOException {
         return (Document) session.newRequest(GetDocumentChild).setInput(docRef).set(
                 "name", name).execute();
     }
 
-    public Document getParent(DocRef docRef) throws Exception {
+    public Document getParent(DocRef docRef) throws IOException {
         return (Document) session.newRequest(GetDocumentParent).setInput(docRef).execute();
     }
 
-    public Documents getParent(DocRef docRef, String type) throws Exception {
+    public Documents getParent(DocRef docRef, String type) throws IOException {
         return (Documents) session.newRequest(GetDocumentParent).setInput(
                 docRef).set("type", type).execute();
     }
 
-    public Documents query(String query) throws Exception {
+    public Documents query(String query) throws IOException {
         return (Documents) session.newRequest(Query).set("query", query).execute();
     }
 
     public Document setPermission(DocRef doc, String user, String permission)
-            throws Exception {
+            throws IOException {
         return setPermission(doc, user, permission, null, true);
     }
 
     public Document setPermission(DocRef doc, String user, String permission,
-            boolean granted) throws Exception {
+            boolean granted) throws IOException {
         return setPermission(doc, user, permission, null, granted);
     }
 
     public Document setPermission(DocRef doc, String user, String permission,
-            String acl, boolean granted) throws Exception {
+            String acl, boolean granted) throws IOException {
         OperationRequest req = session.newRequest(SetPermission).setInput(doc).set(
                 "user", user).set("permission", permission).set("grant",
                 granted);
@@ -250,21 +248,21 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Document removeAcl(DocRef doc, String acl) throws Exception {
+    public Document removeAcl(DocRef doc, String acl) throws IOException {
         return (Document) session.newRequest(RemoveAcl).setInput(doc).set(
                 "acl", acl).execute();
     }
 
-    public Document setState(DocRef doc, String state) throws Exception {
+    public Document setState(DocRef doc, String state) throws IOException {
         return (Document) session.newRequest(SetDocumentState).setInput(doc).set(
                 "value", state).execute();
     }
 
-    public Document lock(DocRef doc) throws Exception {
+    public Document lock(DocRef doc) throws IOException {
         return lock(doc, null);
     }
 
-    public Document lock(DocRef doc, String lock) throws Exception {
+    public Document lock(DocRef doc, String lock) throws IOException {
         OperationRequest req = session.newRequest(LockDocument).setInput(doc);
         if (lock != null) {
             req.set("owner", lock);
@@ -272,18 +270,18 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public Document unlock(DocRef doc) throws Exception {
+    public Document unlock(DocRef doc) throws IOException {
         return (Document) session.newRequest(UnlockDocument).setInput(doc).execute();
     }
 
     // TODO: value Serializable?
     public Document setProperty(DocRef doc, String key, String value)
-            throws Exception {
+            throws IOException {
         return (Document) session.newRequest(SetProperty).setInput(doc).set(
                 "xpath", key).set("value", value).execute();
     }
 
-    public Document removeProperty(DocRef doc, String key) throws Exception {
+    public Document removeProperty(DocRef doc, String key) throws IOException {
         return (Document) session.newRequest(RemoveProperty).setInput(doc).set(
                 "xpath", key).execute();
     }
@@ -294,40 +292,39 @@ public class DocumentService {
      * @since 5.7
      * @param document the document to update
      * @return the document returned by the server
-     * @throws Exception
      */
-    public Document update(Document document) throws Exception {
+    public Document update(Document document) throws IOException {
         return update(new DocRef(document.getId()), document.getDirties());
     }
 
-    public Document update(DocRef doc, PropertyMap properties) throws Exception {
+    public Document update(DocRef doc, PropertyMap properties) throws IOException {
         return (Document) session.newRequest(UpdateDocument).setInput(doc).set(
                 "properties", properties).execute();
     }
 
-    public Document publish(DocRef doc, DocRef section) throws Exception {
+    public Document publish(DocRef doc, DocRef section) throws IOException {
         return publish(doc, section, true);
     }
 
     public Document publish(DocRef doc, DocRef section, boolean override)
-            throws Exception {
+            throws IOException {
         return (Document) session.newRequest(PublishDocument).setInput(doc).set(
                 "target", section).set("override", override).execute();
     }
 
     public Document createRelation(DocRef subject, String predicate,
-            DocRef object) throws Exception {
+            DocRef object) throws IOException {
         return (Document) session.newRequest(CreateRelation).setInput(subject).set(
                 "object", object).set("predicate", predicate).execute();
     }
 
     public Documents getRelations(DocRef doc, String predicate)
-            throws Exception {
+            throws IOException {
         return getRelations(doc, predicate, true);
     }
 
     public Documents getRelations(DocRef doc, String predicate, boolean outgoing)
-            throws Exception {
+            throws IOException {
         return (Documents) session.newRequest(GetRelations).setInput(doc).set(
                 "predicate", predicate).set("outgoing", outgoing).execute();
     }
@@ -336,17 +333,17 @@ public class DocumentService {
      * @since 5.5
      */
     public Documents getRelations(DocRef doc, String predicate,
-            boolean outgoing, String graphName) throws Exception {
+            boolean outgoing, String graphName) throws IOException {
         return (Documents) session.newRequest(GetRelations).setInput(doc).set(
                 "predicate", predicate).set("outgoing", outgoing).set(
                 "graphName", graphName).execute();
     }
 
-    public void setBlob(DocRef doc, Blob blob) throws Exception {
+    public void setBlob(DocRef doc, Blob blob) throws IOException {
         setBlob(doc, blob, null);
     }
 
-    public void setBlob(DocRef doc, Blob blob, String xpath) throws Exception {
+    public void setBlob(DocRef doc, Blob blob, String xpath) throws IOException {
         OperationRequest req = session.newRequest(SetBlob).setInput(blob).set(
                 "document", doc);
         if (xpath != null) {
@@ -356,11 +353,11 @@ public class DocumentService {
         req.execute();
     }
 
-    public void removeBlob(DocRef doc) throws Exception {
+    public void removeBlob(DocRef doc) throws IOException {
         removeBlob(doc, null);
     }
 
-    public void removeBlob(DocRef doc, String xpath) throws Exception {
+    public void removeBlob(DocRef doc, String xpath) throws IOException {
         OperationRequest req = session.newRequest(RemoveBlob).setInput(doc);
         if (xpath != null) {
             req.set("xpath", xpath);
@@ -369,11 +366,11 @@ public class DocumentService {
         req.execute();
     }
 
-    public FileBlob getBlob(DocRef doc) throws Exception {
+    public FileBlob getBlob(DocRef doc) throws IOException {
         return getBlob(doc, null);
     }
 
-    public FileBlob getBlob(DocRef doc, String xpath) throws Exception {
+    public FileBlob getBlob(DocRef doc, String xpath) throws IOException {
         OperationRequest req = session.newRequest(GetBlob).setInput(doc);
         if (xpath != null) {
             req.set("xpath", xpath);
@@ -381,11 +378,11 @@ public class DocumentService {
         return (FileBlob) req.execute();
     }
 
-    public Blobs getBlobs(DocRef doc) throws Exception {
+    public Blobs getBlobs(DocRef doc) throws IOException {
         return getBlobs(doc, null);
     }
 
-    public Blobs getBlobs(DocRef doc, String xpath) throws Exception {
+    public Blobs getBlobs(DocRef doc, String xpath) throws IOException {
         OperationRequest req = session.newRequest(GetBlobs).setInput(doc);
         if (xpath != null) {
             req.set("xpath", xpath);
@@ -393,7 +390,7 @@ public class DocumentService {
         return (Blobs) req.execute();
     }
 
-    public Document createVersion(DocRef doc) throws Exception {
+    public Document createVersion(DocRef doc) throws IOException {
         return createVersion(doc, null);
     }
 
@@ -404,7 +401,7 @@ public class DocumentService {
      * See {@link VersionIncrement}
      */
     public Document createVersion(DocRef doc, String increment)
-            throws Exception {
+            throws IOException {
         OperationRequest req = session.newRequest(CreateVersion).setInput(doc);
         if (increment != null) {
             req.set("increment", increment);
@@ -412,11 +409,11 @@ public class DocumentService {
         return (Document) req.execute();
     }
 
-    public void fireEvent(String event) throws Exception {
+    public void fireEvent(String event) throws IOException {
         fireEvent(null, event);
     }
 
-    public void fireEvent(DocRef doc, String event) throws Exception {
+    public void fireEvent(DocRef doc, String event) throws IOException {
         OperationRequest req = session.newRequest(CreateVersion).setInput(doc);
         req.setHeader(Constants.HEADER_NX_VOIDOP, "true");
         req.execute();

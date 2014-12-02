@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webengine.model.impl;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
@@ -58,7 +59,7 @@ public class ModuleManager {
 
     /**
      * Gets a module given its name.
-     * 
+     *
      * @return the module or null if none
      */
     public ModuleConfiguration getModule(String key) {
@@ -185,11 +186,7 @@ public class ModuleManager {
     public void reloadModules() {
         log.info("Reloading modules");
         for (ModuleConfiguration mc : getModules()) {
-            try {
-                reloadModule(mc.name);
-            } catch (Exception e) {
-                log.error("Failed to redeploy module: " + mc.name);
-            }
+            reloadModule(mc.name);
         }
     }
 
@@ -204,14 +201,14 @@ public class ModuleManager {
                 mc.directory = file.getParentFile().getCanonicalFile();
             }
             return mc;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw WebException.wrap("Faile to load module configuration: "
                     + file, e);
         }
     }
 
     public static ModuleConfiguration readConfiguration(final WebEngine engine,
-            File file) throws Exception {
+            File file) throws IOException {
         XMap xmap = new XMap();
         xmap.register(ModuleConfiguration.class);
         InputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -226,7 +223,7 @@ public class ModuleManager {
                 try {
                     rb.resolve(engine);
                     engine.addResourceBinding(rb);
-                } catch (Exception e) {
+                } catch (ClassNotFoundException e) {
                     throw WebException.wrap(
                             "Faile to load module root resource: " + rb, e);
                 }

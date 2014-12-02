@@ -60,7 +60,7 @@ public class GetRelations {
     protected String graphName;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModel doc) throws Exception {
+    public DocumentModelList run(DocumentModel doc) {
         QNameResource res = getDocumentResource(doc);
         Resource predicate = getPredicate();
         return getDocuments(res, predicate);

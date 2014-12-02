@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.automation.core.operations.login;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -30,12 +31,12 @@ public class Logout {
     protected OperationContext ctx;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws OperationException {
         ctx.getLoginStack().pop();
     }
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws OperationException {
         run();
         // refetch the input document if any using the new session
         // otherwise using document methods that are delegating the call to the

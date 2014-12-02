@@ -159,7 +159,7 @@ public class SubscriptionsAction extends InputController implements
     /**
      * Manage (un)subscription to all notifications
      */
-    public void updateAllSubscriptions() throws Exception {
+    public void updateAllSubscriptions() {
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         List<String> userSubscriptions = notificationManager.getSubscriptionsForUserOnDocument(
@@ -206,13 +206,8 @@ public class SubscriptionsAction extends InputController implements
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext
                 .getCurrentInstance().getExternalContext().getUserPrincipal();
-        List<String> subscriptions;
-        try {
-            subscriptions = notificationManager.getSubscriptionsForUserOnDocument("user:"
-                    + principal.getName(), currentDoc.getId());
-        } catch (ClassNotFoundException e) {
-            throw new ClientException(e.getMessage());
-        }
+        List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
+                "user:" + principal.getName(), currentDoc.getId());
         return subscriptions;
     }
 

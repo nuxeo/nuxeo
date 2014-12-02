@@ -23,6 +23,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -59,7 +60,7 @@ public class RunOperationInSeam {
     protected boolean isolate = false;
 
     @OperationMethod
-    public Object run() throws Exception {
+    public Object run() throws OperationException {
 
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
@@ -80,7 +81,7 @@ public class RunOperationInSeam {
     }
 
     protected Object runChain(OperationContext subctx, Map<String, Object> vars)
-            throws Exception {
+            throws OperationException {
         if (chainId.startsWith("Chain.")) {
             return service.run(subctx, chainId.substring(6));
         } else {

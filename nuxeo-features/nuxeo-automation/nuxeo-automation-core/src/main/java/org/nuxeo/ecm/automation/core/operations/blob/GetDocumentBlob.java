@@ -36,7 +36,7 @@ public class GetDocumentBlob {
     protected String xpath = "file:content";
 
     @OperationMethod(collector=BlobCollector.class)
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) {
         Blob blob = (Blob) doc.getPropertyValue(xpath);
         if (blob==null) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);

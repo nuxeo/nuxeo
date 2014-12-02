@@ -54,7 +54,7 @@ public class PictureResize {
     protected ConversionService service;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) {
 
         Blob pictureBlob = null;
         MultiviewPicture mvp = doc.getAdapter(MultiviewPicture.class);
@@ -79,7 +79,7 @@ public class PictureResize {
     }
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) {
 
         SimpleBlobHolder bh = new SimpleBlobHolder(blob);
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();

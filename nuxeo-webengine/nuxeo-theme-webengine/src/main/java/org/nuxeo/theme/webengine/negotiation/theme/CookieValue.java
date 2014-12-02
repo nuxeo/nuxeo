@@ -14,8 +14,6 @@
 
 package org.nuxeo.theme.webengine.negotiation.theme;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.PageElement;
@@ -23,18 +21,9 @@ import org.nuxeo.theme.negotiation.Scheme;
 
 public class CookieValue implements Scheme {
 
-    private static final Log log = LogFactory.getLog(CookieValue.class);
-
     public String getOutcome(final Object context) {
         final WebContext webContext = (WebContext) context;
-        String path = null;
-        // FIXME AbstractContext.getCookie triggers a NullPointerException
-        // (WEB-157)
-        try {
-            path = webContext.getCookie("nxthemes.theme");
-        } catch (Exception e) {
-            log.error(e, e);
-        }
+        String path = webContext.getCookie("nxthemes.theme");
         if (path == null) {
             return null;
         }

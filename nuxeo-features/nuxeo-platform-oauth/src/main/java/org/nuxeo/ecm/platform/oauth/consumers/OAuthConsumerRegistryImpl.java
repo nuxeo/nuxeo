@@ -85,9 +85,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
     }
 
     @Override
-    public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer)
-            throws ClientException {
-
+    public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         Session session = null;
         try {

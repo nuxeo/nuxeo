@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.automation.core.operations.services.directory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
     protected String lang;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
         List<String> ids = mapper.readValue(jsonEntries,

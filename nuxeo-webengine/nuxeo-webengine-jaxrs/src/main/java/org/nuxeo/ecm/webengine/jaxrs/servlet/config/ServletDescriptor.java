@@ -94,8 +94,9 @@ public class ServletDescriptor {
         return ref;
     }
 
-    public HttpServlet getServlet() throws Exception {
-        return (HttpServlet)getClassRef().get().newInstance();
+    public HttpServlet getServlet() throws ReflectiveOperationException,
+            BundleNotFoundException {
+        return (HttpServlet) getClassRef().get().newInstance();
     }
 
     public String getName() {
@@ -110,7 +111,7 @@ public class ServletDescriptor {
         return resources;
     }
 
-    public FilterSet[] getFilters() throws Exception {
+    public FilterSet[] getFilters() {
         List<FilterSetDescriptor> list = ServletRegistry.getInstance().getFiltersFor(name);
         int len1 = list.size();
         int len2 = filters.size();

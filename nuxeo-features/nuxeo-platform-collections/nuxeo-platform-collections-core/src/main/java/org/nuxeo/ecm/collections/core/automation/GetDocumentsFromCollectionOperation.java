@@ -21,6 +21,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -50,7 +51,7 @@ public class GetDocumentsFromCollectionOperation {
 
     @OperationMethod
     public PaginableDocumentModelListImpl run(DocumentModel collection)
-            throws Exception {
+            throws OperationException {
         Map<String, Object> vars = ctx.getVars();
         vars.put("searchTerm", collection.getId());
         vars.put("providerName",

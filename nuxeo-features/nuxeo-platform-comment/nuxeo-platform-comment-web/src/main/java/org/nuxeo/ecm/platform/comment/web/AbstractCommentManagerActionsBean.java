@@ -106,7 +106,7 @@ public abstract class AbstractCommentManagerActionsBean implements
 
     @Override
     @Create
-    public void initialize() throws Exception {
+    public void initialize() {
         log.debug("Initializing...");
         commentMap = new HashMap<String, UIComment>();
         showCreateForm = false;

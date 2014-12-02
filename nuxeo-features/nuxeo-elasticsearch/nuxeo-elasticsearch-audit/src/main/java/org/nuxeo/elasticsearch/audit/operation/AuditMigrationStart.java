@@ -27,7 +27,7 @@ public class AuditMigrationStart {
     protected int batchSize = 1000;
 
     @OperationMethod
-    public String startMigration() throws Exception {
+    public String startMigration() {
 
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);

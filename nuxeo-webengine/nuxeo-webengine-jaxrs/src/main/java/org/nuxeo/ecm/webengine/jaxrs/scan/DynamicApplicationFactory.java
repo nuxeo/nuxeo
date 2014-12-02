@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.scan;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class DynamicApplicationFactory implements ApplicationFactory {
 
     @Override
     public Application getApplication(Bundle bundle, Map<String, String> args)
-    throws Exception {
+            throws ReflectiveOperationException, IOException {
         String pkg = args.get("package");
         if (pkg == null) {
             pkg = "/";

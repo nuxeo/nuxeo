@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIREC
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
@@ -33,8 +34,6 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -52,9 +51,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 @Scope(ScopeType.STATELESS)
 public class LogoutAction extends InputController implements Serializable {
 
-    private static final long serialVersionUID = -5100044672151458204L;
-
-    private static final Log log = LogFactory.getLog(LogoutAction.class);
+    private static final long serialVersionUID = 1L;
 
     public String login() {
         return navigationContext.goHome();
@@ -66,7 +63,7 @@ public class LogoutAction extends InputController implements Serializable {
      *
      * @return the next page that is going to be displayed
      */
-    public static String logout() throws Exception {
+    public static String logout() throws IOException {
         Map<String, String> parameters = new HashMap<String, String>();
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();

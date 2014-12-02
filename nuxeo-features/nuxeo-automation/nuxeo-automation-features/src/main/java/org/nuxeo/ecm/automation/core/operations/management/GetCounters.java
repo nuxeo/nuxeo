@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.management;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +58,7 @@ public class GetCounters {
     protected StringList counterNames;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
 
         CounterManager cm = Framework.getLocalService(CounterManager.class);
 
@@ -132,8 +133,13 @@ public class GetCounters {
             }
         }
 
-        return new ByteArrayBlob(collection.toString().getBytes("UTF-8"),
-                "application/json");
+        try {
+            return new ByteArrayBlob(collection.toString().getBytes("UTF-8"),
+                    "application/json");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen
+            throw new RuntimeException(e);
+        }
     }
 
 }

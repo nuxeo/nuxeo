@@ -59,7 +59,7 @@ public class LoginAs {
     }
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws LoginException, OperationException {
         run();
         // refetch the input document if any using the new session
         // otherwise using document methods that are delegating the call to the

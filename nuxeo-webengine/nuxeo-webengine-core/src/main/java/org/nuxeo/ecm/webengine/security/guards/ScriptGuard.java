@@ -88,7 +88,7 @@ public class ScriptGuard implements Guard {
                 result = engine.eval(new StringReader(script), bindings);
             }
             return booleanValue(result);
-        } catch (Exception e) {
+        } catch (ScriptException e) {
             log.error(e, e);
             return false;
         }

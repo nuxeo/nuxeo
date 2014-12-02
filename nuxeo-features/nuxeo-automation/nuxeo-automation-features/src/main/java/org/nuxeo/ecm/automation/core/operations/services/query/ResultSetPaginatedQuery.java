@@ -104,7 +104,7 @@ public class ResultSetPaginatedQuery {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public RecordSet run() throws Exception {
+    public RecordSet run() {
         // Ordered parameters
         Object[] orderedParameters = null;
         if (strParameters != null && !strParameters.isEmpty()) {

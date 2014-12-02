@@ -39,7 +39,7 @@ public interface PictureManager {
      * @deprecated since 5.5
      */
     @Deprecated
-    String addPicture() throws Exception;
+    String addPicture();
 
     String crop() throws ClientException, IOException;
 
@@ -140,7 +140,7 @@ public interface PictureManager {
      */
     void resetFields();
 
-    void initialize() throws Exception;
+    void initialize();
 
     void destroy();
 

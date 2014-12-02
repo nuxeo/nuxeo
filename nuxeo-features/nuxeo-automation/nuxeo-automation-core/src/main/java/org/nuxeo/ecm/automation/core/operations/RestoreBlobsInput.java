@@ -36,7 +36,7 @@ public class RestoreBlobsInput {
     protected String name;
 
     @OperationMethod
-    public BlobList run() throws Exception {
+    public BlobList run() throws OperationException {
         Object obj = ctx.get(name);
         if (obj instanceof BlobList) {
             return (BlobList) obj;

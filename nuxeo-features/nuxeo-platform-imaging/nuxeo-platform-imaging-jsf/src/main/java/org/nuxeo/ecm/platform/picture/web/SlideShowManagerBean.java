@@ -74,7 +74,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
     protected Boolean repeat;
 
     @Create
-    public void initialize() throws Exception {
+    public void initialize() {
         log.debug("Initializing...");
         index = 1;
         childrenSize = null;

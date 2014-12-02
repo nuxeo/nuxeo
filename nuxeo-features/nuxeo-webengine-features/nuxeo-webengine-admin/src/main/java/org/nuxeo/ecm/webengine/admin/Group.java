@@ -61,7 +61,7 @@ public class Group extends DefaultObject {
     }
 
     @DELETE
-    public Response doDelete() throws Exception {
+    public Response doDelete() {
         UserManager userManager = Framework.getService(UserManager.class);
         userManager.deleteGroup(group);
         return redirect(getPrevious().getPath());
@@ -75,7 +75,7 @@ public class Group extends DefaultObject {
 
     @GET
     @Path("@delete")
-    public Response simulateDelete() throws Exception {
+    public Response simulateDelete() {
         return doDelete();
     }
 

@@ -7,6 +7,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.admin.oauth.DirectoryBasedEditor;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -43,7 +44,7 @@ public class OAuth2ServiceProvidersActionBean extends DirectoryBasedEditor {
         return SCHEMA;
     }
 
-    public String getAuthorizationURL(String entryId) throws Exception {
+    public String getAuthorizationURL(String entryId) throws ClientException {
 
         String url;
 

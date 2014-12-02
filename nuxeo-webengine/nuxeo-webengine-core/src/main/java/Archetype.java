@@ -29,11 +29,12 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
+import org.xml.sax.SAXException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -240,14 +241,16 @@ public class Archetype {
         return new byte[preferredSize];
     }
 
-    public static Document load(File file) throws Exception {
+    public static Document load(File file) throws ParserConfigurationException,
+            SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(file);
     }
 
-    public static Document load(InputStream in) throws Exception {
+    public static Document load(InputStream in)
+            throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -255,7 +258,7 @@ public class Archetype {
     }
 
     public static void processVars(Element root, Map<Object, Object> vars)
-            throws Exception {
+            throws IOException {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -288,7 +291,7 @@ public class Archetype {
     }
 
     public static void processResources(Element root, File dir,
-            Map<Object, Object> vars) throws Exception {
+            Map<Object, Object> vars) throws IOException {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -345,7 +348,7 @@ public class Archetype {
     }
 
     public static void processArchetype(Document doc, Map<Object, Object> vars)
-            throws Exception {
+            throws IOException {
         Element root = doc.getDocumentElement();
         Node node = root.getFirstChild();
         Element elVars = null;

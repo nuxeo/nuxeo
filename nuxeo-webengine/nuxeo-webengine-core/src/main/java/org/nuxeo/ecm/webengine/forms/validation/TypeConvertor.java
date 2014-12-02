@@ -168,14 +168,15 @@ public abstract class TypeConvertor<T> {
         public Class<?> convert(String value) throws ValidationException {
             try {
                 return loadClass(value);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new ValidationException();
             }
         }
     };
 
 
-    public static Class<?> loadClass(String name) throws Exception {
+    public static Class<?> loadClass(String name)
+            throws ReflectiveOperationException {
         return Framework.getLocalService(WebEngine.class).loadClass(name);
     }
 

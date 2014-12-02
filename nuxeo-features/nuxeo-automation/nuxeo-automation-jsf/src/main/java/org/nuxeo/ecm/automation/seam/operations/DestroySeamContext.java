@@ -42,8 +42,7 @@ public class DestroySeamContext {
     protected OperationContext context;
 
     @OperationMethod
-    public void run() throws Exception {
-
+    public void run() {
         SeamOperationFilter.handleAfterRun(context, conversationId);
     }
 

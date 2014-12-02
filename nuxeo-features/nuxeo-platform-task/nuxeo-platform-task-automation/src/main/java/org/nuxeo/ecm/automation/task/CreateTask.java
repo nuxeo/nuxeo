@@ -106,7 +106,7 @@ public class CreateTask {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     @SuppressWarnings("unchecked")
-    public DocumentModel run(DocumentModel document) throws Exception {
+    public DocumentModel run(DocumentModel document) throws OperationException {
         Principal pal = coreSession.getPrincipal();
         if (!(pal instanceof NuxeoPrincipal)) {
             throw new OperationException(

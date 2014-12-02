@@ -149,7 +149,7 @@ public class GuardDescriptor {
                             Class<?> factory = Class.forName(type);
                             Guard guard = ((GuardFactory)factory.newInstance()).newGuard(value);
                             guards.put(id, guard);
-                        } catch (Exception e) {
+                        } catch (ReflectiveOperationException e) {
                             log.error(e, e); //TODO should throw a DeployException
                         }
                     }

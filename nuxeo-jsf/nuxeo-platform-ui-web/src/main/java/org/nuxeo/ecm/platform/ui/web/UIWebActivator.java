@@ -27,12 +27,12 @@ public class UIWebActivator implements BundleActivator {
     PropertiesEditorsInstaller editorsInstaller = new PropertiesEditorsInstaller();
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         editorsInstaller.installEditors();
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         editorsInstaller.uninstallEditors();
     }
 

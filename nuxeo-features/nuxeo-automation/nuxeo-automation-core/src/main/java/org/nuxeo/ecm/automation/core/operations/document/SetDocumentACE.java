@@ -54,13 +54,13 @@ public class SetDocumentACE {
     boolean overwrite = true;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         setACE(doc.getRef());
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         setACE(doc);
         return session.getDocument(doc);
     }

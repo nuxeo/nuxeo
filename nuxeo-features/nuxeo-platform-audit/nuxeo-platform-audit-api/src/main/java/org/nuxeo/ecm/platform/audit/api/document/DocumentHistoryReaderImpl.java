@@ -33,7 +33,7 @@ public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
 
     @Override
     public List<LogEntry> getDocumentHistory(DocumentModel doc, long pageIndex,
-            long pageSize) throws Exception {
+            long pageSize) {
 
         PageProvider<LogEntry> pp = getPageProvider(doc, pageIndex, pageSize);
         return pp.getCurrentPage();
@@ -42,7 +42,7 @@ public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
     @Override
     @SuppressWarnings("unchecked")
     public PageProvider<LogEntry> getPageProvider(DocumentModel doc,
-            long pageIndex, long pageSize) throws Exception {
+            long pageIndex, long pageSize) {
 
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);
         PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(

@@ -36,7 +36,7 @@ public class RestoreDocumentInput {
     protected String name;
 
     @OperationMethod
-    public DocumentModel run() throws Exception {
+    public DocumentModel run() throws OperationException {
         Object obj = ctx.get(name);
         if (obj instanceof DocumentModel) {
             return (DocumentModel) obj;

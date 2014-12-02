@@ -40,7 +40,7 @@ public class GetDocumentVersions {
     protected CoreSession session;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModel doc) throws Exception {
+    public DocumentModelList run(DocumentModel doc) {
         return new DocumentModelListImpl(session.getVersions(doc.getRef()));
     }
 

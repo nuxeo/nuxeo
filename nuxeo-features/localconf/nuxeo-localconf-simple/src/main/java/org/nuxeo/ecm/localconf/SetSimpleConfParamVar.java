@@ -59,7 +59,7 @@ public class SetSimpleConfParamVar {
     protected String defaultValue;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
                 SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET, doc);
         String value = simpleConfiguration.get(parameterName, defaultValue);

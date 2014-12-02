@@ -31,7 +31,7 @@ public class PopBlobList {
     protected OperationContext ctx;
 
     @OperationMethod
-    public BlobList run() throws Exception {
+    public BlobList run() throws OperationException {
         Object obj = ctx.pop(Constants.O_BLOBS);
         if (obj instanceof BlobList) {
             return (BlobList) obj;

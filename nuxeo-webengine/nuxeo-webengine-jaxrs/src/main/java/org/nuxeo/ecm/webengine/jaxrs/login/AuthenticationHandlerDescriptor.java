@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -34,8 +34,9 @@ public class AuthenticationHandlerDescriptor {
     protected HashMap<String,String> properties;
 
 
-    protected AuthenticationHandler newInstance() throws Exception {
-        AuthenticationHandler ah = (AuthenticationHandler)clazz.newInstance();
+    protected AuthenticationHandler newInstance()
+            throws ReflectiveOperationException {
+        AuthenticationHandler ah = (AuthenticationHandler) clazz.newInstance();
         ah.init(properties);
         return ah;
     }

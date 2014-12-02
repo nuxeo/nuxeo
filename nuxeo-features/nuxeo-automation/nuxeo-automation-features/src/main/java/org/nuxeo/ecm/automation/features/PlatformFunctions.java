@@ -39,21 +39,21 @@ public class PlatformFunctions extends CoreFunctions {
 
     private volatile UserManager userMgr;
 
-    public UserManager getUserManager() throws Exception {
+    public UserManager getUserManager() {
         if (userMgr == null) {
             userMgr = Framework.getService(UserManager.class);
         }
         return userMgr;
     }
 
-    public DirectoryService getDirService() throws Exception {
+    public DirectoryService getDirService() {
         if (dirService == null) {
             dirService = Framework.getService(DirectoryService.class);
         }
         return dirService;
     }
 
-    public String getVocabularyLabel(String voc, String key) throws Exception {
+    public String getVocabularyLabel(String voc, String key) {
         org.nuxeo.ecm.directory.Session session = getDirService().open(voc);
         try {
             DocumentModel doc = session.getEntry(key);
@@ -68,7 +68,7 @@ public class PlatformFunctions extends CoreFunctions {
         }
     }
 
-    public NuxeoPrincipal getPrincipal(String username) throws Exception {
+    public NuxeoPrincipal getPrincipal(String username) {
         return getUserManager().getPrincipal(username);
     }
 
@@ -81,34 +81,33 @@ public class PlatformFunctions extends CoreFunctions {
                 userEmailFieldName);
     }
 
-    public String getEmail(String username) throws Exception {
+    public String getEmail(String username) {
         UserManager userManager = getUserManager();
         return getEmail(userManager.getPrincipal(username),
                 userManager.getUserSchemaName(),
                 userManager.getUserEmailField());
     }
 
-    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group) throws Exception {
+    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group) {
         return getPrincipalsFromGroup(group, false);
     }
 
-    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group, boolean ignoreGroups) throws Exception {
+    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String group, boolean ignoreGroups) {
         PrincipalHelper ph = new PrincipalHelper(getUserManager(), null);
         return ph.getPrincipalsFromGroup(group, !ignoreGroups);
     }
 
-    public StringList getEmailsFromGroup(String group) throws Exception {
+    public StringList getEmailsFromGroup(String group) {
         return getEmailsFromGroup(group, false);
     }
 
-    public StringList getEmailsFromGroup(String group, boolean ignoreGroups) throws Exception {
+    public StringList getEmailsFromGroup(String group, boolean ignoreGroups) {
         PrincipalHelper ph = new PrincipalHelper(getUserManager(), null);
         Set<String> emails = ph.getEmailsFromGroup(group, !ignoreGroups);
         return new StringList(emails);
     }
 
-    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals)
-            throws Exception {
+    public StringList getPrincipalEmails(List<NuxeoPrincipal> principals) {
         StringList result = new StringList(principals.size());
         String schemaName = getUserManager().getUserSchemaName();
         String fieldName = getUserManager().getUserEmailField();
@@ -121,7 +120,7 @@ public class PlatformFunctions extends CoreFunctions {
         return result;
     }
 
-    public StringList getEmails(List<String> usernames) throws Exception {
+    public StringList getEmails(List<String> usernames) {
         return getEmails(usernames, false);
     }
 
@@ -135,8 +134,7 @@ public class PlatformFunctions extends CoreFunctions {
      *
      * @since 5.5
      */
-    public StringList getEmails(List<String> usernames, boolean usePrefix)
-            throws Exception {
+    public StringList getEmails(List<String> usernames, boolean usePrefix) {
         if (usernames == null) {
             return new StringList(0);
         }
@@ -164,7 +162,7 @@ public class PlatformFunctions extends CoreFunctions {
         return result;
     }
 
-    public String getNextId(final String key) throws Exception {
+    public String getNextId(final String key) {
         UIDSequencer svc = Framework.getService(UIDSequencer.class);
         return Integer.toString(svc.getNext(key));
     }

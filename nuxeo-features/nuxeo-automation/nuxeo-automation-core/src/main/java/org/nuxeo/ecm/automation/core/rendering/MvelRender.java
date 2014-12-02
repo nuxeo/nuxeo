@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.rendering;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
@@ -36,7 +37,8 @@ public class MvelRender implements Renderer {
     protected Map<String,CompiledTemplate> cache = Collections.synchronizedMap(new Cache());
 
     @Override
-    public String render(String uriOrContent, Map<String,Object> root) throws Exception {
+    public String render(String uriOrContent, Map<String, Object> root)
+            throws OperationException, IOException {
         CompiledTemplate compiled = null;
         String content = null;
         if (uriOrContent.startsWith(Renderer.TEMPLATE_PREFIX)) {

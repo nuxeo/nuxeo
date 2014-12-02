@@ -42,7 +42,7 @@ public class InitSeamContext {
     protected OperationContext context;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         SeamOperationFilter.handleBeforeRun(context, conversationId);
     }
 }

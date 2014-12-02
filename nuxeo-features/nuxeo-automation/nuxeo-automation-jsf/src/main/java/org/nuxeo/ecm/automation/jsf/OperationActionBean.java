@@ -58,7 +58,7 @@ public class OperationActionBean implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    public String doOperation(String chainId) throws Exception {
+    public String doOperation(String chainId) throws OperationException {
         return runOperation(chainId);
     }
 
@@ -78,7 +78,7 @@ public class OperationActionBean implements Serializable {
         }
     }
 
-    protected String runOperation(Object chain) throws Exception {
+    protected String runOperation(Object chain) throws OperationException {
         AutomationService os = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext(documentManager);
         ctx.setInput(navigationContext.getCurrentDocument());

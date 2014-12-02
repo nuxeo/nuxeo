@@ -132,7 +132,8 @@ public class ServletRegistry {
      * with current contributed servlets
      * @param service
      */
-    public synchronized void initHttpService(HttpService service) {
+    public synchronized void initHttpService(HttpService service)
+            throws ServletException, NamespaceException {
         if (this.service == null) {
             this.service = service;
             installServlets();
@@ -143,7 +144,8 @@ public class ServletRegistry {
         return service;
     }
 
-    public synchronized void addServlet(ServletDescriptor descriptor) {
+    public synchronized void addServlet(ServletDescriptor descriptor)
+            throws ServletException, NamespaceException {
         servlets.add(descriptor);
         installServlet(descriptor);
     }
@@ -162,7 +164,8 @@ public class ServletRegistry {
         }
     }
 
-    public synchronized void reloadServlet(ServletDescriptor descriptor) {
+    public synchronized void reloadServlet(ServletDescriptor descriptor)
+            throws ServletException, NamespaceException {
         removeServlet(descriptor);
         addServlet(descriptor);
     }
@@ -204,7 +207,8 @@ public class ServletRegistry {
         }
     }
 
-    private synchronized void installServlets() {
+    private synchronized void installServlets() throws ServletException,
+            NamespaceException {
         if (service != null) {
             for (ServletDescriptor sd : servlets) {
                 installServlet(sd);
@@ -212,7 +216,8 @@ public class ServletRegistry {
         }
     }
 
-    private void installServlet(ServletDescriptor sd) {
+    private void installServlet(ServletDescriptor sd) throws ServletException,
+            NamespaceException {
         if (service != null) {
             //ClassRef ref = sd.getClassRef();
             BundleHttpContext ctx = new BundleHttpContext(sd.bundle, sd.resources);
@@ -226,11 +231,7 @@ public class ServletRegistry {
                 params.putAll(sd.getInitParams());
                 params.put(SERVLET_NAME, sd.name);
             }
-            try {
-                service.registerServlet(sd.path, new ServletHolder(), params, ctx);
-            } catch (ServletException | NamespaceException e) {
-                throw new RuntimeException(e);
-            }
+            service.registerServlet(sd.path, new ServletHolder(), params, ctx);
             contexts.put(sd.path, ctx);
         }
     }

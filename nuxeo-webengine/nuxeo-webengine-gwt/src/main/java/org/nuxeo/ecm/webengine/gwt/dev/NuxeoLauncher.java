@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.dev.NuxeoApp;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
@@ -100,7 +101,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
                             if (app != null) {
                                 app.shutdown();
                             }
-                        } catch (Exception e) {
+                        } catch (Exception e) { // stupid API
                             log.error(e, e);
                         }
                     }
@@ -185,34 +186,35 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
                     "org.nuxeo.runtime.jtajca");
             app.start();
             return app;
-        } catch (Exception e) {
+        } catch (Exception e) { // stupid APIs
+            ExceptionUtils.checkInterrupt(e);
             throw new ServletException(e);
         }
 
     }
 
     public class MyNuxeoApp extends NuxeoApp {
-        public MyNuxeoApp(File home) throws Exception {
+        public MyNuxeoApp(File home) throws Exception { // stupid API
             super(home, null, false);
         }
 
-        public MyNuxeoApp(File home, ClassLoader cl) throws Exception {
+        public MyNuxeoApp(File home, ClassLoader cl) throws Exception { // stupid API
             super(home, cl, false);
         }
 
         public MyNuxeoApp(File home, ClassLoader cl, boolean isIsolated)
-                throws Exception {
+                throws Exception { // stupid API
             super(home, cl, isIsolated);
         }
 
         @Override
-        protected void initializeGraph() throws Exception {
+        protected void initializeGraph() throws Exception { // stupid API
             super.initializeGraph();
             NuxeoLauncher.this.initializeGraph(this);
         }
 
         @Override
-        protected void aboutToStartFramework() throws Exception {
+        protected void aboutToStartFramework() throws Exception { // stupid API
             super.aboutToStartFramework();
             NuxeoLauncher.this.aboutToStartFramework(this);
         }
@@ -224,7 +226,7 @@ public class NuxeoLauncher extends NuxeoAuthenticationFilter {
         }
 
         @Override
-        protected void frameworkStarted() throws Exception {
+        protected void frameworkStarted() throws Exception { // stupid API
             super.frameworkStarted();
             NuxeoLauncher.this.frameworkStarted(this);
         }

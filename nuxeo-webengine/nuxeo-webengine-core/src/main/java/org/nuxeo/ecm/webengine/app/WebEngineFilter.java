@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.webengine.app;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -87,20 +88,16 @@ public class WebEngineFilter implements Filter {
             if (config.txStarted) {
                 resp = new BufferingHttpServletResponse(resp);
             }
+            boolean completedAbruptly = true;
             try {
                 preRequest(req, resp);
                 chain.doFilter(request, resp);
                 postRequest(req, resp);
-            } catch (Throwable e) {
-                TransactionHelper.setTransactionRollbackOnly();
-                if (e instanceof ServletException) {
-                    throw (ServletException) e;
-                } else if (e instanceof IOException) {
-                    throw (IOException) e;
-                } else {
-                    throw new ServletException(e);
-                }
+                completedAbruptly = false;
             } finally {
+                if (completedAbruptly) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
                 try {
                     cleanup(config, ctx, req, resp);
                 } finally {
@@ -115,16 +112,19 @@ public class WebEngineFilter implements Filter {
     }
 
     public void preRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+            HttpServletResponse response) {
         // need to set the encoding of characters manually
-        if (null == request.getCharacterEncoding()) {
-            request.setCharacterEncoding("UTF-8");
+        if (request.getCharacterEncoding() == null) {
+            try {
+                request.setCharacterEncoding("UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
-        // response.setCharacterEncoding("UTF-8");
     }
 
     public void postRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+            HttpServletResponse response) {
         // check if the target resource don't want automatic headers to be
         // inserted
         if (null != request.getAttribute("org.nuxeo.webengine.DisableAutoHeaders")) {

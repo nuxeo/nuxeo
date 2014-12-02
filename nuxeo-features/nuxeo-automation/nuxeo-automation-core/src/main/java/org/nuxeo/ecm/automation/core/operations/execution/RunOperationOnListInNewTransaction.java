@@ -74,7 +74,7 @@ public class RunOperationOnListInNewTransaction {
     protected boolean isolate = true;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws OperationException {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
 

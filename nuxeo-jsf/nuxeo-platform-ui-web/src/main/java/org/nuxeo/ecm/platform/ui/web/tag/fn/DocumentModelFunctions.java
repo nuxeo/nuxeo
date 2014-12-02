@@ -435,8 +435,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @deprecated use defaultValue(propertyName) instead
      */
     @Deprecated
-    public static Object defaultValue(String schemaName, String fieldName)
-            throws Exception {
+    public static Object defaultValue(String schemaName, String fieldName) {
         Object value = null;
         SchemaManager tm = Framework.getService(SchemaManager.class);
         Schema schema = tm.getSchema(schemaName);
@@ -471,9 +470,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param propertyName as xpath
      * @return the default value.
-     * @throws Exception
      */
-    public static Object defaultValue(String propertyName) throws Exception {
+    public static Object defaultValue(String propertyName) {
         SchemaManager tm = Framework.getService(SchemaManager.class);
         Field field = null;
         if (propertyName != null && propertyName.contains("/")) {

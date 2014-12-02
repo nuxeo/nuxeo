@@ -185,7 +185,6 @@ public class Select2ActionsBean implements Serializable {
      *
      * @param widget the widget
      * @return encoded
-     * @throws Exception
      * @since 5.7.3
      */
     public String encodeParameters(final Widget widget,
@@ -698,7 +697,7 @@ public class Select2ActionsBean implements Serializable {
     @SuppressWarnings("rawtypes")
     public List<String> resolveMultipleReferenceLabels(final Object value,
             final String repo, final String operationName,
-            final String idProperty, final String label) throws Exception {
+            final String idProperty, final String label) {
 
         List<String> result = new ArrayList<>();
 
@@ -742,7 +741,7 @@ public class Select2ActionsBean implements Serializable {
     @SuppressWarnings("rawtypes")
     public String resolveMultipleReferences(final Object value,
             final String repo, final String operationName,
-            final String idProperty, final String schemaNames) throws Exception {
+            final String idProperty, final String schemaNames) throws IOException {
 
         if (value == null) {
             return "[]";
@@ -844,7 +843,7 @@ public class Select2ActionsBean implements Serializable {
 
     protected DocumentModel resolveReference(final String repo,
             final String storedReference, final String operationName,
-            final String idProperty) throws Exception {
+            final String idProperty) {
 
         if (storedReference == null || storedReference.isEmpty()) {
             log.trace("No reference provided ");
@@ -971,7 +970,7 @@ public class Select2ActionsBean implements Serializable {
 
     public String resolveSingleReference(final String storedReference,
             final String repo, final String operationName,
-            final String idProperty, final String schemaNames) throws Exception {
+            final String idProperty, final String schemaNames) throws IOException {
 
         DocumentModel doc;
         doc = resolveReference(repo, storedReference, operationName, idProperty);
@@ -995,7 +994,7 @@ public class Select2ActionsBean implements Serializable {
 
     public String resolveSingleReferenceLabel(final String storedReference,
             final String repo, final String operationName,
-            final String idProperty, final String label) throws Exception {
+            final String idProperty, final String label) {
         DocumentModel doc = resolveReference(repo, storedReference,
                 operationName, idProperty);
         if (doc == null) {

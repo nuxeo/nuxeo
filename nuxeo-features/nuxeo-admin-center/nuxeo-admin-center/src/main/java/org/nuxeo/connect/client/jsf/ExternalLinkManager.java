@@ -32,6 +32,7 @@ import org.jboss.seam.contexts.Context;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.ecm.admin.AdminViewManager;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -101,7 +102,7 @@ public class ExternalLinkManager implements Serializable {
         return pkg;
     }
 
-    protected void initMinimalContext() throws Exception {
+    protected void initMinimalContext() throws ClientException {
         setupCurrentUser();
 
         // we try to select the server to go to the next screen
@@ -116,7 +117,7 @@ public class ExternalLinkManager implements Serializable {
         navigationContext.setCurrentDocument(domains.get(0));
     }
 
-    public String confirm() throws Exception {
+    public String confirm() throws ClientException {
         initMinimalContext();
         webActions.setCurrentTabId(AdminViewManager.ADMIN_ACTION_CATEGORY,
                 "ConnectApps", "ConnectAppsRemote");

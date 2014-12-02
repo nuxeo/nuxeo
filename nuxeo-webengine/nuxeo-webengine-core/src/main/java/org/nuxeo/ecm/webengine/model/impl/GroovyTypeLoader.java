@@ -89,7 +89,7 @@ public class GroovyTypeLoader {
                     throw WebException.wrap(t);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw WebException.wrap(e);
         }
     }
@@ -116,7 +116,7 @@ public class GroovyTypeLoader {
                     if (td != null) {
                         typeReg.registerTypeDescriptor(td);
                     }
-                } catch (Exception e) {
+                } catch (IOException | ClassNotFoundException e) {
                     throw WebException.wrap(e);
                 }
             }

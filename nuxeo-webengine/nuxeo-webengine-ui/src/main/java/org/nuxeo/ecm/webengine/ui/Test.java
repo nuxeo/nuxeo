@@ -22,6 +22,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -47,8 +48,10 @@ public class Test extends ModuleRoot {
 
     @GET
     @Path("tree")
-    public Response getContent(@QueryParam("root") String root) throws Exception {
-        //TODO here you may want to put tree in httpsession to have state preserved after reload
+    public Response getContent(@QueryParam("root") String root)
+            throws ClientException {
+        // TODO here you may want to put tree in httpsession to have state
+        // preserved after reload
         UserSession us = UserSession.getCurrentSession(ctx.getRequest());
         DocumentTree tree = (DocumentTree)us.get("TREE");
         if (tree == null) {

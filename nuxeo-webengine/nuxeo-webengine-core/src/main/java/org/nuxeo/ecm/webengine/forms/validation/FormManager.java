@@ -148,13 +148,9 @@ public class FormManager implements InvocationHandler, Form {
 
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Class<T> type) {
-        ClassLoader cl = null;
-        try {
-            WebEngine we = Framework.getLocalService(WebEngine.class);
-            cl = we != null ? we.getWebLoader().getClassLoader() : FormManager.class.getClassLoader();
-        } catch (Exception e) { // this is needed to be able to run tests (no framework or webengine installed)
-            cl = FormManager.class.getClassLoader();
-        }
+        WebEngine we = Framework.getService(WebEngine.class);
+        ClassLoader cl = we != null ? we.getWebLoader().getClassLoader()
+                : FormManager.class.getClassLoader();
         return (T)Proxy.newProxyInstance(cl,
                 new Class<?>[] {type},
                 new FormManager(getDescriptor(type)));
@@ -170,8 +166,8 @@ public class FormManager implements InvocationHandler, Form {
             try {
                 fd = new FormDescriptor(type);
                 forms.put(type, fd);
-            } catch (Exception e) {
-                throw new Error("Failed to build form descriptor", e);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException("Failed to build form descriptor", e);
             }
         }
         return fd;

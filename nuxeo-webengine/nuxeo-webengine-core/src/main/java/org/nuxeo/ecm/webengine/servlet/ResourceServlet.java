@@ -47,20 +47,10 @@ public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6548084847887645044L;
 
-    protected WebEngine engine;
-
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        if (engine == null) {
-            try {
-                engine = Framework.getService(WebEngine.class);
-            } catch (Exception e) {
-                throw new ServletException("Failed to lookup WebEngine service", e);
-            }
-        }
-
+        WebEngine engine = Framework.getService(WebEngine.class);
         String path = req.getPathInfo();
         if (path == null) {
             resp.sendError(404);
@@ -84,7 +74,7 @@ public class ResourceServlet extends HttpServlet {
 
         try {
             service(req, resp, module, "/resources"+path);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Unable to serve resource for " + path, e);
             resp.sendError(404);
         }
@@ -100,6 +90,7 @@ public class ResourceServlet extends HttpServlet {
             resp.addHeader("Cache-Control", "public");
             resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
 
+            WebEngine engine = Framework.getService(WebEngine.class);
             String mimeType = engine.getMimeType(file.getExtension());
             if (mimeType == null) {
                 mimeType = "text/plain";

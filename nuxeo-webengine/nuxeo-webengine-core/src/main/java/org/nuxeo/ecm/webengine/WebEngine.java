@@ -32,6 +32,7 @@ import javax.servlet.GenericServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
@@ -43,7 +44,6 @@ import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.impl.GlobalTypes;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -80,12 +80,7 @@ public class WebEngine implements ResourceLocator {
         } catch (IOException e) {
             throw new Error("Failed to load mime types");
         } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                }
-            }
+            IOUtils.closeQuietly(in);
         }
         return mimeTypes;
     }
@@ -117,8 +112,6 @@ public class WebEngine implements ResourceLocator {
 
     protected boolean devMode;
 
-    protected final GlobalTypes globalTypes;
-
     protected final AnnotationManager annoMgr;
 
     protected final ResourceRegistry registry;
@@ -142,8 +135,6 @@ public class WebEngine implements ResourceLocator {
         apps = new HashMap<String, WebEngineModule>();
         scripting = new Scripting(webLoader);
         annoMgr = new AnnotationManager();
-
-        globalTypes = new GlobalTypes(this);
 
         skinPathPrefix = Framework.getProperty(SKIN_PATH_PREFIX_KEY);
         if (skinPathPrefix == null) {
@@ -245,10 +236,6 @@ public class WebEngine implements ResourceLocator {
         return webLoader.loadClass(className);
     }
 
-    public GlobalTypes getGlobalTypes() {
-        return globalTypes;
-    }
-
     public String getMimeType(String ext) {
         return (String) mimeTypes.get(ext);
     }
@@ -306,14 +293,8 @@ public class WebEngine implements ResourceLocator {
                         }
                     }
                     for (WebEngineModule app : getApplications()) {
-                        try {
-                            ModuleConfiguration mc = app.getConfiguration();
-                            moduleMgr.loadModule(mc);
-                        } catch (Exception e) {
-                            log.error(
-                                    "Failed to load WebEngine module: "
-                                            + app.getId(), e);
-                        }
+                        ModuleConfiguration mc = app.getConfiguration();
+                        moduleMgr.loadModule(mc);
                     }
                     // set member at the end to be sure moduleMgr is completely
                     // initialized
@@ -359,7 +340,7 @@ public class WebEngine implements ResourceLocator {
         try {
             binding.resolve(this);
             registry.addBinding(binding);
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             throw WebException.wrap("Failed o register binding: " + binding, e);
         }
     }

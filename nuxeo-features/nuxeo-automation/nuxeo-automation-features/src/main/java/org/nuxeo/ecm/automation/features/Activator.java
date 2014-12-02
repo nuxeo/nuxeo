@@ -22,13 +22,13 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         // install platform functions lib.
         Functions.setInstance(new PlatformFunctions());
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         // reset to default functions lib.
         Functions.setInstance(null);
     }

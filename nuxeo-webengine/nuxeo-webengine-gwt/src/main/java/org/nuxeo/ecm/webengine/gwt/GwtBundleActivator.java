@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.webengine.gwt;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +51,7 @@ public class GwtBundleActivator implements BundleActivator {
     protected BundleContext context;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         this.context = context;
         if (GWT_DEV_MODE) {
             return;
@@ -65,7 +66,7 @@ public class GwtBundleActivator implements BundleActivator {
                Framework.removeListener(this);
                try {
                    installGwtApp(GwtBundleActivator.this.context.getBundle());
-               } catch (Exception cause) {
+               } catch (IOException cause) {
                    log.error("Cannot install gwt app", cause);
                }
             }
@@ -74,11 +75,11 @@ public class GwtBundleActivator implements BundleActivator {
 
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.context = null;
     }
 
-    protected void installGwtApp(Bundle bundle) throws Exception {
+    protected void installGwtApp(Bundle bundle) throws IOException {
         GWT_ROOT.mkdirs();
         String symName = bundle.getSymbolicName();
         // check the marker file to avoid copying twice

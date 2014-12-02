@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.adapters;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
@@ -54,7 +56,7 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     @SuppressWarnings("unchecked")
-    public T create(T o, String name, String parentPath) throws Exception {
+    public T create(T o, String name, String parentPath) throws IOException {
         checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
                 o).set("name", name).set("parentPath", parentPath).execute();
@@ -66,7 +68,7 @@ public class BusinessService<T> {
      * @param o the object to send (pojo client side)
      * @return the pojo returned by the server
      */
-    public T update(T o) throws Exception {
+    public T update(T o) throws IOException {
         checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessUpdateOperation").setInput(
                 o).execute();
@@ -78,7 +80,7 @@ public class BusinessService<T> {
      * @param o the object to send (pojo client side)
      * @return the pojo returned by the server
      */
-    public T fetch(T o) throws Exception {
+    public T fetch(T o) throws IOException {
         return (T) session.newRequest("Business.BusinessFetchOperation").setInput(
                 o).execute();
     }

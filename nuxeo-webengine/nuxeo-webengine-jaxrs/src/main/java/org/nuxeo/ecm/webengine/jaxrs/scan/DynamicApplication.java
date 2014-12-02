@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.scan;
 
+import java.io.IOException;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -40,7 +41,7 @@ public abstract class DynamicApplication extends Application {
             Scanner scanner = new Scanner(getBundle(), getPackageBase());
             scanner.scan();
             return scanner.getClasses();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | IOException e) {
             throw new RuntimeException("Failed to scan classes", e);
         }
     }

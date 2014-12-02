@@ -29,11 +29,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import freemarker.core.Environment;
 import freemarker.template.TemplateDirectiveBody;
@@ -108,7 +111,7 @@ public class NXThemesTabsDirective implements TemplateDirectiveModel {
                 }
                 items.add(itemMap);
             }
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | SAXException | DOMException e) {
         }
 
         widget.put("items", items);

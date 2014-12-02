@@ -125,10 +125,6 @@ public class UpdateManager {
         return key;
     }
 
-    /**
-     * @param opt
-     * @throws Exception, VersionAlreadyExistException
-     */
     public RollbackOptions update(UpdateOptions opt) throws PackageException {
         String key = getKey(opt);
         Entry entry = registry.get(key);
@@ -382,9 +378,6 @@ public class UpdateManager {
     /**
      * Create a new entry in the registry given the entry key. A base version
      * will be automatically created if needed.
-     *
-     * @param key
-     * @throws Exception
      */
     public Entry createEntry(String key) throws PackageException {
         Entry entry = new Entry(key);

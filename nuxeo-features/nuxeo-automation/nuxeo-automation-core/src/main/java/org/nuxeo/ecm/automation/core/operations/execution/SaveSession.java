@@ -31,7 +31,7 @@ public class SaveSession {
     protected CoreSession session;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         session.save();
     }
 

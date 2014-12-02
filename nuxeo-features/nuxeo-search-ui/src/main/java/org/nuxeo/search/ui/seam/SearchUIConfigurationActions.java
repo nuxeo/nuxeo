@@ -59,14 +59,13 @@ public class SearchUIConfigurationActions implements Serializable {
     @In(create = true)
     protected transient ContentViewService contentViewService;
 
-    public List<ContentViewHeader> getSelectedContentViewHeaders()
-            throws Exception {
+    public List<ContentViewHeader> getSelectedContentViewHeaders() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return getSelectedContentViewHeaders(currentDoc);
     }
 
     public List<ContentViewHeader> getSelectedContentViewHeaders(
-            DocumentModel document) throws Exception {
+            DocumentModel document) {
         if (!document.hasFacet(SEARCH_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
@@ -100,14 +99,13 @@ public class SearchUIConfigurationActions implements Serializable {
         return selectedContentViewHeaders;
     }
 
-    public List<ContentViewHeader> getNotSelectedContentViewHeaders()
-            throws Exception {
+    public List<ContentViewHeader> getNotSelectedContentViewHeaders() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return getNotSelectedContentViewHeaders(currentDoc);
     }
 
     public List<ContentViewHeader> getNotSelectedContentViewHeaders(
-            DocumentModel document) throws Exception {
+            DocumentModel document) {
         if (!document.hasFacet(SEARCH_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }

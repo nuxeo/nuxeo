@@ -23,8 +23,7 @@ public class RootResource {
     }
 
     @GET
-    public Object doGet(@Context
-    UriInfo uriInfo) throws Exception {
+    public Object doGet(@Context UriInfo uriInfo) {
         LayoutStore service = Framework.getService(LayoutStore.class);
         // XXX: use hard coded "jsf" category for now
         int nbWidgetTypes = service.getWidgetTypeDefinitions("jsf").size();
@@ -37,14 +36,14 @@ public class RootResource {
     }
 
     @Path("layouts")
-    public Object getLayouts() throws Exception {
+    public Object getLayouts() {
         // XXX: use hard coded "jsf" category for now
         return new LayoutResource("jsf");
     }
 
     @Path("widget-types")
-    public Object getWidgetTypes(@QueryParam("widgetTypeCategory")
-    String widgetTypeCategory) throws Exception {
+    public Object getWidgetTypes(
+            @QueryParam("widgetTypeCategory") String widgetTypeCategory) {
         if (StringUtils.isBlank(widgetTypeCategory)) {
             widgetTypeCategory = "jsf";
         }
@@ -52,8 +51,8 @@ public class RootResource {
     }
 
     @Path("layout-types")
-    public Object getLayoutTypes(@QueryParam("layoutTypeCategory")
-    String layoutTypeCategory) throws Exception {
+    public Object getLayoutTypes(
+            @QueryParam("layoutTypeCategory") String layoutTypeCategory) {
         if (StringUtils.isBlank(layoutTypeCategory)) {
             layoutTypeCategory = "jsf";
         }

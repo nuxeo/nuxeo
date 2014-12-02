@@ -143,11 +143,11 @@ public interface PictureBookManager {
      * Creates and saves a Picture Book DocumentModel using views, timeinterval,
      * description and title.
      */
-    String createPictureBook() throws Exception;
+    String createPictureBook();
 
     void reset() throws ClientException;
 
-    void initialize() throws Exception;
+    void initialize();
 
     String downloadSelectedBook() throws ClientException, IOException;
 

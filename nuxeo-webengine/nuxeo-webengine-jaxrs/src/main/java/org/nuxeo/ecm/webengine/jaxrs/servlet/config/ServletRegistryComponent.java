@@ -11,10 +11,13 @@
  */
 package org.nuxeo.ecm.webengine.jaxrs.servlet.config;
 
+import javax.servlet.ServletException;
+
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
+import org.osgi.service.http.NamespaceException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,7 +54,11 @@ public class ServletRegistryComponent extends DefaultComponent {
             String extensionPoint, ComponentInstance contributor) {
         if (XP_SERVLETS.equals(extensionPoint)) {
             ((ServletDescriptor)contribution).setBundle(contributor.getContext().getBundle());
-            registry.addServlet((ServletDescriptor)contribution);
+            try {
+                registry.addServlet((ServletDescriptor)contribution);
+            } catch (ServletException | NamespaceException e) {
+                throw new RuntimeException(e);
+            }
         } else if (XP_FILTERS.equals(extensionPoint)) {
             registry.addFilterSet((FilterSetDescriptor)contribution);
         } else if (XP_RESOURCES.equals(extensionPoint)) {

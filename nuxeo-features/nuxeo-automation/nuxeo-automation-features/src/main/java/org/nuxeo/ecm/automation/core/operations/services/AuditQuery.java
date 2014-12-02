@@ -61,7 +61,7 @@ public class AuditQuery {
     protected int maxResults;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         List<LogEntry> result = query();
         JSONArray rows = new JSONArray();
         for (LogEntry entry : result) {
@@ -85,7 +85,7 @@ public class AuditQuery {
         return new StringBlob(rows.toString(), "application/json");
     }
 
-    public List<LogEntry> query() throws Exception {
+    public List<LogEntry> query() {
         PersistenceProviderFactory pf = Framework.getService(PersistenceProviderFactory.class);
         PersistenceProvider provider = pf.newProvider("nxaudit-logs");
         return provider.run(false, new RunCallback<List<LogEntry>>() {

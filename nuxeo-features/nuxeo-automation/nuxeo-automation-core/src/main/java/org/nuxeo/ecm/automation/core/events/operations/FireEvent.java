@@ -17,6 +17,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -46,7 +47,7 @@ public class FireEvent {
     protected String name;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws ClientException {
         CoreSession session = ctx.getCoreSession();
         Object input = ctx.getInput();
         if (input instanceof DocumentModel) {
@@ -63,7 +64,8 @@ public class FireEvent {
         }
     }
 
-    protected void sendDocumentEvent(DocumentModel input) throws Exception {
+    protected void sendDocumentEvent(DocumentModel input)
+            throws ClientException {
         CoreSession session = ctx.getCoreSession();
         EventContextImpl evctx = new DocumentEventContext(session,
                 session.getPrincipal(), input);
@@ -71,7 +73,7 @@ public class FireEvent {
         service.fireEvent(event);
     }
 
-    protected void sendUnknownEvent(Object input) throws Exception {
+    protected void sendUnknownEvent(Object input) throws ClientException {
         CoreSession session = ctx.getCoreSession();
         EventContextImpl evctx = new EventContextImpl(session,
                 session.getPrincipal(), input);

@@ -40,9 +40,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -115,17 +113,6 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
         return readJson(jp, httpHeaders);
     }
 
-    /**
-     * @param jp
-     * @param httpHeaders
-     * @return
-     * @throws IOException
-     * @throws JsonProcessingException
-     * @throws OperationException
-     * @throws ClientException
-     * @throws Exception
-     *
-     */
     public static DirectoryEntry readJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders) throws IOException,
             ClientException {

@@ -461,7 +461,7 @@ public class SuggestDirectoryEntries {
     }
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         Directory directory = directoryService.getDirectory(directoryName);
         if (directory == null) {
             log.error("Could not find directory with name " + directoryName);

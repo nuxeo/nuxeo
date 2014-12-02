@@ -13,6 +13,7 @@ package org.nuxeo.ecm.automation.core.scripting;
 
 import groovy.lang.Binding;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -49,7 +50,8 @@ public class Scripting {
         return new MvelTemplate(expr);
     }
 
-    public static void run(OperationContext ctx, URL script) throws Exception {
+    public static void run(OperationContext ctx, URL script)
+            throws OperationException, IOException {
         String key = script.toExternalForm();
         Script cs = cache.get(key);
         if (cs != null) {
@@ -124,7 +126,7 @@ public class Scripting {
 
     public interface Script {
         // protected long lastModified;
-        Object eval(OperationContext ctx) throws Exception;
+        Object eval(OperationContext ctx);
     }
 
     public static class MvelScript implements Script {
@@ -138,7 +140,7 @@ public class Scripting {
             this.c = c;
         }
 
-        public Object eval(OperationContext ctx) throws Exception {
+        public Object eval(OperationContext ctx) {
             return MVEL.executeExpression(c, Scripting.initBindings(ctx));
         }
     }
@@ -150,7 +152,7 @@ public class Scripting {
             this.c = gscripting.getScript(c, new Binding());
         }
 
-        public Object eval(OperationContext ctx) throws Exception {
+        public Object eval(OperationContext ctx) {
             Binding binding = new Binding();
             for (Map.Entry<String, Object> entry : initBindings(ctx).entrySet()) {
                 binding.setVariable(entry.getKey(), entry.getValue());

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -441,7 +442,7 @@ public interface WebActions {
      *             document) action listener.
      */
     @Deprecated
-    String getCurrentLifeCycleState() throws Exception;
+    String getCurrentLifeCycleState() throws ClientException;
 
     /**
      * @deprecated since 5.4.2: useless

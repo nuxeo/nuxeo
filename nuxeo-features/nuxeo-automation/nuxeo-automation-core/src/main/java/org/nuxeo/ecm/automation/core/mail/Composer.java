@@ -18,14 +18,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.activation.DataHandler;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
@@ -39,6 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 
 import freemarker.core.Environment;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -147,7 +147,8 @@ public class Composer {
         return writer.toString();
     }
 
-    public String render(String templateContent, Object ctx) throws Exception {
+    public String render(String templateContent, Object ctx)
+            throws TemplateException, IOException {
         StringReader reader = new StringReader(templateContent);
         Template temp = new Template("@inline", reader,
                 engine.getConfiguration(), "UTF-8");
@@ -163,35 +164,37 @@ public class Composer {
     }
 
     public Mailer.Message newTextMessage(URL template, Object ctx)
-            throws Exception {
+            throws RenderingException, MessagingException {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(template, ctx), "UTF-8");
         return msg;
     }
 
     public Mailer.Message newTextMessage(String templateContent, Object ctx)
-            throws Exception {
+            throws RenderingException, MessagingException, TemplateException,
+            IOException {
         Mailer.Message msg = mailer.newMessage();
         msg.setText(render(templateContent, ctx), "UTF-8");
         return msg;
     }
 
     public Mailer.Message newHtmlMessage(URL template, Object ctx)
-            throws Exception {
+            throws RenderingException, MessagingException {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(template, ctx), "text/html; charset=utf-8");
         return msg;
     }
 
     public Mailer.Message newHtmlMessage(String templateContent, Object ctx)
-    throws Exception {
+            throws MessagingException, TemplateException, IOException {
         Mailer.Message msg = mailer.newMessage();
         msg.setContent(render(templateContent, ctx), "text/html; charset=utf-8");
         return msg;
     }
 
-    public Mailer.Message newMixedMessage(String templateContent, Object ctx, String textType, List<Blob> attachments)
-    throws Exception {
+    public Mailer.Message newMixedMessage(String templateContent, Object ctx,
+            String textType, List<Blob> attachments) throws TemplateException,
+            IOException, MessagingException {
         if (textType == null) {
             textType = "plain";
         }
@@ -209,23 +212,6 @@ public class Composer {
         }
         msg.setContent(mp);
         return msg;
-    }
-
-    public static void main(String[] args) throws Exception {
-        Mailer mailer = new Mailer();
-        mailer.setServer("smtp.gmail.com", "465", true);
-        mailer.setCredentials("xxx", "xxx");
-        mailer.setDebug(true);
-
-        Composer c = new Composer(mailer);
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("key1", "val1");
-
-        Mailer.Message msg = c.newTextMessage("bla ${key1} bla", map).addFrom(
-                "bs@nuxeo.com").addTo("bstefanescu@nuxeo.com");
-        msg.setSubject("test2");
-        msg.send();
     }
 
 }

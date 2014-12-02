@@ -214,12 +214,12 @@ public class AppCenterViewsManager implements Serializable {
      *
      * @since 5.6
      */
-    public String installStudioSnapshotAndRedirect() throws Exception {
+    public String installStudioSnapshotAndRedirect() {
         installStudioSnapshot();
         return AdminViewManager.VIEW_ADMIN;
     }
 
-    public void installStudioSnapshot() throws Exception {
+    public void installStudioSnapshot() {
         if (isStudioSnapshopUpdateInProgress) {
             return;
         }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.liveedit;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -185,9 +186,8 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * describing the action: actionEdit, actionNew or actionFromTemplate.
      *
      * @return the bootstrap file content
-     * @throws Exception
      */
-    public void getBootstrap() throws Exception {
+    public void getBootstrap() throws IOException {
         String currentRepoID = documentManager.getRepositoryName();
 
         CoreSession session = documentManager;
@@ -434,7 +434,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
-    protected String getFileExtension(String mimetype) throws Exception {
+    protected String getFileExtension(String mimetype) {
         if (mimetype == null) {
             return null;
         }
@@ -447,7 +447,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
-    protected List<String> getFileExtensions(String mimetype) throws Exception {
+    protected List<String> getFileExtensions(String mimetype) {
         if (mimetype == null) {
             return null;
         }
@@ -701,7 +701,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         return false;
     }
 
-    protected MimetypeRegistry getMimetypeRegistry() throws Exception {
+    protected MimetypeRegistry getMimetypeRegistry() {
         if (mimetypeRegistry == null) {
             mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         }

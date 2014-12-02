@@ -106,7 +106,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     @Override
     @Create
-    public void initialize() throws Exception {
+    public void initialize() {
         log.debug("Initializing...");
         index = 0;
     }
@@ -160,7 +160,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     @Override
     @Deprecated
     @SuppressWarnings("unchecked")
-    public String addPicture() throws Exception {
+    public String addPicture() {
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel doc = navigationContext.getChangeableDocument();
 
@@ -389,7 +389,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
         this.cropCoords = cropCoords;
     }
 
-    public Boolean isImageMagickAvailable() throws Exception {
+    public Boolean isImageMagickAvailable() {
         if (imageMagickAvailable == null) {
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             CommandAvailability ca = cles.getCommandAvailability("cropAndResize");

@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -44,7 +46,8 @@ public class UpdateDocument {
     protected String changeToken = null;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc)
+            throws ConflictOperationException, IOException {
 
         if (changeToken!=null) {
             // Check for dirty update

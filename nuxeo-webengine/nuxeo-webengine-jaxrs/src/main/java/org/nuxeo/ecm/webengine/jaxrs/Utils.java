@@ -81,29 +81,31 @@ public class Utils {
      * @param componentType the type of the expected array component
      * @param classRefs
      * @return
-     * @throws Exception
      *
      * @see {@link #loadClasses(String)}
      */
-    public static <T> T[] newInstances(Class<T> componentType, String classRefs) throws Exception {
+    public static <T> T[] newInstances(Class<T> componentType, String classRefs)
+            throws ReflectiveOperationException, BundleNotFoundException {
         return newInstances(componentType, classRefs, ',');
     }
 
     /**
      * Get class instances for the given class references string
+     *
      * @param <T>
      * @param componentType
      * @param classRefs
      * @param sep
      * @return
-     * @throws Exception
      *
      * @see {@link #loadClasses(String, char)}
      */
     @SuppressWarnings("unchecked")
-    public static <T> T[] newInstances(Class<T> componentType, String classRefs, char sep) throws Exception {
+    public static <T> T[] newInstances(Class<T> componentType,
+            String classRefs, char sep) throws ReflectiveOperationException,
+            BundleNotFoundException {
         Class<?>[] classes = loadClasses(classRefs, sep);
-        T[] ar = (T[])Array.newInstance(componentType, classes.length);
+        T[] ar = (T[]) Array.newInstance(componentType, classes.length);
         for (int i=0; i<classes.length; i++) {
             ar[i] = (T)classes[i].newInstance();
         }
@@ -120,8 +122,6 @@ public class Utils {
      *
      * @param classRef
      * @return
-     * @throws ClassNotFoundException
-     * @throws BundleNotFoundException
      */
     public static Class<?> loadClass(String classRef) throws ClassNotFoundException, BundleNotFoundException {
         int i = classRef.indexOf(':');
@@ -137,7 +137,6 @@ public class Utils {
      * Get a class proxy reference for the given class reference
      * @param classRef
      * @return
-     * @throws Exception
      */
     public static ClassRef getClassRef(String classRef) throws ClassNotFoundException, BundleNotFoundException {
         return getClassRef(classRef, null);
@@ -195,11 +194,11 @@ public class Utils {
      * @param bundleId
      * @param className
      * @return
-     * @throws Exception
      *
      * @see {@link #loadClass(String, String)}
      */
-    public static Object newInstance(String bundleId, String className) throws Exception {
+    public static Object newInstance(String bundleId, String className)
+            throws ReflectiveOperationException, BundleNotFoundException {
         return loadClass(bundleId, className).newInstance();
     }
 
@@ -211,11 +210,11 @@ public class Utils {
      *
      * @param classRef
      * @return
-     * @throws Exception
      *
      * @see {@link #loadClass(String, String)}
      */
-    public static Object newInstance(String classRef) throws Exception {
+    public static Object newInstance(String classRef)
+            throws ReflectiveOperationException, BundleNotFoundException {
         return loadClass(classRef).newInstance();
     }
 
@@ -237,7 +236,7 @@ public class Utils {
             return bundle;
         }
 
-        public Object newInstance() throws Exception {
+        public Object newInstance() throws ReflectiveOperationException {
             return clazz.newInstance();
         }
 

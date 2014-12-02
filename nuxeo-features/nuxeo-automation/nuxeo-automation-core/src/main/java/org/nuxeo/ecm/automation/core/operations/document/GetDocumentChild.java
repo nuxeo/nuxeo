@@ -37,12 +37,12 @@ public class GetDocumentChild {
     protected String name;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         return session.getChild(doc.getRef(), name);
     }
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
+    public DocumentModel run(DocumentRef doc) {
         return session.getChild(doc, name);
     }
 

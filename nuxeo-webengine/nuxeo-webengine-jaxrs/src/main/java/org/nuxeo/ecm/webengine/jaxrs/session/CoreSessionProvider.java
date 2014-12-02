@@ -19,6 +19,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -65,12 +66,13 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
     protected CoreSession createSession(HttpServletRequest request, String repoName) {
         try {
             return _createSession(request, repoName);
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new WebApplicationException(e, 500);
         }
     }
 
-    protected CoreSession _createSession(HttpServletRequest request, String repoName) throws Exception {
+    protected CoreSession _createSession(HttpServletRequest request,
+            String repoName) throws ClientException {
         if (request.getUserPrincipal() == null) {
             throw new java.lang.IllegalStateException("Not authenticated user is trying to get a core session");
         }

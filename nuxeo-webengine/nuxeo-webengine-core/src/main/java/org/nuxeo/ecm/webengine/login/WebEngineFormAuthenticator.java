@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.login;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.sendRedirect(path+"?failed=true");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e);
             return false;
         }
@@ -132,7 +133,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
             } else { // normal request
                 response.sendRedirect(path);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e);
             return false;
         }

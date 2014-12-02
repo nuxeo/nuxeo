@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -23,7 +23,8 @@ public class AuthenticationService {
     protected Map<String, AuthenticationHandler> handlers;
 
 
-    public void addHander(AuthenticationHandlerDescriptor desc) throws Exception {
+    public void addHander(AuthenticationHandlerDescriptor desc)
+            throws ReflectiveOperationException {
         handlers.put(desc.name, desc.newInstance());
     }
 

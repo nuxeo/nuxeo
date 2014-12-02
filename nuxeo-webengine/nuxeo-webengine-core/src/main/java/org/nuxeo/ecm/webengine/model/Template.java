@@ -21,16 +21,18 @@ package org.nuxeo.ecm.webengine.model;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import java.lang.Throwable;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -109,16 +111,6 @@ public class Template {
         return script;
     }
 
-    public Throwable getRootCause(Throwable e) {
-        if (e == null) {
-            return null;
-        } else if (e.getCause() == null) {
-            return e;
-        } else {
-            return getRootCause(e.getCause());
-        }
-    }
-
     public void render(OutputStream out) throws WebException {
         Writer w;
         try {
@@ -126,19 +118,11 @@ public class Template {
         } catch (UnsupportedEncodingException e) {
             throw WebException.wrap("Failed to create output stream: unsupported encoding", e);
         }
-        try {
-            ctx.render(script(), args, w);
-        } catch (Exception e) {
-            if (getRootCause(e) instanceof SocketException) {
-                log.debug("Output socket closed: failed to write response");
-            } else {
-                throw WebException.wrap("Failed to write response", e);
-            }
-        }
+        ctx.render(script(), args, w);
         try {
             w.flush();
-        } catch (Exception e) {
-            if (getRootCause(e) instanceof SocketException) {
+        } catch (IOException e) {
+            if (ExceptionUtils.getRootCause(e) instanceof SocketException) {
                 log.debug("Output socket closed: failed to flush response");
             } else {
                 throw WebException.wrap("Failed to flush response", e);
@@ -148,24 +132,8 @@ public class Template {
 
     public String render() {
         StringWriter w = new StringWriter();
-        try {
-            ctx.render(script(), args, w);
-        } catch (Exception e) {
-            if (getRootCause(e) instanceof SocketException) {
-                log.debug("Output socket closed: failed to write response");
-            } else {
-                throw WebException.wrap("Failed to write response", e);
-            }
-        }
-        try {
-            w.flush();
-        } catch (Exception e) {
-            if (getRootCause(e) instanceof SocketException) {
-                log.debug("Output socket closed: failed to flush response");
-            } else {
-                throw WebException.wrap("Failed to flush response", e);
-            }
-        }
+        ctx.render(script(), args, w);
+        w.flush();
         return w.getBuffer().toString();
     }
 

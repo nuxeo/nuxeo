@@ -20,6 +20,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -27,7 +28,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
  * Save the input document
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author tiry
  */
@@ -40,7 +41,7 @@ public class BlobToPDF {
     protected ConversionService service;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) throws Exception {
+    public Blob run(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             return null;
@@ -73,7 +74,7 @@ public class BlobToPDF {
     }
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) {
         if ("application/pdf".equals(blob.getMimeType())) {
             return blob;
         }
@@ -86,7 +87,7 @@ public class BlobToPDF {
     }
 
     @OperationMethod
-    public BlobList run(BlobList blobs) throws Exception {
+    public BlobList run(BlobList blobs) {
         BlobList bl = new BlobList();
         for (Blob blob : blobs) {
             bl.add(this.run(blob));

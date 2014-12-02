@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.client;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
@@ -39,7 +40,7 @@ public interface OperationRequest {
 
     OperationRequest setContextProperty(String key, Object value);
 
-    Object execute() throws Exception;
+    Object execute() throws IOException;
 
     Map<String, Object> getParameters();
 

@@ -101,15 +101,12 @@ public class ApplicationManager implements BundleTrackerCustomizer {
             if (varsStr != null) {
                 vars = parseAttrs(varsStr);
             }
-            try {
-                ApplicationFragment fragment = new ApplicationFragment(bundle, classRef, vars);
-                ApplicationHost app = getOrCreateApplication(fragment.getHostName());
-                app.add(fragment);
-                app.reload();
-                return fragment;
-            } catch (Exception e) {
-                log.error(e);
-            }
+            ApplicationFragment fragment = new ApplicationFragment(bundle,
+                    classRef, vars);
+            ApplicationHost app = getOrCreateApplication(fragment.getHostName());
+            app.add(fragment);
+            app.reload();
+            return fragment;
         }
         return null;
     }
@@ -122,11 +119,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
             if (fragment != null) {
                 ApplicationHost app = getApplication(fragment);
                 if (app != null) {
-                    try {
-                        app.reload();
-                    } catch (Exception e) {
-                        log.error(e);
-                    }
+                    app.reload();
                 }
             }
         }
@@ -139,11 +132,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
             ApplicationHost app = getApplication(fragment);
             if (app != null) {
                 app.remove(fragment);
-                try {
-                    app.reload();
-                } catch (Exception e) {
-                    log.error(e);
-                }
+                app.reload();
             }
         }
     }

@@ -32,7 +32,7 @@ public class ReloadDocument {
     protected OperationContext ctx;
 
     @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) {
         return ctx.getCoreSession().getDocument(doc.getRef());
     }
 

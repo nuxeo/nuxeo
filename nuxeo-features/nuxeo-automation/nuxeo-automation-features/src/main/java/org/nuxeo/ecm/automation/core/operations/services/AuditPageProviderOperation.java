@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Operation to execute a query or a named provider against Audit with support
@@ -120,7 +120,7 @@ public class AuditPageProviderOperation {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public Paginable<LogEntry> run() throws Exception {
+    public Paginable<LogEntry> run() throws IOException {
 
         List<SortInfo> sortInfos = null;
         if (sortInfoAsStringList != null) {

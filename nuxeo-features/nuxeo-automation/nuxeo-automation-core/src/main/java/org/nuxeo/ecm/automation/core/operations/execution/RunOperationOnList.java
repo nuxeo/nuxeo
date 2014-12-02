@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -94,7 +95,7 @@ public class RunOperationOnList {
 
     @OperationMethod
     @SuppressWarnings("unchecked")
-    public void run() throws Exception {
+    public void run() throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(
                 ctx.getVars()) : ctx.getVars();
