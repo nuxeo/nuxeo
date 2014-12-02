@@ -7,45 +7,47 @@
   xmlns:f="http://java.sun.com/jsf/core"
   class="hostInfos">
 
-  <h3>Re indexing operations</h3>
+  <h3>Indexing operations</h3>
 
-  <div class="detail">Re-indexing operations are done asynchronously.
+  <div class="detail">Indexing operations are done asynchronously.
     When they are terminated the status "No indexing in progress"
     is displayed in the Info tab.
-
-    To remove spurious documents, you need to drop the index first and
-    re-index all the repository.
   </div>
 
   <h:form id="esAdmin">
 
-    <h4>Options</h4>
-    <h5>Repository selection</h5>
-    <div class="detail">Choose a repository where the re-indexing command will apply.</div>
+    <div class="detail">Choose a repository where the indexing operation will apply.</div>
     <div class="bubbleBox">
+      Repository:
       <h:selectOneMenu name="j_repo" value="#{esAdmin.repositoryName}">
         <f:selectItems value="#{esAdmin.repositoryNames}" />
       </h:selectOneMenu>
     </div>
 
-    <h5>Drop index before indexing</h5>
-    <div class="detail">Warning this will first drop Elasticsearch index before indexing.
-    You may experience incomplete search results during the re-indexing.</div>
+    <h4>Re-indexing the entire repository</h4>
+    <div class="detail">Warning depending on your repository size it can be a long operation.
+      The Elasticsearch index is first deleted, you will experience incomplete search results
+      during the re-indexing.
+    </div>
     <div class="bubbleBox">
-      <h:selectBooleanCheckbox value="#{esAdmin.dropIndex}" /> Drop Elasticsearch index associated with the repository.
+      <h:commandButton action="#{esAdmin.startReindexAll}" value="Re-index repository"/>
     </div>
 
-    <h4>Re-indexing using a NXQL query</h4>
-    <div class="detail">Use this to re-index documents that match a NXQL query.
-      The default query match all documents and can be used to re-index the whole repository.</div>
+    <h4>Re-indexing documents that match a NXQL query</h4>
+    <div class="detail">Only documents that match the query are indexed, there is no recursive
+      indexation of children nor deletion of spurious documents from the index.
+    </div>
     <div class="bubbleBox">
       NXQL query:
       <h:inputText name="j_nxql" value="#{esAdmin.nxql}"/>
-      <h:commandButton action="#{esAdmin.startReindex}" value="Re-index"/>
+      <h:commandButton action="#{esAdmin.startReindexNxql}" value="Re-index"/>
     </div>
 
-    <h4>Re-indexing a document</h4>
-    <div class="detail">This will re-index a document and its children recursively.</div>
+    <h4>Re-indexing a document and its children</h4>
+    <div class="detail">This will re-index a document and its children recursively.
+      Before indexing, the document and its children are removed from Elasticsearch,
+      this operation can be used to remove spurious documents from the index.
+      You may experience incomplete search results during the re-indexing.</div>
     <div class="bubbleBox">
       Document id:
       <h:inputText name="j_docid" value="#{esAdmin.rootId}"/>
