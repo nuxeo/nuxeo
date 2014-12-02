@@ -178,7 +178,7 @@ public class CoreFeature extends SimpleFeature {
             log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
             String rootDocumentId = session.getRootDocument().getId();
             IterableQueryResult results = session.queryAndFetch(
-                    "SELECT ecm:uuid FROM Document", NXQL.NXQL);
+                    "SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
             for (Map<String, Serializable> result : results) {
                 String uuid = result.get("ecm:uuid").toString();
                 if (rootDocumentId != uuid) {
@@ -188,7 +188,7 @@ public class CoreFeature extends SimpleFeature {
             results.close();
             session.save();
             waitForAsyncCompletion();
-            if (!session.query("SELECT * FROM Document").isEmpty()) {
+            if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
                 log.error("Fail to cleanupSession, repository will not be empty for the next test.");
             }
         } catch (ClientException e) {
