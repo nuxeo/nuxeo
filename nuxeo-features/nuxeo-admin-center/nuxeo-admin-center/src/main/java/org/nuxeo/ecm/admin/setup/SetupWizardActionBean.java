@@ -436,8 +436,13 @@ public class SetupWizardActionBean implements Serializable {
         return directoryType;
     }
 
-    public String setDirectoryStorage(String directoryStorage) {
-        return parameters.put("nuxeo.user.group.storage", directoryStorage);
+    public void setDirectoryType(String directoryType) {
+        parameters.put("nuxeo.directory.type", directoryType);
+        this.directoryType = directoryType;
+    }
+
+    public void setDirectoryStorage(String directoryStorage) {
+        parameters.put("nuxeo.user.group.storage", directoryStorage);
     }
 
     public void ldapStorageChange() {
@@ -455,10 +460,6 @@ public class SetupWizardActionBean implements Serializable {
             }
         }
         return needGroupConfiguration.booleanValue();
-    }
-
-    public void setDirectoryType(String directoryType) {
-        this.directoryType = directoryType;
     }
 
     public void directoryChange(AjaxBehaviorEvent event) {
