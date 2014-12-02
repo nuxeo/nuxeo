@@ -186,7 +186,9 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         for (Property property : views) {
             if (title.equals(property.getValue(TITLE_PROPERTY))) {
                 Blob blob = (Blob) property.getValue("content");
-                blob.setFilename((String) property.getValue(FILENAME_PROPERTY));
+                if (blob != null) {
+                    blob.setFilename((String) property.getValue(FILENAME_PROPERTY));
+                }
                 return blob;
             }
         }
