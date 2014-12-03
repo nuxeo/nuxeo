@@ -41,6 +41,8 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
+import org.nuxeo.ecm.automation.core.operations.services
+        .DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query
         .DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
@@ -169,7 +171,7 @@ public class RemoteAutomationClientTCK {
         Document root = (Document) session.newRequest("Document.Fetch").set(
                 "value", "/TestFolder2").execute();
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
-                "Document.PageProvider").set("query",
+                DocumentPageProviderOperation.ID).set("query",
                 "select * from Document where ecm:parentId = ?").set(
                 "queryParams", root.getId()).set("pageSize", "2").set("page",
                 "0").execute();
@@ -183,7 +185,7 @@ public class RemoteAutomationClientTCK {
         Document root = (Document) session.newRequest("Document.Fetch").set(
                 "value", "/TestFolder2").execute();
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
-                "Document.PageProvider").set("query",
+                DocumentPageProviderOperation.ID).set("query",
                 "select * from Document where ecm:parentId = ?").set(
                 "queryParams", root.getId()).set("pageSize", "2").set("page",
                 "1").execute();
