@@ -110,4 +110,11 @@ public final class NuxeoDriveIntegrationTestsHelper {
         return defaultDomainPath;
     }
 
+    public static void checkOperationAllowed() {
+        if (Framework.getProperty("org.nuxeo.ecm.tester.name") == null) {
+            throw new UnsupportedOperationException(
+                    "This operation cannot be run unless \"org.nuxeo.ecm.tester.name\" property is set.");
+        }
+    }
+
 }
