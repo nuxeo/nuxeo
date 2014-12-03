@@ -11,22 +11,17 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transaction;
 
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -62,8 +57,7 @@ public class RunOnListItemWithTx {
         getOrCreateList("sids").add(session.getSessionId());
         getOrCreateList("txids").add(tx.toString());
 
-        AbstractSession bareSession = unwrap(session);
-        Session sqlSession = bareSession.getSession();
+        Session sqlSession = ((AbstractSession) session).getSession();
 
         if (sqlSession == null) {
             System.out.println("No SQl Session !!!");
@@ -72,36 +66,4 @@ public class RunOnListItemWithTx {
         }
     }
 
-    protected static Field wrappedSession = loadWrappedSessionField();
-
-    protected static Field loadWrappedSessionField() {
-        Field field;
-        try {
-            field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-        } catch (NoSuchFieldException | SecurityException e) {
-            throw new Error("Cannot get access to wrapped session field of "
-                    + TransactionalCoreSessionWrapper.class.getSimpleName(), e);
-        }
-        field.setAccessible(true);
-        return field;
-    }
-
-    protected AbstractSession unwrap(CoreSession session) throws OperationException {
-        Class<? extends CoreSession> clazz = session.getClass();
-        if (AbstractSession.class.isAssignableFrom(clazz)) {
-            return (AbstractSession) session;
-        }
-        if (Proxy.isProxyClass(clazz)) {
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (!(handler instanceof TransactionalCoreSessionWrapper)) {
-                throw new OperationException("Unsupported session proxy " + handler.getClass());
-            }
-            try {
-                return (AbstractSession) wrappedSession.get(handler);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new OperationException("Cannot unwrap core session proxy", e);
-            }
-        }
-        throw new OperationException("Unknown core session " + clazz + " , cannot dispose");
-    }
 }

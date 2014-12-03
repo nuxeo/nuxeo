@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -64,7 +63,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
     private final Set<SessionInfo> allSessions = Collections.newSetFromMap(new ConcurrentHashMap<SessionInfo, Boolean>());
 
     public static CoreSession createInstance() {
-        return TransactionalCoreSessionWrapper.wrap(new LocalSession());
+        return new LocalSession();
     }
 
     @Override

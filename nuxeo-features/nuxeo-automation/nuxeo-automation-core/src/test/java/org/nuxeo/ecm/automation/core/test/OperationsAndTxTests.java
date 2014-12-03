@@ -114,7 +114,8 @@ public class OperationsAndTxTests {
                 assertFalse(txids.get(0).equals(txids.get(1)));
                 assertTrue(sids.get(0).equals(sids.get(1)));
                 assertTrue(sids.get(2).equals(sids.get(1)));
-                assertFalse(sqlsids.get(0).equals(sqlsids.get(1)) && sqlsids.get(2).equals(sqlsids.get(1)));
+                assertTrue(sqlsids.get(0).equals(sqlsids.get(1)));
+                assertTrue(sqlsids.get(2).equals(sqlsids.get(1)));
 
                 // Same test with RunOperationOnList.ID
                 chain.add(RunOperationOnList.ID).set("list", "groups").set("id", "runOnListItemWithTx").set("isolate",
