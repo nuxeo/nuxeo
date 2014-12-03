@@ -34,6 +34,7 @@ public class NuxeoDriveWaitForAsyncCompletion {
 
     @OperationMethod
     public void run() {
+        NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
