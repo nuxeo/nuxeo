@@ -219,7 +219,6 @@ public interface CoreSession extends AutoCloseable {
      * @throws ClientException
      * @throws SecurityException
      */
-    @NoRollbackOnException
     DocumentModel getDocument(DocumentRef docRef) throws ClientException;
 
     /**
@@ -227,7 +226,6 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      * Documents that are not accessible are skipped.
      */
-    @NoRollbackOnException
     DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException;
 
@@ -257,7 +255,6 @@ public interface CoreSession extends AutoCloseable {
      *         specified parent document is not a folder
      * @throws ClientException
      */
-    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent) throws ClientException;
 
     /**
@@ -281,7 +278,6 @@ public interface CoreSession extends AutoCloseable {
      *         the parent document is not a folder
      * @throws ClientException
      */
-    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type)
             throws ClientException;
 
@@ -303,7 +299,6 @@ public interface CoreSession extends AutoCloseable {
      *         the parent document is not a folder
      * @throws ClientException
      */
-    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type, String perm)
             throws ClientException;
 
@@ -320,7 +315,6 @@ public interface CoreSession extends AutoCloseable {
      *         found or null if the given parent is not a folder
      * @throws ClientException
      */
-    @NoRollbackOnException
     DocumentModelList getChildren(DocumentRef parent, String type, String perm,
             Filter filter, Sorter sorter) throws ClientException;
 
@@ -436,7 +430,6 @@ public interface CoreSession extends AutoCloseable {
      * @return the parent document or null if this is the root document
      * @throws ClientException
      */
-    @NoRollbackOnException
     DocumentModel getParentDocument(DocumentRef docRef) throws ClientException;
 
     /**
@@ -1415,7 +1408,6 @@ public interface CoreSession extends AutoCloseable {
      * @deprecated since 5.4.2, use {@link #setLock(DocumentRef)} instead
      */
     @Deprecated
-    @NoRollbackOnException
     void setLock(DocumentRef doc, String key) throws ClientException;
 
     /**
@@ -1432,7 +1424,6 @@ public interface CoreSession extends AutoCloseable {
      * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
-    @NoRollbackOnException
     String unlock(DocumentRef docRef) throws ClientException;
 
     /**
@@ -1444,7 +1435,6 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 5.4.2
      */
-    @NoRollbackOnException
     Lock setLock(DocumentRef docRef) throws ClientException;
 
     /**
@@ -1477,7 +1467,6 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 5.4.2
      */
-    @NoRollbackOnException
     Lock removeLock(DocumentRef docRef) throws ClientException;
 
     /**
