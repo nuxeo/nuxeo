@@ -79,7 +79,7 @@ public class NuxeoDriveSetupIntegrationTests {
 
     @OperationMethod
     public Blob run() throws ClientException {
-
+        NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
         String[] userNamesArray = StringUtils.split(userNames, ",");
