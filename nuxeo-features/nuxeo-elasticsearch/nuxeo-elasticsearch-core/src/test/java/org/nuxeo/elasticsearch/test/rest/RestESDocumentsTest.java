@@ -19,17 +19,26 @@ package org.nuxeo.elasticsearch.test.rest;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.operations.services
+        .DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentListWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -44,11 +53,11 @@ import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -61,10 +70,16 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class/*, RandomBug.Feature.class*/ })
 @Jetty(port = 18090)
+@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
 @LocalDeploy({"org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
-        "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml"})
+        "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:contentviews-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml"})
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
+
+    @Inject
+    AutomationService automationService;
 
     @Test
     public void iCanBrowseTheRepoByItsId() throws Exception {
@@ -169,4 +184,24 @@ public class RestESDocumentsTest extends BaseTest {
         assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
     }
 
+    @Test
+    public void iCanPerformESQLPageProviderOperationOnRepository() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<>();
+        String providerName = "default_search";
+
+        params.put("providerName", providerName);
+        Map<String, String> namedParameters = new HashMap<>();
+        namedParameters.put("defaults:dc_nature_agg", "[\"article\"]");
+        Properties namedProperties = new Properties(namedParameters);
+        params.put("namedParameters", namedProperties);
+
+        PaginableDocumentModelListImpl result =
+                (PaginableDocumentModelListImpl) automationService.run(ctx,
+                        DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(20, result.getPageSize());
+        assertEquals(11, result.size());
+    }
 }
