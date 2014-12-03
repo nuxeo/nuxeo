@@ -11,20 +11,14 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -175,22 +169,8 @@ public class CoreFeature extends SimpleFeature {
             waitForAsyncCompletion();
             // remove everything except root
             session.removeChildren(new PathRef("/"));
-            log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
-            String rootDocumentId = session.getRootDocument().getId();
-            IterableQueryResult results = session.queryAndFetch(
-                    "SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
-            for (Map<String, Serializable> result : results) {
-                String uuid = result.get("ecm:uuid").toString();
-                if (rootDocumentId != uuid) {
-                    session.removeDocument(new IdRef(uuid));
-                }
-            }
-            results.close();
             session.save();
             waitForAsyncCompletion();
-            if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
-                log.error("Fail to cleanupSession, repository will not be empty for the next test.");
-            }
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
         } finally {
