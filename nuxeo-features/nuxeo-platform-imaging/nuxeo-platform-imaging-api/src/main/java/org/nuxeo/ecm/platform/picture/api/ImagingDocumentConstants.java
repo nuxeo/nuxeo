@@ -30,6 +30,8 @@ public class ImagingDocumentConstants {
 
     public static final String PICTURE_FACET = "Picture";
 
+    public static final String MULTIVIEW_PICTURE_FACET = "MultiviewPicture";
+
     public static final String PICTURE_SCHEMA_NAME = "picture";
 
     public static final String PICTUREBOOK_TYPE_NAME = "PictureBook";

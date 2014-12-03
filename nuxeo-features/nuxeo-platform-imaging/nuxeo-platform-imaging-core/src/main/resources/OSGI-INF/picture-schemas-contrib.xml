@@ -21,13 +21,13 @@
       <schema name="iptc"/>
     </facet>
 
+    <!-- deprecated since 7.1, here for compat -->
     <facet name="MultiviewPicture"/>
 
     <doctype name="Picture" extends="Document">
       <schema name="common"/>
       <schema name="uid"/>
       <schema name="dublincore"/>
-      <facet name="MultiviewPicture"/>
       <facet name="Picture"/>
       <facet name="Versionable"/>
       <facet name="Publishable"/>

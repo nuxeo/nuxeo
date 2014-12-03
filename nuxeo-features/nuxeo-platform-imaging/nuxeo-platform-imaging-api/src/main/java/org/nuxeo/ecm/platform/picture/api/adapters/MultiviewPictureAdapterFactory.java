@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.MULTIVIEW_PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -31,16 +34,16 @@ public class MultiviewPictureAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
-        if (doc.hasFacet("MultiviewPicture")) {
+        if (doc.hasFacet(PICTURE_FACET)
+                || doc.hasFacet(MULTIVIEW_PICTURE_FACET)) {
             try {
                 return new MultiviewPictureAdapter(doc);
             } catch (ClientException e) {
                 log.error("Unable to build MultiviewPictureAdapter", e);
                 return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
 }

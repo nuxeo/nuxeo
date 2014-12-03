@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_VIEWS_PROPERTY;
+
 import java.io.File;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -115,10 +118,8 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     public MultiviewPictureAdapter(DocumentModel docModel)
             throws ClientException {
         this.docModel = docModel;
-        Object o = docModel.getProperty("picture", "views");
 
-        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getProperty(
-                "picture", "views");
+        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(PICTURE_VIEWS_PROPERTY);
         if (list != null) {
             for (Map<String, Object> map : list) {
                 PictureView view = mapToView(map);
@@ -145,7 +146,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         for (PictureView view : views.values()) {
             v.add(viewToMap(view));
         }
-        docModel.setProperty("picture", "views", v.toArray());
+        docModel.setPropertyValue(PICTURE_VIEWS_PROPERTY, v.toArray());
     }
 
     @Override
@@ -155,12 +156,12 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         for (PictureView pv : views.values()) {
             list.add(viewToMap(pv));
         }
-        docModel.setProperty("picture", "views", list);
+        docModel.setPropertyValue(PICTURE_VIEWS_PROPERTY, (Serializable) list);
     }
 
     @Override
     public void removeAllView() throws ClientException {
-        docModel.setProperty("picture", "views", null);
+        docModel.setPropertyValue(PICTURE_VIEWS_PROPERTY, null);
         views.clear();
     }
 

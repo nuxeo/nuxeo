@@ -87,7 +87,7 @@ nuxeo.lightbox = (function(m) {
   };
 
   m.formatDoc = function(doc) {
-    if (doc.facets.indexOf('MultiviewPicture') > -1) {
+    if (doc.facets.indexOf('Picture') > -1) {
       return nuxeo.lightbox.formatPictureDoc(doc);
     } else if (doc.facets.indexOf('Video') > -1) {
       return nuxeo.lightbox.formatVideoDoc(doc);
