@@ -43,6 +43,7 @@ public class NuxeoDriveTearDownIntegrationTests {
 
     @OperationMethod
     public void run() throws ClientException {
+        NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
         // Commit transaction explicitly to ensure client-side consistency

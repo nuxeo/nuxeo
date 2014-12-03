@@ -49,6 +49,7 @@ public class NuxeoDriveSetActiveFactories {
 
     @OperationMethod
     public boolean run() throws Exception {
+        NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         String contrib = null;
         if ("userworkspace".equals(profile)) {
             contrib = "/OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml";

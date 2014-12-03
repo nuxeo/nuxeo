@@ -59,6 +59,7 @@ public class NuxeoDriveCreateTestDocuments {
 
     @OperationMethod
     public Blob run(DocumentModel parent) throws Exception {
+        NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         FileManager fileManager = Framework.getLocalService(FileManager.class);
         for (int i = 0; i < number; i++) {
             String name = String.format(namePattern, i);
@@ -76,5 +77,4 @@ public class NuxeoDriveCreateTestDocuments {
         NuxeoDriveOperationHelper.commitAndReopenTransaction();
         return StreamingBlob.createFromString(number.toString(), "text/plain");
     }
-
 }
