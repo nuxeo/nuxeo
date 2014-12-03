@@ -67,11 +67,11 @@ public abstract class ExecutableResource {
             if (cause instanceof ConflictOperationException) {
                 throw WebException.newException(
                         "Failed to invoke operation: " + getId(), cause,
-                        HttpServletResponse.SC_NOT_FOUND);
+                        HttpServletResponse.SC_CONFLICT);
             } else if (cause instanceof OperationNotFoundException) {
                 throw WebException.newException(
                         "Failed to invoke operation: " + getId(), cause,
-                        HttpServletResponse.SC_CONFLICT);
+                        HttpServletResponse.SC_NOT_FOUND);
             } else {
                 throw WebException.newException(
                         "Failed to invoke operation: " + getId(), cause);
