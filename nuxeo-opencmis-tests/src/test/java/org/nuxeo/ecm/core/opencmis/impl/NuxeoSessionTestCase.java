@@ -838,6 +838,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-16106")
     public void testVersionBasedLocking() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
 
