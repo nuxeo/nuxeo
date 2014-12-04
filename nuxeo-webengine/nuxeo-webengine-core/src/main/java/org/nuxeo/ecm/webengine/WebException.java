@@ -289,6 +289,9 @@ public class WebException extends WebApplicationException {
         if (result instanceof Response) {
             return (Response) result;
         }
+        if (result instanceof WebException) {
+            status = ((WebException) result).getStatus();
+        }
         return Response.fromResponse(getResponse()).status
                 (status).entity(result).build();
     }

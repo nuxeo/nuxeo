@@ -96,6 +96,8 @@
             class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
     <operation
             class="org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation" />
+    <operation
+            class="org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest"/>
   </extension>
 
 </component>

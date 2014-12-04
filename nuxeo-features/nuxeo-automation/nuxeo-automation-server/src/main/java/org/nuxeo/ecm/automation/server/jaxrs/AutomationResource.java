@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -150,8 +151,17 @@ public class AutomationResource extends ModuleRoot {
                                     "operation: " + oid, cause,
                             HttpServletResponse.SC_NOT_FOUND);
                 } else {
-                    return WebException.newException("Failed to invoke " +
-                            "operation: " + oid, cause);
+                    Throwable unWrapException = ExceptionHelper.unwrapException
+                            (cause);
+                    if (unWrapException instanceof RestOperationException) {
+                        int customHttpStatus = ((RestOperationException)
+                                unWrapException).getStatus();
+                        throw WebException.newException(
+                                "Failed to invoke operation: " + oid, cause,
+                                customHttpStatus);
+                    }
+                    throw WebException.newException(
+                            "Failed to invoke operation: " + oid, cause);
                 }
             }
         }

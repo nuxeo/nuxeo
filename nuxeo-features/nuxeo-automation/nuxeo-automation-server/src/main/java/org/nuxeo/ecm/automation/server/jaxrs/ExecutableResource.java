@@ -20,6 +20,7 @@ import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -58,6 +59,10 @@ public abstract class ExecutableResource {
                 return ResponseHelper.notFound();
             }
             Object result = execute(xreq);
+            int customHttpStatus = xreq.getCtx().getHttpStatus();
+            if (customHttpStatus >= 100) {
+                return ResponseHelper.getResponse(result, request, customHttpStatus);
+            }
             return ResponseHelper.getResponse(result, request);
         } catch (OperationException | ClientException | SecurityException
                 | DocumentException cause) {
@@ -70,6 +75,15 @@ public abstract class ExecutableResource {
                         "Failed to invoke operation: " + getId(), cause,
                         HttpServletResponse.SC_CONFLICT);
             } else {
+                Throwable unWrapException = ExceptionHelper.unwrapException
+                        (cause);
+                if (unWrapException instanceof RestOperationException) {
+                    int customHttpStatus = ((RestOperationException)
+                            unWrapException).getStatus();
+                    throw WebException.newException(
+                            "Failed to invoke operation: " + getId(), cause,
+                            customHttpStatus);
+                }
                 throw WebException.newException(
                         "Failed to invoke operation: " + getId(), cause);
             }

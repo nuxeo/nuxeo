@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,12 +29,15 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
+import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -84,11 +88,25 @@ public class OperationAdapter extends DefaultAdapter {
 
             OperationContext ctx = xreq.createContext(request,
                     getContext().getCoreSession());
+            Object result = service.run(ctx, oid, xreq.getParams());
 
-            return Response.ok(service.run(ctx, oid, xreq.getParams())).build();
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to execute operation: "
-                    + oid, e);
+            int customHttpStatus = xreq.getCtx().getHttpStatus();
+            if (customHttpStatus >= 100) {
+                return Response.status(customHttpStatus).entity(result).build();
+            }
+
+            return Response.ok(result).build();
+        } catch (OperationException cause) {
+            if (ExceptionHelper.unwrapException(cause) instanceof
+                    RestOperationException) {
+                int customHttpStatus = ((RestOperationException) ExceptionHelper
+                        .unwrapException(cause)).getStatus();
+                throw WebException.newException(
+                        "Failed to invoke operation: " + oid, cause,
+                        customHttpStatus);
+            }
+            throw WebException.newException(
+                    "Failed to invoke operation: " + oid, cause);
         }
 
     }

@@ -44,6 +44,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteException;
+import org.nuxeo.ecm.automation.client.RemoteThrowable;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.BusinessService;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
@@ -81,6 +82,8 @@ import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
+import org.nuxeo.ecm.automation.test.helpers.ExceptionTest;
+import org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -97,6 +100,8 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -902,12 +907,37 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             // get a wrong doc
             Document wrongDoc = (Document) session.newRequest(FetchDocument.ID).set(
                     "value", "/test").execute();
-            Assert.fail();
+            fail();
         }catch(RemoteException e){
             assertNotNull(e);
             assertNotNull(e.getRemoteStackTrace());
         }catch(Exception e){
-            Assert.fail();
+            fail();
         }
     }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void shouldReturnCustomHttpStatusWhenFailure() throws Exception {
+        try {
+            session.newRequest(HttpStatusOperationTest.ID).set("isFailing",true)
+                    .execute();
+            fail();
+        } catch (RemoteException e) {
+            assertNotNull(e);
+            assertEquals("Exception Message", e.getRemoteCause().getCause()
+                    .getMessage());
+            assertEquals(ExceptionTest.class.getCanonicalName(),
+                    ((RemoteThrowable) e
+                            .getRemoteCause()).getOtherNodes().get("className")
+                            .getTextValue());
+            assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED,
+                    e.getStatus());
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
 }
