@@ -29,14 +29,15 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgresql;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.RandomBug;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@RandomBug.Repeat(issue="/NXP-16098")
+@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPostgresql.class)
 public class WorkTest extends TXSQLRepositoryTestCase {
 
     @Before
