@@ -3,8 +3,7 @@
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
     <repository name="${nuxeo.test.vcs.repository}"
-      factory="${nuxeo.test.vcs.repository-factory}"
-      sendInvalidationEvents="true">
+      factory="${nuxeo.test.vcs.repository-factory}">
       <binaryManager class="${nuxeo.test.vcs.binary-manager}"
         key="${nuxeo.test.vcs.binary-manager-key}" />
       <schema>

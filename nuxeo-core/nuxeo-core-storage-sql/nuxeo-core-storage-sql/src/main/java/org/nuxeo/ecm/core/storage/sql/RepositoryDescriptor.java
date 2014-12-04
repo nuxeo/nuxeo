@@ -399,9 +399,6 @@ public class RepositoryDescriptor {
     @XNode("binaryStore@path")
     public String binaryStorePath;
 
-    @XNode("@sendInvalidationEvents")
-    public boolean sendInvalidationEvents;
-
     @XNode("usersSeparator@key")
     public String usersSeparatorKey;
 
@@ -450,7 +447,6 @@ public class RepositoryDescriptor {
         binaryManagerClass = other.binaryManagerClass;
         binaryManagerKey = other.binaryManagerKey;
         binaryStorePath = other.binaryStorePath;
-        sendInvalidationEvents = other.sendInvalidationEvents;
         usersSeparatorKey = other.usersSeparatorKey;
         xaDataSourceName = other.xaDataSourceName;
         properties = new HashMap<String, String>(other.properties);
@@ -566,7 +562,6 @@ public class RepositoryDescriptor {
         if (other.binaryStorePath != null) {
             binaryStorePath = other.binaryStorePath;
         }
-        sendInvalidationEvents = other.sendInvalidationEvents; // no merge
         if (other.usersSeparatorKey != null) {
             usersSeparatorKey = other.usersSeparatorKey;
         }

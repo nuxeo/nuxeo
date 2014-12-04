@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
-import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -95,24 +94,6 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
     private InvalidationsPropagator cachePropagator;
 
-    /**
-     * The queue of invalidations used for events, a single queue is shared by
-     * all mappers corresponding to the same client repository.
-     */
-    private InvalidationsQueue eventQueue;
-
-    /**
-     * The propagator of event invalidations to all event queues.
-     */
-    private InvalidationsPropagator eventPropagator;
-
-    /**
-     * The session, used for event propagation.
-     */
-    private SessionImpl session;
-
-    protected boolean forRemoteClient;
-
     private static final String CACHE_NAME = "unifiedVCSCache";
 
     private static final String EHCACHE_FILE_PROP = "ehcacheFilePath";
@@ -138,21 +119,15 @@ public class UnifiedCachingRowMapper implements RowMapper {
     public UnifiedCachingRowMapper() {
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
-        forRemoteClient = false;
     }
 
-    synchronized public void initialize(Model model, RowMapper rowMapper,
-            InvalidationsPropagator cachePropagator,
-            InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue,
+    synchronized public void initialize(String repositoryName, Model model,
+            RowMapper rowMapper, InvalidationsPropagator cachePropagator,
             Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
         this.cachePropagator = cachePropagator;
         cachePropagator.addQueue(cacheQueue);
-        eventQueue = repositoryEventQueue;
-        this.eventPropagator = eventPropagator;
-        eventPropagator.addQueue(repositoryEventQueue);
         if (cacheManager == null) {
             if (properties.containsKey(EHCACHE_FILE_PROP)) {
                 String value = properties.get(EHCACHE_FILE_PROP);
@@ -172,11 +147,37 @@ public class UnifiedCachingRowMapper implements RowMapper {
         }
         rowMapperCount.incrementAndGet();
         cache = cacheManager.getCache(CACHE_NAME);
+        setMetrics(repositoryName);
+    }
+
+    protected void setMetrics(String repositoryName) {
+        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo",
+                "repositories", repositoryName, "caches", "unified", "hits"));
+        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "repositories", repositoryName, "caches", "unified", "get"));
+        sorRows = registry.counter(MetricRegistry.name("nuxeo", "repositories",
+                repositoryName, "caches", "unified", "sor", "rows"));
+        sorGetTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "repositories", repositoryName, "caches", "unified", "sor",
+                "get"));
+        String gaugeName = MetricRegistry.name("nuxeo", "repositories",
+                repositoryName, "caches", "unified", "cache-size");
+        SortedMap<String, Gauge> gauges = registry.getGauges();
+        if (!gauges.containsKey(gaugeName)) {
+            registry.register(gaugeName, new Gauge<Integer>() {
+                @Override
+                public Integer getValue() {
+                    if (cacheManager != null) {
+                        return cacheManager.getCache(CACHE_NAME).getSize();
+                    }
+                    return 0;
+                }
+            });
+        }
     }
 
     public void close() throws StorageException {
         cachePropagator.removeQueue(cacheQueue);
-        eventPropagator.removeQueue(eventQueue); // TODO can be overriden
         rowMapperCount.decrementAndGet();
     }
 
@@ -323,20 +324,14 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public InvalidationsPair receiveInvalidations() throws StorageException {
+    public Invalidations receiveInvalidations() throws StorageException {
         // invalidations from the underlying mapper (remote, cluster)
-        InvalidationsPair invals = rowMapper.receiveInvalidations();
+        Invalidations invals = rowMapper.receiveInvalidations();
 
         // add local accumulated invalidations to remote ones
         Invalidations invalidations = cacheQueue.getInvalidations();
         if (invals != null) {
-            invalidations.add(invals.cacheInvalidations);
-        }
-
-        // add local accumulated events to remote ones
-        Invalidations events = eventQueue.getInvalidations();
-        if (invals != null) {
-            events.add(invals.eventInvalidations);
+            invalidations.add(invals);
         }
 
         // invalidate our cache
@@ -346,11 +341,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
         // nothing to do on modified or delete, because there is only one cache
 
-        if (invalidations.isEmpty() && events.isEmpty()) {
-            return null;
-        }
-        return new InvalidationsPair(invalidations.isEmpty() ? null
-                : invalidations, events.isEmpty() ? null : events);
+        return invalidations.isEmpty() ? null : invalidations;
     }
 
     // propagate invalidations
@@ -372,55 +363,6 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
             // queue to other local mappers' caches
             cachePropagator.propagateInvalidations(invalidations, cacheQueue);
-
-            // queue as events for other repositories
-            eventPropagator.propagateInvalidations(invalidations, eventQueue);
-
-            // send event to local repository (synchronous)
-            // only if not the server-side part of a remote client
-            if (!forRemoteClient) {
-                session.sendInvalidationEvent(invalidations, true);
-            }
-        }
-    }
-
-    /**
-     * Used by the server to associate each mapper to a single event
-     * invalidations queue per client repository.
-     */
-    public void setEventQueue(InvalidationsQueue eventQueue) {
-        // don't remove the original global repository queue
-        this.eventQueue = eventQueue;
-        eventPropagator.addQueue(eventQueue);
-        forRemoteClient = true;
-    }
-
-    /**
-     * Sets the session, used for event propagation.
-     */
-    public void setSession(SessionImpl session) {
-        this.session = session;
-        cacheHitCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "hits"));
-        cacheGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "get"));
-        sorRows = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "sor", "rows"));
-        sorGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "sor", "get"));
-        String gaugeName = MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "cache-size");
-        SortedMap<String, Gauge> gauges = registry.getGauges();
-        if (!gauges.containsKey(gaugeName)) {
-            registry.register(gaugeName, new Gauge<Integer>() {
-                @Override
-                public Integer getValue() {
-                    if (cacheManager != null) {
-                        return cacheManager.getCache(CACHE_NAME).getSize();
-                    }
-                    return 0;
-                }
-            });
         }
     }
 

@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
-import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -101,14 +100,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public InvalidationsPair receiveInvalidations() throws StorageException {
-        Invalidations invalidations = null;
+    public Invalidations receiveInvalidations() throws StorageException {
         if (clusterNodeHandler != null && connection != null) {
             receiveClusterInvalidations();
-            invalidations = queue.getInvalidations();
+            return queue.getInvalidations();
+        } else {
+            return null;
         }
-        return invalidations == null ? null : new InvalidationsPair(
-                invalidations, null);
     }
 
     protected void receiveClusterInvalidations() throws StorageException {

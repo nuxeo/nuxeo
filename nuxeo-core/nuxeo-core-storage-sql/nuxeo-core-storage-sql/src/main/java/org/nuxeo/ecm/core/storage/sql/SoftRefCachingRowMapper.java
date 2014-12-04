@@ -25,11 +25,8 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
-import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -44,8 +41,6 @@ import com.codahale.metrics.Timer;
  * the underlying {@link RowMapper}.
  */
 public class SoftRefCachingRowMapper implements RowMapper {
-
-    private static final Log log = LogFactory.getLog(SoftRefCachingRowMapper.class);
 
     private static final String ABSENT = "__ABSENT__\0\0\0";
 
@@ -91,24 +86,6 @@ public class SoftRefCachingRowMapper implements RowMapper {
     private InvalidationsPropagator cachePropagator;
 
     /**
-     * The queue of invalidations used for events, a single queue is shared by
-     * all mappers corresponding to the same client repository.
-     */
-    private InvalidationsQueue eventQueue;
-
-    /**
-     * The propagator of event invalidations to all event queues.
-     */
-    private InvalidationsPropagator eventPropagator;
-
-    /**
-     * The session, used for event propagation.
-     */
-    private SessionImpl session;
-
-    protected boolean forRemoteClient;
-
-    /**
      * Cache statistics
      *
      * @since 5.7
@@ -130,27 +107,33 @@ public class SoftRefCachingRowMapper implements RowMapper {
                 AbstractReferenceMap.SOFT);
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
-        forRemoteClient = false;
     }
 
-    public void initialize(Model model, RowMapper rowMapper,
-            InvalidationsPropagator cachePropagator,
-            InvalidationsPropagator eventPropagator,
-            InvalidationsQueue repositoryEventQueue,
+    public void initialize(String repositoryName, Model model,
+            RowMapper rowMapper, InvalidationsPropagator cachePropagator,
             Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
         this.cachePropagator = cachePropagator;
         cachePropagator.addQueue(cacheQueue);
-        eventQueue = repositoryEventQueue;
-        this.eventPropagator = eventPropagator;
-        eventPropagator.addQueue(repositoryEventQueue);
+        setMetrics(repositoryName);
+    }
+
+    protected void setMetrics(String repositoryName) {
+        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo",
+                "repositories", repositoryName, "caches", "soft-ref", "hits"));
+        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "repositories", repositoryName, "caches", "soft-ref", "get"));
+        sorRows = registry.counter(MetricRegistry.name("nuxeo", "repositories",
+                repositoryName, "caches", "soft-ref", "sor", "rows"));
+        sorGetTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "repositories", repositoryName, "caches", "soft-ref", "sor",
+                "get"));
     }
 
     public void close() throws StorageException {
         clearCache();
         cachePropagator.removeQueue(cacheQueue);
-        eventPropagator.removeQueue(eventQueue); // TODO can be overriden
     }
 
     @Override
@@ -230,20 +213,14 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public InvalidationsPair receiveInvalidations() throws StorageException {
+    public Invalidations receiveInvalidations() throws StorageException {
         // invalidations from the underlying mapper (remote, cluster)
-        InvalidationsPair invals = rowMapper.receiveInvalidations();
+        Invalidations invals = rowMapper.receiveInvalidations();
 
         // add local accumulated invalidations to remote ones
         Invalidations invalidations = cacheQueue.getInvalidations();
         if (invals != null) {
-            invalidations.add(invals.cacheInvalidations);
-        }
-
-        // add local accumulated events to remote ones
-        Invalidations events = eventQueue.getInvalidations();
-        if (invals != null) {
-            events.add(invals.eventInvalidations);
+            invalidations.add(invals);
         }
 
         // invalidate our cache
@@ -261,11 +238,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
             }
         }
 
-        if (invalidations.isEmpty() && events.isEmpty()) {
-            return null;
-        }
-        return new InvalidationsPair(invalidations.isEmpty() ? null
-                : invalidations, events.isEmpty() ? null : events);
+        return invalidations.isEmpty() ? null : invalidations;
     }
 
     // propagate invalidations
@@ -287,42 +260,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
             // queue to other local mappers' caches
             cachePropagator.propagateInvalidations(invalidations, cacheQueue);
-
-            // queue as events for other repositories
-            eventPropagator.propagateInvalidations(invalidations, eventQueue);
-
-            // send event to local repository (synchronous)
-            // only if not the server-side part of a remote client
-            if (!forRemoteClient) {
-                session.sendInvalidationEvent(invalidations, true);
-            }
         }
-    }
-
-    /**
-     * Used by the server to associate each mapper to a single event
-     * invalidations queue per client repository.
-     */
-    public void setEventQueue(InvalidationsQueue eventQueue) {
-        // don't remove the original global repository queue
-        this.eventQueue = eventQueue;
-        eventPropagator.addQueue(eventQueue);
-        forRemoteClient = true;
-    }
-
-    /**
-     * Sets the session, used for event propagation.
-     */
-    public void setSession(SessionImpl session) {
-        this.session = session;
-        cacheHitCount = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "hits"));
-        cacheGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "get"));
-        sorRows = registry.counter(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "sor", "rows"));
-        sorGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "sor", "get"));
     }
 
     @Override

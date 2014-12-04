@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
@@ -66,8 +65,6 @@ import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
  * @author Benjamin Jalon
  */
 public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
-
-    private static final List<String> IGNORE_VCS = Arrays.asList(EventConstants.EVENT_VCS_INVALIDATIONS);
 
     @Override
     @Before
@@ -103,9 +100,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         assertEquals(expected, actual);
     }
 
-    protected static void assertEventSet(List<String> ignored,
-            String... expectedEventNames) {
-        List<String> list = getDummyListenerEvents(ignored);
+    protected static void assertEventSet(String... expectedEventNames) {
+        List<String> list = getDummyListenerEvents();
         Map<String, AtomicInteger> map = new HashMap<String, AtomicInteger>();
         for (String name : list) {
             AtomicInteger i = map.get(name);
@@ -122,13 +118,10 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
                 set);
     }
 
-    protected static List<String> getDummyListenerEvents(List<String> ignored) {
+    protected static List<String> getDummyListenerEvents() {
         List<String> actual = new ArrayList<String>();
         for (Event event : DummyTestListener.EVENTS_RECEIVED) {
             String eventName = event.getName();
-            if (ignored != null && ignored.contains(eventName)) {
-                continue;
-            }
             EventContext context = event.getContext();
             if (context instanceof DocumentEventContext) {
                 DocumentModel doc = ((DocumentEventContext) context).getSourceDocument();
@@ -978,7 +971,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        assertEventSet(IGNORE_VCS, "sessionSaved=1");
+        assertEventSet("sessionSaved=1");
 
         // modify regular
         doc.setPropertyValue("dc:title", "The title");
@@ -988,7 +981,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         session.save();
         waitForFulltextIndexing();
         // 2 = 1 main save + 1 index
-        assertEventSet(IGNORE_VCS, "sessionSaved=2");
+        assertEventSet("sessionSaved=2");
 
         // modify binary
         StringBlob blob = new StringBlob("hello world");
@@ -999,7 +992,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         session.save();
         waitForFulltextIndexing();
         // 3 = 1 main save + 1 simple index + 1 binary index
-        assertEventSet(IGNORE_VCS, "sessionSaved=3", "binaryTextUpdated=1");
+        assertEventSet("sessionSaved=3", "binaryTextUpdated=1");
 
         // delete
         session.removeDocument(doc.getRef());
@@ -1007,7 +1000,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        assertEventSet(IGNORE_VCS, "sessionSaved=1");
+        assertEventSet("sessionSaved=1");
     }
 
     @Test

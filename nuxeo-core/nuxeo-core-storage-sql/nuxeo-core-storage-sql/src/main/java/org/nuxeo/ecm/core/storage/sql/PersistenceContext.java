@@ -35,7 +35,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
-import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyResult;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
@@ -469,7 +468,6 @@ public class PersistenceContext {
             sel.gatherInvalidations(invalidations);
         }
         mapper.sendInvalidations(invalidations);
-        // events sent in mapper
     }
 
     /**
@@ -478,14 +476,12 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     public void processReceivedInvalidations() throws StorageException {
-        InvalidationsPair invals = mapper.receiveInvalidations();
+        Invalidations invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
         }
 
-        processCacheInvalidations(invals.cacheInvalidations);
-
-        session.sendInvalidationEvent(invals);
+        processCacheInvalidations(invals);
     }
 
     private void processCacheInvalidations(Invalidations invalidations)

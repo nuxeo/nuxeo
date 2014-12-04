@@ -27,7 +27,6 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -63,8 +62,6 @@ public class RepositoryImpl implements Repository {
 
     protected final RepositoryDescriptor repositoryDescriptor;
 
-    protected final EventService eventService;
-
     protected final Class<? extends FulltextParser> fulltextParserClass;
 
     protected final BinaryManager binaryManager;
@@ -84,15 +81,6 @@ public class RepositoryImpl implements Repository {
     /** Propagator of invalidations to all local mappers' caches. */
     private final InvalidationsPropagator cachePropagator;
 
-    /**
-     * Propagator of event invalidations to all event queues (only one queue if
-     * there are not remote client repositories).
-     */
-    private final InvalidationsPropagator eventPropagator;
-
-    /** Single event queue global to the repository. */
-    private final InvalidationsQueue repositoryEventQueue;
-
     private Model model;
 
     /**
@@ -106,10 +94,6 @@ public class RepositoryImpl implements Repository {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         cachePropagator = new InvalidationsPropagator("cache-" + this);
-        eventPropagator = new InvalidationsPropagator("event-" + this);
-        repositoryEventQueue = new InvalidationsQueue("repo-"
-                + repositoryDescriptor.name);
-        eventService = Framework.getService(EventService.class);
 
         String className = repositoryDescriptor.fulltextParser;
         if (StringUtils.isBlank(className)) {
@@ -224,8 +208,7 @@ public class RepositoryImpl implements Repository {
                 return mapper;
             }
             CachingMapper cachingMapper = cachingMapperClass.newInstance();
-            cachingMapper.initialize(model, mapper, cachePropagator,
-                    eventPropagator, repositoryEventQueue,
+            cachingMapper.initialize(getName(), model, mapper, cachePropagator,
                     repositoryDescriptor.cachingMapperProperties);
             return cachingMapper;
         } catch (ReflectiveOperationException e) {

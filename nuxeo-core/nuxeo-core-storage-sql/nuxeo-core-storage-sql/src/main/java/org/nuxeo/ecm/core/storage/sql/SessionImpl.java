@@ -41,20 +41,14 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
-import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
@@ -64,7 +58,6 @@ import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
-import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLFulltextExtractorWork;
@@ -146,10 +139,6 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         this.repository = repository;
         this.mapper = mapper;
-        if (mapper instanceof CachingMapper) {
-            ((CachingMapper) mapper).setSession(this);
-        }
-        // this.credentials = credentials;
         this.model = model;
         context = new PersistenceContext(model, mapper, this);
         live = true;
@@ -630,7 +619,6 @@ public class SessionImpl implements Session, XAResource {
      * save.
      */
     protected void sendInvalidationsToOthers() throws StorageException {
-        // XXX TODO repo invalidate adds to cluster, and sends event
         context.sendInvalidationsToOthers();
     }
 
@@ -649,99 +637,6 @@ public class SessionImpl implements Session, XAResource {
     protected void checkInvalidationsConflict() throws StorageException {
         // repository.receiveClusterInvalidations(this);
         context.checkInvalidationsConflict();
-    }
-
-    /**
-     * Collect modified document IDs into two separate set, one for the docs and
-     * the other for parents
-     * <p>
-     * Collects ids as Strings (not Serializables) as these are then sent to
-     * high-level event code.
-     *
-     * @param invalidations
-     * @param docs
-     * @param parents
-     */
-    protected void collectModified(Invalidations invalidations,
-            Set<String> docs, Set<String> parents) {
-        if (invalidations == null || invalidations.modified == null) {
-            return;
-        }
-        for (RowId rowId : invalidations.modified) {
-            Serializable id = rowId.id;
-            Serializable docId;
-            try {
-                docId = getContainingDocument(id);
-            } catch (StorageException e) {
-                log.error("Cannot get containing document for: " + id, e);
-                docId = null;
-            }
-            if (docId == null) {
-                continue;
-            }
-            if (Invalidations.PARENT.equals(rowId.tableName)) {
-                if (docId.equals(id)) {
-                    parents.add(model.idToString(docId));
-                } else { // complex prop added/removed
-                    docs.add(model.idToString(docId));
-                }
-            } else {
-                docs.add(model.idToString(docId));
-            }
-        }
-    }
-
-    /**
-     * Sends a Core Event about the invalidations.
-     * <p>
-     * Containing documents are looked up in this session.
-     *
-     * @param invalidations the invalidations
-     * @param local {@code true} if these invalidations come from this cluster
-     *            node (one of this repository's sessions), {@code false} if
-     *            they come from a remote cluster node
-     */
-    protected void sendInvalidationEvent(Invalidations invalidations,
-            boolean local) {
-        sendInvalidationEvent(new InvalidationsPair(invalidations, null));
-    }
-
-    /**
-     * Send a core event about the merged invalidations (NXP-5808)
-     *
-     * @param pair
-     */
-    protected void sendInvalidationEvent(InvalidationsPair pair) {
-        if (!repository.repositoryDescriptor.sendInvalidationEvents) {
-            return;
-        }
-        // compute modified doc ids and parent ids (as strings)
-        HashSet<String> modifiedDocIds = new HashSet<String>();
-        HashSet<String> modifiedParentIds = new HashSet<String>();
-
-        // merge cache and events because of clustering (NXP-5808)
-        collectModified(pair.cacheInvalidations, modifiedDocIds,
-                modifiedParentIds);
-        collectModified(pair.eventInvalidations, modifiedDocIds,
-                modifiedParentIds);
-
-        // TODO check what we can do about invalidations.deleted
-
-        if (modifiedDocIds.isEmpty() && modifiedParentIds.isEmpty()) {
-            return;
-        }
-
-        EventContext ctx = new EventContextImpl(null, null);
-        ctx.setRepositoryName(repository.getName());
-        ctx.setProperty(EventConstants.INVAL_MODIFIED_DOC_IDS, modifiedDocIds);
-        ctx.setProperty(EventConstants.INVAL_MODIFIED_PARENT_IDS,
-                modifiedParentIds);
-        Event event = new EventImpl(EventConstants.EVENT_VCS_INVALIDATIONS, ctx);
-        try {
-            repository.eventService.fireEvent(event);
-        } catch (ClientException e) {
-            log.error("Failed to send invalidation event: " + e, e);
-        }
     }
 
     /*
