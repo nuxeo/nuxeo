@@ -43,13 +43,14 @@ public class ITLogsViewerTest extends AbstractTest {
             throws DocumentBasePage.UserNotConnectedException {
         LogsPage logsTab = login().getAdminCenter().getMonitoringPage().getLogsPage();
         List<String> serverLogFileNames = logsTab.getServerLogFileNames();
-        assertEquals(6, serverLogFileNames.size());
+        assertEquals(7, serverLogFileNames.size());
         assertTrue(serverLogFileNames.contains("server.log"));
         assertTrue(serverLogFileNames.contains("classloader.log"));
         assertTrue(serverLogFileNames.contains("nuxeo-error.log"));
         assertTrue(serverLogFileNames.contains("tomcat.log"));
         assertTrue(serverLogFileNames.contains("stderr.log"));
         assertTrue(serverLogFileNames.contains("nuxeoctl.log"));
+        assertTrue(serverLogFileNames.contains("console.log"));
 
         logsTab = logsTab.selectServerLogFileTab("server.log");
         WebElement downloadButton = logsTab.getDownloadButton("server.log");
