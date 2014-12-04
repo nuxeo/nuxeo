@@ -9,7 +9,7 @@
     point="repository">
     <repository name="layoutDemo"
       factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
-      <repository sendInvalidationEvents="true">
+      <repository>
         <schema>
           <field type="largetext">note</field>
           <field type="largetext">relatedtext</field>
