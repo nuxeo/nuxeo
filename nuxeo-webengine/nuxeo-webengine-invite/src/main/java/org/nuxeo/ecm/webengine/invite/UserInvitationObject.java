@@ -32,7 +32,6 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
-import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -101,14 +100,6 @@ public class UserInvitationObject extends ModuleRoot {
             registrationData = usr.validateRegistration(requestId,
                     additionalInfo);
 
-            /*
-             * DocumentModel regDoc = (DocumentModel)
-             * registrationData.get(REGISTRATION_DATA_DOC); String docId =
-             * (String)
-             * regDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD
-             * ); if (!StringUtils.isEmpty(docId)) { redirectUrl = new
-             * DocumentUrlFinder(docId).getDocumentUrl(); }
-             */
         } catch (AlreadyProcessedRegistrationException ape) {
             log.info("Try to validate an already processed registration");
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
@@ -153,6 +144,10 @@ public class UserInvitationObject extends ModuleRoot {
         Map<String, String> data = new HashMap<String, String>();
         data.put("RequestId", requestId);
         data.put("ConfigurationName", configurationName);
+        String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
+        String validationRelUrl = usr.getConfiguration(configurationName).getValidationRelUrl();
+        String valUrl = "/" + webappName + "/"+validationRelUrl;
+        data.put("ValidationUrl", valUrl);
         return getView("EnterPassword").arg("data", data);
     }
 

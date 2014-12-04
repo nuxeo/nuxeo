@@ -5,7 +5,7 @@
 </@block>
 
 <@block name="content">
-<form action="${This.path}/validate" method="post" enctype="application/x-www-form-urlencoded" name="submitNewPassword">
+<form action="${data['ValidationUrl']}" method="post" enctype="application/x-www-form-urlencoded" name="submitNewPassword">
 	<input type="hidden" id="RequestId" value="${data['RequestId']}" name="RequestId"/>
 	<input type="hidden" id="ConfigurationName" value="${data['ConfigurationName']}" name="ConfigurationName"/>
 	<#if err??>
