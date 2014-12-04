@@ -42,6 +42,7 @@ import org.nuxeo.ecm.restapi.server.jaxrs.adapters.OperationAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobAdapter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -183,4 +184,27 @@ public class OperationBindingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void itShouldReturnCustomHttpStatusWhenSuccess()
+            throws Exception {
+        String param = "{\"params\":{\"isFailing\":\"false\"}}";
+        ClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "@" + OperationAdapter.NAME + "/Test.HttpStatus", param);
+        assertEquals(405, response.getStatus());
+    }
+
+    /**
+     * @since 7.1
+     */
+    @Test
+    public void itShouldReturnCustomHttpStatusWhenFailure()
+            throws Exception {
+        String param = "{\"params\":{\"isFailing\":\"true\"}}";
+        ClientResponse response = getResponse(RequestType.POSTREQUEST,
+                "@" + OperationAdapter.NAME + "/Test.HttpStatus", param);
+        assertEquals(405, response.getStatus());
+    }
 }

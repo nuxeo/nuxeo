@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -47,6 +48,8 @@ public class ResponseHelper {
     private ResponseHelper() {
     }
 
+    protected static int httpStatus = HttpServletResponse.SC_OK;
+
     public static Response notFound() {
         return Response.status(404).build();
     }
@@ -64,13 +67,15 @@ public class ResponseHelper {
         if (type == null || "???".equals(type)) {
             type = MediaType.APPLICATION_OCTET_STREAM;
         }
-        return Response.ok(blob).type(type).header("Content-Disposition",
+        return Response.status(httpStatus).entity(blob).type(type).header("Content-Disposition",
                 "attachment; filename=" + blob.getFilename()).build();
     }
 
     public static Response blobs(List<Blob> blobs) throws MessagingException,
             IOException {
-        return new MultipartBlobs(blobs).getResponse();
+        MultipartBlobs multipartBlobs = new MultipartBlobs(blobs);
+        return Response.status(httpStatus).entity(multipartBlobs).type(new
+                BoundaryMediaType(multipartBlobs.getContentType())).build();
     }
 
     /**
@@ -78,11 +83,9 @@ public class ResponseHelper {
      */
     public static Object getResponse(Object result, HttpServletRequest request)
             throws MessagingException, IOException {
-        if (result == null) {
-            return null;
-        }
-        if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
-            return emptyContent(); // void response
+        if (result == null || "true".equals(request.getHeader
+                ("X-NXVoidOperation"))) {
+            return emptyContent();
         }
         if (result instanceof Blob) {
             return blob((Blob) result);
@@ -90,18 +93,43 @@ public class ResponseHelper {
             return blobs((BlobList) result);
         } else if (result instanceof DocumentRef) {
             CoreSession session = SessionFactory.getSession(request);
-            return session.getDocument((DocumentRef) result);
-        } else if ((result instanceof DocumentModel)
-                || (result instanceof DocumentModelList)
-                || (result instanceof JsonAdapter)) {
-            return result;
-        } else if (result instanceof RecordSet) {
-            return result;
-        } else if (result instanceof Paginable<?>) {
-            return result;
+            return Response.status(httpStatus).entity(session.getDocument(
+                    (DocumentRef) result)).build();
+        } else if (result instanceof DocumentModel
+                || result instanceof DocumentModelList
+                || result instanceof JsonAdapter || result instanceof
+                RecordSet || result instanceof Paginable<?>) {
+            return Response.status(httpStatus).entity(result).build();
         } else { // try to adapt to JSON
-            return new DefaultJsonAdapter(result);
+            return Response.status(httpStatus).entity(new DefaultJsonAdapter
+                    (result)).build();
         }
     }
 
+    /**
+     * Handle custom http status.
+     * @since 7.1
+     */
+    public static Object getResponse(Object result, HttpServletRequest request,
+            int httpStatus) throws IOException, MessagingException {
+        ResponseHelper.httpStatus = httpStatus;
+        return getResponse(result, request);
+    }
+
+    /**
+     * @since 7.1
+     */
+    public static class BoundaryMediaType extends MediaType {
+        private final String ctype;
+
+        BoundaryMediaType(String ctype) {
+            super("multipart", "mixed");
+            this.ctype = ctype;
+        }
+
+        @Override
+        public String toString() {
+            return ctype;
+        }
+    }
 }

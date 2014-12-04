@@ -30,6 +30,14 @@ import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
  */
 public class RestOperationContext extends OperationContext {
 
+
+    /**
+     * Specify the http status when no failure occurs.
+     *
+     * @since 7.1
+     */
+    protected int httpStatus;
+
     /**
      * Must be called before context execution.
      */
@@ -45,6 +53,20 @@ public class RestOperationContext extends OperationContext {
                         }
                     }
                 });
+    }
+
+    /**
+     * @since 7.1
+     */
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    /**
+     * @since 7.1
+     */
+    public void setHttpStatus(int httpStatus) {
+        this.httpStatus = httpStatus;
     }
 
     protected void deferredDispose() throws OperationException {

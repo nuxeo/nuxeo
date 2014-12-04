@@ -87,4 +87,10 @@ public class ExecutionRequest {
         return ctx;
     }
 
+    /**
+     * @since 7.1
+     */
+    public RestOperationContext getCtx() {
+        return ctx;
+    }
 }
