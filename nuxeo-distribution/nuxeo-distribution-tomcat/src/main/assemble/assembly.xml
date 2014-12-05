@@ -1,10 +1,6 @@
-<project name="nuxeo-assembly"
-         default="build"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="tomcat-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
   <target name="init" unless="init.done">
     <tstamp />
@@ -53,7 +49,7 @@
   </target>
 
   <target name="build" depends="init" unless="no.build">
-    <echo>Building Tomcat standard distributions...</echo>
+    <echo level="info">Building Tomcat standard distributions...</echo>
     <property name="tomcat" value="${outdir}/tomcat.tmp" />
     <antcall target="prepare-tomcat" />
     <artifact:attach file="pom.xml" type="pom" />
@@ -68,8 +64,7 @@
 
   <target name="prepare-tomcat">
     <unzip dest="${outdir}">
-      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip"
-                            classifier="${tomcat.classifier}" />
+      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip:${tomcat.classifier}" />
     </unzip>
     <move todir="${tomcat}">
       <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />
@@ -82,49 +77,37 @@
     </copy>
 
     <unzip dest="${tomcat}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="doc" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:doc" />
     </unzip>
     <copy todir="${tomcat}">
       <fileset dir="src/main/resources/common" />
     </copy>
     <unzip dest="${tomcat}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="root" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:root" />
     </unzip>
     <unzip dest="${tomcat}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="bin" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:bin" />
     </unzip>
 
     <unzip dest="${tomcat}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-common" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-tomcat" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:templates-common" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:templates-tomcat" />
     </unzip>
 
-    <echo message="tomcat.version=${tomcat.version}"
-          append="true"
-          file="${tomcat}/templates/nuxeo.defaults" />
+    <echo message="tomcat.version=${tomcat.version}" append="true" file="${tomcat}/templates/nuxeo.defaults" />
 
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard::war" />
     </copy>
 
-    <mkdir dir="${tomcat}/client" />
     <copy todir="${tomcat}/client">
       <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
     </copy>
-    <mkdir dir="${tomcat}/sdk" />
   </target>
 
-  <target name="build-nuxeo-coreserver"
-          if="build.core"
-          description="Build Tomcat distribution with Nuxeo CoreServer">
-    <echo>Building Nuxeo CoreServer...</echo>
-    <property name="distribution.dir"
-              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
+  <target name="build-nuxeo-coreserver" if="build.core" description="Build Tomcat distribution with Nuxeo CoreServer">
+    <echo level="info">Building Nuxeo CoreServer...</echo>
+    <property name="distribution.dir" value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -138,8 +121,7 @@
 
     <!-- Complementary templates for CoreServer -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-tomcat-coreserver" />
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:templates-tomcat-coreserver" />
     </unzip>
 
     <delete failonerror="false">
@@ -158,10 +140,9 @@
   </target>
 
   <target name="copy-packages-xml">
-  <!-- Copy default packages.xml file -->
-  <copy file="src/main/resources/packages.xml"
-        tofile="${tomcat}/setupWizardDownloads/packages.xml">
-  </copy>
+    <!-- Copy default packages.xml file -->
+    <copy file="src/main/resources/packages.xml" tofile="${tomcat}/setupWizardDownloads/packages.xml">
+    </copy>
   </target>
 
   <target name="sample-installAfterRestart-files">
@@ -176,9 +157,8 @@ install nuxeo-dam</echo>
           if="build.cap"
           depends="sample-installAfterRestart-files,copy-packages-xml"
           description="Build Tomcat distribution with Nuxeo CAP">
-    <echo>Building Nuxeo CAP...</echo>
-    <property name="distribution.dir"
-              value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
+    <echo level="info">Building Nuxeo CAP...</echo>
+    <property name="distribution.dir" value="${outdir}/${classifier}-${maven.project.version}-tomcat" />
     <delete failonerror="false" dir="${distribution.dir}" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -301,7 +281,7 @@ org.nuxeo.distribution.package=zip</echo>
     </move>
     <artifact:printMgt output="${distribution.dir}/sdk/artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
-                       scopes="compile,provided,runtime"/>
+                       scopes="compile,provided,runtime" />
     <artifact:printMgt output="${distribution.dir}/sdk/test-artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
                        scopes="test,provided" />
@@ -310,18 +290,16 @@ org.nuxeo.distribution.package=zip</echo>
   <target name="build-sdk" if="build.sdk">
     <mkdir dir="${distribution.dir}/sdk/sources" />
     <copy todir="${distribution.dir}/sdk/sources">
-      <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts*.properties"
-                             classifier="sources" />
-      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties"
-                             classifier="sources" />
+      <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts*.properties" classifier="sources" />
+      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" classifier="sources" />
     </copy>
-    <mkdir dir="${distribution.dir}/sdk/tests" />
     <copy todir="${distribution.dir}/sdk/tests">
       <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" />
     </copy>
     <copy todir="${distribution.dir}/nxserver/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
     </copy>
+
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}-sdk.zip"
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
@@ -331,8 +309,6 @@ org.nuxeo.distribution.package=zip</echo>
   </target>
 
   <target name="chmodx">
-    <chmod dir="${distribution.dir}"
-           perm="ug+x"
-           includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
+    <chmod dir="${distribution.dir}" perm="ug+x" includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
   </target>
 </project>

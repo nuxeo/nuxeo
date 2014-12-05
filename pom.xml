@@ -4779,8 +4779,7 @@
             <rules>
               <requirePluginVersions>
                 <message>
-                  Set plugin versions in pluginManagement
-                  section.
+                  Set plugin versions in pluginManagement section.
                 </message>
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
