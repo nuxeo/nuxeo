@@ -136,7 +136,9 @@
       <param name="org.nuxeo.distribution.name" value="coreserver" />
     </antcall>
 
-    <antcall target="reorganize-libs-zip-attach" />
+    <antcall target="reorganize-libs" />
+    <antcall target="build-server" />
+    <antcall target="build-sdk" />
   </target>
 
   <target name="copy-packages-xml">
@@ -177,19 +179,18 @@ install nuxeo-dam</echo>
     <echo file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties"
           message="preset=nuxeo-cap-preset" />
 
-    <antcall target="reorganize-libs-zip-attach" />
+    <antcall target="reorganize-libs" />
+    <antcall target="build-server" />
+    <antcall target="build-sdk" />
   </target>
 
-  <target name="reorganize-libs-zip-attach">
-    <antcall target="reorganize-libs" />
-    <antcall target="copy-sdk-resources" />
+  <target name="build-server">
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
                      classifier="${classifier}"
                      type="zip" />
-    <antcall target="build-sdk" />
   </target>
 
   <target name="reorganize-libs">
@@ -267,13 +268,11 @@ org.nuxeo.distribution.server=tomcat
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
 org.nuxeo.distribution.package=zip</echo>
-    <copy file="${distribution.dir}/templates/common/config/distribution.properties"
-          todir="${distribution.dir}/sdk" />
   </target>
 
-  <target name="copy-sdk-resources">
-    <copy file="${outdir}/artifacts-tomcat.properties"
-          todir="${distribution.dir}/sdk" />
+  <target name="build-sdk" if="build.sdk">
+    <copy file="${distribution.dir}/templates/common/config/distribution.properties" todir="${distribution.dir}/sdk" />
+    <copy file="${outdir}/artifacts-tomcat.properties" todir="${distribution.dir}/sdk" />
     <move todir="${distribution.dir}/sdk">
       <fileset dir="${distribution.dir}/nxserver/">
         <filename name="*artifacts-*.properties" />
@@ -285,10 +284,7 @@ org.nuxeo.distribution.package=zip</echo>
     <artifact:printMgt output="${distribution.dir}/sdk/test-artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
                        scopes="test,provided" />
-  </target>
 
-  <target name="build-sdk" if="build.sdk">
-    <mkdir dir="${distribution.dir}/sdk/sources" />
     <copy todir="${distribution.dir}/sdk/sources">
       <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts*.properties" classifier="sources" />
       <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" classifier="sources" />
@@ -296,6 +292,11 @@ org.nuxeo.distribution.package=zip</echo>
     <copy todir="${distribution.dir}/sdk/tests">
       <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" />
     </copy>
+
+    <unzip dest="${distribution.dir}/sdk/tools">
+      <artifact:resolveFile key="org.nuxeo:nuxeo-ecm::zip:tools" />
+    </unzip>
+
     <copy todir="${distribution.dir}/nxserver/bundles">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
     </copy>

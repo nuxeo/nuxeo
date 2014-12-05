@@ -1,0 +1,14 @@
+<project name="tools-assembly" default="package-tools" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+
+  <target name="package-tools">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-tools.zip"
+         basedir="tools"
+         includes="*" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-tools.zip"
+                     classifier="tools"
+                     type="zip" />
+  </target>
+</project>

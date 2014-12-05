@@ -12,9 +12,9 @@
 
   <property name="vcsprops" value="${user.home}/nuxeo-test-vcs.properties" />
 
-  <target name="vcs-tests-setup" depends="_init">
+  <target name="vcs-tests-setup" depends="_initdb">
     <nx:profile name="default">
-      <echo file="${vcsprops}" append="false" />
+      <touch file="${vcsprops}" />
     </nx:profile>
     <nx:profile name="pgsql">
       <echo file="${vcsprops}" append="false">

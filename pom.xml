@@ -189,6 +189,13 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-ecm</artifactId>
+        <type>zip</type>
+        <classifier>tools</classifier>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Nuxeo Common -->
       <dependency>
         <groupId>org.nuxeo.common</groupId>
@@ -4454,6 +4461,25 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/tools-assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>packaging-tools</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -5599,10 +5625,12 @@
                   <goal>build</goal>
                 </goals>
                 <configuration>
-                  <buildFile>${basedir}/integration/vcstests.xml</buildFile>
+                  <buildFiles>
+                    <buildFile>${basedir}/integration/vcstests.xml</buildFile>
+                  </buildFiles>
                   <targets>
-                    <target>prepare-db</target>
                     <target>vcs-tests-setup</target>
+                    <target>prepare-db</target>
                   </targets>
                 </configuration>
               </execution>
