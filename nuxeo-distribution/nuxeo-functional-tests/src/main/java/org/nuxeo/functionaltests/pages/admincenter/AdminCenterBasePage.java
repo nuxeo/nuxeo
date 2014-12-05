@@ -54,6 +54,9 @@ public class AdminCenterBasePage extends AbstractPage {
     @FindBy(linkText = "Vocabularies")
     public WebElement vocabulariesLink;
 
+    @FindBy(linkText = "Workflow")
+    public WebElement worflowsLink;
+
     public AdminCenterBasePage(WebDriver driver) {
         super(driver);
     }
@@ -86,6 +89,11 @@ public class AdminCenterBasePage extends AbstractPage {
     public VocabulariesPage getVocabulariesPage() {
         vocabulariesLink.click();
         return asPage(VocabulariesPage.class);
+    }
+
+    public WorkflowsPage getWorkflowsPage() {
+        worflowsLink.click();
+        return asPage(WorkflowsPage.class);
     }
 
     public String getSelectedSubTab() {

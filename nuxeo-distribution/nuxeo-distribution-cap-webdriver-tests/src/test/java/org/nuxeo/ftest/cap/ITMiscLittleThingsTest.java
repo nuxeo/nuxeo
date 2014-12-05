@@ -25,7 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.WorkflowsPage;
+import org.nuxeo.functionaltests.pages.workflow.WorkflowGraph;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -65,6 +69,25 @@ public class ITMiscLittleThingsTest extends AbstractTest {
         String onclick = workspaces.getAttribute("onclick");
         assertEquals(EXPECTED_HREF, href);
         assertEquals(EXPECTED_ONCLICK, onclick);
+    }
+
+    /**
+     * Test the existing workflow overview works in admin center.
+     *
+     * @since 7.1
+     */
+    @Test
+    public void testWorkflowAdminOverview() {
+        AdminCenterBasePage adminCenterBasePage = asPage(DocumentBasePage.class).getAdminCenter();
+        WorkflowsPage workflowsPage = adminCenterBasePage.getWorkflowsPage();
+        WorkflowGraph graph = workflowsPage.getParallelDocumentReviewGraph();
+        assertEquals(1, graph.getWorkflowStartNodes().size());
+        assertEquals(3, graph.getWorkflowEndNodes().size());
+
+        workflowsPage = asPage(DocumentBasePage.class).getAdminCenter().getWorkflowsPage();
+        graph = workflowsPage.getSerialDocumentReviewGraph();
+        assertEquals(1, graph.getWorkflowStartNodes().size());
+        assertEquals(1, graph.getWorkflowEndNodes().size());
     }
 
 }
