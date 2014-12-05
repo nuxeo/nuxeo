@@ -41,7 +41,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -57,7 +56,6 @@ import com.google.inject.Inject;
 @Features({ RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.tag" })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-@RandomBug.Repeat(issue="NXP-16105")
 public class TestReindex {
 
     @Inject
@@ -144,17 +142,17 @@ public class TestReindex {
         buildDocs();
         startTransaction();
 
-        // String nxql = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' order by ecm:uuid";
-        // String nxql = "SELECT * FROM Tagging order by ecm:uuid";
         String nxql = "SELECT * FROM Document, Relation order by ecm:uuid";
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
         DocumentModelList coreDocs = session.query(nxql);
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
-                nxql).limit(45));
+                nxql).limit(100));
 
         Assert.assertEquals(coreDocs.totalSize(), docs.totalSize());
         Assert.assertEquals(getDigest(coreDocs), getDigest(docs));
+        // can not do that because of NXP-16154
+        // Assert.assertEquals(getDigest(coreDocs), 42, docs.totalSize());
         esa.initIndexes(true);
         esa.refresh();
         DocumentModelList docs2 = ess.query(new NxQueryBuilder(session)
@@ -163,7 +161,7 @@ public class TestReindex {
         esi.reindex(session.getRepositoryName(), "SELECT * FROM Document");
         esi.reindex(session.getRepositoryName(), "SELECT * FROM Relation");
         waitForIndexing();
-        docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(45));
+        docs2 = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(100));
 
         Assert.assertEquals(getDigest(coreDocs), getDigest(docs2));
 
@@ -212,7 +210,8 @@ public class TestReindex {
             if (nameOrTitle == null || nameOrTitle.isEmpty()) {
                 nameOrTitle = doc.getTitle();
             }
-            sb.append(doc.getType() + " " + doc.isProxy() + " " + doc.getId());
+            sb.append(doc.getType() + " " + doc.isProxy() + " " + doc.getId()
+                    + " ");
             sb.append(nameOrTitle);
             sb.append("\n");
         }
