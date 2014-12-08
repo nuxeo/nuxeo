@@ -41,8 +41,7 @@ import org.nuxeo.ecm.platform.video.VideoHelper;
  *
  * @author ogrisel
  */
-public class VideoStoryboardListener implements
-        PostCommitFilteringEventListener {
+public class VideoStoryboardListener implements PostCommitFilteringEventListener {
 
     public static final Log log = LogFactory.getLog(VideoStoryboardListener.class);
 
@@ -69,9 +68,9 @@ public class VideoStoryboardListener implements
                 VideoHelper.updatePreviews(doc, blobHolder.getBlob());
             } catch (IOException e) {
                 // this should only happen if the hard drive is full
-                log.error(String.format(
-                        "Failed to extract previews for video '%s': %s",
-                        doc.getTitle(), e.getMessage()), e);
+                log.error(
+                        String.format("Failed to extract previews for video '%s': %s", doc.getTitle(), e.getMessage()),
+                        e);
             }
             CoreSession session = docCtx.getCoreSession();
             if (doc.isVersion()) {

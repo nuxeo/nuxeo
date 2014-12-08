@@ -46,8 +46,7 @@ public class Stream {
     /**
      * Build a {@code Stream} from a {@code Map} of attributes.
      * <p>
-     * Used when creating a {@code Stream} from a {@code DocumentModel}
-     * property.
+     * Used when creating a {@code Stream} from a {@code DocumentModel} property.
      */
     public static Stream fromMap(Map<String, Serializable> m) {
         return new Stream(m);

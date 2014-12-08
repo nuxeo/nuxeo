@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * Object wrapping a transcoded video and related {@link VideoInfo}.
  * <p>
- * The {@code TranscodedVideo} is identified by its name and a position, if any,
- * in the list of {@code TranscodedVideo}s for a given @{link VideoDocument}.
+ * The {@code TranscodedVideo} is identified by its name and a position, if any, in the list of {@code TranscodedVideo}s
+ * for a given @{link VideoDocument}.
  * <p>
  * If this {@code TranscodedVideo} is not part
  *
@@ -47,11 +47,9 @@ public final class TranscodedVideo extends Video {
     private final int position;
 
     /**
-     * Build a {@code TranscodedVideo} from a {@code Map} of attributes and a
-     * {@code position}
+     * Build a {@code TranscodedVideo} from a {@code Map} of attributes and a {@code position}
      */
-    public static TranscodedVideo fromMapAndPosition(
-            Map<String, Serializable> map, int position) {
+    public static TranscodedVideo fromMapAndPosition(Map<String, Serializable> map, int position) {
         Blob blob = (Blob) map.get(CONTENT);
         @SuppressWarnings("unchecked")
         Map<String, Serializable> info = (Map<String, Serializable>) map.get(INFO);
@@ -61,16 +59,13 @@ public final class TranscodedVideo extends Video {
     }
 
     /**
-     * Build a {@code TranscodedVideo} from a {@code name}, video {@code blob}
-     * and related {@code videoInfo}.
+     * Build a {@code TranscodedVideo} from a {@code name}, video {@code blob} and related {@code videoInfo}.
      */
-    public static TranscodedVideo fromBlobAndInfo(String name, Blob blob,
-            VideoInfo videoInfo) {
+    public static TranscodedVideo fromBlobAndInfo(String name, Blob blob, VideoInfo videoInfo) {
         return new TranscodedVideo(blob, videoInfo, name, -1);
     }
 
-    private TranscodedVideo(Blob blob, VideoInfo videoInfo, String name,
-            int position) {
+    private TranscodedVideo(Blob blob, VideoInfo videoInfo, String name, int position) {
         super(blob, videoInfo);
         this.name = name;
         this.position = position;
@@ -84,8 +79,7 @@ public final class TranscodedVideo extends Video {
     }
 
     /**
-     * Returns the video {@code Blob} property name of this
-     * {@code TranscodedVideo}.
+     * Returns the video {@code Blob} property name of this {@code TranscodedVideo}.
      */
     public String getBlobPropertyName() {
         if (position == -1) {
@@ -98,8 +92,7 @@ public final class TranscodedVideo extends Video {
     /**
      * Returns a {@code Map} of attributes for this {@code TranscodedVideo}.
      * <p>
-     * Used when saving this {@code TranscodedVideo} to a {@code DocumentModel}
-     * property.
+     * Used when saving this {@code TranscodedVideo} to a {@code DocumentModel} property.
      */
     public Map<String, Serializable> toMap() {
         Map<String, Serializable> map = new HashMap<String, Serializable>();

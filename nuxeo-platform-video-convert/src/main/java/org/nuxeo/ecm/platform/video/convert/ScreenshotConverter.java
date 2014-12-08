@@ -49,8 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author ogrisel
  */
-public class ScreenshotConverter extends BaseVideoConverter implements
-        Converter {
+public class ScreenshotConverter extends BaseVideoConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(ScreenshotConverter.class);
 
@@ -66,8 +65,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
         File outFile = null;
         Blob blob = null;
@@ -75,12 +73,10 @@ public class ScreenshotConverter extends BaseVideoConverter implements
         try {
             blob = blobHolder.getBlob();
             inputFile = new InputFile(blob);
-            outFile = File.createTempFile("ScreenshotConverter-out-",
-                    ".tmp.jpeg");
+            outFile = File.createTempFile("ScreenshotConverter-out-", ".tmp.jpeg");
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath",
-                    inputFile.file.getAbsolutePath());
+            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
             if (parameters != null) {
@@ -90,25 +86,19 @@ public class ScreenshotConverter extends BaseVideoConverter implements
                 }
             }
             long positionParam = Math.round(position);
-            params.addNamedParameter(POSITION_PARAMETER,
-                    String.valueOf(positionParam));
-            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND,
-                    params);
+            params.addNamedParameter(POSITION_PARAMETER, String.valueOf(positionParam));
+            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
             if (!res.isSuccessful()) {
                 throw res.getError();
             }
 
-            Blob outBlob = StreamingBlob.createFromStream(
-                    new FileInputStream(outFile), "image/jpeg").persist();
-            outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg",
-                    positionParam));
+            Blob outBlob = StreamingBlob.createFromStream(new FileInputStream(outFile), "image/jpeg").persist();
+            outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg", positionParam));
             return new SimpleCachableBlobHolder(outBlob);
-        } catch (CommandNotAvailable | IOException | ClientException
-                | CommandException e) {
+        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
             String msg;
             if (blob != null) {
-                msg = "error extracting screenshot from '" + blob.getFilename()
-                        + "'";
+                msg = "error extracting screenshot from '" + blob.getFilename() + "'";
             } else {
                 msg = "conversion failed";
             }

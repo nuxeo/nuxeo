@@ -22,8 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
- * Small DTO to precompute the thumbnail URLs for JSF and convert the timcode to
- * millisencodes
+ * Small DTO to precompute the thumbnail URLs for JSF and convert the timcode to millisencodes
  */
 public class StoryboardItem {
 
@@ -39,16 +38,14 @@ public class StoryboardItem {
 
     protected String timecode = "0";
 
-    public StoryboardItem(DocumentModel doc, String basePropertyPath,
-            int position) {
+    public StoryboardItem(DocumentModel doc, String basePropertyPath, int position) {
         this.doc = doc;
         this.position = position;
         String propertyPath = basePropertyPath + "/" + position;
         blobPropertyName = propertyPath + "/content";
         filename = String.format("storyboard-%03d.jpeg", position);
         try {
-            Double tc = doc.getProperty(propertyPath + "/timecode").getValue(
-                    Double.class);
+            Double tc = doc.getProperty(propertyPath + "/timecode").getValue(Double.class);
             if (tc != null) {
                 timecode = String.format("%f", Math.floor(tc));
             }
@@ -59,8 +56,7 @@ public class StoryboardItem {
     }
 
     public String getUrl() {
-        return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName,
-                filename);
+        return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName, filename);
     }
 
     public String getTimecode() {

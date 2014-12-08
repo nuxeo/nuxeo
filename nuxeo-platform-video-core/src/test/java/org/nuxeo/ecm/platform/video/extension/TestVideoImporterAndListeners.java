@@ -74,13 +74,11 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     protected DocumentModel root;
 
     private File getTestFile() {
-        return new File(
-                FileUtils.getResourcePathFromContext("test-data/sample.mpg"));
+        return new File(FileUtils.getResourcePathFromContext("test-data/sample.mpg"));
     }
 
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
-        InputStream is = TestVideoImporterAndListeners.class.getResourceAsStream("/"
-                + path);
+        InputStream is = TestVideoImporterAndListeners.class.getResourceAsStream("/" + path);
         assertNotNull(String.format("Failed to load resource: " + path), is);
         Blob blob = StreamingBlob.createFromStream(is, path).persist();
         blob.setFilename(path);
@@ -112,10 +110,8 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         openSession();
 
         EventServiceAdmin eventServiceAdmin = Framework.getLocalService(EventServiceAdmin.class);
-        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions",
-                false);
-        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text",
-                false);
+        eventServiceAdmin.setListenerEnabledFlag("videoAutomaticConversions", false);
+        eventServiceAdmin.setListenerEnabledFlag("sql-storage-binary-text", false);
 
         root = session.getRootDocument();
         fileManagerService = Framework.getService(FileManager.class);
@@ -138,8 +134,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         // TODO: check get/set properties on common properties of videos
 
         // Create a new DocumentModel of our type in memory
-        DocumentModel docModel = session.createDocumentModel("/", "doc",
-                VIDEO_TYPE);
+        DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
 
         assertNull(docModel.getPropertyValue("common:icon"));
@@ -156,14 +151,11 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
 
-        assertEquals("/icons/video.png",
-                docModelResult.getPropertyValue("common:icon"));
+        assertEquals("/icons/video.png", docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
-        assertEquals("testUser",
-                docModelResult.getPropertyValue("picture:credit"));
+        assertEquals("testUser", docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("0.0",
-                docModelResult.getPropertyValue(DURATION_PROPERTY).toString());
+        assertEquals("0.0", docModelResult.getPropertyValue(DURATION_PROPERTY).toString());
     }
 
     @Test
@@ -177,8 +169,8 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(
-                session, blob, rootPath, true, "test-data/sample.mpg");
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
+                "test-data/sample.mpg");
 
         assertNotNull(docModel);
         DocumentRef ref = docModel.getRef();
@@ -194,21 +186,18 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertNotNull(docModel.getProperty("file:content"));
         assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
 
-        CommandAvailability ca = Framework.getService(
-                CommandLineExecutorService.class).getCommandAvailability(
+        CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg-storyboard is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException(
-                    "ffmpeg-storyboard is not avalaible");
+            throw new AssumptionViolatedException("ffmpeg-storyboard is not avalaible");
         }
 
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         // the test video is very short, no storyboard:
         assertEquals(0.04, docModel.getPropertyValue(DURATION_PROPERTY));
-        List<Map<String, Serializable>> storyboard = docModel.getProperty(
-                "vid:storyboard").getValue(List.class);
+        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(0, storyboard.size());
 
@@ -216,19 +205,15 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
     @Test
     public void testImportBigVideo() throws Exception {
-        CommandAvailability ca = Framework.getService(
-                CommandLineExecutorService.class).getCommandAvailability(
+        CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
         if (!ca.isAvailable()) {
             log.warn("ffmpeg-storyboard is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException(
-                    "ffmpeg-storyboard is not avalaible");
+            throw new AssumptionViolatedException("ffmpeg-storyboard is not avalaible");
         }
-        DocumentModel docModel = session.createDocumentModel("/", "doc",
-                VIDEO_TYPE);
+        DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
-        docModel.setPropertyValue("file:content",
-                (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());
+        docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());
         docModel = session.createDocument(docModel);
         session.save();
 
@@ -238,34 +223,29 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
         assertEquals(653.8, docModel.getPropertyValue(DURATION_PROPERTY));
-        List<Map<String, Serializable>> storyboard = docModel.getProperty(
-                "vid:storyboard").getValue(List.class);
+        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(9, storyboard.size());
 
         assertEquals(0.0, storyboard.get(0).get("timecode"));
-        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 1",
-                storyboard.get(0).get("comment"));
+        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 1", storyboard.get(0).get("comment"));
         Blob thumb0 = (Blob) storyboard.get(0).get("content");
         assertEquals("00000.000-seconds.jpeg", thumb0.getFilename());
 
         assertEquals(70.0, storyboard.get(1).get("timecode"));
-        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 2",
-                storyboard.get(1).get("comment"));
+        assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 2", storyboard.get(1).get("comment"));
         Blob thumb1 = (Blob) storyboard.get(1).get("content");
         assertEquals("00070.000-seconds.jpeg", thumb1.getFilename());
 
         // check that the thumbnails where extracted
-        assertEquals("Thumbnail",
-                docModel.getPropertyValue("picture:views/0/title"));
+        assertEquals("Thumbnail", docModel.getPropertyValue("picture:views/0/title"));
         assertEquals(62L, docModel.getPropertyValue("picture:views/0/height"));
         assertEquals(100L, docModel.getPropertyValue("picture:views/0/width"));
         assertTrue((Long) docModel.getPropertyValue("picture:views/0/content/length") > 1000);
 
         // the original video is also 100 pixels high hence the player preview
         // has the same size
-        assertEquals("StaticPlayerView",
-                docModel.getPropertyValue("picture:views/1/title"));
+        assertEquals("StaticPlayerView", docModel.getPropertyValue("picture:views/1/title"));
         assertEquals(100L, docModel.getPropertyValue("picture:views/1/height"));
         assertEquals(160L, docModel.getPropertyValue("picture:views/1/width"));
         assertTrue((Long) docModel.getPropertyValue("picture:views/1/content/length") > 1000);
@@ -302,8 +282,8 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        DocumentModel docModel = fileManagerService.createDocumentFromBlob(
-                session, blob, rootPath, true, "test-data/sample.mpg");
+        DocumentModel docModel = fileManagerService.createDocumentFromBlob(session, blob, rootPath, true,
+                "test-data/sample.mpg");
         session.save();
 
         closeSession();

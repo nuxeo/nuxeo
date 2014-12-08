@@ -78,8 +78,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         if (workManager != null && workManager.isStarted()) {
             try {
                 workManager.shutdownQueue(
-                        workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION),
-                        10, TimeUnit.SECONDS);
+                        workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION), 10,
+                        TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 // restore interrupted status
                 Thread.currentThread().interrupt();
@@ -91,8 +91,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
             videoConversions.addContribution((VideoConversion) contribution);
         } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
@@ -101,8 +100,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
             videoConversions.removeContribution((VideoConversion) contribution);
         } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
@@ -121,15 +119,13 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }
-        VideoConversionWork work = new VideoConversionWork(
-                doc.getRepositoryName(), doc.getId(), conversionName);
+        VideoConversionWork work = new VideoConversionWork(doc.getRepositoryName(), doc.getId(), conversionName);
         workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
     }
 
     @Override
     public void launchAutomaticConversions(DocumentModel doc) {
-        List<AutomaticVideoConversion> conversions = new ArrayList<>(
-                automaticVideoConversions.registry.values());
+        List<AutomaticVideoConversion> conversions = new ArrayList<>(automaticVideoConversions.registry.values());
         Collections.sort(conversions);
         for (AutomaticVideoConversion conversion : conversions) {
             launchConversion(doc, conversion.getName());
@@ -138,8 +134,7 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     @Deprecated
-    public TranscodedVideo convert(VideoConversionId id, Video originalVideo,
-            String conversionName) {
+    public TranscodedVideo convert(VideoConversionId id, Video originalVideo, String conversionName) {
         return convert(originalVideo, conversionName);
     }
 
@@ -147,22 +142,18 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     public TranscodedVideo convert(Video originalVideo, String conversionName) {
         try {
             if (!videoConversions.registry.containsKey(conversionName)) {
-                throw new ClientRuntimeException(String.format(
-                        "'%s' is not a registered video conversion.",
+                throw new ClientRuntimeException(String.format("'%s' is not a registered video conversion.",
                         conversionName));
             }
-            BlobHolder blobHolder = new SimpleBlobHolder(
-                    originalVideo.getBlob());
+            BlobHolder blobHolder = new SimpleBlobHolder(originalVideo.getBlob());
             VideoConversion conversion = videoConversions.registry.get(conversionName);
             Map<String, Serializable> parameters = new HashMap<>();
             parameters.put("height", conversion.getHeight());
             parameters.put("videoInfo", originalVideo.getVideoInfo());
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-            BlobHolder result = conversionService.convert(
-                    conversion.getConverter(), blobHolder, parameters);
+            BlobHolder result = conversionService.convert(conversion.getConverter(), blobHolder, parameters);
             VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
-            return TranscodedVideo.fromBlobAndInfo(conversionName,
-                    result.getBlob(), videoInfo);
+            return TranscodedVideo.fromBlobAndInfo(conversionName, result.getBlob(), videoInfo);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -172,28 +163,22 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Deprecated
     public VideoConversionStatus getProgressStatus(VideoConversionId id) {
         DocumentLocation loc = id.getDocumentLocation();
-        return getProgressStatus(loc.getServerName(), loc.getIdRef().value,
-                id.getConversionName());
+        return getProgressStatus(loc.getServerName(), loc.getIdRef().value, id.getConversionName());
     }
 
     @Override
-    public VideoConversionStatus getProgressStatus(String repositoryName,
-            String docId, String conversionName) {
+    public VideoConversionStatus getProgressStatus(String repositoryName, String docId, String conversionName) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work work = new VideoConversionWork(repositoryName, docId,
-                conversionName);
+        Work work = new VideoConversionWork(repositoryName, docId, conversionName);
         State state = workManager.getWorkState(work.getId());
         if (state == null || state == State.COMPLETED) {
             return null;
         } else if (state == State.SCHEDULED) {
             String queueId = workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION);
             int queueSize = workManager.getQueueSize(queueId, State.SCHEDULED);
-            return new VideoConversionStatus(
-                    VideoConversionStatus.STATUS_CONVERSION_QUEUED, 0,
-                    queueSize);
+            return new VideoConversionStatus(VideoConversionStatus.STATUS_CONVERSION_QUEUED, 0, queueSize);
         } else { // RUNNING
-            return new VideoConversionStatus(
-                    VideoConversionStatus.STATUS_CONVERSION_PENDING, 0, 0);
+            return new VideoConversionStatus(VideoConversionStatus.STATUS_CONVERSION_PENDING, 0, 0);
         }
     }
 

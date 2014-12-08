@@ -60,9 +60,7 @@ public class TestVideoInfo {
         stream = streams.get(1);
         assertEquals(Stream.AUDIO_TYPE, stream.getType());
         assertEquals("ac3", stream.getCodec());
-        assertEquals(
-                "Stream #0.1: Audio: ac3, 48000 Hz, 5.1, s16, 448 kb/s (default)",
-                stream.getStreamInfo());
+        assertEquals("Stream #0.1: Audio: ac3, 48000 Hz, 5.1, s16, 448 kb/s (default)", stream.getStreamInfo());
     }
 
 }

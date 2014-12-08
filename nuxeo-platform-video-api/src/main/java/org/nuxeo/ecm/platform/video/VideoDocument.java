@@ -22,8 +22,7 @@ import java.util.Collection;
 /**
  * Interface for document adapter wrapping a Video document.
  * <p>
- * Gives access to the videos and related info stored in the underlying
- * document.
+ * Gives access to the videos and related info stored in the underlying document.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -41,8 +40,8 @@ public interface VideoDocument {
     Collection<TranscodedVideo> getTranscodedVideos();
 
     /**
-     * Returns a given {@link TranscodedVideo} based on its {@code name},
-     * {@code null} if this transcoded video does not exist.
+     * Returns a given {@link TranscodedVideo} based on its {@code name}, {@code null} if this transcoded video does not
+     * exist.
      */
     TranscodedVideo getTranscodedVideo(String name);
 }

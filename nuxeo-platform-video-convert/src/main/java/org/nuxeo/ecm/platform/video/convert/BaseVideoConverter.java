@@ -64,8 +64,8 @@ public abstract class BaseVideoConverter {
             }
             if (file == null) {
                 // create temporary dfile
-                file = File.createTempFile("StoryboardConverter-in-", "."
-                        + FilenameUtils.getExtension(blob.getFilename()));
+                file = File.createTempFile("StoryboardConverter-in-",
+                        "." + FilenameUtils.getExtension(blob.getFilename()));
                 blob.transferTo(file);
                 isTempFile = true;
             }
@@ -77,25 +77,19 @@ public abstract class BaseVideoConverter {
     protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)");
 
     /**
-     * @deprecated since 5.5. The duration is now extracted with the other
-     *             information stored in the VideoInfo.
+     * @deprecated since 5.5. The duration is now extracted with the other information stored in the VideoInfo.
      */
     @Deprecated
-    protected static Double extractDuration(List<String> output)
-            throws ConversionException {
+    protected static Double extractDuration(List<String> output) throws ConversionException {
         for (String line : output) {
             Matcher matcher = DURATION_PATTERN.matcher(line);
             if (matcher.find()) {
-                return Double.parseDouble(matcher.group(1)) * 3600
-                        + Double.parseDouble(matcher.group(2)) * 60
-                        + Double.parseDouble(matcher.group(3))
-                        + Double.parseDouble(matcher.group(3)) / 100;
+                return Double.parseDouble(matcher.group(1)) * 3600 + Double.parseDouble(matcher.group(2)) * 60
+                        + Double.parseDouble(matcher.group(3)) + Double.parseDouble(matcher.group(3)) / 100;
             }
         }
         // could not find the duration
-        throw new ConversionException(
-                "failed to extract the duration from output: "
-                        + StringUtils.join(output, " "));
+        throw new ConversionException("failed to extract the duration from output: " + StringUtils.join(output, " "));
     }
 
     /**

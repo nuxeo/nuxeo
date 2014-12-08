@@ -23,14 +23,12 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * {@link ContributionFragmentRegistry} to register
- * {@link AutomaticVideoConversion}.
+ * {@link ContributionFragmentRegistry} to register {@link AutomaticVideoConversion}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class AutomaticVideoConversionContributionHandler extends
-        ContributionFragmentRegistry<AutomaticVideoConversion> {
+public class AutomaticVideoConversionContributionHandler extends ContributionFragmentRegistry<AutomaticVideoConversion> {
 
     public final Map<String, AutomaticVideoConversion> registry;
 
@@ -44,9 +42,7 @@ public class AutomaticVideoConversionContributionHandler extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            AutomaticVideoConversion contrib,
-            AutomaticVideoConversion newOrigContrib) {
+    public void contributionUpdated(String id, AutomaticVideoConversion contrib, AutomaticVideoConversion newOrigContrib) {
         if (contrib.isEnabled()) {
             registry.put(id, contrib);
         } else {
@@ -55,8 +51,7 @@ public class AutomaticVideoConversionContributionHandler extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            AutomaticVideoConversion origContrib) {
+    public void contributionRemoved(String id, AutomaticVideoConversion origContrib) {
         registry.remove(id);
     }
 

@@ -48,13 +48,11 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public abstract class BaseVideoConversionConverter extends
-        CommandLineBasedConverter {
+public abstract class BaseVideoConversionConverter extends CommandLineBasedConverter {
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
-            Map<String, Serializable> stringSerializableMap)
-            throws ConversionException {
+            Map<String, Serializable> stringSerializableMap) throws ConversionException {
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
         try {
             cmdBlobParams.put(INPUT_FILE_PATH_PARAMETER, blobHolder.getBlob());
@@ -65,20 +63,17 @@ public abstract class BaseVideoConversionConverter extends
     }
 
     @Override
-    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
+            throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<String, String>();
 
         String baseDir = getTmpDirectory(parameters);
-        Path tmpPath = new Path(baseDir).append(getTmpDirectoryPrefix() + "_"
-                + UUID.randomUUID());
+        Path tmpPath = new Path(baseDir).append(getTmpDirectoryPrefix() + "_" + UUID.randomUUID());
 
         File outDir = new File(tmpPath.toString());
         boolean dirCreated = outDir.mkdir();
         if (!dirCreated) {
-            throw new ConversionException(
-                    "Unable to create tmp dir for transformer output: "
-                            + outDir);
+            throw new ConversionException("Unable to create tmp dir for transformer output: " + outDir);
         }
 
         try {
@@ -86,8 +81,7 @@ public abstract class BaseVideoConversionConverter extends
             // delete the file as we need only the path for ffmpeg
             outFile.delete();
             Framework.trackFile(outFile, this);
-            cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER,
-                outFile.getAbsolutePath());
+            cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
             String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
             cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
 
@@ -114,10 +108,8 @@ public abstract class BaseVideoConversionConverter extends
     }
 
     @Override
-    protected BlobHolder buildResult(List<String> cmdOutput,
-            CmdParameters cmdParameters) throws ConversionException {
-        String outputPath = cmdParameters.getParameters().get(
-                OUTPUT_FILE_PATH_PARAMETER);
+    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) throws ConversionException {
+        String outputPath = cmdParameters.getParameters().get(OUTPUT_FILE_PATH_PARAMETER);
         File outputFile = new File(outputPath);
         List<Blob> blobs = new ArrayList<Blob>();
         String outFileName = cmdParameters.getParameters().get(OUTPUT_FILE_NAME_PARAMETER);
