@@ -27,13 +27,12 @@ import static org.junit.Assert.assertNotSame;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({"org.nuxeo.ecm.platform.shibboleth.groups.web"})
-@LocalDeploy({"org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml"})
+@Deploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml" })
 public class TestUserTreeNodeParsing {
 
     protected DocumentModel newDoc(String id, String type) {
-        return new DocumentModelImpl(null, type, id, null, null, null, null,
-                null, null, null, null);
+        return new DocumentModelImpl(null, type, id, null, null, null, null, null, null, null, null);
     }
 
     @Test

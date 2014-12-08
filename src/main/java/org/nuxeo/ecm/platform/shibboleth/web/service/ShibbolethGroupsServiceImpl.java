@@ -24,16 +24,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
-public class ShibbolethGroupsServiceImpl extends DefaultComponent
-        implements ShibbolethGroupsService {
+public class ShibbolethGroupsServiceImpl extends DefaultComponent implements ShibbolethGroupsService {
 
     public static final String CONFIG_EP = "config";
 
     protected ShibbolethGroupsConfig config;
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint,
-            ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
             config = (ShibbolethGroupsConfig) contribution;
         }

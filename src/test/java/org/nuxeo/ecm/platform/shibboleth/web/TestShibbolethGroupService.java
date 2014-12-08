@@ -38,9 +38,9 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class,cleanup = Granularity.METHOD)
-@Deploy({"org.nuxeo.ecm.platform.shibboleth.groups.web"})
-@LocalDeploy({"org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml"})
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.shibboleth.groups.web:OSGI-INF/test-shibboleth-groups-contrib.xml" })
 public class TestShibbolethGroupService {
 
     @Inject

@@ -59,8 +59,7 @@ public class UserTreeNode {
     }
 
     /**
-     * Get the displayed name, if instantiate with a documentModel it
-     * will be the document Id
+     * Get the displayed name, if instantiate with a documentModel it will be the document Id
      *
      * @return name defined with the constructor, or Document Id
      */
@@ -71,7 +70,7 @@ public class UserTreeNode {
 
             if (pos > 0) {
                 name = id.substring(pos + UserTreeNodeHelper.getParseStringLength());
-            } else{
+            } else {
                 name = id;
             }
         }
@@ -87,7 +86,7 @@ public class UserTreeNode {
         List<UserTreeNode> ret = new ArrayList<UserTreeNode>();
 
         if (docs != null) {
-            for(DocumentModel doc : docs) {
+            for (DocumentModel doc : docs) {
                 ret.add(new UserTreeNode(doc));
             }
         }

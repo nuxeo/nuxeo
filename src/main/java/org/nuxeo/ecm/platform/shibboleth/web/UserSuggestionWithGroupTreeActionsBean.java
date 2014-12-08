@@ -51,8 +51,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 @Name("shibbUserSuggestionWithGroupTree")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class UserSuggestionWithGroupTreeActionsBean extends
-        UserSuggestionActionsBean {
+public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionActionsBean {
 
     @In(create = true)
     SuggestionActionsBean suggestionActions;
@@ -64,8 +63,9 @@ public class UserSuggestionWithGroupTreeActionsBean extends
     protected String shibbUserName = "";
 
     /**
-     * Build the tree with all groups (not virtual) / shibbGroup and merge them
-     * into a List of UserTreeNode to be displayed
+     * Build the tree with all groups (not virtual) / shibbGroup and merge them into a List of UserTreeNode to be
+     * displayed
+     * 
      * @throws org.nuxeo.ecm.core.api.ClientException thrown from getGroups() or getShibbGroups()
      */
     protected void buildTree() throws ClientException {
@@ -74,13 +74,11 @@ public class UserSuggestionWithGroupTreeActionsBean extends
 
         treeRoot = new ArrayList<UserTreeNode>();
         treeRoot.addAll(UserTreeNodeHelper.getHierarcicalNodes(groups));
-        treeRoot.addAll(UserTreeNodeHelper.buildBranch(UserTreeNodeHelper.getShibbGroupBasePath(),
-                shibbGroups));
+        treeRoot.addAll(UserTreeNodeHelper.buildBranch(UserTreeNodeHelper.getShibbGroupBasePath(), shibbGroups));
     }
 
     /**
-     * Get all groups (without virtual) and shibbGroups with the userManager
-     * bean
+     * Get all groups (without virtual) and shibbGroups with the userManager bean
      *
      * @return list of group which match the pattern
      * @throws ClientException if error occurred while getting all groups.
@@ -92,8 +90,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends
             filter.put("__virtualGroup", false);
 
             // parameters must be serializable so copy keySet to HashSet
-            return userManager.searchGroups(filter, new HashSet<String>(
-                    filter.keySet()));
+            return userManager.searchGroups(filter, new HashSet<String>(filter.keySet()));
         } catch (SizeLimitExceededException e) {
             return Collections.emptyList();
         } catch (Exception e) {
@@ -114,8 +111,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends
         } catch (SizeLimitExceededException e) {
             return Collections.emptyList();
         } catch (Exception e) {
-            throw new ClientException("error searching for Shibboleth Groups",
-                    e);
+            throw new ClientException("error searching for Shibboleth Groups", e);
         }
     }
 

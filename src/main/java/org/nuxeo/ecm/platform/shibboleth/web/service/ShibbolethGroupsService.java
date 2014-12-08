@@ -23,9 +23,7 @@ package org.nuxeo.ecm.platform.shibboleth.web.service;
  */
 public interface ShibbolethGroupsService {
     /**
-     * Get the defined string to be used as hierarchy delimiter.
-     * Example :
-     * As ":" defined as the hierarchy delimiter.
+     * Get the defined string to be used as hierarchy delimiter. Example : As ":" defined as the hierarchy delimiter.
      * group:name:student
      *
      * @return the string to use
@@ -33,8 +31,7 @@ public interface ShibbolethGroupsService {
     String getParseString();
 
     /**
-     * Get the base path (using the previously demlimiter) where
-     * shibb group will be stored
+     * Get the base path (using the previously demlimiter) where shibb group will be stored
      *
      * @return
      */

@@ -38,8 +38,8 @@ public class UserTreeNodeHelper {
     protected static ShibbolethGroupsService service;
 
     /**
-     * Build UserTreeNode Tree by parsing the name of all docs passed by argument.
-     * It uses Shibboleth Service parse char definition to split doc name.
+     * Build UserTreeNode Tree by parsing the name of all docs passed by argument. It uses Shibboleth Service parse char
+     * definition to split doc name.
      *
      * @param docs list groups that want to be parsed
      * @return tree built, and an empty list if docs is null or empty.
@@ -53,7 +53,7 @@ public class UserTreeNodeHelper {
 
         String previousBasePath = null;
         List<DocumentModel> nodesToCreate = new ArrayList<DocumentModel>();
-        for(DocumentModel doc : docs) {
+        for (DocumentModel doc : docs) {
             String id = doc.getId();
             int pos = id.lastIndexOf(getParseString());
 
@@ -64,8 +64,7 @@ public class UserTreeNodeHelper {
                 currentBasePath = id.substring(0, pos + getParseStringLength());
             }
 
-            if (previousBasePath != null && !currentBasePath.equals(
-                    previousBasePath)) {
+            if (previousBasePath != null && !currentBasePath.equals(previousBasePath)) {
                 appendNodes(root, previousBasePath, nodesToCreate);
                 nodesToCreate = new ArrayList<DocumentModel>();
             }
@@ -78,15 +77,14 @@ public class UserTreeNodeHelper {
     }
 
     /**
-     * Append and create UserTreeNode from nodesToCreate list to the rootList.
-     * It create or use defined node in the root to create wanted nodes.
+     * Append and create UserTreeNode from nodesToCreate list to the rootList. It create or use defined node in the root
+     * to create wanted nodes.
      *
      * @param root the root UserNodeTree List, may contains some part of the destination path
      * @param destinationPath destination path, not splitted.
      * @param nodesToCreate list of documentModel to be created at the destination path
      */
-    protected static void appendNodes(List<UserTreeNode> root, String destinationPath,
-            List<DocumentModel> nodesToCreate) {
+    protected static void appendNodes(List<UserTreeNode> root, String destinationPath, List<DocumentModel> nodesToCreate) {
         UserTreeNode currentNode = null;
 
         if (nodesToCreate == null || nodesToCreate.size() < 1) {
@@ -98,9 +96,8 @@ public class UserTreeNodeHelper {
             return;
         }
 
-        for(String path : destinationPath.split(getParseString())) {
-            UserTreeNode node = searchNode(currentNode == null ?
-                    root : currentNode.getChildrens(), path);
+        for (String path : destinationPath.split(getParseString())) {
+            UserTreeNode node = searchNode(currentNode == null ? root : currentNode.getChildrens(), path);
             if (node == null) {
                 node = new UserTreeNode(path);
                 if (currentNode == null) {
@@ -118,6 +115,7 @@ public class UserTreeNodeHelper {
 
     /**
      * Search a Node where param name is equals to the nodeId
+     * 
      * @return null if not found
      */
     protected static UserTreeNode searchNode(List<UserTreeNode> from, String name) {
