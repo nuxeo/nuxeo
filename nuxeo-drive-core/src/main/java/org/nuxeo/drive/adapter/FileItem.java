@@ -25,8 +25,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Representation of a file, ie. a downloadable {@link FileSystemItem}.
  * <p>
- * In the case of a {@link DocumentModel} backed implementation, the backing
- * document holds a binary content. Typically a File, Note or Picture.
+ * In the case of a {@link DocumentModel} backed implementation, the backing document holds a binary content. Typically
+ * a File, Note or Picture.
  *
  * @author Antoine Taillefer
  * @see DocumentBackedFileItem

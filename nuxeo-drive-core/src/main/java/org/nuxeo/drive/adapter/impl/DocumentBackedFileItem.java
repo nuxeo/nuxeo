@@ -35,8 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-public class DocumentBackedFileItem extends
-        AbstractDocumentBackedFileSystemItem implements FileItem {
+public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem implements FileItem {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,25 +49,22 @@ public class DocumentBackedFileItem extends
 
     protected VersioningFileSystemItemFactory factory;
 
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
-            DocumentModel doc) throws ClientException {
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) throws ClientException {
         this(factory, doc, false);
     }
 
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
-            DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         super(factory.getName(), doc, relaxSyncRootConstraint);
         initialize(factory, doc);
     }
 
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
-            FolderItem parentItem, DocumentModel doc) throws ClientException {
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc)
+            throws ClientException {
         this(factory, parentItem, doc, false);
     }
 
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
-            FolderItem parentItem, DocumentModel doc,
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
         super(factory.getName(), parentItem, doc, relaxSyncRootConstraint);
         initialize(factory, doc);
@@ -152,8 +148,7 @@ public class DocumentBackedFileItem extends
     }
 
     /*--------------------- Protected -----------------*/
-    protected final void initialize(VersioningFileSystemItemFactory factory,
-            DocumentModel doc) throws ClientException {
+    protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) throws ClientException {
         this.factory = factory;
         this.name = getFileName(doc);
         this.folder = false;
@@ -168,8 +163,7 @@ public class DocumentBackedFileItem extends
         this.canUpdate = this.canRename;
     }
 
-    protected BlobHolder getBlobHolder(DocumentModel doc)
-            throws ClientException {
+    protected BlobHolder getBlobHolder(DocumentModel doc) throws ClientException {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             throw new ClientException(
@@ -199,8 +193,7 @@ public class DocumentBackedFileItem extends
         return filename != null ? filename : doc.getTitle();
     }
 
-    protected void updateDocTitleIfNeeded(DocumentModel doc, String name)
-            throws ClientException {
+    protected void updateDocTitleIfNeeded(DocumentModel doc, String name) throws ClientException {
         // TODO: not sure about the behavior for the doc title
         if (this.name.equals(docTitle)) {
             doc.setPropertyValue("dc:title", name);
@@ -218,10 +211,8 @@ public class DocumentBackedFileItem extends
         downloadURLSb.append("blobholder:0");
         downloadURLSb.append("/");
         // Remove chars that are invalid in filesystem names
-        String escapedFilename = name.replaceAll(
-                "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
-        downloadURLSb.append(URIUtils.quoteURIPathComponent(escapedFilename,
-                true));
+        String escapedFilename = name.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
+        downloadURLSb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
         downloadURL = downloadURLSb.toString();
     }
 
@@ -232,11 +223,9 @@ public class DocumentBackedFileItem extends
         digest = FileSystemItemHelper.getDigest(blob, digestAlgorithm);
     }
 
-    protected void versionIfNeeded(DocumentModel doc, CoreSession session)
-            throws ClientException {
+    protected void versionIfNeeded(DocumentModel doc, CoreSession session) throws ClientException {
         if (factory.needsVersioning(doc)) {
-            doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    factory.getVersioningOption());
+            doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
             session.saveDocument(doc);
         }
     }

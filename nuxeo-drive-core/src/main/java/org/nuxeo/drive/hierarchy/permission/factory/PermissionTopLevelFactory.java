@@ -32,13 +32,11 @@ import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * User workspace and permission based implementation of the
- * {@link TopLevelFolderItemFactory}.
+ * User workspace and permission based implementation of the {@link TopLevelFolderItemFactory}.
  *
  * @author Antoine Taillefer
  */
-public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory
-        implements TopLevelFolderItemFactory {
+public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory implements TopLevelFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(PermissionTopLevelFactory.class);
 
@@ -48,8 +46,7 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory
 
     /*---------------------- FileSystemItemFactory ---------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters)
-            throws ClientException {
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
         super.handleParameters(parameters);
         // Look for the "childrenFactories" parameter
         String childrenFactoriesParam = parameters.get(CHILDREN_FACTORIES_PARAM);
@@ -64,17 +61,14 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal)
-            throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
         return getTopLevelFolderItem(principal);
     }
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal)
-            throws ClientException {
-        return new PermissionTopLevelFolderItem(getName(), principal,
-                getFolderName(), childrenFactoryNames);
+    public FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
+        return new PermissionTopLevelFolderItem(getName(), principal, getFolderName(), childrenFactoryNames);
     }
 
 }

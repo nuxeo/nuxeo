@@ -20,7 +20,6 @@ package org.nuxeo.drive.service;
 import java.io.Serializable;
 
 /**
- *
  * Core event related constants for Nuxeo Drive.
  *
  * @author Antoine Taillefer

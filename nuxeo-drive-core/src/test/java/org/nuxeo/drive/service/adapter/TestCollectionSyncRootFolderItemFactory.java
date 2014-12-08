@@ -57,8 +57,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api" })
 public class TestCollectionSyncRootFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(TestCollectionSyncRootFolderItemFactory.class);
@@ -83,18 +82,16 @@ public class TestCollectionSyncRootFolderItemFactory {
     public void testFactory() throws Exception {
 
         FileSystemItemFactory collectionSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("collectionSyncRootFolderItemFactory");
-        DocumentModel collection = collectionManager.createCollection(session,
-                "testCollection", "Test collection.", "/");
+        DocumentModel collection = collectionManager.createCollection(session, "testCollection", "Test collection.",
+                "/");
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         doc1.setPropertyValue("dc:title", "doc1");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "Content of file 1."));
+        doc1.setPropertyValue("file:content", new StringBlob("Content of file 1."));
         doc1 = session.createDocument(doc1);
         collectionManager.addToCollection(collection, doc1, session);
         DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
         doc2.setPropertyValue("dc:title", "doc2");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "Content of file 2."));
+        doc2.setPropertyValue("file:content", new StringBlob("Content of file 2."));
         doc2 = session.createDocument(doc2);
         collectionManager.addToCollection(collection, doc2, session);
 
@@ -103,8 +100,7 @@ public class TestCollectionSyncRootFolderItemFactory {
         log.trace("Check Collection not registered as a sync root");
         assertFalse(collectionSyncRootFolderItemFactory.isFileSystemItem(collection));
         log.trace("Check Collection registered as a sync root");
-        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
-                collection, session);
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), collection, session);
         assertTrue(collectionSyncRootFolderItemFactory.isFileSystemItem(collection));
 
         log.trace("Adapt test collection as a FileSystemItem");
@@ -118,17 +114,13 @@ public class TestCollectionSyncRootFolderItemFactory {
         assertEquals(2, collectionChildren.size());
         FileSystemItem child1 = collectionChildren.get(0);
         assertTrue(child1 instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc1.getId(),
-                child1.getId());
-        assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(),
-                child1.getParentId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc1.getId(), child1.getId());
+        assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(), child1.getParentId());
         assertEquals("doc1", child1.getName());
         FileSystemItem child2 = collectionChildren.get(1);
         assertTrue(child2 instanceof FileItem);
-        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc2.getId(),
-                child2.getId());
-        assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(),
-                child2.getParentId());
+        assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc2.getId(), child2.getId());
+        assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(), child2.getParentId());
         assertEquals("doc2", child2.getName());
 
         log.trace("Check FolderItem#getCanCreateChild");
@@ -139,9 +131,7 @@ public class TestCollectionSyncRootFolderItemFactory {
             collectionFSItem.createFile(new StringBlob("Child file content."));
             fail("Should not be able to create a file in a CollectionSyncRootFolderItem.");
         } catch (UnsupportedOperationException e) {
-            assertEquals(
-                    "Cannot create a file in a collection synchronization root.",
-                    e.getMessage());
+            assertEquals("Cannot create a file in a collection synchronization root.", e.getMessage());
         }
 
         log.trace("Check FolderItem#createFolder");
@@ -149,15 +139,12 @@ public class TestCollectionSyncRootFolderItemFactory {
             collectionFSItem.createFolder("Child folder");
             fail("Should not be able to create a folder in a CollectionSyncRootFolderItem.");
         } catch (UnsupportedOperationException e) {
-            assertEquals(
-                    "Cannot create a folder in a collection synchronization root.",
-                    e.getMessage());
+            assertEquals("Cannot create a folder in a collection synchronization root.", e.getMessage());
         }
 
         log.trace("Test AbstractDocumentBackedFileSystemItem#delete");
         child1.delete();
-        assertTrue(!doc1.getCurrentLifeCycleState().equals(
-                LifeCycleConstants.DELETED_STATE));
+        assertTrue(!doc1.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE));
         assertFalse(collectionManager.isInCollection(collection, doc1, session));
     }
 

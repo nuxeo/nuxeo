@@ -24,7 +24,6 @@ import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
  *
  * @author Antoine Taillefer
  */
-public class DummyTopLevelFolderItemFactory extends
-        DefaultTopLevelFolderItemFactory {
+public class DummyTopLevelFolderItemFactory extends DefaultTopLevelFolderItemFactory {
 
 }

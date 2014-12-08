@@ -22,8 +22,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap descriptor for the {@code factory} elements of the
- * {@code activeFileSystemItemFactories} contributions.
+ * XMap descriptor for the {@code factory} elements of the {@code activeFileSystemItemFactories} contributions.
  *
  * @author Antoine Taillefer
  */

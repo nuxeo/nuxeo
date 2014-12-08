@@ -26,9 +26,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 
 /**
- * XMap descriptor for the {@code activeFileSystemItemFactories} contributions
- * to the {@code activeFileSystemItemFactories} extension point of the
- * {@link FileSystemItemAdapterService}.
+ * XMap descriptor for the {@code activeFileSystemItemFactories} contributions to the
+ * {@code activeFileSystemItemFactories} extension point of the {@link FileSystemItemAdapterService}.
  *
  * @author Antoine Taillefer
  */
@@ -55,8 +54,7 @@ public class ActiveFileSystemItemFactoriesDescriptor implements Serializable {
         return factories;
     }
 
-    public void setFactories(
-            List<ActiveFileSystemItemFactoryDescriptor> factories) {
+    public void setFactories(List<ActiveFileSystemItemFactoryDescriptor> factories) {
         this.factories = factories;
     }
 

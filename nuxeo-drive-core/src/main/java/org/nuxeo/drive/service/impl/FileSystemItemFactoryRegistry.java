@@ -41,8 +41,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * @author Antoine Taillefer
  * @see FileSystemItemAdapterServiceImpl
  */
-public class FileSystemItemFactoryRegistry extends
-        ContributionFragmentRegistry<FileSystemItemFactoryDescriptor> {
+public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<FileSystemItemFactoryDescriptor> {
 
     private static final Log log = LogFactory.getLog(FileSystemItemFactoryRegistry.class);
 
@@ -52,63 +51,50 @@ public class FileSystemItemFactoryRegistry extends
     public String getContributionId(FileSystemItemFactoryDescriptor contrib) {
         String name = contrib.getName();
         if (StringUtils.isEmpty(name)) {
-            throw new ClientRuntimeException(
-                    "Cannot register fileSystemItemFactory without a name.");
+            throw new ClientRuntimeException("Cannot register fileSystemItemFactory without a name.");
         }
         return name;
     }
 
     @Override
-    public void contributionUpdated(String id,
-            FileSystemItemFactoryDescriptor contrib,
+    public void contributionUpdated(String id, FileSystemItemFactoryDescriptor contrib,
             FileSystemItemFactoryDescriptor newOrigContrib) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Putting contribution %s with id %s in factory registry",
-                    contrib, id));
+            log.trace(String.format("Putting contribution %s with id %s in factory registry", contrib, id));
         }
         factoryDescriptors.put(id, contrib);
     }
 
     @Override
-    public void contributionRemoved(String id,
-            FileSystemItemFactoryDescriptor origContrib) {
+    public void contributionRemoved(String id, FileSystemItemFactoryDescriptor origContrib) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Removing contribution with id %s from factory registry",
-                    id));
+            log.trace(String.format("Removing contribution with id %s from factory registry", id));
         }
         factoryDescriptors.remove(id);
     }
 
     @Override
-    public FileSystemItemFactoryDescriptor clone(
-            FileSystemItemFactoryDescriptor orig) {
+    public FileSystemItemFactoryDescriptor clone(FileSystemItemFactoryDescriptor orig) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format("Cloning contribution with id %s",
-                    orig.getName()));
+            log.trace(String.format("Cloning contribution with id %s", orig.getName()));
         }
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos);
             oos.writeObject(orig);
-            ByteArrayInputStream bis = new ByteArrayInputStream(
-                    bos.toByteArray());
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
             ObjectInputStream ois = new ObjectInputStream(bis);
             return (FileSystemItemFactoryDescriptor) ois.readObject();
         } catch (Exception e) {
-            throw new ClientRuntimeException("Cannot clone contribution "
-                    + orig, e);
+            throw new ClientRuntimeException("Cannot clone contribution " + orig, e);
         }
     }
 
     @Override
-    public void merge(FileSystemItemFactoryDescriptor src,
-            FileSystemItemFactoryDescriptor dst) {
+    public void merge(FileSystemItemFactoryDescriptor src, FileSystemItemFactoryDescriptor dst) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Merging contribution with id %s to contribution with id %s",
-                    src.getName(), dst.getName()));
+            log.trace(String.format("Merging contribution with id %s to contribution with id %s", src.getName(),
+                    dst.getName()));
         }
         // Order
         int srcOrder = src.getOrder();
@@ -116,18 +102,15 @@ public class FileSystemItemFactoryRegistry extends
             dst.setOrder(srcOrder);
         }
         // Doc type
-        if (!StringUtils.isEmpty(src.getDocType())
-                && !src.getDocType().equals(dst.getDocType())) {
+        if (!StringUtils.isEmpty(src.getDocType()) && !src.getDocType().equals(dst.getDocType())) {
             dst.setDocType(src.getDocType());
         }
         // Facet
-        if (!StringUtils.isEmpty(src.getFacet())
-                && !src.getFacet().equals(dst.getFacet())) {
+        if (!StringUtils.isEmpty(src.getFacet()) && !src.getFacet().equals(dst.getFacet())) {
             dst.setFacet(src.getFacet());
         }
         // Class
-        if (src.getFactoryClass() != null
-                && !src.getFactoryClass().equals(dst.getFactoryClass())) {
+        if (src.getFactoryClass() != null && !src.getFactoryClass().equals(dst.getFactoryClass())) {
             dst.setFactoryClass(src.getFactoryClass());
         }
         // Parameters
@@ -138,8 +121,7 @@ public class FileSystemItemFactoryRegistry extends
         }
     }
 
-    protected List<FileSystemItemFactoryWrapper> getOrderedActiveFactories(
-            Set<String> activeFactories) {
+    protected List<FileSystemItemFactoryWrapper> getOrderedActiveFactories(Set<String> activeFactories) {
         List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
         List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
                 factoryDescriptors.values());
@@ -148,8 +130,7 @@ public class FileSystemItemFactoryRegistry extends
             // Only include active factories
             if (activeFactories.contains(factoryDesc.getName())) {
                 FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(
-                        factoryDesc.getDocType(), factoryDesc.getFacet(),
-                        factoryDesc.getFactory());
+                        factoryDesc.getDocType(), factoryDesc.getFacet(), factoryDesc.getFactory());
                 factories.add(factoryWrapper);
             }
         }

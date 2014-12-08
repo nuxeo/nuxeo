@@ -39,13 +39,12 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * User workspace based implementation of {@link FileSystemItemFactory} for the
- * parent {@link FolderItem} of the user's synchronization roots.
+ * User workspace based implementation of {@link FileSystemItemFactory} for the parent {@link FolderItem} of the user's
+ * synchronization roots.
  *
  * @author Antoine Taillefer
  */
-public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
-        implements VirtualFolderItemFactory {
+public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory implements VirtualFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(UserSyncRootParentFactory.class);
 
@@ -55,34 +54,30 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
 
     /*------------------- AbstractFileSystemItemFactory ------------------- */
     @Override
-    public void handleParameters(Map<String, String> parameters)
-            throws ClientException {
+    public void handleParameters(Map<String, String> parameters) throws ClientException {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (StringUtils.isEmpty(folderNameParam)) {
-            throw new ClientException(String.format(
-                    "Factory %s has no %s parameter, please provide one.",
-                    getName(), FOLDER_NAME_PARAM));
+            throw new ClientException(String.format("Factory %s has no %s parameter, please provide one.", getName(),
+                    FOLDER_NAME_PARAM));
         }
         folderName = folderNameParam;
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
             if (log.isTraceEnabled()) {
                 log.trace(String.format(
-                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
+                        "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.", doc.getId()));
             }
             return false;
         }
         // Check "deleted" life cycle state
-        if (!includeDeleted
-                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+        if (!includeDeleted && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Document %s is in the '%s' life cycle state, it cannot be adapted as a FileSystemItem.",
@@ -94,11 +89,9 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
     }
 
     @Override
-    protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem,
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
             boolean relaxSyncRootConstraint) throws ClientException {
-        return new UserSyncRootParentFolderItem(getName(), doc, parentItem,
-                folderName, relaxSyncRootConstraint);
+        return new UserSyncRootParentFolderItem(getName(), doc, parentItem, folderName, relaxSyncRootConstraint);
     }
 
     /*------------------- FileSystemItemFactory ------------------- */
@@ -106,26 +99,21 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
      * Force parent item using {@link #getTopLevelFolderItem(Principal)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
-        return getFileSystemItem(doc, getTopLevelFolderItem(principal),
-                includeDeleted);
+        return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
-        return getFileSystemItem(doc, getTopLevelFolderItem(principal),
-                includeDeleted, relaxSyncRootConstraint);
+        return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
     }
 
     /*------------------- VirtualFolderItemFactory ------------------- */
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal)
-            throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
         DocumentModel userWorkspace = getUserPersonalWorkspace(principal);
         return (FolderItem) getFileSystemItem(userWorkspace);
     }
@@ -141,33 +129,25 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
     }
 
     /*------------------- Protected ------------------- */
-    protected FolderItem getTopLevelFolderItem(Principal principal)
-            throws ClientException {
-        FolderItem topLevelFolder = getFileSystemItemManager().getTopLevelFolder(
-                principal);
+    protected FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
+        FolderItem topLevelFolder = getFileSystemItemManager().getTopLevelFolder(principal);
         if (topLevelFolder == null) {
-            throw new ClientException(
-                    "Found no top level folder item. Please check your "
-                            + "contribution to the following extension point:"
-                            + " <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\""
-                            + " point=\"topLevelFolderItemFactory\">.");
+            throw new ClientException("Found no top level folder item. Please check your "
+                    + "contribution to the following extension point:"
+                    + " <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\""
+                    + " point=\"topLevelFolderItemFactory\">.");
         }
         return topLevelFolder;
     }
 
-    protected DocumentModel getUserPersonalWorkspace(Principal principal)
-            throws ClientException {
+    protected DocumentModel getUserPersonalWorkspace(Principal principal) throws ClientException {
         UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         // TODO: handle multiple repositories
-        CoreSession session = getSession(
-                repositoryManager.getDefaultRepositoryName(), principal);
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
+        CoreSession session = getSession(repositoryManager.getDefaultRepositoryName(), principal);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
         if (userWorkspace == null) {
-            throw new ClientException(String.format(
-                    "No personal workspace found for user %s.",
-                    principal.getName()));
+            throw new ClientException(String.format("No personal workspace found for user %s.", principal.getName()));
         }
         return userWorkspace;
     }
@@ -176,8 +156,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
         return Framework.getLocalService(FileSystemItemManager.class);
     }
 
-    protected CoreSession getSession(String repositoryName, Principal principal)
-            throws ClientException {
+    protected CoreSession getSession(String repositoryName, Principal principal) throws ClientException {
         return getFileSystemItemManager().getSession(repositoryName, principal);
     }
 }

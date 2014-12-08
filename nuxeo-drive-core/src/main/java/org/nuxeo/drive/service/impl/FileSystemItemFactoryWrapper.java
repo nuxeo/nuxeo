@@ -35,8 +35,7 @@ public class FileSystemItemFactoryWrapper implements Serializable {
 
     protected FileSystemItemFactory factory;
 
-    public FileSystemItemFactoryWrapper(String docType, String facet,
-            FileSystemItemFactory factory) {
+    public FileSystemItemFactoryWrapper(String docType, String facet, FileSystemItemFactory factory) {
         this.docType = docType;
         this.facet = facet;
         this.factory = factory;

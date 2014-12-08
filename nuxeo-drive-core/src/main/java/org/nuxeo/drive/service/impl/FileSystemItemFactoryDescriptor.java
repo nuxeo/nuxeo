@@ -28,15 +28,13 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * XMap descriptor for factories contributed to the
- * {@code fileSystemItemFactory} extension point of the
+ * XMap descriptor for factories contributed to the {@code fileSystemItemFactory} extension point of the
  * {@link FileSystemItemAdapterService}.
  *
  * @author Antoine Taillefer
  */
 @XObject("fileSystemItemFactory")
-public class FileSystemItemFactoryDescriptor implements Serializable,
-        Comparable<FileSystemItemFactoryDescriptor> {
+public class FileSystemItemFactoryDescriptor implements Serializable, Comparable<FileSystemItemFactoryDescriptor> {
 
     private static final long serialVersionUID = -7840980495329452651L;
 
@@ -90,8 +88,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         return factoryClass;
     }
 
-    public void setFactoryClass(
-            Class<? extends FileSystemItemFactory> factoryClass) {
+    public void setFactoryClass(Class<? extends FileSystemItemFactory> factoryClass) {
         this.factoryClass = factoryClass;
     }
 

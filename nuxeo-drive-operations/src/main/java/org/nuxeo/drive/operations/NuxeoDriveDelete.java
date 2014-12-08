@@ -29,8 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Deletes the {@link FileSystemItem} with the given id for the currently
- * authenticated user.
+ * Deletes the {@link FileSystemItem} with the given id for the currently authenticated user.
  *
  * @author Antoine Taillefer
  */

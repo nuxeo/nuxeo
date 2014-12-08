@@ -66,11 +66,9 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.user.center.profile", "org.nuxeo.drive.operations" })
+@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.user.center.profile", "org.nuxeo.drive.operations" })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Jetty(port = 18080)
 public class TestIntegrationTestOperations {
@@ -99,10 +97,10 @@ public class TestIntegrationTestOperations {
     @Before
     public void init() throws Exception {
 
-        testWorkspacePath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
-                + "/" + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
-        userWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
-                + "/" + USER_WORKSPACE_PARENT_NAME;
+        testWorkspacePath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"
+                + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
+        userWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"
+                + USER_WORKSPACE_PARENT_NAME;
 
         mapper = new ObjectMapper();
     }
@@ -113,20 +111,17 @@ public class TestIntegrationTestOperations {
         // ---------------------------------------------------------
         // Setup the integration tests environment as Administrator
         // ---------------------------------------------------------
-        Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(
-                NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").set(
-                "permission", "ReadWrite").execute();
+        Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set(
+                "userNames", "joe,jack").set("permission", "ReadWrite").execute();
         assertNotNull(testUserCredentialsBlob);
         // Invalidate VCS cache
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         // Check test users
-        String testUserCredentials = IOUtils.toString(
-                testUserCredentialsBlob.getStream(), "UTF-8");
+        String testUserCredentials = IOUtils.toString(testUserCredentialsBlob.getStream(), "UTF-8");
         assertNotNull(testUserCredentials);
-        String[] testUserCrendentialsArray = StringUtils.split(
-                testUserCredentials, ",");
+        String[] testUserCrendentialsArray = StringUtils.split(testUserCredentials, ",");
         assertEquals(2, testUserCrendentialsArray.length);
         assertTrue(testUserCrendentialsArray[0].startsWith("nuxeoDriveTestUser_joe:"));
         assertTrue(testUserCrendentialsArray[1].startsWith("nuxeoDriveTestUser_jack:"));
@@ -144,20 +139,14 @@ public class TestIntegrationTestOperations {
         DocumentModel testWorkspace = session.getDocument(testWorkspaceRef);
         assertEquals("Workspace", testWorkspace.getType());
         assertEquals("Nuxeo Drive Test Workspace", testWorkspace.getTitle());
-        assertTrue(session.hasPermission(joePrincipal, testWorkspaceRef,
-                SecurityConstants.WRITE));
-        assertTrue(session.hasPermission(jackPrincipal, testWorkspaceRef,
-                SecurityConstants.WRITE));
+        assertTrue(session.hasPermission(joePrincipal, testWorkspaceRef, SecurityConstants.WRITE));
+        assertTrue(session.hasPermission(jackPrincipal, testWorkspaceRef, SecurityConstants.WRITE));
 
         // Create test users' personal workspaces for cleanup check
-        userWorkspaceService.getUserPersonalWorkspace("nuxeoDriveTestUser_joe",
-                session.getRootDocument());
-        userWorkspaceService.getUserPersonalWorkspace(
-                "nuxeoDriveTestUser_jack", session.getRootDocument());
-        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
-                + "/nuxeoDriveTestUser-joe")));
-        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
-                + "/nuxeoDriveTestUser-jack")));
+        userWorkspaceService.getUserPersonalWorkspace("nuxeoDriveTestUser_joe", session.getRootDocument());
+        userWorkspaceService.getUserPersonalWorkspace("nuxeoDriveTestUser_jack", session.getRootDocument());
+        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-joe")));
+        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-jack")));
         // Save personal workspaces
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -166,9 +155,8 @@ public class TestIntegrationTestOperations {
         // Setup the integration tests environment with other user names without
         // having teared it down previously => should start by cleaning it up
         // ----------------------------------------------------------------------
-        testUserCredentialsBlob = (Blob) clientSession.newRequest(
-                NuxeoDriveSetupIntegrationTests.ID).set("userNames", "sarah").set(
-                "useMembersGroup", true).set("permission", "ReadWrite").execute();
+        testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set("userNames",
+                "sarah").set("useMembersGroup", true).set("permission", "ReadWrite").execute();
         assertNotNull(testUserCredentialsBlob);
 
         // Check cleanup
@@ -178,25 +166,22 @@ public class TestIntegrationTestOperations {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         try {
-            session.getDocument(new PathRef(userWorkspaceParentPath
-                    + "/nuxeoDriveTestUser-joe"));
+            session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-joe"));
             fail("User workspace should not exist.");
         } catch (ClientException e) {
-            assertEquals("Failed to get document " + userWorkspaceParentPath
-                    + "/nuxeoDriveTestUser-joe", e.getMessage());
+            assertEquals("Failed to get document " + userWorkspaceParentPath + "/nuxeoDriveTestUser-joe",
+                    e.getMessage());
         }
         try {
-            session.getDocument(new PathRef(userWorkspaceParentPath
-                    + "/nuxeoDriveTestUser-jack"));
+            session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-jack"));
             fail("User workspace should not exist.");
         } catch (ClientException e) {
-            assertEquals("Failed to get document " + userWorkspaceParentPath
-                    + "/nuxeoDriveTestUser-jack", e.getMessage());
+            assertEquals("Failed to get document " + userWorkspaceParentPath + "/nuxeoDriveTestUser-jack",
+                    e.getMessage());
         }
 
         // Check test users
-        testUserCredentials = IOUtils.toString(
-                testUserCredentialsBlob.getStream(), "UTF-8");
+        testUserCredentials = IOUtils.toString(testUserCredentialsBlob.getStream(), "UTF-8");
         assertNotNull(testUserCredentials);
         testUserCrendentialsArray = StringUtils.split(testUserCredentials, ",");
         assertEquals(1, testUserCrendentialsArray.length);
@@ -209,14 +194,11 @@ public class TestIntegrationTestOperations {
         // Check test workspace
         testWorkspace = session.getDocument(testWorkspaceRef);
         assertEquals("Nuxeo Drive Test Workspace", testWorkspace.getTitle());
-        assertTrue(session.hasPermission(sarahPrincipal, testWorkspaceRef,
-                SecurityConstants.WRITE));
+        assertTrue(session.hasPermission(sarahPrincipal, testWorkspaceRef, SecurityConstants.WRITE));
 
         // Create test users' personal workspaces for cleanup check
-        userWorkspaceService.getUserPersonalWorkspace(
-                "nuxeoDriveTestUser_sarah", session.getRootDocument());
-        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
-                + "/nuxeoDriveTestUser-sarah")));
+        userWorkspaceService.getUserPersonalWorkspace("nuxeoDriveTestUser_sarah", session.getRootDocument());
+        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah")));
         // Save personal workspaces
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -227,11 +209,10 @@ public class TestIntegrationTestOperations {
         // ----------------------------------------------------------------------
         String sarahCredentials = testUserCrendentialsArray[0];
         String sarahPassword = sarahCredentials.substring(sarahCredentials.indexOf(':') + 1);
-        Session unauthorizedSession = automationClient.getSession(
-                "nuxeoDriveTestUser_sarah", sarahPassword);
+        Session unauthorizedSession = automationClient.getSession("nuxeoDriveTestUser_sarah", sarahPassword);
         try {
-            unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set(
-                    "userNames", "john,bob").set("permission", "ReadWrite").execute();
+            unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set("userNames", "john,bob").set(
+                    "permission", "ReadWrite").execute();
             fail("NuxeoDrive.SetupIntegrationTests operation should not be callable by a non administrator.");
         } catch (Exception e) {
             // Expected
@@ -242,8 +223,7 @@ public class TestIntegrationTestOperations {
         // user => should fail
         // ----------------------------------------------------------------------
         try {
-            unauthorizedSession.newRequest(
-                    NuxeoDriveTearDownIntegrationTests.ID).execute();
+            unauthorizedSession.newRequest(NuxeoDriveTearDownIntegrationTests.ID).execute();
             fail("NuxeoDrive.TearDownIntegrationTests operation should not be callable by a non administrator.");
         } catch (Exception e) {
             // Expected
@@ -258,12 +238,11 @@ public class TestIntegrationTestOperations {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         try {
-            session.getDocument(new PathRef(userWorkspaceParentPath
-                    + "/nuxeoDriveTestUser-sarah"));
+            session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah"));
             fail("User workspace should not exist.");
         } catch (ClientException e) {
-            assertEquals("Failed to get document " + userWorkspaceParentPath
-                    + "/nuxeoDriveTestUser-sarah", e.getMessage());
+            assertEquals("Failed to get document " + userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah",
+                    e.getMessage());
         }
         assertFalse(session.exists(testWorkspaceRef));
     }

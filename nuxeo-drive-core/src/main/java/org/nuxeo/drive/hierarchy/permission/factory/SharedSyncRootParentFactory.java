@@ -27,25 +27,23 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Permission based implementation of {@link FileSystemItemFactory} for the
- * parent {@link FolderItem} of the user's shared synchronization roots.
+ * Permission based implementation of {@link FileSystemItemFactory} for the parent {@link FolderItem} of the user's
+ * shared synchronization roots.
  *
  * @author Antoine Taillefer
  */
-public class SharedSyncRootParentFactory extends
-        AbstractVirtualFolderItemFactory {
+public class SharedSyncRootParentFactory extends AbstractVirtualFolderItemFactory {
 
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal)
-            throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(principal);
         if (topLevelFolder == null) {
             throw new ClientException(
                     "Found no top level folder item. Please check your contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
         }
-        return new SharedSyncRootParentFolderItem(getName(), principal,
-                topLevelFolder.getId(), topLevelFolder.getPath(), folderName);
+        return new SharedSyncRootParentFolderItem(getName(), principal, topLevelFolder.getId(),
+                topLevelFolder.getPath(), folderName);
     }
 
 }

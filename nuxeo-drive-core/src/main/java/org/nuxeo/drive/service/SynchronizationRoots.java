@@ -22,8 +22,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
- * Data transfer object to fetch the list of references of synchronization roots
- * for a given repo and user.
+ * Data transfer object to fetch the list of references of synchronization roots for a given repo and user.
  */
 public class SynchronizationRoots {
 
@@ -33,8 +32,7 @@ public class SynchronizationRoots {
 
     protected final Set<IdRef> refs;
 
-    public SynchronizationRoots(String repositoryName, Set<String> paths,
-            Set<IdRef> refs) {
+    public SynchronizationRoots(String repositoryName, Set<String> paths, Set<IdRef> refs) {
         this.repositoryName = repositoryName;
         this.paths = paths;
         this.refs = refs;

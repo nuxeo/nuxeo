@@ -43,7 +43,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
+@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @Jetty(port = 18080)
 public class TestSetVersioningOptions {
@@ -67,26 +67,18 @@ public class TestSetVersioningOptions {
     public void testSetVersioningOptions() throws Exception {
 
         // Default values
-        assertEquals(3600.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
-        assertEquals(VersioningOption.MINOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        assertEquals(3600.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MINOR, defaultFileSystemItemFactory.getVersioningOption());
 
         // Set delay to 2 seconds
-        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set(
-                "delay", "2").execute();
-        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
-        assertEquals(VersioningOption.MINOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set("delay", "2").execute();
+        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MINOR, defaultFileSystemItemFactory.getVersioningOption());
 
         // Set option to MAJOR
-        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set(
-                "option", "MAJOR").execute();
-        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
-        assertEquals(VersioningOption.MAJOR,
-                defaultFileSystemItemFactory.getVersioningOption());
+        clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set("option", "MAJOR").execute();
+        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
+        assertEquals(VersioningOption.MAJOR, defaultFileSystemItemFactory.getVersioningOption());
 
     }
 

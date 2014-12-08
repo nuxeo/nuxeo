@@ -44,8 +44,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Sets up the Nuxeo Drive integration tests environment for the given user
- * names by:
+ * Sets up the Nuxeo Drive integration tests environment for the given user names by:
  * <ul>
  * <li>Cleaning it up</li>
  * <li>Creating test users belonging to the members group</li>
@@ -85,8 +84,7 @@ public class NuxeoDriveSetupIntegrationTests {
         String[] userNamesArray = StringUtils.split(userNames, ",");
         String[] prefixedUserNames = new String[userNamesArray.length];
         for (int i = 0; i < userNamesArray.length; i++) {
-            prefixedUserNames[i] = TEST_USER_NAME_PREFIX
-                    + userNamesArray[i].trim();
+            prefixedUserNames[i] = TEST_USER_NAME_PREFIX + userNamesArray[i].trim();
         }
         String testUserCredentials = createTestUsers(prefixedUserNames);
         createTestWorkspace(prefixedUserNames);
@@ -98,8 +96,7 @@ public class NuxeoDriveSetupIntegrationTests {
         return StreamingBlob.createFromString(testUserCredentials, "text/plain");
     }
 
-    protected String createTestUsers(String[] testUserNames)
-            throws ClientException {
+    protected String createTestUsers(String[] testUserNames) throws ClientException {
 
         StringBuilder testUserCredentials = new StringBuilder();
 
@@ -113,18 +110,14 @@ public class NuxeoDriveSetupIntegrationTests {
             String testUserName = testUserNames[i];
 
             // Generate random password
-            String testUserPassword = UUID.randomUUID().toString().substring(0,
-                    6);
+            String testUserPassword = UUID.randomUUID().toString().substring(0, 6);
 
             // Create test user
             DocumentModel testUserModel = userManager.getBareUserModel();
-            testUserModel.setProperty(userSchemaName, userNameField,
-                    testUserName);
-            testUserModel.setProperty(userSchemaName, passwordField,
-                    testUserPassword);
+            testUserModel.setProperty(userSchemaName, userNameField, testUserName);
+            testUserModel.setProperty(userSchemaName, passwordField, testUserPassword);
             if (useMembersGroup) {
-                testUserModel.setProperty(userSchemaName, "groups",
-                        new String[] { "members" });
+                testUserModel.setProperty(userSchemaName, "groups", new String[] { "members" });
             }
             userManager.createUser(testUserModel);
 
@@ -139,21 +132,18 @@ public class NuxeoDriveSetupIntegrationTests {
         return testUserCredentials.toString();
     }
 
-    protected void createTestWorkspace(String[] testUserNames)
-            throws ClientException {
+    protected void createTestWorkspace(String[] testUserNames) throws ClientException {
 
         // Create test workspace
-        String testWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
-                + "/"
+        String testWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"
                 + NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PARENT_NAME;
-        DocumentModel testWorkspace = session.createDocumentModel(
-                testWorkspaceParentPath, TEST_WORKSPACE_NAME, "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel(testWorkspaceParentPath, TEST_WORKSPACE_NAME,
+                "Workspace");
         testWorkspace.setPropertyValue("dc:title", TEST_WORKSPACE_TITLE);
         session.createDocument(testWorkspace);
 
         // Grant the given permission to the test users on the test workspace
-        String testWorkspacePath = testWorkspaceParentPath + "/"
-                + TEST_WORKSPACE_NAME;
+        String testWorkspacePath = testWorkspaceParentPath + "/" + TEST_WORKSPACE_NAME;
         DocumentRef testWorkspaceDocRef = new PathRef(testWorkspacePath);
         ACP acp = session.getACP(testWorkspaceDocRef);
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);

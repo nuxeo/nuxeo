@@ -37,35 +37,28 @@ public class ActiveTopLevelFolderItemFactoryRegistry extends
     protected String activeFactory;
 
     @Override
-    public String getContributionId(
-            ActiveTopLevelFolderItemFactoryDescriptor contrib) {
+    public String getContributionId(ActiveTopLevelFolderItemFactoryDescriptor contrib) {
         return CONTRIBUTION_ID;
     }
 
     @Override
-    public void contributionUpdated(String id,
-            ActiveTopLevelFolderItemFactoryDescriptor contrib,
+    public void contributionUpdated(String id, ActiveTopLevelFolderItemFactoryDescriptor contrib,
             ActiveTopLevelFolderItemFactoryDescriptor newOrigContrib) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Updating activeTopLevelFolderItemFactory contribution %s.",
-                    contrib));
-            log.trace(String.format("Setting active factory to %s.",
-                    contrib.getName()));
+            log.trace(String.format("Updating activeTopLevelFolderItemFactory contribution %s.", contrib));
+            log.trace(String.format("Setting active factory to %s.", contrib.getName()));
         }
         activeFactory = contrib.getName();
     }
 
     @Override
-    public void contributionRemoved(String id,
-            ActiveTopLevelFolderItemFactoryDescriptor origContrib) {
+    public void contributionRemoved(String id, ActiveTopLevelFolderItemFactoryDescriptor origContrib) {
         log.trace("Clearing active factory.");
         activeFactory = null;
     }
 
     @Override
-    public ActiveTopLevelFolderItemFactoryDescriptor clone(
-            ActiveTopLevelFolderItemFactoryDescriptor orig) {
+    public ActiveTopLevelFolderItemFactoryDescriptor clone(ActiveTopLevelFolderItemFactoryDescriptor orig) {
         if (log.isTraceEnabled()) {
             log.trace(String.format("Cloning contribution %s.", orig));
         }
@@ -75,14 +68,11 @@ public class ActiveTopLevelFolderItemFactoryRegistry extends
     }
 
     @Override
-    public void merge(ActiveTopLevelFolderItemFactoryDescriptor src,
-            ActiveTopLevelFolderItemFactoryDescriptor dst) {
+    public void merge(ActiveTopLevelFolderItemFactoryDescriptor src, ActiveTopLevelFolderItemFactoryDescriptor dst) {
         if (log.isTraceEnabled()) {
-            log.trace(String.format(
-                    "Merging contribution %s to contribution %s.", src, dst));
+            log.trace(String.format("Merging contribution %s to contribution %s.", src, dst));
         }
-        if (!StringUtils.isEmpty(src.getName())
-                && !src.getName().equals(dst.getName())) {
+        if (!StringUtils.isEmpty(src.getName()) && !src.getName().equals(dst.getName())) {
             dst.setName(src.getName());
         }
     }

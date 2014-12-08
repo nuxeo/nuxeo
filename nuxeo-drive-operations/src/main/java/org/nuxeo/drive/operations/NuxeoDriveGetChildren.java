@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Get the children of the {@link FolderItem} with the given id for the
- * currently authenticated user.
+ * Get the children of the {@link FolderItem} with the given id for the currently authenticated user.
  *
  * @author Antoine Taillefer
  */
@@ -53,8 +52,7 @@ public class NuxeoDriveGetChildren {
     public Blob run() throws ClientException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        List<FileSystemItem> children = fileSystemItemManager.getChildren(id,
-                ctx.getPrincipal());
+        List<FileSystemItem> children = fileSystemItemManager.getChildren(id, ctx.getPrincipal());
         return NuxeoDriveOperationHelper.asJSONBlob(children);
     }
 

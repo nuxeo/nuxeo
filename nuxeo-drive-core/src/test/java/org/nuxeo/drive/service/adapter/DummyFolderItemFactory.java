@@ -31,65 +31,54 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Dummy folder implementation of a {@link FileSystemItemFactory} for test
- * purpose.
+ * Dummy folder implementation of a {@link FileSystemItemFactory} for test purpose.
  *
  * @author Antoine Taillefer
  */
 public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc)
-            throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
         return new DummyFolderItem(name, doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
         return getFileSystemItem(doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted, boolean relaxSyncRootConstraint)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
         return getFileSystemItem(doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
         return new DummyFolderItem(name, parentItem, doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
         return getFileSystemItem(doc, parentItem);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            FolderItem parentItem, boolean includeDeleted,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
         return getFileSystemItem(doc, parentItem);
     }
 
     @Override
     public boolean canHandleFileSystemItemId(String id) {
-        return id.startsWith(name
-                + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
+        return id.startsWith(name + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
-        String[] parts = StringUtils.split(id,
-                AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
-        CoreSession session = Framework.getLocalService(
-                FileSystemItemManager.class).getSession(parts[1], principal);
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
+        String[] parts = StringUtils.split(id, AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
+        CoreSession session = Framework.getLocalService(FileSystemItemManager.class).getSession(parts[1], principal);
         return new DummyFolderItem(name, getDocumentById(parts[2], session));
     }
 

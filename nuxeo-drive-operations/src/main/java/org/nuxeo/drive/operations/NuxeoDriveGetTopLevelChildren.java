@@ -32,11 +32,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Gets the children of the top level {@link FolderItem} for the currently
- * authenticated user.
+ * Gets the children of the top level {@link FolderItem} for the currently authenticated user.
  *
- * @deprecated use NuxeoDriveGetTopLevelFolder and the NuxeoDriveGetChildren
- *             operations instead
+ * @deprecated use NuxeoDriveGetTopLevelFolder and the NuxeoDriveGetChildren operations instead
  * @author Antoine Taillefer
  */
 @Deprecated

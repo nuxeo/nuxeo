@@ -32,8 +32,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Creates a folder with the given name in the {@link FileSystemItem} with the
- * given id for the currently authenticated user.
+ * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the currently authenticated
+ * user.
  *
  * @author Antoine Taillefer
  */
@@ -55,8 +55,7 @@ public class NuxeoDriveCreateFolder {
     public Blob run() throws ClientException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FolderItem folderItem = fileSystemItemManager.createFolder(parentId,
-                name, ctx.getPrincipal());
+        FolderItem folderItem = fileSystemItemManager.createFolder(parentId, name, ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed

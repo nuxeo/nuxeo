@@ -47,9 +47,8 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
         // Needed for JSON deserialization
     }
 
-    public FileSystemItemChangeImpl(String eventId, long eventDate,
-            String repositoryId, String docUuid, String fileSystemItemId,
-            String fileSystemItemName) {
+    public FileSystemItemChangeImpl(String eventId, long eventDate, String repositoryId, String docUuid,
+            String fileSystemItemId, String fileSystemItemName) {
         this.eventId = eventId;
         this.eventDate = eventDate;
 
@@ -67,10 +66,9 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
         this.fileSystemItemName = fileSystemItemName;
     }
 
-    public FileSystemItemChangeImpl(String eventId, long eventDate,
-            String repositoryId, String docUuid, FileSystemItem fsItem) {
-        this(eventId, eventDate, repositoryId, docUuid, fsItem.getId(),
-                fsItem.getName());
+    public FileSystemItemChangeImpl(String eventId, long eventDate, String repositoryId, String docUuid,
+            FileSystemItem fsItem) {
+        this(eventId, eventDate, repositoryId, docUuid, fsItem.getId(), fsItem.getName());
         this.fileSystemItem = fsItem;
     }
 
@@ -134,12 +132,10 @@ public class FileSystemItemChangeImpl implements FileSystemItemChange {
     @Override
     public String toString() {
         if (fileSystemItem != null) {
-            return String.format("%s(eventId=\"%s\", eventDate=%d, item=%s)",
-                    getClass().getSimpleName(), eventId, eventDate,
-                    fileSystemItem);
+            return String.format("%s(eventId=\"%s\", eventDate=%d, item=%s)", getClass().getSimpleName(), eventId,
+                    eventDate, fileSystemItem);
         } else {
-            return String.format("%s(eventId=\"%s\", eventDate=%d)",
-                    getClass().getSimpleName(), eventId, eventDate);
+            return String.format("%s(eventId=\"%s\", eventDate=%d)", getClass().getSimpleName(), eventId, eventDate);
         }
     }
 }

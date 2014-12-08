@@ -47,8 +47,7 @@ public final class NuxeoDriveOperationHelper {
         }
     }
 
-    public static void normalizeMimeTypeAndEncoding(Blob blob)
-            throws ParseException {
+    public static void normalizeMimeTypeAndEncoding(Blob blob) throws ParseException {
 
         String mimeType = blob.getMimeType();
         if (!StringUtils.isEmpty(mimeType) && !"null".equals(mimeType)) {
@@ -63,12 +62,10 @@ public final class NuxeoDriveOperationHelper {
         }
     }
 
-    public static Blob asJSONBlob(Object value) throws JsonGenerationException,
-            JsonMappingException, IOException {
+    public static Blob asJSONBlob(Object value) throws JsonGenerationException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(value);
-        return StreamingBlob.createFromByteArray(json.getBytes("UTF-8"),
-                "application/json");
+        return StreamingBlob.createFromByteArray(json.getBytes("UTF-8"), "application/json");
     }
 
 }

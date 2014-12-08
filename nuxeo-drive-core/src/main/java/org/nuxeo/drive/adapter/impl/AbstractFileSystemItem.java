@@ -70,13 +70,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     protected transient Principal principal;
 
     /**
-     * Needed for JSON serialization/deserialization since we don't serialize
-     * the principal
+     * Needed for JSON serialization/deserialization since we don't serialize the principal
      */
     protected String userName;
 
-    protected AbstractFileSystemItem(String factoryName, Principal principal,
-            boolean relaxSyncRootConstraint) {
+    protected AbstractFileSystemItem(String factoryName, Principal principal, boolean relaxSyncRootConstraint) {
         this.factoryName = factoryName;
         this.principal = principal;
         this.userName = principal.getName();
@@ -167,16 +165,13 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     /*--------------------- Comparable -------------*/
     @Override
     public int compareTo(FileSystemItem other) {
-        if (StringUtils.isEmpty(getName())
-                && StringUtils.isEmpty(other.getName())) {
+        if (StringUtils.isEmpty(getName()) && StringUtils.isEmpty(other.getName())) {
             return 0;
         }
-        if (StringUtils.isEmpty(getName())
-                && !StringUtils.isEmpty(other.getName())) {
+        if (StringUtils.isEmpty(getName()) && !StringUtils.isEmpty(other.getName())) {
             return -1;
         }
-        if (!StringUtils.isEmpty(getName())
-                && StringUtils.isEmpty(other.getName())) {
+        if (!StringUtils.isEmpty(getName()) && StringUtils.isEmpty(other.getName())) {
             return 1;
         }
         return getName().compareTo(other.getName());
@@ -201,13 +196,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     @Override
     public String toString() {
-        return String.format("%s(id=\"%s\", name=\"%s\")",
-                getClass().getSimpleName(), getId(), getName());
+        return String.format("%s(id=\"%s\", name=\"%s\")", getClass().getSimpleName(), getId(), getName());
     }
 
     /*--------------------- Protected ---------------------*/
-    protected CoreSession getSession(String repositoryName)
-            throws ClientException {
+    protected CoreSession getSession(String repositoryName) throws ClientException {
         return getFileSystemItemManager().getSession(repositoryName, principal);
     }
 
@@ -262,7 +255,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected void setUserName(String userName) throws ClientException {
         this.userName = userName;
-        this.principal = Framework.getLocalService(UserManager.class).getPrincipal(
-                userName);
+        this.principal = Framework.getLocalService(UserManager.class).getPrincipal(userName);
     }
 }

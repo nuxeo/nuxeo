@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Notify the NuxeoDriveManager service in case of document deletions so as to
- * make it possible to invalidate any cache.
+ * Notify the NuxeoDriveManager service in case of document deletions so as to make it possible to invalidate any cache.
  */
 public class NuxeoDriveCacheInvalidationListener implements EventListener {
 

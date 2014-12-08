@@ -39,8 +39,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Permission based implementation of the parent {@link FolderItem} of the
- * user's shared synchronization roots.
+ * Permission based implementation of the parent {@link FolderItem} of the user's shared synchronization roots.
  *
  * @author Antoine Taillefer
  */
@@ -50,8 +49,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
     private static final Log log = LogFactory.getLog(SharedSyncRootParentFolderItem.class);
 
-    public SharedSyncRootParentFolderItem(String factoryName,
-            Principal principal, String parentId, String parentPath,
+    public SharedSyncRootParentFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
             String folderName) throws ClientException {
         super(factoryName, principal, parentId, parentPath, folderName);
     }
@@ -64,8 +62,8 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
     public List<FileSystemItem> getChildren() throws ClientException {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(
-                NuxeoDriveManager.class).getSynchronizationRoots(principal);
+        Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(
+                principal);
         for (String repositoryName : syncRootsByRepo.keySet()) {
             CoreSession session = getSession(repositoryName);
             Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
@@ -88,10 +86,8 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                 // TODO: allow filtering by dc:creator in
                 // NuxeoDriveManager#getSynchronizationRoots(Principal
                 // principal)
-                if (!session.getPrincipal().getName().equals(
-                        doc.getPropertyValue("dc:creator"))) {
-                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
-                            doc, this);
+                if (!session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
                     if (child == null) {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(
@@ -101,9 +97,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                         continue;
                     }
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Including synchronization root %s in children.",
-                                idRef));
+                        log.debug(String.format("Including synchronization root %s in children.", idRef));
                     }
                     children.add(child);
                 }

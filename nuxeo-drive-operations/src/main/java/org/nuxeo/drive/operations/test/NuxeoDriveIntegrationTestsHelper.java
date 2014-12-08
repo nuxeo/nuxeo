@@ -60,17 +60,15 @@ public final class NuxeoDriveIntegrationTestsHelper {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         DocumentModelList testUsers = userManager.searchUsers(TEST_USER_NAME_PREFIX);
         for (DocumentModel testUser : testUsers) {
-            String testUserName = (String) testUser.getPropertyValue(userManager.getUserSchemaName()
-                    + ":" + userManager.getUserIdField());
+            String testUserName = (String) testUser.getPropertyValue(userManager.getUserSchemaName() + ":"
+                    + userManager.getUserIdField());
             if (userManager.getPrincipal(testUserName) != null) {
                 userManager.deleteUser(testUserName);
             }
-            String testUserWorkspaceName = IdUtils.generateId(testUserName,
-                    "-", false, 30);
-            String testUserWorkspacePath = getDefaultDomainPath(session) + "/"
-                    + USER_WORKSPACE_PARENT_NAME + "/" + testUserWorkspaceName;
-            DocumentRef testUserWorkspaceRef = new PathRef(
-                    testUserWorkspacePath);
+            String testUserWorkspaceName = IdUtils.generateId(testUserName, "-", false, 30);
+            String testUserWorkspacePath = getDefaultDomainPath(session) + "/" + USER_WORKSPACE_PARENT_NAME + "/"
+                    + testUserWorkspaceName;
+            DocumentRef testUserWorkspaceRef = new PathRef(testUserWorkspacePath);
             if (session.exists(testUserWorkspaceRef)) {
                 session.removeDocument(testUserWorkspaceRef);
                 session.save();
@@ -78,8 +76,8 @@ public final class NuxeoDriveIntegrationTestsHelper {
         }
 
         // Delete test workspace if exists
-        String testWorkspacePath = getDefaultDomainPath(session) + "/"
-                + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
+        String testWorkspacePath = getDefaultDomainPath(session) + "/" + TEST_WORKSPACE_PARENT_NAME + "/"
+                + TEST_WORKSPACE_NAME;
         DocumentRef testWorkspaceDocRef = new PathRef(testWorkspacePath);
         if (session.exists(testWorkspaceDocRef)) {
             session.removeDocument(testWorkspaceDocRef);
@@ -90,36 +88,29 @@ public final class NuxeoDriveIntegrationTestsHelper {
         Framework.getLocalService(UserProfileService.class).clearCache();
     }
 
-    public static String getDefaultDomainPath(CoreSession session)
-            throws ClientException {
+    public static String getDefaultDomainPath(CoreSession session) throws ClientException {
         String query = "SELECT * FROM Document where ecm:primaryType = 'Domain'";
         DocumentModelList results = session.query(query);
         if (results.isEmpty()) {
-            throw new ClientException(String.format(
-                    "Found no domains in repository %s",
-                    session.getRepositoryName()));
+            throw new ClientException(String.format("Found no domains in repository %s", session.getRepositoryName()));
         }
         if (results.size() > 1) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Found more than one domain in repository %s, using first one.",
+                log.debug(String.format("Found more than one domain in repository %s, using first one.",
                         session.getRepositoryName()));
             }
         }
         DocumentModel defaultDomain = results.get(0);
         String defaultDomainPath = defaultDomain.getPathAsString();
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Using default domain %s",
-                    defaultDomainPath));
+            log.debug(String.format("Using default domain %s", defaultDomainPath));
         }
         return defaultDomainPath;
     }
 
     public static void checkOperationAllowed() {
-        if (!Framework.isTestModeSet()
-                && Framework.getProperty("org.nuxeo.ecm.tester.name") == null) {
-            throw new UnsupportedOperationException(
-                    "This operation cannot be run unless test mode is set.");
+        if (!Framework.isTestModeSet() && Framework.getProperty("org.nuxeo.ecm.tester.name") == null) {
+            throw new UnsupportedOperationException("This operation cannot be run unless test mode is set.");
         }
     }
 

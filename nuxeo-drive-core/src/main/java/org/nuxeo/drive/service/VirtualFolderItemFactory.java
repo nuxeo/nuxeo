@@ -22,8 +22,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Interface for the classes contributed to the
- * {@code topLevelFolderItemFactory} extension point of the
+ * Interface for the classes contributed to the {@code topLevelFolderItemFactory} extension point of the
  * {@link FileSystemItemAdapterService}.
  * <p>
  * Allows to get a virtual {@link FolderItem} for a given user.

@@ -34,11 +34,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- * Generates a conflicted name for a {@link FileSystemItem} given its name, the
- * currently authenticated user's first name and last name.
- *
- * Doing so as an operation make it possible to override this part without
- * having to fork the client codebase.
+ * Generates a conflicted name for a {@link FileSystemItem} given its name, the currently authenticated user's first
+ * name and last name. Doing so as an operation make it possible to override this part without having to fork the client
+ * codebase.
  *
  * @author Olivier Grisel
  */
@@ -66,8 +64,7 @@ public class NuxeoDriveGenerateConflictedItemName {
         }
         NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
         String userName = principal.getName(); // fallback
-        if (!StringUtils.isBlank(principal.getLastName())
-                && !StringUtils.isBlank(principal.getFirstName())) {
+        if (!StringUtils.isBlank(principal.getLastName()) && !StringUtils.isBlank(principal.getFirstName())) {
             // build more user friendly name from user info
             userName = principal.getFirstName() + " " + principal.getLastName();
         }
@@ -76,8 +73,7 @@ public class NuxeoDriveGenerateConflictedItemName {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh-mm");
         dateFormat.setCalendar(userDate);
         String formatedDate = dateFormat.format(userDate.getTime());
-        String contextSection = String.format(" (%s - %s)", userName,
-                formatedDate);
+        String contextSection = String.format(" (%s - %s)", userName, formatedDate);
         String conflictedName = name + contextSection + extension;
         return NuxeoDriveOperationHelper.asJSONBlob(conflictedName);
     }

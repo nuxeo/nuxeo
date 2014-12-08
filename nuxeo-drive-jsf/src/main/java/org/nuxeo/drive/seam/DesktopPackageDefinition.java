@@ -18,8 +18,7 @@
 package org.nuxeo.drive.seam;
 
 /**
- * Data transfer object to display the list of available packages for download
- * in the User Center.
+ * Data transfer object to display the list of available packages for download in the User Center.
  *
  * @since 5.7
  */

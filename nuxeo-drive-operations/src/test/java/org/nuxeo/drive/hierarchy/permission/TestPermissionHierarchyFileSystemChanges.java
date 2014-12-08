@@ -76,8 +76,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * Tests the file system changes in the case of the user workspace and
- * permission based hierarchy.
+ * Tests the file system changes in the case of the user workspace and permission based hierarchy.
  *
  * @author Antoine Taillefer
  * @see AuditChangeFinder#getFileSystemChanges
@@ -86,12 +85,9 @@ import com.google.inject.Inject;
 @Features({ TransactionalFeature.class, AuditFeature.class })
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
-        "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.query.api",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
+        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {
 
@@ -139,8 +135,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Before
     public void init() throws Exception {
         // Enable deletion listener because the tear down disables it
-        eventServiceAdmin.setListenerEnabledFlag(
-                "nuxeoDriveFileSystemDeletionListener", true);
+        eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
         // Create test users
         createUser("user1", "user1");
@@ -153,10 +148,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         principal2 = session2.getPrincipal();
 
         // Create personal workspace for user1
-        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session1, null);
-        userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
-                + userWorkspace1.getId();
+        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);
+        userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         // Wait for personal workspace creation event to be logged in the audit
@@ -179,24 +172,20 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Disable deletion listener for the repository cleanup phase done in
         // CoreFeature#afterTeardown to avoid exception due to no active
         // transaction in FileSystemItemManagerImpl#getSession
-        eventServiceAdmin.setListenerEnabledFlag(
-                "nuxeoDriveFileSystemDeletionListener", false);
+        eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", false);
 
         // Clean up audit log
         cleanUpAuditLog();
     }
 
     /**
-     * When an unregistered synchronization root can still be adapted as a
-     * FileSystemItem, for example in the case of the "My Docs" virtual folder
-     * in the permission based hierarchy implementation, checks that the related
-     * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder}
-     * contains a non null {@code fileSystemItem} attribute, that is to be used
-     * by the client.
+     * When an unregistered synchronization root can still be adapted as a FileSystemItem, for example in the case of
+     * the "My Docs" virtual folder in the permission based hierarchy implementation, checks that the related
+     * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder} contains a non null {@code fileSystemItem}
+     * attribute, that is to be used by the client.
      */
     @Test
-    public void testAdaptableUnregisteredSyncRootChange()
-            throws ClientException, InterruptedException {
+    public void testAdaptableUnregisteredSyncRootChange() throws ClientException, InterruptedException {
 
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -206,10 +195,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         // user1
         TransactionHelper.startTransaction();
         try {
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session1.getPrincipal(), userWorkspace1, session1);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(
-                    session1).contains(new IdRef(userWorkspace1.getId())));
+            nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(), userWorkspace1, session1);
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(
+                    new IdRef(userWorkspace1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -231,10 +219,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         // user1
         TransactionHelper.startTransaction();
         try {
-            nuxeoDriveManager.unregisterSynchronizationRoot(
-                    session1.getPrincipal(), userWorkspace1, session1);
-            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(
-                    session1).contains(new IdRef(userWorkspace1.getId())));
+            nuxeoDriveManager.unregisterSynchronizationRoot(session1.getPrincipal(), userWorkspace1, session1);
+            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(
+                    new IdRef(userWorkspace1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -256,22 +243,20 @@ public class TestPermissionHierarchyFileSystemChanges {
     /**
      * Tests the rootless file system items, typically:
      * <ul>
-     * <li>A folder registered as a synchronization root but that is not
-     * adaptable as a {@link FileSystemItem}. For example if it is handled by
-     * the {@link PermissionSyncRootFactory} and
-     * {@link PermissionSyncRootFactory#isFileSystemItem(DocumentModel, boolean)}
-     * returns {@code false} because of the missing required permission.</li>
+     * <li>A folder registered as a synchronization root but that is not adaptable as a {@link FileSystemItem}. For
+     * example if it is handled by the {@link PermissionSyncRootFactory} and
+     * {@link PermissionSyncRootFactory#isFileSystemItem(DocumentModel, boolean)} returns {@code false} because of the
+     * missing required permission.</li>
      * <li>A file created in such a folder.</li>
-     * <li>A file created in a folder registered as a synchronization root on
-     * which the user doesn't have Read access.</li>
+     * <li>A file created in a folder registered as a synchronization root on which the user doesn't have Read access.</li>
      * </ul>
-     * For the test, the required permission for a folder to be adapted by the
-     * {@link PermissionSyncRootFactory} is Everything.
+     * For the test, the required permission for a folder to be adapted by the {@link PermissionSyncRootFactory} is
+     * Everything.
      *
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     *
+     * 
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
@@ -296,15 +281,11 @@ public class TestPermissionHierarchyFileSystemChanges {
         TransactionHelper.startTransaction();
         try {
             // Populate user1's personal workspace
-            user1Folder1 = createFolder(session1,
-                    userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
-            user1Folder2 = createFolder(session1,
-                    userWorkspace1.getPathAsString(), "user1Folder2", "Folder");
+            user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
+            user1Folder2 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder2", "Folder");
             session1.save();
-            setPermission(session1, user1Folder1, "user2",
-                    SecurityConstants.EVERYTHING, true);
-            setPermission(session1, user1Folder2, "user2",
-                    SecurityConstants.READ_WRITE, true);
+            setPermission(session1, user1Folder1, "user2", SecurityConstants.EVERYTHING, true);
+            setPermission(session1, user1Folder2, "user2", SecurityConstants.READ_WRITE, true);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -317,10 +298,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         // so appears in the file system changes
         TransactionHelper.startTransaction();
         try {
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session2.getPrincipal(), user1Folder1, session2);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(
-                    session2).contains(new IdRef(user1Folder1.getId())));
+            nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), user1Folder1, session2);
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
+                    new IdRef(user1Folder1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -329,8 +309,7 @@ public class TestPermissionHierarchyFileSystemChanges {
             List<FileSystemItemChange> changes = getChanges(principal2);
             assertEquals(1, changes.size());
             FileSystemItemChange change = changes.get(0);
-            assertEquals(SYNC_ROOT_ID_PREFIX + user1Folder1.getId(),
-                    change.getFileSystemItemId());
+            assertEquals(SYNC_ROOT_ID_PREFIX + user1Folder1.getId(), change.getFileSystemItemId());
             assertEquals("user1Folder1", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
         } finally {
@@ -341,10 +320,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         // adaptable so doesn't appear in the file system changes
         TransactionHelper.startTransaction();
         try {
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session2.getPrincipal(), user1Folder2, session2);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(
-                    session2).contains(new IdRef(user1Folder2.getId())));
+            nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), user1Folder2, session2);
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
+                    new IdRef(user1Folder2.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -361,8 +339,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         // the file system changes
         TransactionHelper.startTransaction();
         try {
-            createFile(session1, user1Folder2.getPathAsString(), "user1File1",
-                    "File", "user1File1.txt", CONTENT_PREFIX + "user1File1");
+            createFile(session1, user1Folder2.getPathAsString(), "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
+                    + "user1File1");
             session1.save();
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -382,11 +360,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         TransactionHelper.startTransaction();
         try {
             resetPermissions(session1, user1Folder2.getRef(), "user2");
-            user1File2 = createFile(session1, user1Folder2.getPathAsString(),
-                    "user1File2", "File", "user1File2.txt", CONTENT_PREFIX
-                            + "user1File2");
-            setPermission(session1, user1File2, "user2",
-                    SecurityConstants.READ, true);
+            user1File2 = createFile(session1, user1Folder2.getPathAsString(), "user1File2", "File", "user1File2.txt",
+                    CONTENT_PREFIX + "user1File2");
+            setPermission(session1, user1File2, "user2", SecurityConstants.READ, true);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -400,16 +376,14 @@ public class TestPermissionHierarchyFileSystemChanges {
 
             FileSystemItemChange change = changes.get(0);
             assertEquals("securityUpdated", change.getEventId());
-            assertEquals("test#" + user1File2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + user1File2.getId(), change.getFileSystemItemId());
             assertEquals("user1File2.txt", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since parent is not
             assertNull(change.getFileSystemItem());
 
             change = changes.get(1);
             assertEquals("securityUpdated", change.getEventId());
-            assertEquals("test#" + user1Folder2.getId(),
-                    change.getFileSystemItemId());
+            assertEquals("test#" + user1Folder2.getId(), change.getFileSystemItemId());
             assertEquals("user1Folder2", change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission
             assertNull(change.getFileSystemItem());
@@ -422,9 +396,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         Framework.getLocalService(ReloadService.class).reload();
     }
 
-    protected DocumentModel createFile(CoreSession session, String path,
-            String name, String type, String fileName, String content)
-            throws ClientException {
+    protected DocumentModel createFile(CoreSession session, String path, String name, String type, String fileName,
+            String content) throws ClientException {
 
         DocumentModel file = session.createDocumentModel(path, name, type);
         Blob blob = new StringBlob(content);
@@ -433,15 +406,14 @@ public class TestPermissionHierarchyFileSystemChanges {
         return session.createDocument(file);
     }
 
-    protected DocumentModel createFolder(CoreSession session, String path,
-            String name, String type) throws ClientException {
+    protected DocumentModel createFolder(CoreSession session, String path, String name, String type)
+            throws ClientException {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         return session.createDocument(folder);
     }
 
-    protected void createUser(String userName, String password)
-            throws ClientException {
+    protected void createUser(String userName, String password) throws ClientException {
         Session userDir = directoryService.getDirectory("userDirectory").getSession();
         try {
             Map<String, Object> user = new HashMap<String, Object>();
@@ -454,8 +426,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected void deleteUser(String userName) throws ClientException {
-        org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory(
-                "userDirectory").getSession();
+        org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory("userDirectory").getSession();
         try {
             userDir.deleteEntry(userName);
         } finally {
@@ -463,9 +434,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
     }
 
-    protected void setPermission(CoreSession session, DocumentModel doc,
-            String userName, String permission, boolean isGranted)
-            throws ClientException {
+    protected void setPermission(CoreSession session, DocumentModel doc, String userName, String permission,
+            boolean isGranted) throws ClientException {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
@@ -473,8 +443,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         session.save();
     }
 
-    protected void resetPermissions(CoreSession session, DocumentRef docRef,
-            String userName) throws ClientException {
+    protected void resetPermissions(CoreSession session, DocumentRef docRef, String userName) throws ClientException {
         ACP acp = session.getACP(docRef);
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();
@@ -493,11 +462,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         eventService.waitForAsyncCompletion();
     }
 
-    protected List<FileSystemItemChange> getChanges(Principal principal)
-            throws ClientException, InterruptedException {
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(
-                principal, Collections.<String, Set<IdRef>> emptyMap(),
-                lastEventLogId);
+    protected List<FileSystemItemChange> getChanges(Principal principal) throws ClientException, InterruptedException {
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
+                Collections.<String, Set<IdRef>> emptyMap(), lastEventLogId);
         assertNotNull(changeSummary);
         lastEventLogId = changeSummary.getUpperBound();
         return changeSummary.getFileSystemChanges();
@@ -506,16 +473,14 @@ public class TestPermissionHierarchyFileSystemChanges {
     protected void cleanUpAuditLog() {
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
-        ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(
-                true, new RunVoid() {
-                    @Override
-                    public void runWith(EntityManager em)
-                            throws ClientException {
-                        em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
-                        em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
-                        em.createNativeQuery("delete from nxp_logs").executeUpdate();
-                    }
-                });
+        ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            @Override
+            public void runWith(EntityManager em) throws ClientException {
+                em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+                em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+                em.createNativeQuery("delete from nxp_logs").executeUpdate();
+            }
+        });
     }
 
 }
