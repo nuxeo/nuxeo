@@ -257,6 +257,10 @@
       <fields>
         <field>size</field>
       </fields>
+      <controls mode="any">
+        <control name="deprecatedVersion">6.0</control>
+        <control name="deprecatedDescription">Size must now be set in css, not with the size attribute</control>
+      </controls>
     </widget>
 
     <widget name="validator" type="text">
@@ -1221,6 +1225,9 @@
                   <widget category="widgetTypeConf">maxlength</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">size</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">style</widget>
                 </row>
                 <row>
@@ -1324,6 +1331,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">maxlength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">size</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">style</widget>
@@ -1432,6 +1442,9 @@
                   <widget category="widgetTypeConf">maxlength</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">size</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">style</widget>
                 </row>
                 <row>
@@ -1514,6 +1527,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">maxlength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">size</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">accesskey</widget>
