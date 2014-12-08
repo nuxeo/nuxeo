@@ -19,13 +19,16 @@ package org.nuxeo.ecm.platform.tag;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -60,31 +63,35 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             CoreSession session = docCtx.getCoreSession();
             DocumentModel doc = docCtx.getSourceDocument();
-            if (doc == null || doc instanceof DeletedDocumentModel) {
+            if (doc == null) {
                 return;
             }
             String docId = doc.getId();
-
             TagService tagService = Framework.getLocalService(TagService.class);
+            if (doc instanceof DeletedDocumentModel) {
+                tagService.removeTags(session, docId);
+                return;
+            }
             switch (name) {
             case DOCUMENT_CHECKEDIN:
                 DocumentRef versionRef = (DocumentRef) ctx.getProperty("checkedInVersionRef");
                 if (versionRef instanceof IdRef) {
                     tagService.copyTags(session, docId, versionRef.toString());
-                    session.save();
                 }
                 break;
             case DOCUMENT_PROXY_PUBLISHED:
                 if (doc.isProxy()) {
                     DocumentModel version = session.getSourceDocument(doc.getRef());
                     tagService.copyTags(session, version.getId(), docId);
-                    session.save();
                 }
                 break;
             case DOCUMENT_RESTORED:
                 String versionUUID = (String) ctx.getProperty(VersioningDocument.RESTORED_VERSION_UUID_KEY);
                 tagService.replaceTags(session, versionUUID, docId);
-                session.save();
+                break;
+            case DOCUMENT_REMOVED:
+            case TRANSITION_EVENT:
+                tagService.removeTags(session, docId);
                 break;
             default:
                 break;
@@ -97,6 +104,9 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
         String name = event.getName();
         return DOCUMENT_CHECKEDIN.equals(name)
                 || DOCUMENT_PROXY_PUBLISHED.equals(name)
-                || DOCUMENT_RESTORED.equals(name);
+                || DOCUMENT_RESTORED.equals(name)
+                || DOCUMENT_REMOVED.equals(name)
+                || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(event.getContext().getProperty(
+                        LifeCycleConstants.TRANSTION_EVENT_OPTION_TO)));
     }
 }
