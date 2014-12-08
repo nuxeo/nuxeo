@@ -45,7 +45,6 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.ecm.core.api.IdRef;
 
-
 /**
  * The root entry for the WebEngine module.
  *
@@ -65,24 +64,20 @@ public class EasyShare extends ModuleRoot {
 
     @Path("{folderId}")
     @GET
-    public Object getFolderListing(@PathParam("folderId")
-    String folderId) {
+    public Object getFolderListing(@PathParam("folderId") String folderId) {
         return new EasyShareUnrestrictedRunner() {
             @Override
-            public Object run(CoreSession session, IdRef docRef)
-                    throws ClientException {
+            public Object run(CoreSession session, IdRef docRef) throws ClientException {
                 if (session.exists(docRef)) {
                     DocumentModel docFolder = session.getDocument(docRef);
 
                     Date today = new Date();
-                    if (today.after(docFolder.getProperty("dc:expired").getValue(
-                            Date.class))) {
+                    if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
                         return getView("denied");
                     }
 
                     if (!docFolder.getType().equals("EasyShareFolder")) {
-                        return Response.serverError().status(
-                                Response.Status.NOT_FOUND).build();
+                        return Response.serverError().status(Response.Status.NOT_FOUND).build();
                     }
 
                     DocumentModelList docList = session.getChildren(docRef);
@@ -96,8 +91,7 @@ public class EasyShare extends ModuleRoot {
                         Map<String, Object> params = new HashMap<String, Object>();
                         params.put("event", "Access");
                         params.put("category", "Document");
-                        params.put("comment",
-                                "IP: " + request.getRemoteAddr());
+                        params.put("comment", "IP: " + request.getRemoteAddr());
                         AutomationService service = Framework.getLocalService(AutomationService.class);
                         service.run(ctx, "Audit.Log", params);
                     } catch (Exception ex) {
@@ -105,8 +99,7 @@ public class EasyShare extends ModuleRoot {
                         return getView("denied");
                     }
 
-                    return getView("folderList").arg("docFolder", docFolder).arg(
-                            "docList", docList);
+                    return getView("folderList").arg("docFolder", docFolder).arg("docList", docList);
                 } else {
 
                     return getView("denied");
@@ -123,13 +116,11 @@ public class EasyShare extends ModuleRoot {
 
     @GET
     @Path("{folderId}/{fileId}/{fileName}")
-    public Response getFileStream(@PathParam("fileId")
-    String fileId) throws ClientException {
+    public Response getFileStream(@PathParam("fileId") String fileId) throws ClientException {
 
         return (Response) new EasyShareUnrestrictedRunner() {
             @Override
-            public Object run(CoreSession session, IdRef docRef)
-                    throws ClientException {
+            public Object run(CoreSession session, IdRef docRef) throws ClientException {
                 if (session.exists(docRef)) {
                     try {
                         DocumentModel doc = session.getDocument(docRef);
@@ -142,20 +133,16 @@ public class EasyShare extends ModuleRoot {
                         ctx.setInput(doc);
 
                         Date today = new Date();
-                        if (today.after(docFolder.getProperty("dc:expired").getValue(
-                                Date.class))) {
-                            return Response.serverError().status(
-                                    Response.Status.NOT_FOUND).build();
+                        if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
+                            return Response.serverError().status(Response.Status.NOT_FOUND).build();
 
                         }
-
 
                         // Audit.Log operation parameter setting
                         Map<String, Object> params = new HashMap<String, Object>();
                         params.put("event", "Download");
                         params.put("category", "Document");
-                        params.put("comment",
-                                "IP: " + request.getRemoteAddr());
+                        params.put("comment", "IP: " + request.getRemoteAddr());
                         AutomationService service = Framework.getLocalService(AutomationService.class);
                         service.run(ctx, "Audit.Log", params);
 
@@ -165,18 +152,19 @@ public class EasyShare extends ModuleRoot {
                             service.run(ctx, "Audit.Log", params);
                         }
 
-                        //Email notification
+                        // Email notification
                         String email = docFolder.getProperty("eshare:contactEmail").getValue(String.class);
                         String fileName = blob.getFilename();
                         String shareName = docFolder.getName();
-                        try{
+                        try {
                             log.debug("Easyshare: starting email");
                             EmailHelper emailer = new EmailHelper();
                             Map<String, Object> mailProps = new Hashtable<String, Object>();
                             mailProps.put("mail.from", "system@nuxeo.com");
                             mailProps.put("mail.to", email);
                             mailProps.put("subject", "EasyShare Download Notification");
-                            mailProps.put("body", "File "+fileName+" from "+shareName+" downloaded by "+request.getRemoteAddr());
+                            mailProps.put("body", "File " + fileName + " from " + shareName + " downloaded by "
+                                    + request.getRemoteAddr());
                             mailProps.put("template", "easyShareEmail");
                             emailer.sendmail(mailProps);
                             log.debug("Easyshare: completed email");
@@ -184,19 +172,15 @@ public class EasyShare extends ModuleRoot {
                             log.error("Cannot send easyShare notification email", ex);
                         }
 
-
-                        return Response.ok(blob.getStream(),
-                                blob.getMimeType()).build();
+                        return Response.ok(blob.getStream(), blob.getMimeType()).build();
 
                     } catch (Exception ex) {
                         log.error("error ", ex);
-                        return Response.serverError().status(
-                                Response.Status.NOT_FOUND).build();
+                        return Response.serverError().status(Response.Status.NOT_FOUND).build();
                     }
 
                 } else {
-                    return Response.serverError().status(
-                            Response.Status.NOT_FOUND).build();
+                    return Response.serverError().status(Response.Status.NOT_FOUND).build();
                 }
             }
         }.runUnrestricted(fileId);

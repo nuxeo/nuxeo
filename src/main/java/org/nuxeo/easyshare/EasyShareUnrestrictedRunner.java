@@ -54,21 +54,18 @@ public abstract class EasyShareUnrestrictedRunner {
 
             } finally {
                 final CoreSession session2close = coreSession;
-                RequestContext.getActiveContext().addRequestCleanupHandler(
-                        new RequestCleanupHandler() {
+                RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
 
-                            @Override
-                            public void cleanup(HttpServletRequest req) {
-                                try {
-                                    Repository.close(session2close);
-                                    lc.logout();
-                                } catch (Exception e) {
-                                    log.error(
-                                            "Error during request context cleanup",
-                                            e);
-                                }
-                            }
-                        });
+                    @Override
+                    public void cleanup(HttpServletRequest req) {
+                        try {
+                            Repository.close(session2close);
+                            lc.logout();
+                        } catch (Exception e) {
+                            log.error("Error during request context cleanup", e);
+                        }
+                    }
+                });
 
             }
         } catch (Exception ex) {
@@ -78,6 +75,5 @@ public abstract class EasyShareUnrestrictedRunner {
 
     }
 
-    public abstract Object run(CoreSession coreSession, IdRef docId)
-            throws ClientException;
+    public abstract Object run(CoreSession coreSession, IdRef docId) throws ClientException;
 }
