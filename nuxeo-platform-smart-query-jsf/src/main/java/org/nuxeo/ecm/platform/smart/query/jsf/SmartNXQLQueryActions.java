@@ -39,11 +39,9 @@ import org.nuxeo.ecm.platform.smart.query.SmartQuery;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
- * Seam component handling a {@link IncrementalSmartNXQLQuery} instance created
- * for a given existing query string.
+ * Seam component handling a {@link IncrementalSmartNXQLQuery} instance created for a given existing query string.
  * <p>
- * Also handles undo/redo actions and all ajax interactions for an incremental
- * query build page.
+ * Also handles undo/redo actions and all ajax interactions for an incremental query build page.
  *
  * @since 5.4
  * @author Anahide Tchertchian
@@ -69,21 +67,18 @@ public class SmartNXQLQueryActions implements Serializable {
     protected List<SortInfo> searchSortInfos;
 
     /**
-     * Request parameter passed from the widget that makes it possible to
-     * decide whether the backing object should be updated when performing ajax
-     * calls.
+     * Request parameter passed from the widget that makes it possible to decide whether the backing object should be
+     * updated when performing ajax calls.
      * <p>
-     * For instance, on the smart search form, any ajax action should update
-     * the backing property {@link #queryPart}. When the query part is held by
-     * a document property, it should not be updated on ajax actions: only the
-     * global submit of the form should impact it.
+     * For instance, on the smart search form, any ajax action should update the backing property {@link #queryPart}.
+     * When the query part is held by a document property, it should not be updated on ajax actions: only the global
+     * submit of the form should impact it.
      */
     @RequestParameter
     protected Boolean updateQueryPart;
 
     /**
-     * Request parameter making it possible to find the component holding the
-     * query part to update it.
+     * Request parameter making it possible to find the component holding the query part to update it.
      */
     @RequestParameter
     protected String queryPartComponentId;
@@ -117,8 +112,7 @@ public class SmartNXQLQueryActions implements Serializable {
         this.searchSortInfos = searchSortInfos;
     }
 
-    public void initCurrentSmartQuery(String existingQueryPart,
-            boolean resetHistory) {
+    public void initCurrentSmartQuery(String existingQueryPart, boolean resetHistory) {
         currentSmartQuery = new IncrementalSmartNXQLQuery(existingQueryPart);
         if (resetHistory) {
             queryPartHistory = null;
@@ -129,12 +123,11 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * Creates a new {@link #currentSmartQuery} instance.
      * <p>
-     * This method is supposed to be called once when loading a new page: it
-     * will initialize the smart query object according to the current existing
-     * qury part.
+     * This method is supposed to be called once when loading a new page: it will initialize the smart query object
+     * according to the current existing qury part.
      * <p>
-     * It should not be called when there are validation errors happening on
-     * the page, otherwise the new query part may be discarded.
+     * It should not be called when there are validation errors happening on the page, otherwise the new query part may
+     * be discarded.
      */
     public void initCurrentSmartQuery(String existingQueryPart) {
         initCurrentSmartQuery(existingQueryPart, true);
@@ -148,11 +141,9 @@ public class SmartNXQLQueryActions implements Serializable {
     }
 
     /**
-     * Updates the current {@link #currentSmartQuery} instance according to
-     * changes on the existing query part.
+     * Updates the current {@link #currentSmartQuery} instance according to changes on the existing query part.
      * <p>
-     * if request parameters {@link #updateQueryPart} is true, the field
-     * {@link #queryPart} will also be edited.
+     * if request parameters {@link #updateQueryPart} is true, the field {@link #queryPart} will also be edited.
      */
     public void queryPartChanged(ActionEvent event) throws ClientException {
         UIComponent comp = event.getComponent();
@@ -180,19 +171,15 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * Updates the JSF component holding the query part.
      * <p>
-     * if request parameters {@link #updateQueryPart} is true, the field
-     * {@link #queryPart} will also be edited.
+     * if request parameters {@link #updateQueryPart} is true, the field {@link #queryPart} will also be edited.
      *
-     * @param event the JSF event that will give an anchor on the JSF tree to
-     *            find the target component.
+     * @param event the JSF event that will give an anchor on the JSF tree to find the target component.
      * @param newQuery the new query to set.
-     * @param rebuildSmartQuery if true, will rebuild the smart query
-     *            completely, otherwise will just set the query part on it.
-     * @throws ClientException if target JSF component is not found in the JSF
-     *             tree.
+     * @param rebuildSmartQuery if true, will rebuild the smart query completely, otherwise will just set the query part
+     *            on it.
+     * @throws ClientException if target JSF component is not found in the JSF tree.
      */
-    protected void setQueryPart(ActionEvent event, String newQuery,
-            boolean rebuildSmartQuery) throws ClientException {
+    protected void setQueryPart(ActionEvent event, String newQuery, boolean rebuildSmartQuery) throws ClientException {
         if (currentSmartQuery != null) {
             UIComponent component = event.getComponent();
             if (component == null) {
@@ -200,8 +187,8 @@ public class SmartNXQLQueryActions implements Serializable {
             }
             // find component to update in the hierarchy of JSF components:
             // this is specific to rendering structure...
-            EditableValueHolder queryPartComp = ComponentUtils.getComponent(
-                    component, queryPartComponentId, EditableValueHolder.class);
+            EditableValueHolder queryPartComp = ComponentUtils.getComponent(component, queryPartComponentId,
+                    EditableValueHolder.class);
             if (queryPartComp != null) {
                 // set submitted value to ensure validation
                 queryPartComp.setSubmittedValue(newQuery);
@@ -228,8 +215,7 @@ public class SmartNXQLQueryActions implements Serializable {
     }
 
     /**
-     * Updates the query part, asking the {@link #currentSmartQuery} to build
-     * the new resulting query.
+     * Updates the query part, asking the {@link #currentSmartQuery} to build the new resulting query.
      *
      * @see #setQueryPart(ActionEvent, String)
      */
@@ -276,8 +262,7 @@ public class SmartNXQLQueryActions implements Serializable {
         return hasQueryPartHistory(redoQueryPartHistory);
     }
 
-    public void undoHistoryChanges(ActionEvent event,
-            HistoryList<String> history, HistoryList<String> redoHistory)
+    public void undoHistoryChanges(ActionEvent event, HistoryList<String> history, HistoryList<String> redoHistory)
             throws ClientException {
         if (!hasQueryPartHistory(history)) {
             return;
@@ -309,8 +294,7 @@ public class SmartNXQLQueryActions implements Serializable {
         undoHistoryChanges(event, redoQueryPartHistory, null);
     }
 
-    protected void addToHistory(String queryPart,
-            HistoryList<String> queryPartHistory) {
+    protected void addToHistory(String queryPart, HistoryList<String> queryPartHistory) {
         if (queryPartHistory == null) {
             return;
         }
@@ -335,27 +319,23 @@ public class SmartNXQLQueryActions implements Serializable {
     }
 
     /**
-     * Validates the query part: throws a {@link ValidatorException} if query
-     * is not a String, or if {@link IncrementalSmartNXQLQuery#isValid(String)}
-     * returns false.
+     * Validates the query part: throws a {@link ValidatorException} if query is not a String, or if
+     * {@link IncrementalSmartNXQLQuery#isValid(String)} returns false.
      *
      * @see IncrementalSmartNXQLQuery#isValid(String)
      */
-    public void validateQueryPart(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateQueryPart(FacesContext context, UIComponent component, Object value) {
         if (value == null || !(value instanceof String)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "error.smart.query.invalidQuery"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "error.smart.query.invalidQuery"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
         String query = (String) value;
         if (!IncrementalSmartNXQLQuery.isValid(query)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "error.smart.query.invalidQuery"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "error.smart.query.invalidQuery"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -365,8 +345,8 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * Returns true if current request is an ajax request.
      * <p>
-     * Useful when some component should be required only when the global form
-     * is submitted, and not when ajax calls are performed.
+     * Useful when some component should be required only when the global form is submitted, and not when ajax calls are
+     * performed.
      */
     public boolean isAjaxRequest() {
         FacesContext context = FacesContext.getCurrentInstance();

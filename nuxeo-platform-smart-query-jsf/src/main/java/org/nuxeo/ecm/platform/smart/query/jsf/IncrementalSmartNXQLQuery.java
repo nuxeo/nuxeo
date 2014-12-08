@@ -39,8 +39,7 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
 
     public static enum SPECIAL_OPERATORS {
 
-        CONTAINS("CONTAINS"), BETWEEN("BETWEEN"), NOT_CONTAINS("NOT CONTAINS"), NOT_STARTSWITH(
-                "NOT STARTSWITH");
+        CONTAINS("CONTAINS"), BETWEEN("BETWEEN"), NOT_CONTAINS("NOT CONTAINS"), NOT_STARTSWITH("NOT STARTSWITH");
 
         String stringValue;
 
@@ -59,8 +58,7 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
 
     final SimpleDateFormat isoDate = new SimpleDateFormat("yyyy-MM-dd");
 
-    final SimpleDateFormat isoTimeStamp = new SimpleDateFormat(
-            "yyyy-MM-dd hh:mm:ss");
+    final SimpleDateFormat isoTimeStamp = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     public IncrementalSmartNXQLQuery(String existingQueryPart) {
         super(existingQueryPart);
@@ -83,8 +81,7 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                 builder.append("(");
             }
             if (Boolean.TRUE.equals(addNotOperator)
-                    || SPECIAL_OPERATORS.NOT_STARTSWITH.getStringValue().equals(
-                            conditionalOperator)) {
+                    || SPECIAL_OPERATORS.NOT_STARTSWITH.getStringValue().equals(conditionalOperator)) {
                 builder.append("NOT ");
             }
             if (leftExpression != null) {
@@ -92,14 +89,11 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                 builder.append(" ");
             }
             if (conditionalOperator != null) {
-                if (SPECIAL_OPERATORS.CONTAINS.getStringValue().equals(
-                        conditionalOperator)) {
+                if (SPECIAL_OPERATORS.CONTAINS.getStringValue().equals(conditionalOperator)) {
                     builder.append("LIKE");
-                } else if (SPECIAL_OPERATORS.NOT_CONTAINS.getStringValue().equals(
-                        conditionalOperator)) {
+                } else if (SPECIAL_OPERATORS.NOT_CONTAINS.getStringValue().equals(conditionalOperator)) {
                     builder.append("NOT LIKE");
-                } else if (SPECIAL_OPERATORS.NOT_STARTSWITH.getStringValue().equals(
-                        conditionalOperator)) {
+                } else if (SPECIAL_OPERATORS.NOT_STARTSWITH.getStringValue().equals(conditionalOperator)) {
                     // negation already added above
                     builder.append("STARTSWITH");
                 } else {
@@ -115,22 +109,18 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                         builder.append(0);
                     }
                 } else if (stringValue != null) {
-                    if (SPECIAL_OPERATORS.CONTAINS.getStringValue().equals(
-                            conditionalOperator)
-                            || SPECIAL_OPERATORS.NOT_CONTAINS.getStringValue().equals(
-                                    conditionalOperator)) {
+                    if (SPECIAL_OPERATORS.CONTAINS.getStringValue().equals(conditionalOperator)
+                            || SPECIAL_OPERATORS.NOT_CONTAINS.getStringValue().equals(conditionalOperator)) {
                         builder.append("'%");
                         if (Boolean.TRUE.equals(escapeValue)) {
-                            builder.append(String.format("%s",
-                                    escaper.escape(stringValue)));
+                            builder.append(String.format("%s", escaper.escape(stringValue)));
                         } else {
                             builder.append(stringValue);
                         }
                         builder.append("%'");
                     } else {
                         if (Boolean.TRUE.equals(escapeValue)) {
-                            builder.append(String.format("'%s'",
-                                    escaper.escape(stringValue)));
+                            builder.append(String.format("'%s'", escaper.escape(stringValue)));
                         } else {
                             builder.append(String.format("'%s'", stringValue));
                         }
@@ -140,49 +130,40 @@ public class IncrementalSmartNXQLQuery extends IncrementalSmartQuery {
                     values = stringListValue.toArray(values);
                     if (Boolean.TRUE.equals(escapeValue)) {
                         for (int i = 0; i < values.length; i++) {
-                            values[i] = String.format("'%s'",
-                                    escaper.escape(values[i]));
+                            values[i] = String.format("'%s'", escaper.escape(values[i]));
                         }
                     } else {
                         for (int i = 0; i < values.length; i++) {
                             values[i] = String.format("'%s'", values[i]);
                         }
                     }
-                    builder.append(String.format("(%s)", StringUtils.join(
-                            values, ",")));
+                    builder.append(String.format("(%s)", StringUtils.join(values, ",")));
                 } else if (stringArrayValue != null) {
                     String[] values = new String[stringArrayValue.length];
                     if (Boolean.TRUE.equals(escapeValue)) {
                         for (int i = 0; i < stringArrayValue.length; i++) {
-                            values[i] = String.format("'%s'",
-                                    escaper.escape(stringArrayValue[i]));
+                            values[i] = String.format("'%s'", escaper.escape(stringArrayValue[i]));
                         }
                     } else {
                         for (int i = 0; i < stringArrayValue.length; i++) {
-                            values[i] = String.format("'%s'",
-                                    stringArrayValue[i]);
+                            values[i] = String.format("'%s'", stringArrayValue[i]);
                         }
                     }
-                    builder.append(String.format("(%s)", StringUtils.join(
-                            values, ",")));
+                    builder.append(String.format("(%s)", StringUtils.join(values, ",")));
                 } else if (datetimeValue != null) {
-                    builder.append(String.format(
-                            "TIMESTAMP '%s'",
+                    builder.append(String.format("TIMESTAMP '%s'",
                             isoTimeStamp.format(Long.valueOf(datetimeValue.getTime()))));
                     if (otherDatetimeValue != null) {
                         builder.append(" AND ");
-                        builder.append(String.format(
-                                "TIMESTAMP '%s'",
+                        builder.append(String.format("TIMESTAMP '%s'",
                                 isoTimeStamp.format(Long.valueOf(otherDatetimeValue.getTime()))));
                     }
                 } else if (dateValue != null) {
                     // TODO: handle other date
-                    builder.append(String.format("DATE '%s'",
-                            isoDate.format(Long.valueOf(dateValue.getTime()))));
+                    builder.append(String.format("DATE '%s'", isoDate.format(Long.valueOf(dateValue.getTime()))));
                     if (otherDateValue != null) {
                         builder.append(" AND ");
-                        builder.append(String.format(
-                                "DATE '%s'",
+                        builder.append(String.format("DATE '%s'",
                                 isoDate.format(Long.valueOf(otherDateValue.getTime()))));
                     }
                 } else if (integerValue != null) {

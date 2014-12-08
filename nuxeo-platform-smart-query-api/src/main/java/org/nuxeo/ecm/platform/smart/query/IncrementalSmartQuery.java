@@ -23,11 +23,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Smart query providing all the needed methods for UI interaction that will
- * make it possible to build a query adding clauses step by step.
+ * Smart query providing all the needed methods for UI interaction that will make it possible to build a query adding
+ * clauses step by step.
  * <p>
- * Specific getters and setters have been defined instead of a generic one for
- * a better resolution of target types.
+ * Specific getters and setters have been defined instead of a generic one for a better resolution of target types.
  *
  * @since 5.4
  * @author Anahide Tchertchian
@@ -44,45 +43,39 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     protected String existingQueryPart;
 
     /**
-     * String containing the logical operator at start of the query part to add
-     * (for instance 'AND' or 'OR').
+     * String containing the logical operator at start of the query part to add (for instance 'AND' or 'OR').
      */
     protected String logicalOperator;
 
     /**
-     * Boolean indicating if the query part to add should be negated (for
-     * instance by adding the 'NOT' marker before)
+     * Boolean indicating if the query part to add should be negated (for instance by adding the 'NOT' marker before)
      */
     protected Boolean addNotOperator;
 
     /**
-     * Boolean indicating if an open parenthesis should be added prior to the
-     * query part to add.
+     * Boolean indicating if an open parenthesis should be added prior to the query part to add.
      */
     protected Boolean openParenthesis;
 
     /**
-     * Boolean indicating if an closed parenthesis should be added after the
-     * query part to add.
+     * Boolean indicating if an closed parenthesis should be added after the query part to add.
      */
     protected Boolean closeParenthesis;
 
     /**
-     * Marker for layout row selection that will make it possible to display
-     * only the widgets defined in this row for the rest of the query part
-     * definition.
+     * Marker for layout row selection that will make it possible to display only the widgets defined in this row for
+     * the rest of the query part definition.
      */
     protected String selectedRowName;
 
     /**
-     * String typically representing the search index for the query part to
-     * add.
+     * String typically representing the search index for the query part to add.
      */
     protected String leftExpression;
 
     /**
-     * String representing the conditional operator to use when building the
-     * query part to add (for instance '=', 'LIKE',...)
+     * String representing the conditional operator to use when building the query part to add (for instance '=',
+     * 'LIKE',...)
      */
     protected String conditionalOperator;
 
@@ -124,8 +117,7 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     protected Date datetimeValue;
 
     /**
-     * Another date and time value binding (useful when using the 'BETWEEN'
-     * operator for instance)
+     * Another date and time value binding (useful when using the 'BETWEEN' operator for instance)
      */
     protected Date otherDatetimeValue;
 
@@ -135,8 +127,7 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     protected Date dateValue;
 
     /**
-     * Another date value binding (useful when using the 'BETWEEN' operator for
-     * instance)
+     * Another date value binding (useful when using the 'BETWEEN' operator for instance)
      */
     protected Date otherDateValue;
 
@@ -209,8 +200,7 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     }
 
     /**
-     * Returns true if there are strictly more open parenthesis in the existing
-     * query part than closed ones.
+     * Returns true if there are strictly more open parenthesis in the existing query part than closed ones.
      */
     public boolean getShowCloseParenthesis() {
         if (existingQueryPart != null) {
@@ -238,9 +228,8 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     /**
      * Sets the selected row name.
      * <p>
-     * Also resets the left expression, conditional operator, and all value
-     * bindings, as they may be set to values that are not relevant in this new
-     * row context.
+     * Also resets the left expression, conditional operator, and all value bindings, as they may be set to values that
+     * are not relevant in this new row context.
      */
     public void setSelectedRowName(String selectedRowName) {
         this.selectedRowName = selectedRowName;
@@ -274,8 +263,8 @@ public abstract class IncrementalSmartQuery implements SmartQuery {
     /**
      * Sets the conditional operator.
      * <p>
-     * Also resets all the value bindings, as they may be set to values that
-     * are not relevant in this new conditional operator context.
+     * Also resets all the value bindings, as they may be set to values that are not relevant in this new conditional
+     * operator context.
      */
     public void setConditionalOperator(String conditionalOperator) {
         this.conditionalOperator = conditionalOperator;

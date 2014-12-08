@@ -54,12 +54,10 @@ public class SmartNXQLFolderActions implements Serializable {
     protected transient SmartNXQLQueryActions smartNXQLQueryActions;
 
     /**
-     * Initializes a document model of given type, and fill its properties
-     * according to fields set on the seam component
+     * Initializes a document model of given type, and fill its properties according to fields set on the seam component
      * {@link SmartNXQLFolderActions}.
      * <p>
-     * Assumes the document type holds the 'content_view_display' and
-     * 'smart_folder' schemas.
+     * Assumes the document type holds the 'content_view_display' and 'smart_folder' schemas.
      */
     public String saveQueryAsDocument(String docType) throws ClientException {
         documentActions.createDocument(docType);
@@ -68,10 +66,8 @@ public class SmartNXQLFolderActions implements Serializable {
         String queryPart = smartNXQLQueryActions.getQueryPart();
         List<String> selectedLayoutColumns = smartNXQLQueryActions.getSelectedLayoutColumns();
         List<SortInfo> sortInfos = smartNXQLQueryActions.getSearchSortInfos();
-        doc.setPropertyValue(SmartFolderDocumentConstants.QUERY_PART_PROP_NAME,
-                queryPart);
-        doc.setPropertyValue(
-                SmartFolderDocumentConstants.SELECTED_LAYOUT_COLUMNS_PROP_NAME,
+        doc.setPropertyValue(SmartFolderDocumentConstants.QUERY_PART_PROP_NAME, queryPart);
+        doc.setPropertyValue(SmartFolderDocumentConstants.SELECTED_LAYOUT_COLUMNS_PROP_NAME,
                 (Serializable) selectedLayoutColumns);
         List<Map<String, Serializable>> sortInfosForDoc = new ArrayList<Map<String, Serializable>>();
         if (sortInfos != null) {
@@ -81,8 +77,7 @@ public class SmartNXQLFolderActions implements Serializable {
                 }
             }
         }
-        doc.setPropertyValue(SmartFolderDocumentConstants.SORT_INFOS_PROP_NAME,
-                (Serializable) sortInfosForDoc);
+        doc.setPropertyValue(SmartFolderDocumentConstants.SORT_INFOS_PROP_NAME, (Serializable) sortInfosForDoc);
         return "save_smart_query_as_document";
     }
 }
