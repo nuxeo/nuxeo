@@ -98,21 +98,17 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public void launchInitialComputation(String updaterName) {
-        launchInitialComputation(updaterName,
-                documentManager.getRepositoryName());
+        launchInitialComputation(updaterName, documentManager.getRepositoryName());
     }
 
-    public void launchInitialComputation(String updaterName,
-            String repositoryName) {
+    public void launchInitialComputation(String updaterName, String repositoryName) {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-        quotaStatsService.launchInitialStatisticsComputation(updaterName,
-                repositoryName);
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, repositoryName);
     }
 
     public String getStatus(String updaterName) {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-        return quotaStatsService.getProgressStatus(updaterName,
-                documentManager.getRepositoryName());
+        return quotaStatsService.getProgressStatus(updaterName, documentManager.getRepositoryName());
     }
 
     @Factory(value = "currentQuotaDoc", scope = ScopeType.EVENT)
@@ -121,25 +117,22 @@ public class QuotaStatsActions implements Serializable {
         return doc.getAdapter(QuotaAware.class);
     }
 
-    public void validateQuotaSize(FacesContext context, UIComponent component,
-            Object value) {
+    public void validateQuotaSize(FacesContext context, UIComponent component, Object value) {
         String strValue = value.toString();
         Long quotaValue = -1L;
         boolean quotaAllowed = true;
         try {
             quotaValue = Long.parseLong(strValue);
         } catch (NumberFormatException e) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, messages.get("wrong format"),
-                    null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messages.get("wrong format"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
 
         try {
-            quotaAllowed = getQuotaStatsService().canSetMaxQuota(quotaValue,
-                    navigationContext.getCurrentDocument(), documentManager);
+            quotaAllowed = getQuotaStatsService().canSetMaxQuota(quotaValue, navigationContext.getCurrentDocument(),
+                    documentManager);
         } catch (ClientException e) {
             log.error(e);
         }
@@ -176,8 +169,7 @@ public class QuotaStatsActions implements Serializable {
         long maxQuotaSize = -1L;
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc != null) {
-            maxQuotaSize = getQuotaStatsService().getQuotaFromParent(doc,
-                    documentManager);
+            maxQuotaSize = getQuotaStatsService().getQuotaFromParent(doc, documentManager);
         }
         return maxQuotaSize > 0 ? maxQuotaSize : 1072668082176L; // 999GB
     }
@@ -191,10 +183,9 @@ public class QuotaStatsActions implements Serializable {
         if (isActivateQuotaOnUsersWorkspaces()) {
             maxSize = getMaxQuotaOnUsersWorkspaces();
         }
-        getQuotaStatsService().activateQuotaOnUserWorkspaces(maxSize,
+        getQuotaStatsService().activateQuotaOnUserWorkspaces(maxSize, documentManager);
+        getQuotaStatsService().launchSetMaxQuotaOnUserWorkspaces(maxSize, documentManager.getRootDocument(),
                 documentManager);
-        getQuotaStatsService().launchSetMaxQuotaOnUserWorkspaces(maxSize,
-                documentManager.getRootDocument(), documentManager);
     }
 
     /**
@@ -202,8 +193,7 @@ public class QuotaStatsActions implements Serializable {
      * @since 5.7
      */
     public void initQuotaActivatedOnUserWorkspaces() throws ClientException {
-        long quota = getQuotaStatsService().getQuotaSetOnUserWorkspaces(
-                documentManager);
+        long quota = getQuotaStatsService().getQuotaSetOnUserWorkspaces(documentManager);
         setActivateQuotaOnUsersWorkspaces(quota == -1 ? false : true);
         setMaxQuotaOnUsersWorkspaces(quota);
     }
@@ -233,8 +223,7 @@ public class QuotaStatsActions implements Serializable {
         return activateQuotaOnUsersWorkspaces;
     }
 
-    public void setActivateQuotaOnUsersWorkspaces(
-            boolean activateQuotaOnUsersWorkspaces) {
+    public void setActivateQuotaOnUsersWorkspaces(boolean activateQuotaOnUsersWorkspaces) {
         this.activateQuotaOnUsersWorkspaces = activateQuotaOnUsersWorkspaces;
     }
 

@@ -22,7 +22,6 @@ import java.util.Collection;
 /**
  * @author dmetzler
  * @since 5.7
- *
  */
 public interface QuotaSizeService {
 

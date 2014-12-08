@@ -110,8 +110,7 @@ public class QuotaAwareDocument implements QuotaAware {
         doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, size);
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, size);
         if (log.isDebugEnabled()) {
-            log.debug("Setting quota (inner size) : " + size + " on document "
-                    + doc.getId());
+            log.debug("Setting quota (inner size) : " + size + " on document " + doc.getId());
         }
         if (save) {
             save(true);
@@ -126,15 +125,11 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addInnerSize(long additionalSize, boolean save)
-            throws ClientException {
-        Number inner = addDelta(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY,
-                additionalSize);
-        Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY,
-                additionalSize);
+    public void addInnerSize(long additionalSize, boolean save) throws ClientException {
+        Number inner = addDelta(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, additionalSize);
+        Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
-            log.debug("Setting quota (inner size) : " + inner
-                    + ", (total size) : " + total + " on document "
+            log.debug("Setting quota (inner size) : " + inner + ", (total size) : " + total + " on document "
                     + doc.getId());
         }
         if (save) {
@@ -143,13 +138,10 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addTotalSize(long additionalSize, boolean save)
-            throws ClientException {
-        Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY,
-                additionalSize);
+    public void addTotalSize(long additionalSize, boolean save) throws ClientException {
+        Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
-            log.debug("Setting quota (total size) : " + total + " on document "
-                    + doc.getId());
+            log.debug("Setting quota (total size) : " + total + " on document " + doc.getId());
         }
         if (save) {
             save(true);
@@ -157,13 +149,10 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addTrashSize(long additionalSize, boolean save)
-            throws ClientException {
-        Number trash = addDelta(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY,
-                additionalSize);
+    public void addTrashSize(long additionalSize, boolean save) throws ClientException {
+        Number trash = addDelta(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
-            log.debug("Setting quota (trash size):" + trash + " on document "
-                    + doc.getId());
+            log.debug("Setting quota (trash size):" + trash + " on document " + doc.getId());
         }
         if (save) {
             save(true);
@@ -171,13 +160,10 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addVersionsSize(long additionalSize, boolean save)
-            throws ClientException {
-        Number versions = addDelta(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY,
-                additionalSize);
+    public void addVersionsSize(long additionalSize, boolean save) throws ClientException {
+        Number versions = addDelta(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
-            log.debug("Setting quota (versions size): " + versions
-                    + " on document " + doc.getId());
+            log.debug("Setting quota (versions size): " + versions + " on document " + doc.getId());
         }
         if (save) {
             save(true);
@@ -186,14 +172,12 @@ public class QuotaAwareDocument implements QuotaAware {
 
     @Override
     public void save() throws ClientException {
-        doc.getContextData().putScopedValue(ScopeType.REQUEST,
-                QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
-                Boolean.TRUE);
+        doc.getContextData().putScopedValue(ScopeType.REQUEST, QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER,
+                true);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         // force no versioning after quota modifications
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.NONE);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
         doc = doc.getCoreSession().saveDocument(doc);
     }
 
@@ -217,16 +201,11 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void setMaxQuota(long maxSize, boolean save, boolean skipValidation)
-            throws ClientException {
+    public void setMaxQuota(long maxSize, boolean save, boolean skipValidation) throws ClientException {
         if (!skipValidation) {
-            if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(
-                    maxSize, doc, doc.getCoreSession()))) {
-                throw new QuotaExceededException(
-                        doc,
-                        "Can not set "
-                                + maxSize
-                                + ". Quota exceeded because the quota set on one of the children.");
+            if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(maxSize, doc, doc.getCoreSession()))) {
+                throw new QuotaExceededException(doc, "Can not set " + maxSize
+                        + ". Quota exceeded because the quota set on one of the children.");
             }
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);
@@ -242,8 +221,7 @@ public class QuotaAwareDocument implements QuotaAware {
 
     @Override
     public QuotaInfo getQuotaInfo() {
-        return new QuotaInfo(getInnerSize(), getTotalSize(), getTrashSize(),
-                getVersionsSize(), getMaxQuota());
+        return new QuotaInfo(getInnerSize(), getTotalSize(), getTrashSize(), getVersionsSize(), getMaxQuota());
     }
 
     /**

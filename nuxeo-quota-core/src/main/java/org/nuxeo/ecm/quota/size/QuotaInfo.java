@@ -22,32 +22,29 @@ package org.nuxeo.ecm.quota.size;
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
- * 
  */
 public class QuotaInfo {
 
     protected final QuotaDisplayValue innerSize;
 
     protected final QuotaDisplayValue totalSize;
-    
+
     protected final QuotaDisplayValue sizeTrash;
-    
+
     protected final QuotaDisplayValue sizeVersions;
 
     protected final QuotaDisplayValue maxQuota;
-    
+
     protected final QuotaDisplayValue liveSize;
-    
-    public QuotaInfo(long innerSize, long totalSize, long trashSize,
-            long versionsSize, long maxQuota) {
+
+    public QuotaInfo(long innerSize, long totalSize, long trashSize, long versionsSize, long maxQuota) {
         this.innerSize = new QuotaDisplayValue(innerSize, maxQuota);
         this.totalSize = new QuotaDisplayValue(totalSize, maxQuota);
         this.sizeTrash = new QuotaDisplayValue(trashSize, maxQuota);
         this.sizeVersions = new QuotaDisplayValue(versionsSize, maxQuota);
         this.maxQuota = new QuotaDisplayValue(maxQuota);
         this.liveSize = new QuotaDisplayValue(
-                (totalSize - trashSize - versionsSize) > 0L ? (totalSize
-                        - trashSize - versionsSize) : 0L);
+                (totalSize - trashSize - versionsSize) > 0L ? (totalSize - trashSize - versionsSize) : 0L);
     }
 
     public QuotaDisplayValue getInnerSize() {

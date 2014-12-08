@@ -35,23 +35,16 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
  */
 public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
 
-    public static QuotaAwareDocument make(DocumentModel doc, boolean save)
-            throws ClientException {
+    public static QuotaAwareDocument make(DocumentModel doc, boolean save) throws ClientException {
         if (!doc.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
             doc.addFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             if (save) {
-                doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
-                        true);
-                doc.putContextData(
-                        DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-                doc.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        true);
-                doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
-                        Boolean.TRUE);
+                doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+                doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+                doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
                 // force no versioning after quota modifications
-                doc.putContextData(VersioningService.VERSIONING_OPTION,
-                        VersioningOption.NONE);
+                doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
                 doc = doc.getCoreSession().saveDocument(doc);
             }
         }

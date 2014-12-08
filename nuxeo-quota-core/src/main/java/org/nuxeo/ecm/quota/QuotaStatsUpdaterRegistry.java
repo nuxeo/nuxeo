@@ -26,15 +26,13 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s, handling merge
- * of registered {@link org.nuxeo.ecm.quota.QuotaStatsUpdaterDescriptor}
- * elements.
+ * Registry for {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s, handling merge of registered
+ * {@link org.nuxeo.ecm.quota.QuotaStatsUpdaterDescriptor} elements.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class QuotaStatsUpdaterRegistry extends
-        ContributionFragmentRegistry<QuotaStatsUpdaterDescriptor> {
+public class QuotaStatsUpdaterRegistry extends ContributionFragmentRegistry<QuotaStatsUpdaterDescriptor> {
 
     protected Map<String, QuotaStatsUpdater> quotaStatsUpdaters = new HashMap<String, QuotaStatsUpdater>();
 
@@ -52,8 +50,7 @@ public class QuotaStatsUpdaterRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            QuotaStatsUpdaterDescriptor contrib,
+    public void contributionUpdated(String id, QuotaStatsUpdaterDescriptor contrib,
             QuotaStatsUpdaterDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             try {
@@ -71,20 +68,17 @@ public class QuotaStatsUpdaterRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            QuotaStatsUpdaterDescriptor descriptor) {
+    public void contributionRemoved(String id, QuotaStatsUpdaterDescriptor descriptor) {
         quotaStatsUpdaters.remove(id);
     }
 
     @Override
-    public QuotaStatsUpdaterDescriptor clone(
-            QuotaStatsUpdaterDescriptor descriptor) {
+    public QuotaStatsUpdaterDescriptor clone(QuotaStatsUpdaterDescriptor descriptor) {
         return descriptor.clone();
     }
 
     @Override
-    public void merge(QuotaStatsUpdaterDescriptor src,
-            QuotaStatsUpdaterDescriptor dst) {
+    public void merge(QuotaStatsUpdaterDescriptor src, QuotaStatsUpdaterDescriptor dst) {
         dst.setQuotaStatsUpdaterClass(src.getQuotaStatsUpdaterClass());
         dst.setEnabled(src.isEnabled());
         dst.setLabel(src.getLabel());

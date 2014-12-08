@@ -44,17 +44,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- *
  * @since 5.7
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @TransactionalConfig(autoStart = false)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.quota.core" })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api", "org.nuxeo.ecm.platform.userworkspace.core",
+        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.quota.core" })
 public class TestQuotaService {
 
     @Inject
@@ -79,11 +75,9 @@ public class TestQuotaService {
 
         assertNotNull(workManager);
         TransactionHelper.startTransaction();
-        try (CoreSession userSession = CoreInstance.openCoreSession(
-                session.getRepositoryName(), "jdoe")) {
+        try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             assertNotNull(uwm);
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
-                    null);
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
             uwRef1 = uw.getRef();
 
@@ -94,13 +88,11 @@ public class TestQuotaService {
             TransactionHelper.commitOrRollbackTransaction();
         }
         TransactionHelper.startTransaction();
-        try (CoreSession userSession = CoreInstance.openCoreSession(
-                session.getRepositoryName(), "jack")) {
+        try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
             uwm = Framework.getLocalService(UserWorkspaceService.class);
             assertNotNull(uwm);
 
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
-                    null);
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
             assertNotNull(uw);
             uwRef2 = uw.getRef();
 
@@ -113,8 +105,7 @@ public class TestQuotaService {
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         try {
-            quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L,
-                    session.getRootDocument(), session);
+            quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L, session.getRootDocument(), session);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }

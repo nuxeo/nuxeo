@@ -83,33 +83,29 @@ public class TestDocumentsCountUpdater {
         ws = session.createDocument(ws);
         wsRef = ws.getRef();
 
-        DocumentModel firstFolder = session.createDocumentModel(
-                ws.getPathAsString(), "folder1", "Folder");
+        DocumentModel firstFolder = session.createDocumentModel(ws.getPathAsString(), "folder1", "Folder");
         firstFolder = session.createDocument(firstFolder);
         firstFolderRef = firstFolder.getRef();
 
-        DocumentModel firstSubFolder = session.createDocumentModel(
-                firstFolder.getPathAsString(), "subfolder1", "Folder");
+        DocumentModel firstSubFolder = session.createDocumentModel(firstFolder.getPathAsString(), "subfolder1",
+                "Folder");
         firstSubFolder = session.createDocument(firstSubFolder);
         firstSubFolderRef = firstSubFolder.getRef();
 
-        DocumentModel firstFile = session.createDocumentModel(
-                firstSubFolder.getPathAsString(), "file1", "File");
+        DocumentModel firstFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file1", "File");
         firstFile = session.createDocument(firstFile);
         firstFileRef = firstFile.getRef();
 
-        DocumentModel secondFile = session.createDocumentModel(
-                firstSubFolder.getPathAsString(), "file2", "File");
+        DocumentModel secondFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file2", "File");
         secondFile = session.createDocument(secondFile);
         secondFileRef = secondFile.getRef();
 
-        DocumentModel secondSubFolder = session.createDocumentModel(
-                firstFolder.getPathAsString(), "subfolder2", "Folder");
+        DocumentModel secondSubFolder = session.createDocumentModel(firstFolder.getPathAsString(), "subfolder2",
+                "Folder");
         secondSubFolder = session.createDocument(secondSubFolder);
         secondSubFolderRef = secondSubFolder.getRef();
 
-        DocumentModel secondFolder = session.createDocumentModel(
-                ws.getPathAsString(), "folder2", "Folder");
+        DocumentModel secondFolder = session.createDocumentModel(ws.getPathAsString(), "folder2", "Folder");
         secondFolder = session.createDocument(secondFolder);
         session.save();
         secondFolderRef = secondFolder.getRef();
@@ -125,8 +121,7 @@ public class TestDocumentsCountUpdater {
 
     protected static void assertDescendantsCount(long expected, DocumentModel doc) {
         assertHasCountFacet(doc);
-        assertEquals(
-                expected,
+        assertEquals(expected,
                 ((Number) doc.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY)).longValue());
     }
 
@@ -237,8 +232,7 @@ public class TestDocumentsCountUpdater {
         }
 
         String updaterName = "documentsCountUpdater";
-        quotaStatsService.launchInitialStatisticsComputation(updaterName,
-                session.getRepositoryName());
+        quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
         TransactionHelper.commitOrRollbackTransaction();
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);

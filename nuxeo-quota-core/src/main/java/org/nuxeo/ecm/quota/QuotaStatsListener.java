@@ -46,20 +46,17 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener handling default events to update statistics through the
- * {@link org.nuxeo.ecm.quota.QuotaStatsService}.
+ * Listener handling default events to update statistics through the {@link org.nuxeo.ecm.quota.QuotaStatsService}.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
 public class QuotaStatsListener implements EventListener {
 
-    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(
-            Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
-                    DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
-                    BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION,
-                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
-                    BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
+    public static final Set<String> EVENTS_TO_HANDLE = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY, DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
+            BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION, DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
+            BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -70,8 +67,7 @@ public class QuotaStatsListener implements EventListener {
         if (!EVENTS_TO_HANDLE.contains(event.getName())) {
             return;
         }
-        if (TRANSITION_EVENT.equals(event.getName())
-                && !isTrashOpEvent((DocumentEventContext) ctx)) {
+        if (TRANSITION_EVENT.equals(event.getName()) && !isTrashOpEvent((DocumentEventContext) ctx)) {
             return;
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
@@ -80,10 +76,8 @@ public class QuotaStatsListener implements EventListener {
     }
 
     protected boolean isTrashOpEvent(DocumentEventContext eventContext) {
-        String transition = (String) eventContext.getProperties().get(
-                TRANSTION_EVENT_OPTION_TRANSITION);
-        if (transition != null
-                && (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition))) {
+        String transition = (String) eventContext.getProperties().get(TRANSTION_EVENT_OPTION_TRANSITION);
+        if (transition != null && (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition))) {
             return true;
         }
         return false;

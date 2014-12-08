@@ -22,7 +22,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author dmetzler
- *
  */
 public class IsolatedSessionRunner {
 
