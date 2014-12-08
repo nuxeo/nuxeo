@@ -48,7 +48,7 @@ public class RenditionDefinition {
 
     @XNode("operationChain")
     protected String operationChain;
-        
+
     /**
      * @since 6.0
      */
@@ -60,17 +60,13 @@ public class RenditionDefinition {
      */
     @XNode("@visible")
     protected boolean visible = true;
-            
+
     @XNode("@class")
     protected Class<? extends RenditionProvider> providerClass;
 
     @XNode("contentType")
     protected String contentType;
 
-    
-    
-    
-    
     public String getName() {
         return name;
     }
@@ -125,6 +121,6 @@ public class RenditionDefinition {
 
     public boolean isVisible() {
         return visible;
-    }    
-    
+    }
+
 }

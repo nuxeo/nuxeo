@@ -24,14 +24,11 @@ import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
- * Implementation of the {@link Rendition} interface that allows lazy
- * computation of the rendition Blobs
+ * Implementation of the {@link Rendition} interface that allows lazy computation of the rendition Blobs
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
-public abstract class LazyRendition extends AbstractRendition implements
-        Rendition {
+public abstract class LazyRendition extends AbstractRendition implements Rendition {
 
     protected List<Blob> blobs = null;
 
@@ -55,7 +52,6 @@ public abstract class LazyRendition extends AbstractRendition implements
         return blobs;
     }
 
-    protected abstract List<Blob> computeRenditionBlobs()
-            throws RenditionException;
+    protected abstract List<Blob> computeRenditionBlobs() throws RenditionException;
 
 }

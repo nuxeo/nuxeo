@@ -17,8 +17,7 @@
 package org.nuxeo.ecm.platform.rendition;
 
 /**
- * Constants used by the
- * {@link org.nuxeo.ecm.platform.rendition.service.RenditionService}.
+ * Constants used by the {@link org.nuxeo.ecm.platform.rendition.service.RenditionService}.
  * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1

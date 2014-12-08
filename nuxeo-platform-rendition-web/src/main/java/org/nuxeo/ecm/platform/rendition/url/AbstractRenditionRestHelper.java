@@ -67,16 +67,14 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
     @In(create = true)
     protected Map<String, String> messages;
 
-    protected abstract Blob renderAsBlob(DocumentModel doc, String renditionName)
-            throws Exception;
+    protected abstract Blob renderAsBlob(DocumentModel doc, String renditionName) throws Exception;
 
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
     public void render(DocumentView docView) throws Exception {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (documentManager == null) {
-            RepositoryLocation loc = new RepositoryLocation(
-                    docLoc.getServerName());
+            RepositoryLocation loc = new RepositoryLocation(docLoc.getServerName());
             navigationContext.setCurrentServerLocation(loc);
             documentManager = navigationContext.getOrCreateDocumentManager();
         }
@@ -89,8 +87,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
                 rendered = renderAsBlob(doc, renditionName);
             } catch (RenditionException e) {
                 log.error("Unable to generate rendition " + renditionName, e);
-                facesMessages.add(StatusMessage.Severity.WARN,
-                        messages.get("rendition.not.available"), renditionName);
+                facesMessages.add(StatusMessage.Severity.WARN, messages.get("rendition.not.available"), renditionName);
                 // now we need to redirect
                 // otherwise the page will be rendered via Seam PDF
                 HttpServletRequest req = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -108,18 +105,15 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
                 return;
             }
             if (rendered != null) {
-                if (rendered.getMimeType() != null
-                        && rendered.getMimeType().startsWith("text/")) {
+                if (rendered.getMimeType() != null && rendered.getMimeType().startsWith("text/")) {
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
                     // add inline download flag
                     request.setAttribute("inline", "true");
                 }
-                ComponentUtils.download(context, rendered,
-                        rendered.getFilename());
+                ComponentUtils.download(context, rendered, rendered.getFilename());
             } else {
                 HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-                response.sendError(404, "Unable to find rendition "
-                        + renditionName);
+                response.sendError(404, "Unable to find rendition " + renditionName);
             }
         }
     }

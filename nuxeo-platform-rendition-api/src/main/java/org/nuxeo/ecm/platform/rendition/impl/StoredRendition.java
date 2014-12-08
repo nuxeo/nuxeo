@@ -27,11 +27,9 @@ import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
- * Implementation of the {@link Rendition} interface for rendition that are
- * stored in the Repository
+ * Implementation of the {@link Rendition} interface for rendition that are stored in the Repository
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class StoredRendition extends AbstractRendition implements Rendition {
 
@@ -52,8 +50,7 @@ public class StoredRendition extends AbstractRendition implements Rendition {
         try {
             return stored.getAdapter(BlobHolder.class).getBlob();
         } catch (ClientException e) {
-            throw new RenditionException(
-                    "Unable to get Blob from stored rendition", e);
+            throw new RenditionException("Unable to get Blob from stored rendition", e);
         }
     }
 
@@ -62,8 +59,7 @@ public class StoredRendition extends AbstractRendition implements Rendition {
         try {
             return stored.getAdapter(BlobHolder.class).getBlobs();
         } catch (ClientException e) {
-            throw new RenditionException(
-                    "Unable to get Blobs from stored rendition", e);
+            throw new RenditionException("Unable to get Blobs from stored rendition", e);
         }
     }
 

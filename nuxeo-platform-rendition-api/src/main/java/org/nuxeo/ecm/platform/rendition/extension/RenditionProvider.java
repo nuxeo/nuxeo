@@ -25,12 +25,11 @@ import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
- * Interface to hide providers of {@link Rendition}. A provider could be
- * converter based, template based, or Automation based
+ * Interface to hide providers of {@link Rendition}. A provider could be converter based, template based, or Automation
+ * based
  * 
  * @since 5.6
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public interface RenditionProvider {
 
@@ -44,16 +43,14 @@ public interface RenditionProvider {
     boolean isAvailable(DocumentModel doc, RenditionDefinition definition);
 
     /**
-     * Generate the rendition Blobs for a given {@link RenditionDefinition}.
-     * Return is a List of Blob for bigger flexibility (typically HTML rendition
-     * with resources)
+     * Generate the rendition Blobs for a given {@link RenditionDefinition}. Return is a List of Blob for bigger
+     * flexibility (typically HTML rendition with resources)
      * 
      * @param doc the target {@link DocumentModel}
      * @param definition the {@link RenditionDefinition} to use
      * @return The list of Blobs
      * @throws RenditionException
      */
-    List<Blob> render(DocumentModel doc, RenditionDefinition definition)
-            throws RenditionException;
+    List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException;
 
 }

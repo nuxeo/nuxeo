@@ -18,8 +18,8 @@ public class DummyDocToTxt {
     protected ConversionService service;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) throws Exception {        
-        return new StringBlob(doc.getTitle());        
+    public Blob run(DocumentModel doc) throws Exception {
+        return new StringBlob(doc.getTitle());
     }
 
 }

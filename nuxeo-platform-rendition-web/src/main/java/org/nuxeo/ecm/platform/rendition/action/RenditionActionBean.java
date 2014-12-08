@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  * Seam bean used to hold Factory used by summary widget
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 @Name("renditionAction")
 @Scope(ScopeType.PAGE)
@@ -53,10 +52,10 @@ public class RenditionActionBean implements Serializable {
         RenditionService rs = Framework.getLocalService(RenditionService.class);
         return rs.getAvailableRenditions(doc);
     }
-    
+
     @Factory(value = "currentDocumentVisibleRenditionDefinitions", scope = ScopeType.EVENT)
-    public List<RenditionDefinition> getVisibleRenditionDefinitions() throws Exception{
-        
+    public List<RenditionDefinition> getVisibleRenditionDefinitions() throws Exception {
+
         List<RenditionDefinition> result = new ArrayList<>();
         DocumentModel doc = navigationContext.getCurrentDocument();
         RenditionService rs = Framework.getLocalService(RenditionService.class);
@@ -64,7 +63,7 @@ public class RenditionActionBean implements Serializable {
             if (rd.isVisible()) {
                 result.add(rd);
             }
-        }        
+        }
         return result;
     }
 }

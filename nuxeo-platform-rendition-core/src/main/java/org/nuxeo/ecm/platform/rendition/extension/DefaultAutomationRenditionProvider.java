@@ -31,8 +31,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
 
         try {
             if (as.getOperationChain(chain) == null) {
-                log.error("Chain " + chain
-                        + " is not defined : rendition can not be used");
+                log.error("Chain " + chain + " is not defined : rendition can not be used");
                 return false;
             }
         } catch (Exception e) {
@@ -51,8 +50,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
                     return false;
                 }
             } catch (Exception e) {
-                log.error("Unable to get Blob to test Rendition availability",
-                        e);
+                log.error("Unable to get Blob to test Rendition availability", e);
                 return false;
             }
         }
@@ -60,8 +58,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition)
-            throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
 
         String chain = definition.getOperationChain();
         if (chain == null) {
@@ -97,9 +94,8 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
             return blobs;
 
         } catch (Exception e) {
-            throw new RenditionException(
-                    "Exception while running the operation chain: "
-                            + definition.getOperationChain(), e);
+            throw new RenditionException("Exception while running the operation chain: "
+                    + definition.getOperationChain(), e);
         }
     }
 }

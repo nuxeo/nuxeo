@@ -20,8 +20,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 public class TestUrlCodecs {
 
     protected String validateUrl(String repo, String path, String rendition) {
-        DocumentLocation dl = new DocumentLocationImpl(repo, new IdRef("id"),
-                new PathRef(path));
+        DocumentLocation dl = new DocumentLocationImpl(repo, new IdRef("id"), new PathRef(path));
         DocumentView dv = new DocumentViewImpl(dl, rendition);
 
         RenditionBasedCodec codec = new RenditionBasedCodec();
@@ -33,8 +32,7 @@ public class TestUrlCodecs {
         assertNotNull(dv2);
         assertEquals(repo, dv2.getDocumentLocation().getServerName());
         assertEquals(path, dv2.getDocumentLocation().getPathRef().toString());
-        assertEquals(rendition,
-                dv2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
+        assertEquals(rendition, dv2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
         assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID, dv2.getViewId());
 
         return url;
@@ -57,33 +55,25 @@ public class TestUrlCodecs {
         String docPath = "/some/path";
         String docId = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
 
-        DocumentLocation documentLocation = new DocumentLocationImpl("default",
-                new IdRef(docId), new PathRef(docPath));
-        DocumentView docView = new DocumentViewImpl(documentLocation,
-                renditionName);
+        DocumentLocation documentLocation = new DocumentLocationImpl("default", new IdRef(docId), new PathRef(docPath));
+        DocumentView docView = new DocumentViewImpl(documentLocation, renditionName);
 
         RenditionBasedCodec codec = new DocumentRenditionCodec();
         String url = codec.getUrlFromDocumentView(docView);
         assertEquals("nxrendition/default/some/path@My%20Rendition%20Name", url);
 
         DocumentView docView2 = codec.getDocumentViewFromUrl(url);
-        assertEquals(renditionName,
-                docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
-        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID,
-                docView2.getViewId());
+        assertEquals(renditionName, docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
+        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID, docView2.getViewId());
 
         // force version to get a URL based on docid
         docView.addParameter("version", "true");
         url = codec.getUrlFromDocumentView(docView);
-        assertEquals(
-                "nxrendition/default/dbefd5a0-35ee-4ed2-a023-6817714f32cf/My%20Rendition%20Name?version=true",
-                url);
+        assertEquals("nxrendition/default/dbefd5a0-35ee-4ed2-a023-6817714f32cf/My%20Rendition%20Name?version=true", url);
 
         docView2 = codec.getDocumentViewFromUrl(url);
-        assertEquals(renditionName,
-                docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
-        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID,
-                docView2.getViewId());
+        assertEquals(renditionName, docView2.getParameter(RenditionBasedCodec.RENDITION_PARAM_NAME));
+        assertEquals(RenditionBasedCodec.RENDITION_VIEW_ID, docView2.getViewId());
     }
 
     @Test
@@ -92,12 +82,10 @@ public class TestUrlCodecs {
         String docPath = "/some/path";
         String docId = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
 
-        DocumentLocation documentLocation = new DocumentLocationImpl("default",
-                new IdRef(docId), new PathRef(docPath));
+        DocumentLocation documentLocation = new DocumentLocationImpl("default", new IdRef(docId), new PathRef(docPath));
         Map<String, String> params = new HashMap<>();
         params.put(RenditionBasedCodec.RENDITION_PARAM_NAME, renditionName);
-        DocumentView docView = new DocumentViewImpl(documentLocation,
-                RenditionBasedCodec.RENDITION_VIEW_ID, params);
+        DocumentView docView = new DocumentViewImpl(documentLocation, RenditionBasedCodec.RENDITION_VIEW_ID, params);
 
         RenditionBasedCodec codec = new DocumentRenditionCodec();
         String url = codec.getUrlFromDocumentView(docView);

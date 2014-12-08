@@ -20,8 +20,7 @@ public class DummyRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition)
-            throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
         try {
             StringBlob blob = new StringBlob(doc.getTitle(), CONTENT_TYPE);
             List<Blob> blobs = new ArrayList<Blob>();

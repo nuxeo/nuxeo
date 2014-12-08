@@ -37,8 +37,7 @@ public class RenditionRestHelper extends AbstractRenditionRestHelper {
 
     private static final long serialVersionUID = 1L;
 
-    protected Blob renderAsBlob(DocumentModel doc, String renditionName)
-            throws Exception {
+    protected Blob renderAsBlob(DocumentModel doc, String renditionName) throws Exception {
         RenditionService rs = Framework.getLocalService(RenditionService.class);
         Rendition rendition = rs.getRendition(doc, renditionName);
         return rendition.getBlob();

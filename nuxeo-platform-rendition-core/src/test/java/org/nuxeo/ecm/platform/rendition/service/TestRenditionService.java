@@ -65,11 +65,10 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.rendition.api",
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.commandline.executor" })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
 public class TestRenditionService {
 
@@ -107,8 +106,7 @@ public class TestRenditionService {
         assertTrue(renditionServiceImpl.renditionDefinitions.containsKey("renditionDefinitionWithCustomOperationChain"));
         rd = renditionServiceImpl.renditionDefinitions.get("renditionDefinitionWithCustomOperationChain");
         assertNotNull(rd);
-        assertEquals("renditionDefinitionWithCustomOperationChain",
-                rd.getName());
+        assertEquals("renditionDefinitionWithCustomOperationChain", rd.getName());
         assertEquals("Dummy", rd.getOperationChain());
     }
 
@@ -137,20 +135,15 @@ public class TestRenditionService {
     public void doPDFRendition() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentRef renditionDocumentRef = renditionService.storeRendition(
-                file, PDF_RENDITION_DEFINITION);
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         assertNotNull(renditionDocument);
         assertTrue(renditionDocument.hasFacet(RENDITION_FACET));
-        assertEquals(
-                file.getId(),
-                renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
+        assertEquals(file.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
 
         DocumentModel lastVersion = session.getLastDocumentVersion(file.getRef());
-        assertEquals(
-                lastVersion.getId(),
-                renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+        assertEquals(lastVersion.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
         BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
         Blob renditionBlob = bh.getBlob();
@@ -159,18 +152,15 @@ public class TestRenditionService {
         assertEquals("dummy.txt.pdf", renditionBlob.getFilename());
 
         // now refetch the rendition
-        Rendition rendition = renditionService.getRendition(file,
-                PDF_RENDITION_DEFINITION);
+        Rendition rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION);
         assertNotNull(rendition);
         assertTrue(rendition.isStored());
-        assertEquals(renditionDocument.getRef(),
-                rendition.getHostDocument().getRef());
+        assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
 
         // now update the document
         file.setPropertyValue("dc:description", "I have been updated");
         file = session.saveDocument(file);
-        rendition = renditionService.getRendition(file,
-                PDF_RENDITION_DEFINITION);
+        rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION);
         assertNotNull(rendition);
         assertFalse(rendition.isStored());
 
@@ -185,41 +175,32 @@ public class TestRenditionService {
         assertEquals("approved", file.getCurrentLifeCycleState());
 
         // create a version of the document
-        file.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MINOR);
+        file.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         file = session.saveDocument(file);
         session.save();
         eventService.waitForAsyncCompletion();
         assertEquals("0.1", file.getVersionLabel());
 
         // make a rendition on the document
-        DocumentRef renditionDocumentRef = renditionService.storeRendition(
-                file, PDF_RENDITION_DEFINITION);
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
         assertNotNull(renditionDocument);
-        assertEquals(
-                file.getId(),
-                renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
+        assertEquals(file.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
         DocumentModel lastVersion = session.getLastDocumentVersion(file.getRef());
-        assertEquals(
-                lastVersion.getId(),
-                renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+        assertEquals(lastVersion.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
         // check that the redition is a version
         assertTrue(renditionDocument.isVersion());
         // check same life-cycle state
         assertEquals(file.getCurrentLifeCycleState(), renditionDocument.getCurrentLifeCycleState());
         // check that version label of the rendition is the same as the source
-        assertEquals(file.getVersionLabel(),
-                renditionDocument.getVersionLabel());
+        assertEquals(file.getVersionLabel(), renditionDocument.getVersionLabel());
 
         // fetch the rendition to check we have the same DocumentModel
-        Rendition rendition = renditionService.getRendition(file,
-                PDF_RENDITION_DEFINITION);
+        Rendition rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION);
         assertNotNull(rendition);
         assertTrue(rendition.isStored());
-        assertEquals(renditionDocument.getRef(),
-                rendition.getHostDocument().getRef());
+        assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
 
         // update the source Document
         file.setPropertyValue("dc:description", "I have been updated");
@@ -227,8 +208,7 @@ public class TestRenditionService {
         assertEquals("0.1+", file.getVersionLabel());
 
         // get the rendition from checkedout doc
-        rendition = renditionService.getRendition(file,
-                PDF_RENDITION_DEFINITION);
+        rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION);
         assertNotNull(rendition);
         // rendition should be live
         assertFalse(rendition.isStored());
@@ -239,8 +219,7 @@ public class TestRenditionService {
         DatabaseHelper.DATABASE.maybeSleepToNextSecond();
 
         // now store rendition for version 0.2
-        rendition = renditionService.getRendition(file,
-                PDF_RENDITION_DEFINITION, true);
+        rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION, true);
         assertEquals("0.2", rendition.getHostDocument().getVersionLabel());
         assertTrue(rendition.isStored());
 
@@ -252,11 +231,9 @@ public class TestRenditionService {
         assertEquals(2, versions.size());
 
         // check retrieval
-        Rendition rendition2 = renditionService.getRendition(file,
-                PDF_RENDITION_DEFINITION, false);
+        Rendition rendition2 = renditionService.getRendition(file, PDF_RENDITION_DEFINITION, false);
         assertTrue(rendition2.isStored());
-        assertEquals(rendition.getHostDocument().getRef(),
-                rendition2.getHostDocument().getRef());
+        assertEquals(rendition.getHostDocument().getRef(), rendition2.getHostDocument().getRef());
 
     }
 
@@ -267,8 +244,7 @@ public class TestRenditionService {
         return file;
     }
 
-    protected DocumentModel createFileWithBlob(Blob blob, String name)
-            throws ClientException {
+    protected DocumentModel createFileWithBlob(Blob blob, String name) throws ClientException {
         DocumentModel file = session.createDocumentModel("/", name, "File");
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         bh.setBlob(blob);
@@ -286,27 +262,22 @@ public class TestRenditionService {
     public void shouldNotRenderAProxyDocument() throws ClientException {
         DocumentModel file = createBlobFile();
 
-        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef(
-                "/"));
+        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
         renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
     }
 
     @Test
-    public void shouldNotCreateANewVersionForACheckedInDocument()
-            throws ClientException {
+    public void shouldNotCreateANewVersionForACheckedInDocument() throws ClientException {
         DocumentModel file = createBlobFile();
 
         DocumentRef versionRef = file.checkIn(VersioningOption.MINOR, null);
         file.refresh(DocumentModel.REFRESH_STATE, null);
         DocumentModel version = session.getDocument(versionRef);
 
-        DocumentRef renditionDocumentRef = renditionService.storeRendition(
-                version, "pdf");
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(version, "pdf");
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
-        assertEquals(
-                version.getId(),
-                renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+        assertEquals(version.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
 
         List<DocumentModel> versions = session.getVersions(file.getRef());
         assertFalse(versions.isEmpty());
@@ -324,26 +295,22 @@ public class TestRenditionService {
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderWithAnUndefinedRenditionDefinition()
-            throws ClientException {
+    public void shouldNotRenderWithAnUndefinedRenditionDefinition() throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.storeRendition(file, "undefinedRenditionDefinition");
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderWithAnUndefinedOperationChain()
-            throws ClientException {
+    public void shouldNotRenderWithAnUndefinedOperationChain() throws ClientException {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.storeRendition(file,
-                "renditionDefinitionWithUnknownOperationChain");
+        renditionService.storeRendition(file, "renditionDefinitionWithUnknownOperationChain");
     }
 
     @Test
-    public void shouldRenderOnFolder()
-            throws Exception {
-        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");        
+    public void shouldRenderOnFolder() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
         folder = session.createDocument(folder);
         Rendition rendition = renditionService.getRendition(folder, "renditionDefinitionWithCustomOperationChain");
         assertNotNull(rendition);
@@ -357,8 +324,7 @@ public class TestRenditionService {
         DocumentModel fileDocument = createBlobFile();
 
         Blob firstAttachedBlob = createTextBlob("first attached blob", "first");
-        Blob secondAttachedBlob = createTextBlob("second attached blob",
-                "second");
+        Blob secondAttachedBlob = createTextBlob("second attached blob", "second");
 
         List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
         Map<String, Serializable> file = new HashMap<String, Serializable>();
@@ -370,11 +336,9 @@ public class TestRenditionService {
         file.put("filename", secondAttachedBlob.getFilename());
         files.add(file);
 
-        fileDocument.setPropertyValue(FILES_FILES_PROPERTY,
-                (Serializable) files);
+        fileDocument.setPropertyValue(FILES_FILES_PROPERTY, (Serializable) files);
 
-        DocumentRef renditionDocumentRef = renditionService.storeRendition(
-                fileDocument, PDF_RENDITION_DEFINITION);
+        DocumentRef renditionDocumentRef = renditionService.storeRendition(fileDocument, PDF_RENDITION_DEFINITION);
         DocumentModel renditionDocument = session.getDocument(renditionDocumentRef);
 
         BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
@@ -386,10 +350,8 @@ public class TestRenditionService {
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderADocumentWithoutBlobHolder()
-            throws ClientException {
-        DocumentModel folder = session.createDocumentModel("/", "dummy-folder",
-                "Folder");
+    public void shouldNotRenderADocumentWithoutBlobHolder() throws ClientException {
+        DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
         folder = session.createDocument(folder);
         renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);
     }

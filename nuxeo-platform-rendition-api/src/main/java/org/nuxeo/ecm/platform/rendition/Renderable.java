@@ -24,13 +24,11 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
  * Interface on an Object that can be used to produce {@link Rendition}
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public interface Renderable {
 
     /**
-     * Returns {@link RenditionDefinition} that are available on the underlying
-     * object
+     * Returns {@link RenditionDefinition} that are available on the underlying object
      * 
      * @return
      */
@@ -46,8 +44,7 @@ public interface Renderable {
     Rendition getRenditionByName(String name) throws RenditionException;
 
     /**
-     * Retrieve the {@link Rendition} by it's king (first match rendition is
-     * returned)
+     * Retrieve the {@link Rendition} by it's king (first match rendition is returned)
      * 
      * @param name
      * @return

@@ -41,22 +41,20 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Implementation of {@link PublishedDocumentFactory} that uses the
- * {@link RenditionService} to publish a Rendition of the given document.
+ * Implementation of {@link PublishedDocumentFactory} that uses the {@link RenditionService} to publish a Rendition of
+ * the given document.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
-public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
-        implements PublishedDocumentFactory {
+public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory implements PublishedDocumentFactory {
 
     public static final String RENDITION_NAME_PARAMETER_KEY = "renditionName";
 
     protected RenditionService renditionService;
 
     @Override
-    public PublishedDocument publishDocument(DocumentModel doc,
-            PublicationNode targetNode, Map<String, String> params)
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             throws ClientException {
         if (params != null && params.containsKey(RENDITION_NAME_PARAMETER_KEY)) {
             String renditionName = params.get(RENDITION_NAME_PARAMETER_KEY);
@@ -64,19 +62,16 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
                 DocumentModel renditionDocument = null;
                 Rendition rendition = null;
                 try {
-                    rendition = getRenditionService().getRendition(doc,
-                            renditionName, true);
+                    rendition = getRenditionService().getRendition(doc, renditionName, true);
                     if (rendition != null) {
                         renditionDocument = rendition.getHostDocument();
                     } else {
-                        throw new PublisherException(
-                                "Unable to render the document");
+                        throw new PublisherException("Unable to render the document");
                     }
                 } catch (RenditionException e) {
                     throw new PublisherException(e.getLocalizedMessage(), e);
                 }
-                PublishedDocument publishedDocument = super.publishDocument(
-                        renditionDocument, targetNode, params);
+                PublishedDocument publishedDocument = super.publishDocument(renditionDocument, targetNode, params);
                 DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
                 proxy.attach(doc.getSessionId());
                 if (!hasValidationTask(publishedDocument)) {
@@ -90,20 +85,17 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
     }
 
     @Override
-    protected DocumentModel getLiveDocument(CoreSession session,
-            DocumentModel proxy) throws ClientException {
+    protected DocumentModel getLiveDocument(CoreSession session, DocumentModel proxy) throws ClientException {
         if (!proxy.hasFacet(RENDITION_FACET)) {
             return super.getLiveDocument(session, proxy);
         }
-        RenditionLiveDocFetcher fetcher = new RenditionLiveDocFetcher(session,
-                proxy);
+        RenditionLiveDocFetcher fetcher = new RenditionLiveDocFetcher(session, proxy);
         fetcher.runUnrestricted();
         return fetcher.getLiveDocument();
     }
 
     @Override
-    protected void removeExistingProxiesOnPreviousVersions(
-            DocumentModel newProxy) throws PublishingException {
+    protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) throws PublishingException {
 
         if (!newProxy.hasFacet(RENDITION_FACET)) {
             super.removeExistingProxiesOnPreviousVersions(newProxy);
@@ -113,8 +105,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
         try {
             remover.runUnrestricted();
         } catch (ClientException e) {
-            throw new PublishingException(
-                    "Unable to remove old puiblished renditions", e);
+            throw new PublishingException("Unable to remove old puiblished renditions", e);
         }
 
     }
@@ -124,8 +115,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory
             try {
                 renditionService = Framework.getService(RenditionService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to RenditionService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to RenditionService. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (renditionService == null) {

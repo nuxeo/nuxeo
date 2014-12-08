@@ -24,14 +24,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
- * Interface hiding the actual rendition implementation and allowing for Lazy
- * computation of the rendition blobs.
+ * Interface hiding the actual rendition implementation and allowing for Lazy computation of the rendition blobs.
  * <p>
  * RenditionDefinition is partially wrapper in the {@link Rendition}
  * 
  * @since 5.6
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public interface Rendition {
 
@@ -50,9 +48,7 @@ public interface Rendition {
     String getName();
 
     /**
-     * get the {@link RenditionDefinition} label
-     * 
-     * s@return
+     * get the {@link RenditionDefinition} label s@return
      */
     String getLabel();
 
@@ -96,8 +92,8 @@ public interface Rendition {
     /**
      * Return the Document hosting the rendition.
      * <p>
-     * In case of a Live rendition it will be the target document and in case of
-     * stored Rendition it will be the Rendition document it self
+     * In case of a Live rendition it will be the target document and in case of stored Rendition it will be the
+     * Rendition document it self
      * 
      * @return
      */

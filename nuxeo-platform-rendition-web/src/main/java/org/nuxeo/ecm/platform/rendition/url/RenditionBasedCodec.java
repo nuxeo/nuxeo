@@ -42,8 +42,8 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
  * <p>
  * This class is shared with Template rendering system.
  * <p>
- * Codec handling a document repository, id, view and additional request
- * parameters. View is used to represent the Rendition name.
+ * Codec handling a document repository, id, view and additional request parameters. View is used to represent the
+ * Rendition name.
  * <p>
  * This codec supports both path abd id based urls.
  *
@@ -83,8 +83,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
 
     @Override
     public DocumentView getDocumentViewFromUrl(String url) {
-        final Pattern pathPattern = Pattern.compile(getPrefix()
-                + PATH_URL_PATTERN);
+        final Pattern pathPattern = Pattern.compile(getPrefix() + PATH_URL_PATTERN);
         Matcher pathMatcher = pathPattern.matcher(url);
         if (pathMatcher.matches()) {
 
@@ -107,12 +106,10 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
                 params = new HashMap<String, String>();
             }
             params.put(RENDITION_PARAM_NAME, renditionName);
-            final DocumentLocation docLoc = new DocumentLocationImpl(server,
-                    docRef);
+            final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
             return new DocumentViewImpl(docLoc, RENDITION_VIEW_ID, params);
         } else {
-            final Pattern idPattern = Pattern.compile(getPrefix()
-                    + ID_URL_PATTERN);
+            final Pattern idPattern = Pattern.compile(getPrefix() + ID_URL_PATTERN);
             Matcher idMatcher = idPattern.matcher(url);
             if (idMatcher.matches()) {
                 if (idMatcher.groupCount() >= 4) {
@@ -134,10 +131,8 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
                     }
                     params.put(RENDITION_PARAM_NAME, renditionName);
 
-                    final DocumentLocation docLoc = new DocumentLocationImpl(
-                            server, docRef);
-                    return new DocumentViewImpl(docLoc, RENDITION_VIEW_ID,
-                            params);
+                    final DocumentLocation docLoc = new DocumentLocationImpl(server, docRef);
+                    return new DocumentViewImpl(docLoc, RENDITION_VIEW_ID, params);
                 }
             }
         }
@@ -212,8 +207,7 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
             }
 
             if (renditionName != null) {
-                uri += "@"
-                        + URIUtils.quoteURIPathComponent(renditionName, true);
+                uri += "@" + URIUtils.quoteURIPathComponent(renditionName, true);
             }
 
             Map<String, String> params = new HashMap<>();

@@ -26,11 +26,9 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
- * Implementation of the {@link Rendition} interface that is applicable for
- * rendition created on the fly
+ * Implementation of the {@link Rendition} interface that is applicable for rendition created on the fly
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 public class LiveRendition extends LazyRendition implements Rendition {
 

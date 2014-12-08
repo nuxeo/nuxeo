@@ -60,18 +60,12 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
-        "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.versioning.api",
-        "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
-        "org.nuxeo.ecm.relations.jena",
-        "org.nuxeo.ecm.platform.publisher.core.contrib",
-        "org.nuxeo.ecm.platform.publisher.core",
-        "org.nuxeo.ecm.platform.publisher.task",
+@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.rendition.api",
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.versioning.api", "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
+        "org.nuxeo.ecm.relations.jena", "org.nuxeo.ecm.platform.publisher.core.contrib",
+        "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher" })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
@@ -84,12 +78,9 @@ public class TestRenditionPublication {
     protected PublisherService publisherService;
 
     @Test
-    public void shouldPublishASimpleProxyIfNoRenditionNameIsDefined()
-            throws ClientException {
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree tree = publisherService.getPublicationTree(
-                defaultTreeName, session, null);
+    public void shouldPublishASimpleProxyIfNoRenditionNameIsDefined() throws ClientException {
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree tree = publisherService.getPublicationTree(defaultTreeName, session, null);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -102,8 +93,7 @@ public class TestRenditionPublication {
         file = session.createDocument(file);
         session.save();
 
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(
-                file, targetNode);
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(file, targetNode);
 
         DocumentModel proxy = publishedDocument.getProxy();
         assertFalse(proxy.hasFacet(RENDITION_FACET));
@@ -112,10 +102,8 @@ public class TestRenditionPublication {
 
     @Test
     public void shouldPublishAPDFRendition() throws ClientException {
-        String defaultTreeName = publisherService.getAvailablePublicationTree().get(
-                0);
-        PublicationTree tree = publisherService.getPublicationTree(
-                defaultTreeName, session, null);
+        String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
+        PublicationTree tree = publisherService.getPublicationTree(defaultTreeName, session, null);
 
         List<PublicationNode> nodes = tree.getChildrenNodes();
         assertEquals(1, nodes.size());
@@ -132,8 +120,7 @@ public class TestRenditionPublication {
 
         String liveUUID = file.getId();
 
-        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(
-                file, targetNode,
+        SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(file, targetNode,
                 Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "pdf"));
 
         DocumentModel proxy = publishedDocument.getProxy();
@@ -169,8 +156,7 @@ public class TestRenditionPublication {
         file = session.saveDocument(file);
 
         // now republish
-        publishedDocument = (SimpleCorePublishedDocument) tree.publish(file,
-                targetNode,
+        publishedDocument = (SimpleCorePublishedDocument) tree.publish(file, targetNode,
                 Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "pdf"));
 
         versions = session.getVersions(file.getRef());
