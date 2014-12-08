@@ -45,11 +45,10 @@ import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Operation creating asset(s) from file(s) inside the configured Asset Library
- * or the current document.
+ * Operation creating asset(s) from file(s) inside the configured Asset Library or the current document.
  * <p>
- * If the {@code docType} parameter is not null, documents of this type will be
- * created, otherwise it relies on the {@code FileManager} to create documents.
+ * If the {@code docType} parameter is not null, documents of this type will be created, otherwise it relies on the
+ * {@code FileManager} to create documents.
  *
  * @since 5.7
  */
@@ -116,8 +115,7 @@ public class DamImport {
         try {
             DocumentModel doc;
             if (StringUtils.isBlank(docType)) {
-                doc = fileManager.createDocumentFromBlob(session, blob, path,
-                        overwrite, blob.getFilename());
+                doc = fileManager.createDocumentFromBlob(session, blob, path, overwrite, blob.getFilename());
             } else {
                 doc = createDocument(blob, path);
             }
@@ -125,15 +123,12 @@ public class DamImport {
             return doc;
         } catch (ClientException e) {
             String[] params = { blob.getFilename(), title };
-            throw new RecoverableClientException("Cannot import asset",
-                    "label.dam.import.asset.error", params, e);
+            throw new RecoverableClientException("Cannot import asset", "label.dam.import.asset.error", params, e);
         }
     }
 
-    protected DocumentModel createDocument(Blob blob, String path)
-            throws ClientException {
-        DocumentModel doc = FileManagerUtils.getExistingDocByFileName(session,
-                path, blob.getFilename());
+    protected DocumentModel createDocument(Blob blob, String path) throws ClientException {
+        DocumentModel doc = FileManagerUtils.getExistingDocByFileName(session, path, blob.getFilename());
         boolean skipCheckInAfterAdd = false;
         if (overwrite && doc != null) {
             if (!skipCheckInForBlob(getBlob(doc))) {
@@ -179,8 +174,7 @@ public class DamImport {
         }
     }
 
-    protected void updateDocument(DocumentModel doc, Blob blob)
-            throws ClientException {
+    protected void updateDocument(DocumentModel doc, Blob blob) throws ClientException {
         try {
             blob = blob.persist();
         } catch (IOException e) {

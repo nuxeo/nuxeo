@@ -153,8 +153,7 @@ public class DamSearchActions implements Serializable {
     /**
      * @since 5.9.1
      */
-    public String getJSONContentViewState() throws ClientException,
-            UnsupportedEncodingException {
+    public String getJSONContentViewState() throws ClientException, UnsupportedEncodingException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
         ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
         ContentViewState state = contentViewService.saveContentView(contentView);
@@ -171,34 +170,28 @@ public class DamSearchActions implements Serializable {
         return currentContentViewName;
     }
 
-    public void setCurrentContentViewName(String contentViewName)
-            throws ClientException {
+    public void setCurrentContentViewName(String contentViewName) throws ClientException {
         this.currentContentViewName = contentViewName;
     }
 
     public String getCurrentSelectedSavedSearchId() {
-        return currentSelectedSavedSearchId != null ? currentSelectedSavedSearchId
-                : currentContentViewName;
+        return currentSelectedSavedSearchId != null ? currentSelectedSavedSearchId : currentContentViewName;
     }
 
-    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId)
-            throws ClientException {
+    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId) throws ClientException {
         if (contentViewNames.contains(selectedSavedSearchId)) {
             contentViewActions.reset(currentContentViewName);
             currentContentViewName = selectedSavedSearchId;
             currentSelectedSavedSearchId = null;
         } else {
-            DocumentModel savedSearch = documentManager.getDocument(new IdRef(
-                    selectedSavedSearchId));
+            DocumentModel savedSearch = documentManager.getDocument(new IdRef(selectedSavedSearchId));
             String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
             loadSavedSearch(contentViewName, savedSearch);
         }
     }
 
-    public void loadSavedSearch(String contentViewName,
-            DocumentModel searchDocument) throws ClientException {
-        ContentView contentView = contentViewActions.getContentView(
-                contentViewName, searchDocument);
+    public void loadSavedSearch(String contentViewName, DocumentModel searchDocument) throws ClientException {
+        ContentView contentView = contentViewActions.getContentView(contentViewName, searchDocument);
         if (contentView != null) {
             currentContentViewName = contentViewName;
             currentSelectedSavedSearchId = searchDocument.getId();
@@ -208,14 +201,12 @@ public class DamSearchActions implements Serializable {
     public List<String> getContentViewNames() {
         if (contentViewNames == null) {
             ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
-            contentViewNames = new ArrayList<String>(
-                    contentViewService.getContentViewNames(DAM_FLAG));
+            contentViewNames = new ArrayList<String>(contentViewService.getContentViewNames(DAM_FLAG));
         }
         return contentViewNames;
     }
 
-    public Set<ContentViewHeader> getContentViewHeaders()
-            throws ClientException {
+    public Set<ContentViewHeader> getContentViewHeaders() throws ClientException {
         if (contentViewHeaders == null) {
             contentViewHeaders = new HashSet<ContentViewHeader>();
             ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
@@ -246,8 +237,7 @@ public class DamSearchActions implements Serializable {
         updateCurrentDocument((PageProvider<DocumentModel>) contentView.getCurrentPageProvider());
     }
 
-    public void updateCurrentDocument(PageProvider<DocumentModel> pageProvider)
-            throws ClientException {
+    public void updateCurrentDocument(PageProvider<DocumentModel> pageProvider) throws ClientException {
         if (pageProvider == null || !damActions.isOnDamView()) {
             return;
         }
@@ -266,12 +256,10 @@ public class DamSearchActions implements Serializable {
      * ----- Load / Save searches -----
      */
 
-    public List<SelectItem> getAllSavedSearchesSelectItems()
-            throws ClientException {
+    public List<SelectItem> getAllSavedSearchesSelectItems() throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
         // Add saved searches
-        SelectItemGroup userGroup = new SelectItemGroup(
-                messages.get(SAVED_SEARCHES_LABEL));
+        SelectItemGroup userGroup = new SelectItemGroup(messages.get(SAVED_SEARCHES_LABEL));
         List<DocumentModel> userSavedSearches = getSavedSearches();
         List<SelectItem> userSavedSearchesItems = convertToSelectItems(userSavedSearches);
         userGroup.setSelectItems(userSavedSearchesItems.toArray(new SelectItem[userSavedSearchesItems.size()]));
@@ -279,12 +267,10 @@ public class DamSearchActions implements Serializable {
         // Add shared searches
         List<DocumentModel> otherUsersSavedFacetedSearches = getSharedSearches();
         List<SelectItem> otherUsersSavedSearchesItems = convertToSelectItems(otherUsersSavedFacetedSearches);
-        SelectItemGroup allGroup = new SelectItemGroup(
-                messages.get(SHARED_SEARCHES_LABEL));
+        SelectItemGroup allGroup = new SelectItemGroup(messages.get(SHARED_SEARCHES_LABEL));
         allGroup.setSelectItems(otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
         items.add(allGroup);
-        SelectItemGroup flaggedGroup = new SelectItemGroup(
-                messages.get(SEARCH_FILTERS_LABEL));
+        SelectItemGroup flaggedGroup = new SelectItemGroup(messages.get(SEARCH_FILTERS_LABEL));
         // Add flagged content views
         Set<ContentViewHeader> flaggedSavedSearches = getContentViewHeaders();
         List<SelectItem> flaggedSavedSearchesItems = convertCVToSelectItems(flaggedSavedSearches);
@@ -294,27 +280,23 @@ public class DamSearchActions implements Serializable {
     }
 
     protected List<DocumentModel> getSavedSearches() throws ClientException {
-        return getDocuments(SAVED_DAM_SEARCHES_PROVIDER_NAME,
-                documentManager.getPrincipal().getName());
+        return getDocuments(SAVED_DAM_SEARCHES_PROVIDER_NAME, documentManager.getPrincipal().getName());
     }
 
     protected List<DocumentModel> getSharedSearches() throws ClientException {
-        return getDocuments(SHARED_DAM_SEARCHES_PROVIDER_NAME,
-                documentManager.getPrincipal().getName());
+        return getDocuments(SHARED_DAM_SEARCHES_PROVIDER_NAME, documentManager.getPrincipal().getName());
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getDocuments(String pageProviderName,
-            Object... parameters) throws ClientException {
+    protected List<DocumentModel> getDocuments(String pageProviderName, Object... parameters) throws ClientException {
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("coreSession", (Serializable) documentManager);
-        return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                pageProviderName, null, null, null, properties, parameters)).getCurrentPage();
+        return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, null, null, null,
+                properties, parameters)).getCurrentPage();
     }
 
-    protected List<SelectItem> convertToSelectItems(List<DocumentModel> docs)
-            throws ClientException {
+    protected List<SelectItem> convertToSelectItems(List<DocumentModel> docs) throws ClientException {
         List<SelectItem> items = new ArrayList<SelectItem>();
         for (DocumentModel doc : docs) {
             items.add(new SelectItem(doc.getId(), doc.getTitle(), ""));
@@ -322,12 +304,10 @@ public class DamSearchActions implements Serializable {
         return items;
     }
 
-    protected List<SelectItem> convertCVToSelectItems(
-            Set<ContentViewHeader> contentViewHeaders) {
+    protected List<SelectItem> convertCVToSelectItems(Set<ContentViewHeader> contentViewHeaders) {
         List<SelectItem> items = new ArrayList<SelectItem>();
         for (ContentViewHeader contentViewHeader : contentViewHeaders) {
-            items.add(new SelectItem(contentViewHeader.getName(),
-                    messages.get(contentViewHeader.getTitle()), ""));
+            items.add(new SelectItem(contentViewHeader.getName(), messages.get(contentViewHeader.getTitle()), ""));
         }
         return items;
     }
@@ -344,24 +324,19 @@ public class DamSearchActions implements Serializable {
         ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
         if (contentView != null) {
             UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                    documentManager, null);
+            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(documentManager, null);
 
             DocumentModel searchDoc = contentView.getSearchDocumentModel();
-            searchDoc.setPropertyValue("cvd:contentViewName",
-                    contentView.getName());
+            searchDoc.setPropertyValue("cvd:contentViewName", contentView.getName());
             searchDoc.setPropertyValue("dc:title", savedSearchTitle);
             PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
-            searchDoc.setPathInfo(uws.getPathAsString(),
-                    pathService.generatePathSegment(searchDoc));
+            searchDoc.setPathInfo(uws.getPathAsString(), pathService.generatePathSegment(searchDoc));
             searchDoc = documentManager.createDocument(searchDoc);
             documentManager.save();
 
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get(SEARCH_SAVED_LABEL));
+            facesMessages.add(StatusMessage.Severity.INFO, messages.get(SEARCH_SAVED_LABEL));
 
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    uws);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, uws);
 
             savedSearchTitle = null;
             currentSelectedSavedSearchId = searchDoc.getId();
@@ -374,17 +349,15 @@ public class DamSearchActions implements Serializable {
      * ----- Permanent links -----
      */
 
-    public void setState(String state) throws ClientException,
-            UnsupportedEncodingException {
+    public void setState(String state) throws ClientException, UnsupportedEncodingException {
         if (StringUtils.isNotBlank(state)) {
             Long finalPageSize = null;
             if (!StringUtils.isBlank(pageSize)) {
                 try {
                     finalPageSize = Long.valueOf(pageSize);
                 } catch (NumberFormatException e) {
-                    log.warn(String.format(
-                            "Unable to parse '%s' parameter with value '%s'",
-                            PAGE_SIZE_PARAMETER, pageSize));
+                    log.warn(String.format("Unable to parse '%s' parameter with value '%s'", PAGE_SIZE_PARAMETER,
+                            pageSize));
                 }
             }
 
@@ -393,14 +366,13 @@ public class DamSearchActions implements Serializable {
                 try {
                     finalCurrentPage = Long.valueOf(currentPage);
                 } catch (NumberFormatException e) {
-                    log.warn(String.format(
-                            "Unable to parse '%s' parameter with value '%s'",
-                            CURRENT_PAGE_PARAMETER, currentPage));
+                    log.warn(String.format("Unable to parse '%s' parameter with value '%s'", CURRENT_PAGE_PARAMETER,
+                            currentPage));
                 }
             }
 
-            contentViewActions.restoreContentView(getCurrentContentViewName(),
-                    finalCurrentPage, finalPageSize, null, state);
+            contentViewActions.restoreContentView(getCurrentContentViewName(), finalCurrentPage, finalPageSize, null,
+                    state);
         }
         updateCurrentDocument();
     }
@@ -425,8 +397,7 @@ public class DamSearchActions implements Serializable {
      * Compute a permanent link for the current search.
      */
     @SuppressWarnings("unchecked")
-    public String getSearchPermanentLinkUrl() throws ClientException,
-            UnsupportedEncodingException {
+    public String getSearchPermanentLinkUrl() throws ClientException, UnsupportedEncodingException {
         // do not try to compute an URL if we don't have any CoreSession
         if (documentManager == null) {
             return null;
@@ -436,51 +407,41 @@ public class DamSearchActions implements Serializable {
         DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
         DocumentView docView = computeDocumentView(damCurrentDocument);
         docView.setViewId("assets");
-        docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
-                currentContentViewName);
-        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
-                getJSONContentViewState());
+        docView.addParameter(CONTENT_VIEW_NAME_PARAMETER, currentContentViewName);
+        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER, getJSONContentViewState());
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
-                docView, true, BaseURL.getBaseURL());
+        String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC, docView, true, BaseURL.getBaseURL());
         return RestHelper.addCurrentConversationParameters(url);
     }
 
     protected DocumentView computeDocumentView(DocumentModel doc) {
         if (doc != null) {
-            return new DocumentViewImpl(new DocumentLocationImpl(
-                    documentManager.getRepositoryName(), new PathRef(
-                            doc.getPathAsString())));
+            return new DocumentViewImpl(new DocumentLocationImpl(documentManager.getRepositoryName(), new PathRef(
+                    doc.getPathAsString())));
         } else {
-            return new DocumentViewImpl(new DocumentLocationImpl(
-                    documentManager.getRepositoryName(), null));
+            return new DocumentViewImpl(new DocumentLocationImpl(documentManager.getRepositoryName(), null));
         }
     }
 
     /**
-     * @deprecated since 5.9.5. Use
-     *             {@link DamActions#getAssetPermanentLinkUrl(boolean)}.
+     * @deprecated since 5.9.5. Use {@link DamActions#getAssetPermanentLinkUrl(boolean)}.
      */
     @Deprecated
-    public String getAssetPermanentLinkUrl() throws ClientException,
-            UnsupportedEncodingException {
+    public String getAssetPermanentLinkUrl() throws ClientException, UnsupportedEncodingException {
         return damActions.getAssetPermanentLinkUrl(true);
     }
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public String loadPermanentLink(DocumentView docView)
-            throws ClientException {
+    public String loadPermanentLink(DocumentView docView) throws ClientException {
         restHelper.initContextFromRestRequest(docView);
         return "assets";
     }
 
-    @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT,
-            CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT, CONTENT_VIEW_REFRESH_EVENT }, create = true)
-    public void onContentViewPageProviderChanged(String contentViewName)
-            throws ClientException {
+    @Observer(value = { CONTENT_VIEW_PAGE_CHANGED_EVENT, CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT,
+            CONTENT_VIEW_REFRESH_EVENT }, create = true)
+    public void onContentViewPageProviderChanged(String contentViewName) throws ClientException {
         String currentContentViewName = getCurrentContentViewName();
-        if (currentContentViewName != null
-                && currentContentViewName.equals(contentViewName)) {
+        if (currentContentViewName != null && currentContentViewName.equals(contentViewName)) {
             updateCurrentDocument();
         }
     }

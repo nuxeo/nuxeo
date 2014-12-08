@@ -87,10 +87,8 @@ public class DamActions implements Serializable {
         return currentDocument != null ? currentDocument.getId() : null;
     }
 
-    public void setSelectedDocumentId(String selectedDocumentId)
-            throws ClientException {
-        DocumentModel selectedDocument = documentManager.getDocument(new IdRef(
-                selectedDocumentId));
+    public void setSelectedDocumentId(String selectedDocumentId) throws ClientException {
+        DocumentModel selectedDocument = documentManager.getDocument(new IdRef(selectedDocumentId));
         selectDocument(selectedDocument);
     }
 
@@ -104,8 +102,7 @@ public class DamActions implements Serializable {
     }
 
     public void setDamMainTab(String tabs) {
-        webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs
-                : MAIN_TABS_DAM);
+        webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs : MAIN_TABS_DAM);
     }
 
     public String viewInDM() throws ClientException {
@@ -116,8 +113,7 @@ public class DamActions implements Serializable {
     /**
      * @deprecated since 5.9.5. Use {@code #getAssetPermanentLinkUrl}.
      */
-    public String viewInDAM() throws ClientException,
-            UnsupportedEncodingException {
+    public String viewInDAM() throws ClientException, UnsupportedEncodingException {
         return getAssetPermanentLinkUrl(false);
     }
 
@@ -129,8 +125,7 @@ public class DamActions implements Serializable {
     public boolean getCanCreateInAssetLibrary() throws ClientException {
         AssetLibrary assetLibrary = getAssetLibrary();
         DocumentRef assetLibraryRef = new PathRef(assetLibrary.getPath());
-        return documentManager.hasPermission(assetLibraryRef,
-                SecurityConstants.ADD_CHILDREN);
+        return documentManager.hasPermission(assetLibraryRef, SecurityConstants.ADD_CHILDREN);
     }
 
     public AssetLibrary getAssetLibrary() {
@@ -179,8 +174,7 @@ public class DamActions implements Serializable {
      * @since 5.9.4
      */
     public String getDownloadURL() {
-        return DocumentModelFunctions.bigFileUrl(
-                navigationContext.getCurrentDocument(), "blobholder:0", "");
+        return DocumentModelFunctions.bigFileUrl(navigationContext.getCurrentDocument(), "blobholder:0", "");
     }
 
     /**
@@ -188,10 +182,9 @@ public class DamActions implements Serializable {
      *
      * @since 5.9.5
      */
-    public String getAssetPermanentLinkUrl(boolean newConversation)
-            throws ClientException, UnsupportedEncodingException {
+    public String getAssetPermanentLinkUrl(boolean newConversation) throws ClientException,
+            UnsupportedEncodingException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return DocumentModelFunctions.documentUrl(DAM_ID_PATTERN,
-                currentDocument, "asset", null, newConversation);
+        return DocumentModelFunctions.documentUrl(DAM_ID_PATTERN, currentDocument, "asset", null, newConversation);
     }
 }

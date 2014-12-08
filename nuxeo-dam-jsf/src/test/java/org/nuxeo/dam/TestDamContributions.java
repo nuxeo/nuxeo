@@ -41,14 +41,12 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core",
+@Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
         "org.nuxeo.ecm.platform.picture.jsf:OSGI-INF/imaging-types-contrib.xml",
         "org.nuxeo.ecm.platform.video.jsf:OSGI-INF/ui-types-contrib.xml",
         "org.nuxeo.ecm.platform.audio.jsf:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.dam.jsf:OSGI-INF/dam-service.xml",
-        "org.nuxeo.dam.jsf:OSGI-INF/dam-service-contrib.xml" })
+        "org.nuxeo.dam.jsf:OSGI-INF/dam-service.xml", "org.nuxeo.dam.jsf:OSGI-INF/dam-service-contrib.xml" })
 public class TestDamContributions {
 
     @Inject
@@ -68,14 +66,14 @@ public class TestDamContributions {
     }
 
     @Test
-    public  void testAllowedAssetTypes() {
+    public void testAllowedAssetTypes() {
         List<Type> types = damService.getAllowedAssetTypes();
         assertNotNull(types);
         assertFalse(types.isEmpty());
         assertEquals(4, types.size());
 
         List<String> expectedTypes = Arrays.asList("Picture", "Video", "Audio", "File");
-        for (Type type: types) {
+        for (Type type : types) {
             assertTrue(expectedTypes.contains(type.getId()));
         }
     }

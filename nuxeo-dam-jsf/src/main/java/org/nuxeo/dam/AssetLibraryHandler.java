@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandle
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @since 5.7
  */
 public class AssetLibraryHandler implements PostContentCreationHandler {
@@ -49,11 +48,9 @@ public class AssetLibraryHandler implements PostContentCreationHandler {
                     String parentPath = path.removeLastSegments(1).toString();
                     String name = path.lastSegment();
 
-                    DocumentModel doc = session.createDocumentModel(parentPath,
-                            name, assetLibrary.getDocType());
+                    DocumentModel doc = session.createDocumentModel(parentPath, name, assetLibrary.getDocType());
                     doc.setPropertyValue(DC_TITLE, assetLibrary.getTitle());
-                    doc.setPropertyValue(DC_DESCRIPTION,
-                            assetLibrary.getDescription());
+                    doc.setPropertyValue(DC_DESCRIPTION, assetLibrary.getDescription());
                     session.createDocument(doc);
                 }
             }
