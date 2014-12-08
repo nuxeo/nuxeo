@@ -58,10 +58,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
-        "org.nuxeo.common", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.signature.core",
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
+        "org.nuxeo.common", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
         "org.nuxeo.ecm.platform.signature.core.test" })
 public class TypeTest {
 
@@ -87,8 +85,7 @@ public class TypeTest {
     public void setUp() throws Exception {
         File keystoreFile = FileUtils.getResourceFileFromContext(KEYSTORE_PATH);
         InputStream keystoreIS = new FileInputStream(keystoreFile);
-        KeyStore rootKeystore = certService.getKeyStore(
-                keystoreIS, ROOT_KEYSTORE_PASSWORD);
+        KeyStore rootKeystore = certService.getKeyStore(keystoreIS, ROOT_KEYSTORE_PASSWORD);
         RootService rootService = new RootServiceImpl();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
@@ -108,8 +105,7 @@ public class TypeTest {
         map.put("userid", userID);
 
         // add a keystore to the entry
-        KeyStore keystore = certService.initializeUser(getUserInfo(userID),
-                USER_KEY_PASSWORD);
+        KeyStore keystore = certService.initializeUser(getUserInfo(userID), USER_KEY_PASSWORD);
         ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
         keystore.store(byteOS, USER_KEYSTORE_PASSWORD.toCharArray());
         String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
@@ -122,8 +118,7 @@ public class TypeTest {
         DocumentModel entryFromSession = sqlSession.getEntry(userID);
         String keystore64EncodedFromSession = (String) entryFromSession.getPropertyValue("cert:keystore");
         byte[] keystoreBytes = Base64.decode(keystore64EncodedFromSession);
-        ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(
-                keystoreBytes);
+        ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(keystoreBytes);
         keystore.load(keystoreByteIS, USER_KEYSTORE_PASSWORD.toCharArray());
         AliasWrapper userAlias = new AliasWrapper(userID);
 

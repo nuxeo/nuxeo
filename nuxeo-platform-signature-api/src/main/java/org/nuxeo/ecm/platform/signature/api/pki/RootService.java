@@ -22,29 +22,39 @@ import java.security.KeyStore;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
- * Allows interaction with CA root-related PKI objects:
- * certificates, keys, keystore & certificate files
+ * Allows interaction with CA root-related PKI objects: certificates, keys, keystore & certificate files
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 public interface RootService {
 
     public KeyStore getRootKeyStore();
+
     public String getRootKeystoreFilePath();
+
     public String getRootKeystorePassword();
+
     public String getRootKeyAlias();
+
     public String getRootKeyPassword();
+
     public String getRootCertificateAlias();
 
     public boolean isRootSetup();
+
     public byte[] getRootPublicCertificate() throws CertException;
+
     public InputStream getRootKeystoreIS() throws CertException;
-    
+
     public void setRootKeyStore(KeyStore rootKeyStore);
+
     public void setRootKeystoreFilePath(String rootKeystoreFilePath);
+
     public void setRootKeystorePassword(String rootKeystorePassword);
+
     public void setRootKeyAlias(String rootKeyAlias);
+
     public void setRootKeyPassword(String rootKeyPassword);
+
     public void setRootCertificateAlias(String rootCertificateAlias);
 }

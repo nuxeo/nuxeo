@@ -35,23 +35,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.platform.signature.core",
-        "org.nuxeo.ecm.platform.signature.web", "org.nuxeo.ecm.platform.signature.web.test"  })
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.usermanager.api",
+        "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.web",
+        "org.nuxeo.ecm.platform.signature.web.test" })
 public class CertActionsTest {
 
     private static final String USER_ID = "hsimpson";
 
     protected DocumentModel user;
+
     protected CertActions certActions;
 
     @Before
@@ -63,7 +61,7 @@ public class CertActionsTest {
     public void testValidateRequiredUserFields() throws Exception {
         DocumentModel user = getFullUser();
         assertNotNull("User not created", user);
-        //certActions.validateRequiredUserFields();
+        // certActions.validateRequiredUserFields();
     }
 
     public DocumentModel getFullUser() throws Exception {

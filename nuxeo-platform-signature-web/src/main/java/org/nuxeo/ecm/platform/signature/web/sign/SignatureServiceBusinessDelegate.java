@@ -53,8 +53,7 @@ public class SignatureServiceBusinessDelegate implements Serializable {
             try {
                 signatureService = Framework.getService(SignatureService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to SignatureService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to SignatureService. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (signatureService == null) {

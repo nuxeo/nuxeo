@@ -53,8 +53,7 @@ public class CUserServiceBusinessDelegate implements Serializable {
             try {
                 cUserService = Framework.getService(CUserService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to CUserService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to CUserService. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (cUserService == null) {

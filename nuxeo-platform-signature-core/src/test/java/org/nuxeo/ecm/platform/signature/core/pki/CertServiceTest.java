@@ -52,8 +52,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(user = "Administrator")
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
         "org.nuxeo.ecm.platform.signature.core.test" })
 public class CertServiceTest {
@@ -76,15 +75,13 @@ public class CertServiceTest {
     private static final String KEYSTORE_PATH = "test-files/keystore.jks";
 
     /**
-     * Replace root keystore from the config file with a custom one loaded from
-     * a test resource file
+     * Replace root keystore from the config file with a custom one loaded from a test resource file
      *
      * @throws Exception
      */
     @Before
     public void setUp() throws Exception {
-        KeyStore rootKeystore = certService.getKeyStore(
-                getKeystoreIS(KEYSTORE_PATH), ROOT_KEYSTORE_PASSWORD);
+        KeyStore rootKeystore = certService.getKeyStore(getKeystoreIS(KEYSTORE_PATH), ROOT_KEYSTORE_PASSWORD);
         RootService rootService = new RootServiceImpl();
         AliasWrapper alias = new AliasWrapper(ROOT_USER_ID);
         rootService.setRootKeyAlias(alias.getId(AliasType.KEY));
@@ -95,8 +92,7 @@ public class CertServiceTest {
         certService.setRootService(rootService);
     }
 
-    protected InputStream getKeystoreIS(String keystoreFilePath)
-            throws Exception {
+    protected InputStream getKeystoreIS(String keystoreFilePath) throws Exception {
         File keystoreFile = FileUtils.getResourceFileFromContext(keystoreFilePath);
         return new FileInputStream(keystoreFile);
     }
@@ -107,18 +103,15 @@ public class CertServiceTest {
         AliasWrapper alias = new AliasWrapper(userID);
         String keyAliasName = alias.getId(AliasType.KEY);
         String certificateAliasName = alias.getId(AliasType.CERT);
-        KeyStore keystore = certService.getKeyStore(
-                getKeystoreIS(KEYSTORE_PATH), USER_KEYSTORE_PASSWORD);
-        KeyPair keyPair = certService.getKeyPair(keystore, keyAliasName,
-                certificateAliasName, USER_KEY_PASSWORD);
+        KeyStore keystore = certService.getKeyStore(getKeystoreIS(KEYSTORE_PATH), USER_KEYSTORE_PASSWORD);
+        KeyPair keyPair = certService.getKeyPair(keystore, keyAliasName, certificateAliasName, USER_KEY_PASSWORD);
         assertNotNull(keyPair.getPrivate());
     }
 
     @Test
     public void testGetCertificate() throws Exception {
         KeyStore keystore = generateUserKeystore();
-        Certificate cert = certService.getCertificate(keystore,
-                getAliasId(getUserInfo(), AliasType.CERT));
+        Certificate cert = certService.getCertificate(keystore, getAliasId(getUserInfo(), AliasType.CERT));
         assertNotNull(cert.getPublicKey());
         assertTrue(cert.getPublicKey().getEncoded().length > EXPECTED_MIN_ENCODED_CERT_LENGTH);
     }
@@ -132,14 +125,12 @@ public class CertServiceTest {
     }
 
     protected KeyStore generateUserKeystore() throws Exception {
-        KeyStore keystore = certService.initializeUser(getUserInfo(),
-                USER_KEYSTORE_PASSWORD);
+        KeyStore keystore = certService.initializeUser(getUserInfo(), USER_KEYSTORE_PASSWORD);
         return keystore;
     }
 
     protected String getAliasId(UserInfo userInfo, AliasType aliasType) {
-        AliasWrapper alias = new AliasWrapper(userInfo.getUserFields().get(
-                CNField.UserID));
+        AliasWrapper alias = new AliasWrapper(userInfo.getUserFields().get(CNField.UserID));
         return alias.getId(aliasType);
     }
 

@@ -105,8 +105,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         }
     }
 
-    protected X509Certificate createCertificateFromCSR(
-            PKCS10CertificationRequest csr) throws CertException {
+    protected X509Certificate createCertificateFromCSR(PKCS10CertificationRequest csr) throws CertException {
         X509Certificate cert;
         try {
             X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
@@ -119,37 +118,30 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
             certGen.setSignatureAlgorithm(CERT_SIGNATURE_ALGORITHM);
             certGen.addExtension(X509Extensions.SubjectKeyIdentifier, false,
                     new SubjectKeyIdentifierStructure(csr.getPublicKey("BC")));
-            certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, false,
-                    new AuthorityKeyIdentifierStructure(getRootCertificate()));
-            certGen.addExtension(X509Extensions.BasicConstraints, true,
-                    new BasicConstraints(false));
-            certGen.addExtension(X509Extensions.KeyUsage, true, new KeyUsage(
-                    KeyUsage.digitalSignature));
-            certGen.addExtension(X509Extensions.ExtendedKeyUsage, true,
-                    new ExtendedKeyUsage(KeyPurposeId.id_kp_serverAuth));
+            certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, false, new AuthorityKeyIdentifierStructure(
+                    getRootCertificate()));
+            certGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
+            certGen.addExtension(X509Extensions.KeyUsage, true, new KeyUsage(KeyUsage.digitalSignature));
+            certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, new ExtendedKeyUsage(
+                    KeyPurposeId.id_kp_serverAuth));
 
             ASN1Set attributes = csr.getCertificationRequestInfo().getAttributes();
             for (int i = 0; i != attributes.size(); i++) {
                 Attribute attr = Attribute.getInstance(attributes.getObjectAt(i));
-                if (attr.getAttrType().equals(
-                        PKCSObjectIdentifiers.pkcs_9_at_extensionRequest)) {
-                    X509Extensions extensions = X509Extensions.getInstance(attr.getAttrValues().getObjectAt(
-                            0));
+                if (attr.getAttrType().equals(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest)) {
+                    X509Extensions extensions = X509Extensions.getInstance(attr.getAttrValues().getObjectAt(0));
                     @SuppressWarnings("rawtypes")
                     Enumeration e = extensions.oids();
                     while (e.hasMoreElements()) {
                         DERObjectIdentifier oid = (DERObjectIdentifier) e.nextElement();
                         X509Extension ext = extensions.getExtension(oid);
-                        certGen.addExtension(oid, ext.isCritical(),
-                                ext.getValue().getOctets());
+                        certGen.addExtension(oid, ext.isCritical(), ext.getValue().getOctets());
                     }
                 }
             }
 
-            KeyPair rootKeyPair = getKeyPair(rootService.getRootKeyStore(),
-                    rootService.getRootKeyAlias(),
-                    rootService.getRootCertificateAlias(),
-                    rootService.getRootKeyPassword());
+            KeyPair rootKeyPair = getKeyPair(rootService.getRootKeyStore(), rootService.getRootKeyAlias(),
+                    rootService.getRootCertificateAlias(), rootService.getRootKeyPassword());
             cert = certGen.generate(rootKeyPair.getPrivate(), "BC");
         } catch (CertificateParsingException e) {
             throw new CertException(e);
@@ -173,8 +165,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     @Override
     public X509Certificate getRootCertificate() throws CertException {
         if (rootCertificate == null) {
-            rootCertificate = getCertificate(
-                    getRootService().getRootKeyStore(),
+            rootCertificate = getCertificate(getRootService().getRootKeyStore(),
                     getRootService().getRootCertificateAlias());
         }
         return rootCertificate;
@@ -192,8 +183,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     @Override
-    public KeyStore initializeUser(UserInfo userInfo, String suppliedPassword)
-            throws CertException {
+    public KeyStore initializeUser(UserInfo userInfo, String suppliedPassword) throws CertException {
         char[] password = suppliedPassword.toCharArray();
         KeyStore ks = null;
         String userName = userInfo.getUserFields().get(CNField.UserID);
@@ -205,8 +195,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
             keyGen.initialize(KEY_SIZE);
             KeyPair keyPair = keyGen.genKeyPair();
             java.security.cert.Certificate[] chain = { getRootCertificate() };
-            ks.setKeyEntry(keystoreAlias.getId(AliasType.KEY),
-                    keyPair.getPrivate(), password, chain);
+            ks.setKeyEntry(keystoreAlias.getId(AliasType.KEY), keyPair.getPrivate(), password, chain);
             X509Certificate cert = getCertificate(keyPair, userInfo);
             ks.setCertificateEntry(keystoreAlias.getId(AliasType.CERT), cert);
         } catch (CertificateException e) {
@@ -222,20 +211,16 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     @Override
-    public KeyPair getKeyPair(KeyStore ks, String keyAlias, String certAlias,
-            String keyPassword) throws CertException {
+    public KeyPair getKeyPair(KeyStore ks, String keyAlias, String certAlias, String keyPassword) throws CertException {
         KeyPair keyPair = null;
         try {
             if (!ks.containsAlias(keyAlias)) {
-                throw new CertException(
-                        "Missing keystore key entry for key alias:" + keyAlias);
+                throw new CertException("Missing keystore key entry for key alias:" + keyAlias);
             }
             if (!ks.containsAlias(certAlias)) {
-                throw new CertException(
-                        "Missing keystore certificate entry for :" + certAlias);
+                throw new CertException("Missing keystore certificate entry for :" + certAlias);
             }
-            PrivateKey privateKey = (PrivateKey) ks.getKey(keyAlias,
-                    keyPassword.toCharArray());
+            PrivateKey privateKey = (PrivateKey) ks.getKey(keyAlias, keyPassword.toCharArray());
             X509Certificate cert = (X509Certificate) ks.getCertificate(certAlias);
             PublicKey publicKey = cert.getPublicKey();
             keyPair = new KeyPair(publicKey, privateKey);
@@ -250,14 +235,12 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     @Override
-    public X509Certificate getCertificate(KeyStore ks, String certificateAlias)
-            throws CertException {
+    public X509Certificate getCertificate(KeyStore ks, String certificateAlias) throws CertException {
         X509Certificate certificate = null;
         try {
 
             if (ks == null) {
-                throw new CertException("Keystore missing for "
-                        + certificateAlias);
+                throw new CertException("Keystore missing for " + certificateAlias);
             }
             if (ks.containsAlias(certificateAlias)) {
                 certificate = (X509Certificate) ks.getCertificate(certificateAlias);
@@ -270,40 +253,31 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         return certificate;
     }
 
-    protected X509Certificate getCertificate(KeyPair keyPair, UserInfo userInfo)
-            throws CertException {
-        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) generateCSR(
-                keyPair, userInfo);
+    protected X509Certificate getCertificate(KeyPair keyPair, UserInfo userInfo) throws CertException {
+        PKCS10CertificationRequest csr = (PKCS10CertificationRequest) generateCSR(keyPair, userInfo);
         X509Certificate certificate = createCertificateFromCSR(csr);
         return certificate;
     }
 
-    protected CertificationRequest generateCSR(KeyPair keyPair,
-            UserInfo userInfo) throws CertException {
+    protected CertificationRequest generateCSR(KeyPair keyPair, UserInfo userInfo) throws CertException {
 
         CertificationRequest csr;
 
-        GeneralNames subjectAltName = new GeneralNames(new GeneralName(
-                GeneralName.rfc822Name, userInfo.getUserFields().get(
-                        CNField.Email)));
+        GeneralNames subjectAltName = new GeneralNames(new GeneralName(GeneralName.rfc822Name,
+                userInfo.getUserFields().get(CNField.Email)));
 
         Vector<DERObjectIdentifier> objectIdentifiers = new Vector<DERObjectIdentifier>();
         Vector<X509Extension> extensionValues = new Vector<X509Extension>();
 
         objectIdentifiers.add(X509Extensions.SubjectAlternativeName);
-        extensionValues.add(new X509Extension(false, new DEROctetString(
-                subjectAltName)));
+        extensionValues.add(new X509Extension(false, new DEROctetString(subjectAltName)));
 
-        X509Extensions extensions = new X509Extensions(objectIdentifiers,
-                extensionValues);
+        X509Extensions extensions = new X509Extensions(objectIdentifiers, extensionValues);
 
-        Attribute attribute = new Attribute(
-                PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, new DERSet(
-                        extensions));
+        Attribute attribute = new Attribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, new DERSet(extensions));
         try {
-            csr = new PKCS10CertificationRequest(CERT_SIGNATURE_ALGORITHM,
-                    userInfo.getX500Principal(), keyPair.getPublic(),
-                    new DERSet(attribute), keyPair.getPrivate());
+            csr = new PKCS10CertificationRequest(CERT_SIGNATURE_ALGORITHM, userInfo.getX500Principal(),
+                    keyPair.getPublic(), new DERSet(attribute), keyPair.getPrivate());
         } catch (InvalidKeyException e) {
             throw new CertException(e);
         } catch (NoSuchAlgorithmException e) {
@@ -319,8 +293,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     @Override
-    public KeyStore getKeyStore(InputStream keystoreIS, String password)
-            throws CertException {
+    public KeyStore getKeyStore(InputStream keystoreIS, String password) throws CertException {
         KeyStore ks;
         try {
             ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
@@ -332,8 +305,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
         } catch (CertificateException e) {
             throw new CertException(e);
         } catch (IOException e) {
-            if (String.valueOf(e.getMessage()).contains(
-                    "password was incorrect")) {
+            if (String.valueOf(e.getMessage()).contains("password was incorrect")) {
                 // "Keystore was tampered with, or password was incorrect"
                 // is not very useful to end-users
                 throw new CertException("Incorrect password");
@@ -344,8 +316,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
     }
 
     @Override
-    public String getCertificateEmail(X509Certificate certificate)
-            throws CertException {
+    public String getCertificateEmail(X509Certificate certificate) throws CertException {
         String emailOID = "2.5.29.17";
         byte[] emailBytes = certificate.getExtensionValue(emailOID);
         String certificateEmail = null;
@@ -358,15 +329,13 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
                 certificateEmail = generalName.getName().toString();
             }
         } catch (IOException e) {
-            throw new CertException(
-                    "Email could not be extracted from certificate", e);
+            throw new CertException("Email could not be extracted from certificate", e);
         }
         return certificateEmail;
     }
 
     @Override
-    public void storeCertificate(KeyStore keystore, OutputStream os,
-            String keystorePassword) throws CertException {
+    public void storeCertificate(KeyStore keystore, OutputStream os, String keystorePassword) throws CertException {
         try {
             keystore.store(os, keystorePassword.toCharArray());
         } catch (KeyStoreException e) {

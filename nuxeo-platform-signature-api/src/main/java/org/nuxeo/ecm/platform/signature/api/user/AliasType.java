@@ -17,8 +17,7 @@
 package org.nuxeo.ecm.platform.signature.api.user;
 
 /**
- * Alias type specifies what type of object (certificate, private key, etc)
- * is being persisted in the keystore.
+ * Alias type specifies what type of object (certificate, private key, etc) is being persisted in the keystore.
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */

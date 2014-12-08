@@ -145,12 +145,10 @@ public class SignatureServiceTest {
         userModel.setPathInfo("/", SECOND_USER_ID);
         user2 = userManager.createUser(userModel);
 
-        DocumentModel certificate = cUserService.createCertificate(user,
-                USER_KEY_PASSWORD);
+        DocumentModel certificate = cUserService.createCertificate(user, USER_KEY_PASSWORD);
         assertNotNull(certificate);
 
-        DocumentModel certificate2 = cUserService.createCertificate(user2,
-                USER_KEY_PASSWORD);
+        DocumentModel certificate2 = cUserService.createCertificate(user2, USER_KEY_PASSWORD);
         assertNotNull(certificate2);
 
         origPdfFile = FileUtils.getResourceFileFromContext(ORIGINAL_PDF);
@@ -179,8 +177,7 @@ public class SignatureServiceTest {
         // first user signs
         FileBlob origBlob = new FileBlob(origPdfFile);
         assertEquals(UNSIGNED, ssi.getSigningStatus(origBlob, user));
-        Blob signedBlob = signatureService.signPDF(origBlob, user,
-                USER_KEY_PASSWORD, "test reason");
+        Blob signedBlob = signatureService.signPDF(origBlob, user, USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlob);
         assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlob, user));
         assertEquals(SIGNED_OTHER, ssi.getSigningStatus(signedBlob, user2));
@@ -188,21 +185,17 @@ public class SignatureServiceTest {
         // try for the same user to sign the certificate again
         Blob signedBlobTwice = null;
         try {
-            signedBlobTwice = signatureService.signPDF(signedBlob, user,
-                    USER_KEY_PASSWORD, "test reason");
+            signedBlobTwice = signatureService.signPDF(signedBlob, user, USER_KEY_PASSWORD, "test reason");
             fail("Should raise AlreadySignedException");
         } catch (AlreadySignedException e) {
             // ok
         }
 
         // try for the second user to sign the certificate
-        signedBlobTwice = signatureService.signPDF(signedBlob, user2,
-                USER_KEY_PASSWORD, "test reason");
+        signedBlobTwice = signatureService.signPDF(signedBlob, user2, USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlobTwice);
-        assertEquals(SIGNED_CURRENT,
-                ssi.getSigningStatus(signedBlobTwice, user));
-        assertEquals(SIGNED_CURRENT,
-                ssi.getSigningStatus(signedBlobTwice, user2));
+        assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlobTwice, user));
+        assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlobTwice, user2));
 
         // test presence of multiple signatures
         List<String> names = getSignatureNames(signedBlobTwice);
@@ -226,24 +219,19 @@ public class SignatureServiceTest {
         SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
 
         // sign the original PDF file
-        Blob signedBlob = signatureService.signPDF(new FileBlob(origPdfFile),
-                user, USER_KEY_PASSWORD, "test reason");
+        Blob signedBlob = signatureService.signPDF(new FileBlob(origPdfFile), user, USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlob);
         // verify there are certificates in the signed file
         List<X509Certificate> certificates = ssi.getCertificates(signedBlob);
-        assertTrue(
-                "There has to be at least 1 certificate in a signed document",
-                certificates.size() > 0);
-        assertTrue(certificates.get(0).getSubjectDN().toString().contains(
-                "CN=Homer Simpson"));
+        assertTrue("There has to be at least 1 certificate in a signed document", certificates.size() > 0);
+        assertTrue(certificates.get(0).getSubjectDN().toString().contains("CN=Homer Simpson"));
     }
 
     @Test
     public void testGetSigningStatus() throws Exception {
         Serializable pdfBlob = new FileBlob(origPdfFile, "application/pdf");
         Serializable signedBlob = new FileBlob(signedPdfFile, "application/pdf");
-        Serializable otherBlob = new StringBlob("foo",
-                "application/octet-stream");
+        Serializable otherBlob = new StringBlob("foo", "application/octet-stream");
         DocumentModel doc = session.createDocumentModel("File");
         StatusWithBlob swb;
 
@@ -280,8 +268,7 @@ public class SignatureServiceTest {
         assertEquals(UNSIGNABLE, swb.status);
         assertNull(swb.path);
         assertNull(swb.blob);
-        doc.setPropertyValue("files:files",
-                (Serializable) Collections.emptyList());
+        doc.setPropertyValue("files:files", (Serializable) Collections.emptyList());
         swb = signatureService.getSigningStatus(doc, null);
         assertEquals(UNSIGNABLE, swb.status);
         assertNull(swb.path);
@@ -316,32 +303,27 @@ public class SignatureServiceTest {
 
     @Test
     public void testSignDocumentReplace() throws Exception {
-        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null,
-                "foo.txt", null);
+        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null, "foo.txt", null);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) txtBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.REPLACE,
-                null);
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.REPLACE, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(signedBlob, doc.getPropertyValue("file:content"));
-        assertEquals(Collections.emptyList(),
-                doc.getPropertyValue("files:files"));
+        assertEquals(Collections.emptyList(), doc.getPropertyValue("files:files"));
     }
 
     @Test
     public void testSignDocumentAttach() throws Exception {
-        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null,
-                "foo.txt", null);
+        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null, "foo.txt", null);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) txtBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.ATTACH,
-                null);
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.ATTACH, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
@@ -354,14 +336,12 @@ public class SignatureServiceTest {
 
     @Test
     public void testSignDocumentArchive() throws Exception {
-        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null,
-                "foo.txt", null);
+        Blob txtBlob = new FileBlob(helloTxtFile, "text/plain", null, "foo.txt", null);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) txtBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.ARCHIVE,
-                "foo archive.txt");
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.ARCHIVE, "foo archive.txt");
 
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
@@ -377,32 +357,27 @@ public class SignatureServiceTest {
 
     @Test
     public void testSignPDFDocumentReplace() throws Exception {
-        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null,
-                "foo.pdf", null);
+        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null, "foo.pdf", null);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) pdfBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.REPLACE,
-                null);
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.REPLACE, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(signedBlob, doc.getPropertyValue("file:content"));
-        assertEquals(Collections.emptyList(),
-                doc.getPropertyValue("files:files"));
+        assertEquals(Collections.emptyList(), doc.getPropertyValue("files:files"));
     }
 
     @Test
     public void testSignPDFDocumentAttach() throws Exception {
-        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null,
-                "foo.pdf", null);
+        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null, "foo.pdf", null);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) pdfBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.ATTACH,
-                null);
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.ATTACH, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
@@ -415,14 +390,12 @@ public class SignatureServiceTest {
 
     @Test
     public void testSignPDFDocumentArchive() throws Exception {
-        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null,
-                "foo.pdf", null);
+        Blob pdfBlob = new FileBlob(origPdfFile, "application/pdf", null, "foo.pdf", null);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) pdfBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.ARCHIVE,
-                "foo archive.pdf");
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.ARCHIVE, "foo archive.pdf");
 
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
@@ -438,20 +411,17 @@ public class SignatureServiceTest {
 
     @Test
     public void testResignDocument() throws Exception {
-        Blob pdfBlob = new FileBlob(signedPdfFile, "application/pdf", null,
-                "foo.pdf", null);
+        Blob pdfBlob = new FileBlob(signedPdfFile, "application/pdf", null, "foo.pdf", null);
         assertEquals(Arrays.asList("Signature1"), getSignatureNames(pdfBlob));
 
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("file:content", (Serializable) pdfBlob);
 
-        Blob signedBlob = signatureService.signDocument(doc, user,
-                USER_KEY_PASSWORD, "test", false, SigningDisposition.REPLACE,
-                null);
+        Blob signedBlob = signatureService.signDocument(doc, user, USER_KEY_PASSWORD, "test", false,
+                SigningDisposition.REPLACE, null);
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature2", "Signature1"),
-                getSignatureNames(signedBlob));
+        assertEquals(Arrays.asList("Signature2", "Signature1"), getSignatureNames(signedBlob));
     }
 
 }

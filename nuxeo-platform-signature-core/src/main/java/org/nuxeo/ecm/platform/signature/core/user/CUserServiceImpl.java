@@ -97,15 +97,13 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
             userInfo = new UserInfo(userFields);
         } catch (ClientException e) {
             LOG.error(e);
-            throw new CertException(
-                    "User data could not be retrieved from the system");
+            throw new CertException("User data could not be retrieved from the system");
         }
         return userInfo;
     }
 
     @Override
-    public KeyStore getUserKeystore(String userID, String userKeystorePassword)
-            throws CertException, ClientException {
+    public KeyStore getUserKeystore(String userID, String userKeystorePassword) throws CertException, ClientException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -115,18 +113,15 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(
-                    CERTIFICATE_DIRECTORY_NAME);
+            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
             try {
                 KeyStore keystore = null;
                 DocumentModel entry = session.getEntry(userID);
                 if (entry != null) {
                     String keystore64Encoded = (String) entry.getPropertyValue("cert:keystore");
                     byte[] keystoreBytes = Base64.decode(keystore64Encoded);
-                    ByteArrayInputStream byteIS = new ByteArrayInputStream(
-                            keystoreBytes);
-                    keystore = getCertService().getKeyStore(byteIS,
-                            userKeystorePassword);
+                    ByteArrayInputStream byteIS = new ByteArrayInputStream(keystoreBytes);
+                    keystore = getCertService().getKeyStore(byteIS, userKeystorePassword);
                 } else {
                     throw new CertException("No directory entry for " + userID);
                 }
@@ -147,8 +142,8 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public DocumentModel createCertificate(DocumentModel user,
-            String userKeyPassword) throws CertException, ClientException {
+    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException,
+            ClientException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -157,8 +152,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
             throw new ClientException("Cannot log in as system user", e);
         }
         try {
-            Session session = getDirectoryService().open(
-                    CERTIFICATE_DIRECTORY_NAME);
+            Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
             try {
                 String userKeystorePassword = userKeyPassword;
                 DocumentModel certificate = null;
@@ -170,8 +164,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 // current userid
                 boolean certificateExists = session.hasEntry(userID);
                 if (certificateExists) {
-                    throw new CertException(userID
-                            + " already has a certificate");
+                    throw new CertException(userID + " already has a certificate");
                 }
 
                 LOG.info("Starting certificate generation for: " + userID);
@@ -179,11 +172,9 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 map.put("userid", userID);
 
                 // add a keystore to a directory entry
-                KeyStore keystore = getCertService().initializeUser(
-                        getUserInfo(user), userKeyPassword);
+                KeyStore keystore = getCertService().initializeUser(getUserInfo(user), userKeyPassword);
                 ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
-                getCertService().storeCertificate(keystore, byteOS,
-                        userKeystorePassword);
+                getCertService().storeCertificate(keystore, byteOS, userKeystorePassword);
                 String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
                 map.put("keystore", keystore64Encoded);
                 map.put("certificate", getUserCertInfo(keystore, user));
@@ -208,8 +199,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
     }
 
-    protected static DirectoryService getDirectoryService()
-            throws ClientException {
+    protected static DirectoryService getDirectoryService() throws ClientException {
         DirectoryService service = null;
         try {
             service = Framework.getService(DirectoryService.class);
@@ -220,24 +210,20 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public String getUserCertInfo(DocumentModel user, String userKeyPassword)
-            throws CertException, ClientException {
+    public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException, ClientException {
         String userKeystorePassword = userKeyPassword;
         String userID = (String) user.getPropertyValue("user:username");
         KeyStore keystore = getUserKeystore(userID, userKeystorePassword);
         return getUserCertInfo(keystore, user);
     }
 
-    private String getUserCertInfo(KeyStore keystore, DocumentModel user)
-            throws CertException, ClientException {
+    private String getUserCertInfo(KeyStore keystore, DocumentModel user) throws CertException, ClientException {
         String userCertInfo = null;
         if (null != keystore) {
             String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
-            X509Certificate certificate = getCertService().getCertificate(
-                    keystore, alias.getId(AliasType.CERT));
-            userCertInfo = certificate.getSubjectDN() + " valid till: "
-                    + certificate.getNotAfter();
+            X509Certificate certificate = getCertService().getCertificate(keystore, alias.getId(AliasType.CERT));
+            userCertInfo = certificate.getSubjectDN() + " valid till: " + certificate.getNotAfter();
         }
         return userCertInfo;
     }
@@ -253,8 +239,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(
-                    CERTIFICATE_DIRECTORY_NAME);
+            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
             try {
                 DocumentModel certificate = session.getEntry(userID);
                 return certificate;
@@ -280,8 +265,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public boolean hasCertificate(String userID) throws CertException,
-            ClientException {
+    public boolean hasCertificate(String userID) throws CertException, ClientException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -291,8 +275,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(
-                    CERTIFICATE_DIRECTORY_NAME);
+            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
             try {
                 return session.getEntry(userID) != null;
             } finally {
@@ -311,8 +294,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public void deleteCertificate(String userID) throws CertException,
-            ClientException {
+    public void deleteCertificate(String userID) throws CertException, ClientException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -322,8 +304,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(
-                    CERTIFICATE_DIRECTORY_NAME);
+            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
             try {
                 DocumentModel certEntry = session.getEntry(userID);
                 session.deleteEntry(certEntry);
@@ -346,8 +327,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof CUserDescriptor) {
             CUserDescriptor desc = (CUserDescriptor) contribution;
             countryCode = desc.getCountryCode();

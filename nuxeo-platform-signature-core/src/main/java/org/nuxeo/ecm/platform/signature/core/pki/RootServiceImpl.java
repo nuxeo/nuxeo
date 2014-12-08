@@ -37,7 +37,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 public class RootServiceImpl extends DefaultComponent implements RootService {
 
@@ -125,53 +124,46 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
     @Override
     public boolean isRootSetup() {
         boolean rootIsSetup = false;
-        if (rootKeyStore != null && rootKeystorePassword != null
-                && rootCertificateAlias != null && rootKeyAlias != null
-                && rootKeyPassword != null) {
+        if (rootKeyStore != null && rootKeystorePassword != null && rootCertificateAlias != null
+                && rootKeyAlias != null && rootKeyPassword != null) {
             rootIsSetup = true;
         }
         return rootIsSetup;
     }
 
     protected void initializeRoot() throws CertException {
-            for (RootDescriptor certDescriptor : config) {
-                if (certDescriptor.getRootKeystoreFilePath() != null) {
-                    setRootKeystoreFilePath(certDescriptor.getRootKeystoreFilePath());
-                } else if (getRootKeyStore() == null) {
-                    throw new CertException("Keystore path is missing");
-                }
-                if (certDescriptor.getRootCertificateAlias() != null) {
-                    setRootCertificateAlias(certDescriptor.getRootCertificateAlias());
-                } else {
-                    throw new CertException(
-                            "You have to provide root certificate alias");
-                }
-                if (certDescriptor.getRootKeystorePassword() != null) {
-                    setRootKeystorePassword(certDescriptor.getRootKeystorePassword());
-                } else {
-                    throw new CertException(
-                            "You have to provide root keystore password");
-                }
-                if (certDescriptor.getRootKeyAlias() != null) {
-                    setRootKeyAlias(certDescriptor.getRootKeyAlias());
-                } else {
-                    throw new CertException(
-                            "You have to provide root key alias");
-                }
-                if (certDescriptor.getRootKeyPassword() != null) {
-                    setRootKeyPassword(certDescriptor.getRootKeyPassword());
-                } else {
-                    throw new CertException(
-                            "You have to provide root key password");
-                }
+        for (RootDescriptor certDescriptor : config) {
+            if (certDescriptor.getRootKeystoreFilePath() != null) {
+                setRootKeystoreFilePath(certDescriptor.getRootKeystoreFilePath());
+            } else if (getRootKeyStore() == null) {
+                throw new CertException("Keystore path is missing");
             }
-            KeyStore keystore = getKeyStore(getRootKeystoreIS(),
-                    getRootKeystorePassword());
-            setRootKeyStore(keystore);
+            if (certDescriptor.getRootCertificateAlias() != null) {
+                setRootCertificateAlias(certDescriptor.getRootCertificateAlias());
+            } else {
+                throw new CertException("You have to provide root certificate alias");
+            }
+            if (certDescriptor.getRootKeystorePassword() != null) {
+                setRootKeystorePassword(certDescriptor.getRootKeystorePassword());
+            } else {
+                throw new CertException("You have to provide root keystore password");
+            }
+            if (certDescriptor.getRootKeyAlias() != null) {
+                setRootKeyAlias(certDescriptor.getRootKeyAlias());
+            } else {
+                throw new CertException("You have to provide root key alias");
+            }
+            if (certDescriptor.getRootKeyPassword() != null) {
+                setRootKeyPassword(certDescriptor.getRootKeyPassword());
+            } else {
+                throw new CertException("You have to provide root key password");
+            }
+        }
+        KeyStore keystore = getKeyStore(getRootKeystoreIS(), getRootKeystorePassword());
+        setRootKeyStore(keystore);
     }
 
-    public KeyStore getKeyStore(InputStream keystoreIS, String password)
-            throws CertException {
+    public KeyStore getKeyStore(InputStream keystoreIS, String password) throws CertException {
         KeyStore ks;
         try {
             ks = java.security.KeyStore.getInstance(KEYSTORE_TYPE);
@@ -203,25 +195,21 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
             }
         } catch (FileNotFoundException e) {
             // try local path
-            throw new CertException("Certificate not found at"
-                    + rootKeystoreFile.getAbsolutePath());
+            throw new CertException("Certificate not found at" + rootKeystoreFile.getAbsolutePath());
         } catch (Exception e) {
             // try local path
-            throw new CertException("Root certificate problem: "
-                    + rootKeystoreFile.getAbsolutePath());
+            throw new CertException("Root certificate problem: " + rootKeystoreFile.getAbsolutePath());
         }
         return keystoreIS;
     }
 
     /**
-     * Public certificate for the CA root. Encoded as an ASN.1 DER
-     * ("anybody there?") formatted byte array.
+     * Public certificate for the CA root. Encoded as an ASN.1 DER ("anybody there?") formatted byte array.
      */
     public byte[] getRootPublicCertificate() throws CertException {
         X509Certificate certificate;
         try {
-            certificate = getCertificate(getRootKeyStore(),
-                    getRootCertificateAlias());
+            certificate = getCertificate(getRootKeyStore(), getRootCertificateAlias());
             return certificate.getEncoded();
         } catch (Exception e) {
             throw new CertException(e);
@@ -229,14 +217,12 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
     }
 
     // custom certificate type for the root certificate
-    protected X509Certificate getCertificate(KeyStore ks,
-            String certificateAlias) throws CertException {
+    protected X509Certificate getCertificate(KeyStore ks, String certificateAlias) throws CertException {
         X509Certificate certificate = null;
         try {
 
             if (ks == null) {
-                throw new CertException("Keystore missing for "
-                        + certificateAlias);
+                throw new CertException("Keystore missing for " + certificateAlias);
             }
             if (ks.containsAlias(certificateAlias)) {
                 certificate = (X509Certificate) ks.getCertificate(certificateAlias);
@@ -250,18 +236,17 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) throws CertException{
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
+            throws CertException {
         config.add((RootDescriptor) contribution);
         initializeRoot();
-        if(!isRootSetup()){
+        if (!isRootSetup()) {
             throw new CertException("Root keystore was not set up correctly");
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         config.remove(contribution);
     }
 

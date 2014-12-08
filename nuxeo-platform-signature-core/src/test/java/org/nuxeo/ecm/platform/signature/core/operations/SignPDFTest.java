@@ -48,8 +48,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform" +
-        ".signature.core.test" })
+@Deploy({ "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform" + ".signature.core.test" })
 public class SignPDFTest {
 
     protected static final String ORIGINAL_PDF = "pdf-tests/original.pdf";
@@ -94,8 +93,7 @@ public class SignPDFTest {
         userModel.setProperty("user", "email", "hsimpson@springfield.com");
         userModel.setPathInfo("/", DEFAULT_USER_ID);
         user = userManager.createUser(userModel);
-        DocumentModel certificate = cUserService.createCertificate(user,
-                USER_KEY_PASSWORD);
+        DocumentModel certificate = cUserService.createCertificate(user, USER_KEY_PASSWORD);
         assertNotNull(certificate);
         origPdfFile = FileUtils.getResourceFileFromContext(ORIGINAL_PDF);
     }

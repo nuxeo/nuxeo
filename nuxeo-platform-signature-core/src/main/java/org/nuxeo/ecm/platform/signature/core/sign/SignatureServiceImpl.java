@@ -78,18 +78,15 @@ import com.lowagie.text.pdf.PdfStamper;
 /**
  * Base implementation for the signature service (also a Nuxeo component).
  * <p>
- * The main document is signed. If it's not already a PDF, then a PDF conversion
- * is done.
+ * The main document is signed. If it's not already a PDF, then a PDF conversion is done.
  * <p>
- * Once signed, it can replace the main document or be stored as the first
- * attachment. If replacing the main document, an archive of the original can be
- * kept.
+ * Once signed, it can replace the main document or be stored as the first attachment. If replacing the main document,
+ * an archive of the original can be kept.
  * <p>
  * <ul>
  * <li>
  */
-public class SignatureServiceImpl extends DefaultComponent implements
-        SignatureService {
+public class SignatureServiceImpl extends DefaultComponent implements SignatureService {
 
     private static final Log log = LogFactory.getLog(SignatureServiceImpl.class);
 
@@ -127,20 +124,17 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_SIGNATURE.equals(extensionPoint)) {
             SignatureDescriptor signatureDescriptor = (SignatureDescriptor) contribution;
             if (!signatureDescriptor.getRemoveExtension()) {
-                signatureRegistryMap.put(signatureDescriptor.getId(),
-                        signatureDescriptor);
+                signatureRegistryMap.put(signatureDescriptor.getId(), signatureDescriptor);
             }
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_SIGNATURE.equals(extensionPoint)) {
             SignatureDescriptor signatureDescriptor = (SignatureDescriptor) contribution;
             if (!signatureDescriptor.getRemoveExtension()) {
@@ -154,8 +148,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     //
 
     @Override
-    public StatusWithBlob getSigningStatus(DocumentModel doc, DocumentModel user)
-            throws ClientException {
+    public StatusWithBlob getSigningStatus(DocumentModel doc, DocumentModel user) throws ClientException {
         if (doc == null) {
             return new StatusWithBlob(UNSIGNABLE, null, null, null);
         }
@@ -171,8 +164,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return new StatusWithBlob(UNSIGNED, blob, mbh, FILE_CONTENT);
     }
 
-    protected int getSigningStatus(Blob pdfBlob, DocumentModel user)
-            throws ClientException {
+    protected int getSigningStatus(Blob pdfBlob, DocumentModel user) throws ClientException {
         if (pdfBlob == null) {
             return UNSIGNED;
         }
@@ -205,8 +197,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     /**
      * Finds the first signed PDF blob.
      */
-    protected StatusWithBlob getSignedPdfBlobAndStatus(DocumentModel doc,
-            DocumentModel user) throws ClientException {
+    protected StatusWithBlob getSignedPdfBlobAndStatus(DocumentModel doc, DocumentModel user) throws ClientException {
         BlobHolder mbh = doc.getAdapter(BlobHolder.class);
         if (mbh != null) {
             Blob blob = mbh.getBlob();
@@ -230,8 +221,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 if (status != UNSIGNED) {
                     String pathbase = FILES_FILES + "/" + i + "/";
                     String path = pathbase + FILES_FILE;
-                    BlobHolder bh = new DocumentBlobHolder(doc, path, pathbase
-                            + FILES_FILENAME);
+                    BlobHolder bh = new DocumentBlobHolder(doc, path, pathbase + FILES_FILENAME);
                     return new StatusWithBlob(status, blob, bh, path);
                 }
             }
@@ -240,16 +230,13 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Blob signDocument(DocumentModel doc, DocumentModel user,
-            String keyPassword, String reason, boolean pdfa,
-            SigningDisposition disposition, String archiveFilename)
-            throws ClientException {
+    public Blob signDocument(DocumentModel doc, DocumentModel user, String keyPassword, String reason, boolean pdfa,
+            SigningDisposition disposition, String archiveFilename) throws ClientException {
 
         StatusWithBlob blobAndStatus = getSignedPdfBlobAndStatus(doc, user);
         if (blobAndStatus != null) {
             // re-sign it
-            Blob signedBlob = signPDF(blobAndStatus.blob, user, keyPassword,
-                    reason);
+            Blob signedBlob = signPDF(blobAndStatus.blob, user, keyPassword, reason);
             signedBlob.setFilename(blobAndStatus.blob.getFilename());
             // replace the previous blob with a new one
             blobAndStatus.blobHolder.setBlob(signedBlob);
@@ -273,8 +260,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 parameters.put(PDFA1_PARAM, Boolean.TRUE);
             }
             try {
-                BlobHolder holder = conversionService.convert("any2pdf",
-                        new SimpleBlobHolder(originalBlob), parameters);
+                BlobHolder holder = conversionService.convert("any2pdf", new SimpleBlobHolder(originalBlob), parameters);
                 pdfBlob = holder.getBlob();
             } catch (ConversionException conversionException) {
                 throw new SignException(conversionException);
@@ -282,8 +268,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         }
 
         Blob signedBlob = signPDF(pdfBlob, user, keyPassword, reason);
-        signedBlob.setFilename(FilenameUtils.getBaseName(originalBlob.getFilename())
-                + ".pdf");
+        signedBlob.setFilename(FilenameUtils.getBaseName(originalBlob.getFilename()) + ".pdf");
 
         Map<String, Serializable> map;
         ListDiff listDiff;
@@ -319,8 +304,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword,
-            String reason) throws ClientException {
+    public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword, String reason) throws ClientException {
         CertService certService = Framework.getLocalService(CertService.class);
         CUserService cUserService = Framework.getLocalService(CUserService.class);
         File outputFile = null;
@@ -338,24 +322,20 @@ public class SignatureServiceImpl extends DefaultComponent implements
             List<X509Certificate> pdfCertificates = getCertificates(pdfReader);
 
             // allows for multiple signatures
-            PdfStamper pdfStamper = PdfStamper.createSignature(pdfReader,
-                    new FileOutputStream(outputFile), '\0', null, true);
+            PdfStamper pdfStamper = PdfStamper.createSignature(pdfReader, new FileOutputStream(outputFile), '\0', null,
+                    true);
 
             PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
             String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
-            KeyStore keystore = cUserService.getUserKeystore(userID,
-                    keyPassword);
-            Certificate certificate = certService.getCertificate(keystore,
-                    alias.getId(AliasType.CERT));
-            KeyPair keyPair = certService.getKeyPair(keystore,
-                    alias.getId(AliasType.KEY), alias.getId(AliasType.CERT),
+            KeyStore keystore = cUserService.getUserKeystore(userID, keyPassword);
+            Certificate certificate = certService.getCertificate(keystore, alias.getId(AliasType.CERT));
+            KeyPair keyPair = certService.getKeyPair(keystore, alias.getId(AliasType.KEY), alias.getId(AliasType.CERT),
                     keyPassword);
 
             if (certificatePresentInPDF(certificate, pdfCertificates)) {
                 X509Certificate userX509Certificate = (X509Certificate) certificate;
-                String message = ALREADY_SIGNED_BY
-                        + userX509Certificate.getSubjectDN();
+                String message = ALREADY_SIGNED_BY + userX509Certificate.getSubjectDN();
                 log.debug(message);
                 throw new AlreadySignedException(message);
             }
@@ -364,27 +344,22 @@ public class SignatureServiceImpl extends DefaultComponent implements
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
-            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain,
-                    null, PdfSignatureAppearance.SELF_SIGNED);
+            pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain, null, PdfSignatureAppearance.SELF_SIGNED);
             if (StringUtils.isBlank(reason)) {
                 reason = getSigningReason();
             }
             pdfSignatureAppearance.setReason(reason);
             pdfSignatureAppearance.setAcro6Layers(true);
-            Font layer2Font = FontFactory.getFont(FontFactory.TIMES,
-                    getSignatureLayout().getTextSize(), Font.NORMAL, new Color(
-                            0x00, 0x00, 0x00));
+            Font layer2Font = FontFactory.getFont(FontFactory.TIMES, getSignatureLayout().getTextSize(), Font.NORMAL,
+                    new Color(0x00, 0x00, 0x00));
             pdfSignatureAppearance.setLayer2Font(layer2Font);
             pdfSignatureAppearance.setRender(PdfSignatureAppearance.SignatureRenderDescription);
 
-            pdfSignatureAppearance.setVisibleSignature(
-                    getNextCertificatePosition(pdfReader, pdfCertificates), 1,
-                    null);
+            pdfSignatureAppearance.setVisibleSignature(getNextCertificatePosition(pdfReader, pdfCertificates), 1, null);
 
             pdfStamper.close(); // closes the file
 
-            log.debug("File " + outputFile.getAbsolutePath()
-                    + " created and signed with " + reason);
+            log.debug("File " + outputFile.getAbsolutePath() + " created and signed with " + reason);
 
             return blob;
         } catch (IOException e) {
@@ -393,8 +368,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             // iText PDF stamping
             throw new SignException(e);
         } catch (IllegalArgumentException e) {
-            if (String.valueOf(e.getMessage()).contains(
-                    "PdfReader not opened with owner password")) {
+            if (String.valueOf(e.getMessage()).contains("PdfReader not opened with owner password")) {
                 // iText PDF reading
                 throw new SignException("PDF is password-protected");
             }
@@ -423,17 +397,15 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 return reason;
             }
         }
-        throw new SignException(
-                "No default signing reason provided in configuration");
+        throw new SignException("No default signing reason provided in configuration");
     }
 
-    protected boolean certificatePresentInPDF(Certificate userCert,
-            List<X509Certificate> pdfCertificates) throws SignException {
+    protected boolean certificatePresentInPDF(Certificate userCert, List<X509Certificate> pdfCertificates)
+            throws SignException {
         X509Certificate xUserCert = (X509Certificate) userCert;
         for (X509Certificate xcert : pdfCertificates) {
             // matching certificate found
-            if (xcert.getSubjectX500Principal().equals(
-                    xUserCert.getSubjectX500Principal())) {
+            if (xcert.getSubjectX500Principal().equals(xUserCert.getSubjectX500Principal())) {
                 return true;
             }
         }
@@ -441,13 +413,12 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     /**
-     * @since 5.8 Provides the position rectangle for the next certificate. An
-     *        assumption is made that all previous certificates in a given PDF
-     *        were placed using the same technique and settings. New
-     *        certificates are added depending of signature layout contributed.
+     * @since 5.8 Provides the position rectangle for the next certificate. An assumption is made that all previous
+     *        certificates in a given PDF were placed using the same technique and settings. New certificates are added
+     *        depending of signature layout contributed.
      */
-    protected Rectangle getNextCertificatePosition(PdfReader pdfReader,
-            List<X509Certificate> pdfCertificates) throws SignException {
+    protected Rectangle getNextCertificatePosition(PdfReader pdfReader, List<X509Certificate> pdfCertificates)
+            throws SignException {
         int numberOfSignatures = pdfCertificates.size();
 
         Rectangle pageSize = pdfReader.getPageSize(PAGE_TO_SIGN);
@@ -461,10 +432,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
         float rectangeHeight = height / getSignatureLayout().getLines();
 
         // Signature location
-        int column = numberOfSignatures % getSignatureLayout().getColumns()
-                + getSignatureLayout().getStartColumn();
-        int line = numberOfSignatures / getSignatureLayout().getColumns()
-                + getSignatureLayout().getStartLine();
+        int column = numberOfSignatures % getSignatureLayout().getColumns() + getSignatureLayout().getStartColumn();
+        int line = numberOfSignatures / getSignatureLayout().getColumns() + getSignatureLayout().getStartLine();
         if (column > getSignatureLayout().getColumns()) {
             column = column % getSignatureLayout().getColumns();
             line++;
@@ -489,25 +458,21 @@ public class SignatureServiceImpl extends DefaultComponent implements
         validatePageBounds(pdfReader, 1, topRightX, true);
         validatePageBounds(pdfReader, 1, topRightY, false);
 
-        Rectangle positionRectangle = new Rectangle(bottomLeftX, bottomLeftY,
-                topRightX, topRightY);
+        Rectangle positionRectangle = new Rectangle(bottomLeftX, bottomLeftY, topRightX, topRightY);
 
         return positionRectangle;
     }
 
     /**
-     * Verifies that a provided value fits within the page bounds. If it does
-     * not, a sign exception is thrown. This is to verify externally
-     * configurable signature positioning.
+     * Verifies that a provided value fits within the page bounds. If it does not, a sign exception is thrown. This is
+     * to verify externally configurable signature positioning.
      *
-     * @param isHorizontal - if false, the current value is checked agains the
-     *            vertical page dimension
+     * @param isHorizontal - if false, the current value is checked agains the vertical page dimension
      */
-    protected void validatePageBounds(PdfReader pdfReader, int pageNo,
-            float valueToCheck, boolean isHorizontal) throws SignException {
+    protected void validatePageBounds(PdfReader pdfReader, int pageNo, float valueToCheck, boolean isHorizontal)
+            throws SignException {
         if (valueToCheck < 0) {
-            String message = "The new signature position "
-                    + valueToCheck
+            String message = "The new signature position " + valueToCheck
                     + " exceeds the page bounds. The position must be a positive number.";
             log.debug(message);
             throw new SignException(message);
@@ -515,26 +480,21 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
         Rectangle pageRectangle = pdfReader.getPageSize(pageNo);
         if (isHorizontal && valueToCheck > pageRectangle.getRight()) {
-            String message = "The new signature position "
-                    + valueToCheck
-                    + " exceeds the horizontal page bounds. The page dimensions are: ("
-                    + pageRectangle + ").";
+            String message = "The new signature position " + valueToCheck
+                    + " exceeds the horizontal page bounds. The page dimensions are: (" + pageRectangle + ").";
             log.debug(message);
             throw new SignException(message);
         }
         if (!isHorizontal && valueToCheck > pageRectangle.getTop()) {
-            String message = "The new signature position "
-                    + valueToCheck
-                    + " exceeds the vertical page bounds. The page dimensions are: ("
-                    + pageRectangle + ").";
+            String message = "The new signature position " + valueToCheck
+                    + " exceeds the vertical page bounds. The page dimensions are: (" + pageRectangle + ").";
             log.debug(message);
             throw new SignException(message);
         }
     }
 
     @Override
-    public List<X509Certificate> getCertificates(DocumentModel doc)
-            throws ClientException {
+    public List<X509Certificate> getCertificates(DocumentModel doc) throws ClientException {
         StatusWithBlob signedBlob = getSignedPdfBlobAndStatus(doc, null);
         if (signedBlob == null) {
             return Collections.emptyList();
@@ -542,8 +502,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         return getCertificates(signedBlob.blob);
     }
 
-    protected List<X509Certificate> getCertificates(Blob pdfBlob)
-            throws SignException {
+    protected List<X509Certificate> getCertificates(Blob pdfBlob) throws SignException {
         try {
             PdfReader pdfReader = new PdfReader(pdfBlob.getStream());
             return getCertificates(pdfReader);
@@ -556,8 +515,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         }
     }
 
-    protected List<X509Certificate> getCertificates(PdfReader pdfReader)
-            throws SignException {
+    protected List<X509Certificate> getCertificates(PdfReader pdfReader) throws SignException {
         List<X509Certificate> pdfCertificates = new ArrayList<X509Certificate>();
         AcroFields acroFields = pdfReader.getAcroFields();
         @SuppressWarnings("unchecked")

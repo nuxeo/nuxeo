@@ -74,14 +74,12 @@ public class SignActions implements Serializable {
     public static final String SIGNATURE_USE_PDFA_PROP = "org.nuxeo.ecm.signature.pdfa";
 
     /**
-     * Signature disposition for PDF files. Can be "replace", "archive" or
-     * "attach".
+     * Signature disposition for PDF files. Can be "replace", "archive" or "attach".
      */
     public static final String SIGNATURE_DISPOSITION_PDF = "org.nuxeo.ecm.signature.disposition.pdf";
 
     /**
-     * Signature disposition for non-PDF files. Can be "replace", "archive" or
-     * "attach".
+     * Signature disposition for non-PDF files. Can be "replace", "archive" or "attach".
      */
     public static final String SIGNATURE_DISPOSITION_NOTPDF = "org.nuxeo.ecm.signature.disposition.notpdf";
 
@@ -146,22 +144,19 @@ public class SignActions implements Serializable {
     }
 
     /**
-     * Signs digitally a PDF blob contained in the current document, modifies
-     * the document status and updates UI & auditing messages related to
-     * signing
+     * Signs digitally a PDF blob contained in the current document, modifies the document status and updates UI &
+     * auditing messages related to signing
      *
      * @param signingReason
      * @param password
      * @throws SignException
      * @throws ClientException
      */
-    public void signCurrentDoc(String signingReason, String password)
-            throws ClientException {
+    public void signCurrentDoc(String signingReason, String password) throws ClientException {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         DocumentModel currentUserModel = getCurrentUserModel();
-        StatusWithBlob swb = signatureService.getSigningStatus(currentDoc,
-                currentUserModel);
+        StatusWithBlob swb = signatureService.getSigningStatus(currentDoc, currentUserModel);
         if (swb.status == StatusWithBlob.UNSIGNABLE) {
             error(LABEL_SIGN_DOCUMENT_MISSING);
             return;
@@ -181,8 +176,8 @@ public class SignActions implements Serializable {
         String archiveFilename = getArchiveFilename(filename);
 
         try {
-            signatureService.signDocument(currentDoc, currentUserModel,
-                    password, signingReason, pdfa, disposition, archiveFilename);
+            signatureService.signDocument(currentDoc, currentUserModel, password, signingReason, pdfa, disposition,
+                    archiveFilename);
         } catch (CertException e) {
             log.debug("Signing problem: " + e.getMessage(), e);
             error(NOTIFICATION_SIGN_CERTIFICATE_ACCESS_PROBLEM);
@@ -203,8 +198,7 @@ public class SignActions implements Serializable {
         notifyEvent(DOCUMENT_SIGNED, currentDoc, properties, comment);
 
         // display a signing message
-        facesMessages.add(INFO, filename + " "
-                + getMessage(NOTIFICATION_SIGN_SIGNED));
+        facesMessages.add(INFO, filename + " " + getMessage(NOTIFICATION_SIGN_SIGNED));
     }
 
     protected boolean getPDFA() {
@@ -214,11 +208,9 @@ public class SignActions implements Serializable {
     protected SigningDisposition getDisposition(boolean originalIsPdf) {
         String disp;
         if (originalIsPdf) {
-            disp = Framework.getProperty(SIGNATURE_DISPOSITION_PDF,
-                    SigningDisposition.ARCHIVE.name());
+            disp = Framework.getProperty(SIGNATURE_DISPOSITION_PDF, SigningDisposition.ARCHIVE.name());
         } else {
-            disp = Framework.getProperty(SIGNATURE_DISPOSITION_NOTPDF,
-                    SigningDisposition.ATTACH.name());
+            disp = Framework.getProperty(SIGNATURE_DISPOSITION_NOTPDF, SigningDisposition.ATTACH.name());
         }
         try {
             return Enum.valueOf(SigningDisposition.class, disp.toUpperCase());
@@ -229,10 +221,8 @@ public class SignActions implements Serializable {
     }
 
     protected String getArchiveFilename(String filename) {
-        String format = Framework.getProperty(
-                SIGNATURE_ARCHIVE_FILENAME_FORMAT_PROP, DEFAULT_ARCHIVE_FORMAT);
-        return FilenameUtils.getBaseName(filename)
-                + new SimpleDateFormat(format).format(new Date()) + "."
+        String format = Framework.getProperty(SIGNATURE_ARCHIVE_FILENAME_FORMAT_PROP, DEFAULT_ARCHIVE_FORMAT);
+        return FilenameUtils.getBaseName(filename) + new SimpleDateFormat(format).format(new Date()) + "."
                 + FilenameUtils.getExtension(filename);
     }
 
@@ -244,15 +234,13 @@ public class SignActions implements Serializable {
      */
     public StatusWithBlob getSigningStatus() throws ClientException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
-        return signatureService.getSigningStatus(currentDoc,
-                getCurrentUserModel());
+        return signatureService.getSigningStatus(currentDoc, getCurrentUserModel());
     }
 
     /**
      * Returns info about the certificates contained in the current document.
      */
-    public List<X509Certificate> getCertificateList() throws SignException,
-            ClientException {
+    public List<X509Certificate> getCertificateList() throws SignException, ClientException {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
@@ -266,21 +254,17 @@ public class SignActions implements Serializable {
         // certificate.getNotAfter()
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Serializable> properties, String comment)
-            throws ClientException {
+    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> properties,
+            String comment) throws ClientException {
         properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
-        properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+        properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
 
-        DocumentEventContext eventContext = new DocumentEventContext(
-                source.getCoreSession(),
+        DocumentEventContext eventContext = new DocumentEventContext(source.getCoreSession(),
                 source.getCoreSession().getPrincipal(), source);
 
         eventContext.setProperties(properties);
 
-        Framework.getLocalService(EventProducer.class).fireEvent(
-                eventContext.newEvent(eventId));
+        Framework.getLocalService(EventProducer.class).fireEvent(eventContext.newEvent(eventId));
     }
 
 }

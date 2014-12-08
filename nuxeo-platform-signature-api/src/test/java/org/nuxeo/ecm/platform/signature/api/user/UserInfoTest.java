@@ -25,7 +25,6 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 public class UserInfoTest {
 
@@ -48,8 +47,7 @@ public class UserInfoTest {
         userFields.put(CNField.UserID, "wsulejman");
 
         UserInfo ui = new UserInfo(userFields);
-        assertEquals(ui.getDN(userFields),
-                ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
+        assertEquals(ui.getDN(userFields), ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
 
         Map<CNField, String> userFields2;
         userFields2 = new HashMap<CNField, String>();
@@ -61,8 +59,7 @@ public class UserInfoTest {
         userFields2.put(CNField.UserID, "wsulejman");
 
         UserInfo ui2 = new UserInfo(userFields2);
-        assertEquals(ui2.getDN(userFields2),
-                ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
+        assertEquals(ui2.getDN(userFields2), ("C=US, O=Nuxeo, OU=IT, CN=Wojciech Sulejman"));
 
     }
 }

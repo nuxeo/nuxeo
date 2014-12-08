@@ -20,12 +20,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- *
  */
 public class AlreadySignedException extends SignException {
 
     private static final long serialVersionUID = 333L;
-    
+
     public AlreadySignedException(String message) {
         super(message);
     }

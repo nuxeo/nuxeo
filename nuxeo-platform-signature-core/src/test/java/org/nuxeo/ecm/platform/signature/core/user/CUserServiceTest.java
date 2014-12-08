@@ -40,13 +40,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD, user = "Administrator")
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
-        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.usermanager.api",
-        "org.nuxeo.ecm.platform.signature.core",
-        "org.nuxeo.ecm.platform.signature.core.test" })
+@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management",
+        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.usermanager.api",
+        "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test" })
 public class CUserServiceTest {
 
     private static final String USER_KEYSTORE_PASSWORD = "abc";
@@ -73,8 +70,7 @@ public class CUserServiceTest {
     }
 
     public void testCreateCert() throws Exception {
-        DocumentModel certificate = cUserService.createCertificate(user,
-                USER_KEYSTORE_PASSWORD);
+        DocumentModel certificate = cUserService.createCertificate(user, USER_KEYSTORE_PASSWORD);
         assertTrue(certificate.getPropertyValue("cert:userid").equals(USER_ID));
     }
 
@@ -84,16 +80,12 @@ public class CUserServiceTest {
         DocumentModel retrievedCertificate = cUserService.getCertificate(USER_ID);
         assertNull(retrievedCertificate);
         // add missing certificate
-        DocumentModel createdCertificate = cUserService.createCertificate(user,
-                USER_KEYSTORE_PASSWORD);
+        DocumentModel createdCertificate = cUserService.createCertificate(user, USER_KEYSTORE_PASSWORD);
         assertNotNull(createdCertificate);
         // retry
         retrievedCertificate = cUserService.getCertificate(USER_ID);
-        assertNotNull(
-                "The certificate could not be retrieved from the directory",
-                retrievedCertificate);
-        assertTrue(retrievedCertificate.getPropertyValue("cert:userid").equals(
-                USER_ID));
+        assertNotNull("The certificate could not be retrieved from the directory", retrievedCertificate);
+        assertTrue(retrievedCertificate.getPropertyValue("cert:userid").equals(USER_ID));
     }
 
 }

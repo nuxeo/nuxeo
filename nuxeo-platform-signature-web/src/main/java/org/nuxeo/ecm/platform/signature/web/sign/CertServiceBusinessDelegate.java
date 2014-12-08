@@ -48,7 +48,6 @@ public class CertServiceBusinessDelegate implements Serializable {
     protected CertService certService;
 
     /**
-     *
      * @return CertService
      * @throws ClientException
      */
@@ -58,8 +57,7 @@ public class CertServiceBusinessDelegate implements Serializable {
             try {
                 certService = Framework.getService(CertService.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to CertService. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to CertService. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (certService == null) {

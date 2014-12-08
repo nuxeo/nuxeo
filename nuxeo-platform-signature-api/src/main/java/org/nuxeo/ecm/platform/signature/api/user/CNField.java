@@ -34,11 +34,11 @@ public enum CNField {
      * Organizational Unit name
      */
     OU,
-    //TODO to be added
+    // TODO to be added
     /**
      * Localization
      */
-    //L,
+    // L,
     /**
      * Common Name
      */

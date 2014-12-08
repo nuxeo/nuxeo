@@ -28,9 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
-@Operation(id = SignPDF.ID, category = Constants.CAT_SERVICES,
-        label = "Sign PDF", description = "Applies a digital signature to the" +
-        " input PDF.")
+@Operation(id = SignPDF.ID, category = Constants.CAT_SERVICES, label = "Sign PDF", description = "Applies a digital signature to the"
+        + " input PDF.")
 public class SignPDF {
 
     public static final String ID = "Services.SignPDF";
@@ -41,12 +40,10 @@ public class SignPDF {
     @Context
     protected SignatureService signatureService;
 
-    @Param(name = "username", required = true, description = "The user ID for" +
-            " signing PDF document.")
+    @Param(name = "username", required = true, description = "The user ID for" + " signing PDF document.")
     protected String username;
 
-    @Param(name = "password", required = true, description = "Certificate " +
-            "password.")
+    @Param(name = "password", required = true, description = "Certificate " + "password.")
     protected String password;
 
     @Param(name = "reason", required = true, description = "Signature reason.")

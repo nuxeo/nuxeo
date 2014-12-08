@@ -19,8 +19,7 @@ package org.nuxeo.ecm.platform.signature.api.user;
 /**
  * Represents a keystore alias.
  * <p>
- * Provides methods for binding a keystore alias name with userID and alias
- * type.
+ * Provides methods for binding a keystore alias name with userID and alias type.
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
@@ -28,12 +27,10 @@ public class AliasWrapper {
     private String userName;
 
     /**
-     * Public constructor for the AliasWrapper. Used to associate a user name
-     * with an AliasWrapper object. The userName constitutes the first part of
-     * the AliasWrapper's identity. The second part of the identity is based on
-     * an AliasType provided as a parameter. E.g., for a user identified by
-     * string "jdoe" and using a type "cert", the produced alias string would be
-     * "jdoecert".
+     * Public constructor for the AliasWrapper. Used to associate a user name with an AliasWrapper object. The userName
+     * constitutes the first part of the AliasWrapper's identity. The second part of the identity is based on an
+     * AliasType provided as a parameter. E.g., for a user identified by string "jdoe" and using a type "cert", the
+     * produced alias string would be "jdoecert".
      *
      * @param userName
      */
@@ -42,8 +39,8 @@ public class AliasWrapper {
     }
 
     /**
-     * Provides the user name associated with the alias for generic checking of
-     * alias groups (an alias group would share the name, not the id).
+     * Provides the user name associated with the alias for generic checking of alias groups (an alias group would share
+     * the name, not the id).
      *
      * @return
      */
