@@ -12,8 +12,7 @@ import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 
 @Produces("text/plain; charset=UTF-8")
-public abstract class AbstractJaxRSImporterExecutor extends
-        AbstractImporterExecutor {
+public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExecutor {
 
     @Override
     public ImporterLogger getLogger() {

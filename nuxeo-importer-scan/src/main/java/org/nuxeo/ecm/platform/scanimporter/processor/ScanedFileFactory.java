@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.scanimporter.processor;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,16 +35,12 @@ import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Custom implementation of the {@link ImporterDocumentModelFactory}. Provides :
- * - container doc type configuration from service - leaf doc type configuration
- * from service
+ * Custom implementation of the {@link ImporterDocumentModelFactory}. Provides : - container doc type configuration from
+ * service - leaf doc type configuration from service
  *
  * @author Thierry Delprat
- *
  */
-public class ScanedFileFactory extends DefaultDocumentModelFactory implements
-        ImporterDocumentModelFactory {
+public class ScanedFileFactory extends DefaultDocumentModelFactory implements ImporterDocumentModelFactory {
 
     protected static String targetContainerType = null;
 
@@ -65,8 +60,8 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
     }
 
     @Override
-    public DocumentModel createFolderishNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws Exception {
 
         String docType = getTargetContainerType();
         String name = getValidNameFromFileName(node.getName());
@@ -112,8 +107,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
     }
 
     @Override
-    public DocumentModel createLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
 
         String docType = "File";
         BlobHolder bh = node.getBlobHolder();
@@ -136,8 +130,8 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
     }
 
     @Override
-    protected DocumentModel defaultCreateLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws Exception {
 
         BlobHolder bh = node.getBlobHolder();
 

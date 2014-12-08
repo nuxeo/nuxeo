@@ -18,8 +18,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
-public class FileWithNonHeritedIndividalMetaDataSourceNode extends
-        FileSourceNode {
+public class FileWithNonHeritedIndividalMetaDataSourceNode extends FileSourceNode {
 
     private static final Log log = LogFactory.getLog(FileWithNonHeritedIndividalMetaDataSourceNode.class);
 
@@ -61,15 +60,13 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends
         return (file.getName().contains(PROPERTY_FILE_SUFIX));
     }
 
-
     @Override
     public BlobHolder getBlobHolder() {
         BlobHolder bh = null;
         String metadataFilename = file.getParent() + File.separator + getFileNameNoExt(file) + PROPERTY_FILE_SUFIX;
-        File metadataFile = new File (metadataFilename);
+        File metadataFile = new File(metadataFilename);
         if (metadataFile.exists()) {
-            bh = new SimpleBlobHolderWithProperties(new FileBlob(file),
-                    loadPropertyFile(metadataFile));
+            bh = new SimpleBlobHolderWithProperties(new FileBlob(file), loadPropertyFile(metadataFile));
         } else {
             bh = new SimpleBlobHolder(new FileBlob(file));
         }
@@ -93,19 +90,19 @@ public class FileWithNonHeritedIndividalMetaDataSourceNode extends
         return map;
     }
 
-    protected Serializable parseFromString( String value) {
+    protected Serializable parseFromString(String value) {
 
         Serializable prop = value;
-            if (value.contains(ARRAY_SEPARATOR)) {
-                prop = value.split(REGEXP_ARRAY_SEPARATOR);
-            } else if (value.contains(LIST_SEPARATOR)) {
-                List<Serializable> lstprop = new ArrayList<Serializable>();
-                String[] parts = value.split(REGEXP_LIST_SEPARATOR);
-                for (String part : parts) {
-                    lstprop.add(parseFromString(part));
-                }
-                prop = (Serializable) lstprop;
+        if (value.contains(ARRAY_SEPARATOR)) {
+            prop = value.split(REGEXP_ARRAY_SEPARATOR);
+        } else if (value.contains(LIST_SEPARATOR)) {
+            List<Serializable> lstprop = new ArrayList<Serializable>();
+            String[] parts = value.split(REGEXP_LIST_SEPARATOR);
+            for (String part : parts) {
+                lstprop.add(parseFromString(part));
             }
+            prop = (Serializable) lstprop;
+        }
         return prop;
     }
 }

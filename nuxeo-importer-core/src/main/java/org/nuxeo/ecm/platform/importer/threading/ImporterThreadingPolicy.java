@@ -26,12 +26,10 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  * Defines multi-threading policy for the importer
  *
  * @author Thierry Delprat
- *
  */
 public interface ImporterThreadingPolicy {
 
-    boolean needToCreateThreadAfterNewFolderishNode(DocumentModel parent,
-            SourceNode node, long uploadedSources, int batchSize,
-            int scheduledTasks);
+    boolean needToCreateThreadAfterNewFolderishNode(DocumentModel parent, SourceNode node, long uploadedSources,
+            int batchSize, int scheduledTasks);
 
 }

@@ -32,15 +32,12 @@ import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Replace default XML Parser used into the Scan Importer service by the
- * advanced one implemented into nuxeo-importer-xml-parser
+ * Replace default XML Parser used into the Scan Importer service by the advanced one implemented into
+ * nuxeo-importer-xml-parser
  *
  * @author Benjamin JALON
- *
  */
-public class AdvancedScannedFileFactory extends ScanedFileFactory implements
-        ImporterDocumentModelFactory {
+public class AdvancedScannedFileFactory extends ScanedFileFactory implements ImporterDocumentModelFactory {
 
     public AdvancedScannedFileFactory(ImporterConfig config) {
         super(config);
@@ -51,17 +48,14 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements
     protected ImporterConfig config;
 
     @Override
-    public DocumentModel createLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
 
         XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
         if (!(node instanceof FileSourceNode)) {
-            throw new ClientException("Waiting a FileSourceNode object not: "
-                    + node.getClass().getName());
+            throw new ClientException("Waiting a FileSourceNode object not: " + node.getClass().getName());
         }
         FileSourceNode fileNode = (FileSourceNode) node;
-        List<DocumentModel> docCreated = importer.importDocuments(parent,
-                fileNode.getFile());
+        List<DocumentModel> docCreated = importer.importDocuments(parent, fileNode.getFile());
 
         if (docCreated == null || docCreated.size() < 1) {
             return null;
@@ -69,8 +63,7 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements
 
         ScannedFileImporter.addProcessedDescriptor(fileNode.getSourcePath());
 
-        GenericMultiThreadedImporter.addCreatedDoc("_XMLimporter",
-                docCreated.size() - 1);
+        GenericMultiThreadedImporter.addCreatedDoc("_XMLimporter", docCreated.size() - 1);
         return docCreated.get(0);
     }
 }

@@ -24,11 +24,9 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- *
  * Interface for Source Nodes for the importer
  *
  * @author Thierry Delprat
- *
  */
 public interface SourceNode {
 
@@ -39,7 +37,7 @@ public interface SourceNode {
     List<SourceNode> getChildren();
 
     String getName();
-    
+
     String getSourcePath();
 
 }

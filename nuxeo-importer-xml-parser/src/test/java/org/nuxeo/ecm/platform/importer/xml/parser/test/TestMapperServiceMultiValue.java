@@ -45,7 +45,6 @@ import java.util.Objects;
  * Verify Service mapping with multi-value metadata
  *
  * @author <a href="mailto:mvachette@nuxeo.com">Mika</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -73,11 +72,10 @@ public class TestMapperServiceMultiValue {
 
         List<DocumentModel> docs = session.query("select * from Document where dc:title='MultiValue'");
         Assert.assertEquals("we should have only one File", 1, docs.size());
-        DocumentModel fileDoc  = docs.get(0);
+        DocumentModel fileDoc = docs.get(0);
         Property property = fileDoc.getProperty("dc:subjects");
         Object[] subjects = (Object[]) property.getValue();
-        Assert.assertEquals(
-                "The property dc:subjects should contain 2 values", 2, subjects.length);
+        Assert.assertEquals("The property dc:subjects should contain 2 values", 2, subjects.length);
     }
 
 }

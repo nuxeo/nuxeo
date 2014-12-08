@@ -27,11 +27,9 @@ import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
- *
  * Default importer
  *
  * @author Thierry Delprat
- *
  */
 public class DefaultImporterExecutor extends AbstractImporterExecutor {
 
@@ -52,28 +50,24 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
         return GenericMultiThreadedImporter.getCreatedDocsCounter();
     }
 
-    public String run(String inputPath, String targetPath,
-            Boolean skipRootContainerCreation, Integer batchSize,
+    public String run(String inputPath, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
             Integer nbTheards, Boolean interactive) throws Exception {
         SourceNode source = new FileSourceNode(inputPath);
-        return run(source, targetPath, skipRootContainerCreation, batchSize,
-                nbTheards, interactive);
+        return run(source, targetPath, skipRootContainerCreation, batchSize, nbTheards, interactive);
     }
 
-    public String run(SourceNode source, String targetPath,
-            Boolean skipRootContainerCreation, Integer batchSize,
+    public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
             Integer nbTheards, Boolean interactive) throws Exception {
-        importer = new GenericMultiThreadedImporter(source, targetPath,
-                skipRootContainerCreation, batchSize, nbTheards, getLogger());
+        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize,
+                nbTheards, getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
-        importer.setTransactionTimeout( getTransactionTimeout() );
+        importer.setTransactionTimeout(getTransactionTimeout());
         return doRun(importer, interactive);
     }
 
     @Override
-    public String run(ImporterRunner runner, Boolean interactive)
-            throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
         return doRun(runner, interactive);
     }
 

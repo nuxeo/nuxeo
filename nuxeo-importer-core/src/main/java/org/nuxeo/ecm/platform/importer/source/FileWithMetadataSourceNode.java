@@ -31,12 +31,9 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.importer.properties.MetadataCollector;
 
 /**
- *
- * {@link SourceNode} implementation that manages Meta-data from properties
- * files
+ * {@link SourceNode} implementation that manages Meta-data from properties files
  *
  * @author Thierry Delprat
- *
  */
 public class FileWithMetadataSourceNode extends FileSourceNode {
 
@@ -56,8 +53,7 @@ public class FileWithMetadataSourceNode extends FileSourceNode {
 
     @Override
     public BlobHolder getBlobHolder() {
-        BlobHolder bh = new SimpleBlobHolderWithProperties(new FileBlob(file),
-                collector.getProperties(file.getPath()));
+        BlobHolder bh = new SimpleBlobHolderWithProperties(new FileBlob(file), collector.getProperties(file.getPath()));
         return bh;
     }
 

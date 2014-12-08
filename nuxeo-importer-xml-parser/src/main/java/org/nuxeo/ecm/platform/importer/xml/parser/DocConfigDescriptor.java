@@ -22,11 +22,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor that is used to define how DocumenModel should be created from XML
- * input
+ * Descriptor that is used to define how DocumenModel should be created from XML input
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @XObject("docConfig")
 public class DocConfigDescriptor {

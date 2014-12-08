@@ -44,7 +44,6 @@ import com.google.inject.Inject;
  * Test dynamic root creation
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -85,13 +84,15 @@ public class TestMapperServiceWithDynamicRoot {
 
         docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {
-            if(!doc.getId().equals(root.getId())) {
-                System.out.println("> [" +  doc.getType() + "] " + doc.getPathAsString() + " : " + " - title: '" + doc.getTitle() + "', dc:source: '" + doc.getPropertyValue("dc:source"));
+            if (!doc.getId().equals(root.getId())) {
+                System.out.println("> [" + doc.getType() + "] " + doc.getPathAsString() + " : " + " - title: '"
+                        + doc.getTitle() + "', dc:source: '" + doc.getPropertyValue("dc:source"));
                 BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                if (bh!=null) {
+                if (bh != null) {
                     Blob blob = bh.getBlob();
-                    if (blob!=null) {
-                        System.out.println(" ------ > File " + blob.getFilename() + " " + blob.getMimeType() + " " + blob.getLength());
+                    if (blob != null) {
+                        System.out.println(" ------ > File " + blob.getFilename() + " " + blob.getMimeType() + " "
+                                + blob.getLength());
                     }
                 }
             }

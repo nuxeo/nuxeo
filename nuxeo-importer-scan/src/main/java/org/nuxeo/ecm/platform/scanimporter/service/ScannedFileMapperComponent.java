@@ -45,15 +45,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
- * Component to provide service logic : - meta-data parsing - configuration
- * management - extension points
+ * Component to provide service logic : - meta-data parsing - configuration management - extension points
  *
  * @author Thierry Delprat
- *
  */
-public class ScannedFileMapperComponent extends DefaultComponent implements
-        ScannedFileMapperService {
+public class ScannedFileMapperComponent extends DefaultComponent implements ScannedFileMapperService {
 
     private static final Log log = LogFactory.getLog(ScannedFileMapperComponent.class);
 
@@ -66,8 +62,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
     protected ImporterConfig config = null;
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (MAPPING_EP.equals(extensionPoint)) {
             mappingDesc = (ScanFileMappingDescriptor) contribution;
@@ -136,8 +131,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
                 log.error("Unknown target type, please look the scan importer configuration: "
                         + fieldMap.getTargetType());
             }
-            log.error("Mulliple or no element(s) found for: "
-                    + fieldMap.sourceXPath + " for "
+            log.error("Mulliple or no element(s) found for: " + fieldMap.sourceXPath + " for "
                     + xmlFile.getAbsolutePath());
 
         }
@@ -159,8 +153,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
 
                 // Mainly for tests
                 if (filePath.startsWith("$TMP")) {
-                    filePath = filePath.replace("$TMP",
-                            Framework.getProperty("nuxeo.import.tmpdir"));
+                    filePath = filePath.replace("$TMP", Framework.getProperty("nuxeo.import.tmpdir"));
                 }
 
                 File file = new File(filePath);
@@ -178,8 +171,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
                         data.put(target, (Serializable) blob);
                     }
                 } else {
-                    log.error("File " + file.getAbsolutePath()
-                            + " is referenced by " + xmlFile.getAbsolutePath()
+                    log.error("File " + file.getAbsolutePath() + " is referenced by " + xmlFile.getAbsolutePath()
                             + " but was not found");
                 }
             }

@@ -30,21 +30,18 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Main Nuxeo Runtime component managing extension points and exposing
- * {@link XMLImporterService}
+ * Main Nuxeo Runtime component managing extension points and exposing {@link XMLImporterService}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-public class XMLImporterComponent extends DefaultComponent implements
-        XMLImporterService {
+public class XMLImporterComponent extends DefaultComponent implements XMLImporterService {
 
     protected List<DocConfigDescriptor> docConfigs = new ArrayList<DocConfigDescriptor>();
 
     protected List<AttributeConfigDescriptor> attributeConfigs = new ArrayList<AttributeConfigDescriptor>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("documentMapping".equals(extensionPoint)) {
             docConfigs.add((DocConfigDescriptor) contribution);
         } else if ("attributeMapping".equals(extensionPoint)) {
@@ -68,31 +65,26 @@ public class XMLImporterComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile)
-            throws IOException {
+    public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile) throws IOException {
         return importDocuments(root, xmlFile, null);
     }
 
     @Override
-    public List<DocumentModel> importDocuments(DocumentModel root,
-            InputStream xmlStream) throws IOException {
+    public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream) throws IOException {
         return importDocuments(root, xmlStream, null);
     }
 
     @Override
-    public List<DocumentModel> importDocuments(DocumentModel root, File source,
-            Map<String, Object> mvelContext) throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
-                getRegistry(), mvelContext);
+    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
+            throws IOException {
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext);
         return importer.parse(source);
     }
 
     @Override
-    public List<DocumentModel> importDocuments(DocumentModel root,
-            InputStream xmlStream, Map<String, Object> mvelContext)
-            throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
-                getRegistry(), mvelContext);
+    public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream,
+            Map<String, Object> mvelContext) throws IOException {
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext);
         return importer.parse(xmlStream);
     }
 

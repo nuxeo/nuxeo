@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Some helper function that are injected inside MVEL context
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class MVELImporterFunction extends CoreFunctions {
 
@@ -49,8 +48,7 @@ public class MVELImporterFunction extends CoreFunctions {
 
     protected final Element el;
 
-    public MVELImporterFunction(CoreSession session,
-            Stack<DocumentModel> docsStack,
+    public MVELImporterFunction(CoreSession session, Stack<DocumentModel> docsStack,
             Map<Element, DocumentModel> elToDoc, Element el) {
         super();
         this.session = session;
@@ -67,8 +65,8 @@ public class MVELImporterFunction extends CoreFunctions {
         return result;
     }
 
-    public DocumentModel mkdir(DocumentModel parent, String regexp,
-            String data, String typeName) throws ClientException {
+    public DocumentModel mkdir(DocumentModel parent, String regexp, String data, String typeName)
+            throws ClientException {
 
         String[] parts = data.split(regexp);
         List<DocumentModel> result = new ArrayList<DocumentModel>();
@@ -79,8 +77,7 @@ public class MVELImporterFunction extends CoreFunctions {
             try {
                 child = session.getChild(root.getRef(), part);
             } catch (Exception e) {
-                child = session.createDocumentModel(root.getPathAsString(),
-                        part, typeName);
+                child = session.createDocumentModel(root.getPathAsString(), part, typeName);
                 child.setPropertyValue("dc:title", part);
                 child = session.createDocument(child);
             }

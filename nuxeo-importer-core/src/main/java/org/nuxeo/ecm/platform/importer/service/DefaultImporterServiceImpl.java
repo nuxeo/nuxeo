@@ -50,9 +50,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     private int transactionTimeout = 0;
 
     @Override
-    public void importDocuments(String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize,
-            int noImportingThreads) throws ClientException {
+    public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,
+            int batchSize, int noImportingThreads) throws ClientException {
         SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
         if (sourceNode == null) {
             log.error("Need to set a sourceNode to be used by this importer");
@@ -66,9 +65,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         executor.setFactory(getDocumentModelFactory());
         executor.setTransactionTimeout(transactionTimeout);
         try {
-            executor.run(sourceNode, destinationPath,
-                    skipRootContainerCreation, batchSize, noImportingThreads,
-                    true);
+            executor.run(sourceNode, destinationPath, skipRootContainerCreation, batchSize, noImportingThreads, true);
         } catch (Exception e) {
             log.error("Import error:", e);
             throw new ClientException(e);
@@ -77,10 +74,9 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     @Override
-    public String importDocuments(AbstractImporterExecutor executor,
-            String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize,
-            int noImportingThreads, boolean interactive) throws ClientException {
+    public String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
+            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive)
+            throws ClientException {
 
         SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
         if (sourceNode == null) {
@@ -91,10 +87,9 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             log.error("Need to set a documentModelFactory to be used by this importer");
         }
 
-        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(
-                sourceNode, destinationPath, executor.getLogger()).skipRootContainerCreation(
-                skipRootContainerCreation).batchSize(batchSize).nbThreads(
-                noImportingThreads).build();
+        ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(sourceNode,
+                destinationPath, executor.getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(
+                batchSize).nbThreads(noImportingThreads).build();
         GenericMultiThreadedImporter runner;
         try {
             runner = new GenericMultiThreadedImporter(configuration);
@@ -103,8 +98,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             throw new ClientException(e1);
         }
         runner.setTransactionTimeout(transactionTimeout);
-        ImporterFilter filter = new EventServiceConfiguratorFilter(false,
-                false, false, true);
+        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, true);
         runner.addFilter(filter);
         runner.setFactory(getDocumentModelFactory());
         try {
@@ -116,32 +110,26 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     @Override
-    public String importDocuments(AbstractImporterExecutor executor,
-            String leafType, String folderishType, String destinationPath,
-            String sourcePath, boolean skipRootContainerCreation,
-            int batchSize, int noImportingThreads, boolean interactive)
-            throws ClientException {
+    public String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
+            String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
+            int noImportingThreads, boolean interactive) throws ClientException {
         ImporterDocumentModelFactory docModelFactory = getDocumentModelFactory();
         if (docModelFactory instanceof DefaultDocumentModelFactory) {
             DefaultDocumentModelFactory defaultDocModelFactory = (DefaultDocumentModelFactory) docModelFactory;
-        defaultDocModelFactory.setLeafType(leafType == null ? getLeafDocType()
-                : leafType);
-        defaultDocModelFactory.setFolderishType(folderishType == null ? getFolderishDocType()
-                : folderishType);
+            defaultDocModelFactory.setLeafType(leafType == null ? getLeafDocType() : leafType);
+            defaultDocModelFactory.setFolderishType(folderishType == null ? getFolderishDocType() : folderishType);
         }
         setDocumentModelFactory(docModelFactory);
         executor.setTransactionTimeout(transactionTimeout);
-        String res = importDocuments(executor, destinationPath, sourcePath,
-                skipRootContainerCreation, batchSize, noImportingThreads,
-                interactive);
+        String res = importDocuments(executor, destinationPath, sourcePath, skipRootContainerCreation, batchSize,
+                noImportingThreads, interactive);
         setDocumentModelFactory(null);
         return res;
 
     }
 
     @Override
-    public void setDocModelFactoryClass(
-            Class<? extends ImporterDocumentModelFactory> docModelFactoryClass) {
+    public void setDocModelFactoryClass(Class<? extends ImporterDocumentModelFactory> docModelFactoryClass) {
         this.docModelFactoryClass = docModelFactoryClass;
     }
 
@@ -150,14 +138,11 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.sourceNodeClass = sourceNodeClass;
     }
 
-    protected SourceNode createNewSourceNodeInstanceForSourcePath(
-            String sourcePath) {
+    protected SourceNode createNewSourceNodeInstanceForSourcePath(String sourcePath) {
         SourceNode sourceNode = null;
-        if (sourceNodeClass != null
-                && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
+        if (sourceNodeClass != null && FileSourceNode.class.isAssignableFrom(sourceNodeClass)) {
             try {
-                sourceNode = sourceNodeClass.getConstructor(String.class).newInstance(
-                        sourcePath);
+                sourceNode = sourceNodeClass.getConstructor(String.class).newInstance(sourcePath);
             } catch (Exception e) {
                 log.error(e);
             }
@@ -170,8 +155,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             if (docModelFactoryClass != null
                     && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
                 try {
-                    setDocumentModelFactory(docModelFactoryClass.getConstructor(
-                            String.class, String.class).newInstance(
+                    setDocumentModelFactory(docModelFactoryClass.getConstructor(String.class, String.class).newInstance(
                             getFolderishDocType(), getLeafDocType()));
                 } catch (Exception e) {
                     log.error(e);
@@ -181,8 +165,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         return documentModelFactory;
     }
 
-    protected void setDocumentModelFactory(
-            ImporterDocumentModelFactory documentModelFactory) {
+    protected void setDocumentModelFactory(ImporterDocumentModelFactory documentModelFactory) {
         this.documentModelFactory = documentModelFactory;
     }
 

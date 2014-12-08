@@ -35,11 +35,9 @@ import static javax.transaction.Status.STATUS_MARKED_ROLLBACK;
 import static javax.transaction.Status.STATUS_ROLLEDBACK;
 
 /**
- *
  * Simple helper for Tx management
  *
  * @author Thierry Delprat
- *
  */
 public class TxHelper {
 
@@ -66,8 +64,7 @@ public class TxHelper {
             return;
         }
         if (tx != null) {
-            throw new UnsupportedOperationException(
-                    "There is already an uncommited transaction running");
+            throw new UnsupportedOperationException("There is already an uncommited transaction running");
         }
         tx = createUT(transactionTimeout);
         if (tx == null) {
@@ -112,8 +109,7 @@ public class TxHelper {
             try {
                 ut.setTransactionTimeout(transactionTimeout);
             } catch (SystemException e) {
-                log.error("Error while setting transaction timeout to "
-                        + transactionTimeout, e);
+                log.error("Error while setting transaction timeout to " + transactionTimeout, e);
             }
         }
         return ut;
@@ -162,8 +158,7 @@ public class TxHelper {
     private boolean isUTTransactionMarkedRollback() {
         try {
             int status = tx.getStatus();
-            return status == STATUS_MARKED_ROLLBACK
-                    || status == STATUS_ROLLEDBACK;
+            return status == STATUS_MARKED_ROLLBACK || status == STATUS_ROLLEDBACK;
         } catch (SystemException e) {
             log.error("Error while getting tx status", e);
             return false;

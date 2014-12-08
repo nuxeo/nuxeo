@@ -27,9 +27,7 @@ public abstract class ImportTestCase extends SQLRepositoryTestCase {
     protected List<File> tmp = new ArrayList<File>();
 
     protected String deployTestFiles(String name) throws IOException {
-        File src = new File(
-                org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data/"
-                        + name));
+        File src = new File(org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data/" + name));
         File dst = File.createTempFile("nuxeoImportTestCase", ".dir");
         dst.delete();
         dst.mkdir();

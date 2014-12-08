@@ -25,7 +25,6 @@ import java.io.FilenameFilter;
  * {@link FilenameFilter} implemetation to skip files that are not descriptors
  *
  * @author Thierry Delprat
- *
  */
 public class XmlMetaDataFileFilter implements FilenameFilter {
 

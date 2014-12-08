@@ -26,25 +26,19 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 /**
  * Allows basic configuration of the default importer :
  * <p>
- * Allows configuration of the a DocumentModelFactory and the document types it
- * creates ( if no implementation is contributed,
- * <code>DefaultDocumentModelFactory</code> is used;
+ * Allows configuration of the a DocumentModelFactory and the document types it creates ( if no implementation is
+ * contributed, <code>DefaultDocumentModelFactory</code> is used;
  * <p>
- * Also allows configuration of the SourceNode implementation; if none is
- * provided the <code>FileSourceNode<code>> it's used by default
- *
+ * Also allows configuration of the SourceNode implementation; if none is provided the
+ * <code>FileSourceNode<code>> it's used by default
  */
 public interface DefaultImporterService {
 
     /**
-     * Imports documents using a DefaultImporterExecutor and the contributed
-     * documentModelFactory and SourceNode implementations;
-     *
-     * If no documentModelFactory implementation was contributed to the service,
-     * <code>DefaultDocumentModelFactory</code> it's used
-     *
-     * If no SourceNode implementation was contributed to the service,
-     * <code>FileSourceNode</code> it's used
+     * Imports documents using a DefaultImporterExecutor and the contributed documentModelFactory and SourceNode
+     * implementations; If no documentModelFactory implementation was contributed to the service,
+     * <code>DefaultDocumentModelFactory</code> it's used If no SourceNode implementation was contributed to the
+     * service, <code>FileSourceNode</code> it's used
      *
      * @param destionationPath
      * @param sourcePath
@@ -53,19 +47,14 @@ public interface DefaultImporterService {
      * @param noImportingThreads
      * @throws ClientException
      */
-    void importDocuments(String destionationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize,
+    void importDocuments(String destionationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads) throws ClientException;
 
     /***
-     * Imports documents using a the given executor and the contributed
-     * documentModelFactory and SourceNode implementations;
-     *
-     * If no documentModelFactory implementation was contributed to the service,
-     * <code>DefaultDocumentModelFactory</code> it's used
-     *
-     * If no SourceNode implementation was contributed to the service,
-     * <code>FileSourceNode</code> it's used
+     * Imports documents using a the given executor and the contributed documentModelFactory and SourceNode
+     * implementations; If no documentModelFactory implementation was contributed to the service,
+     * <code>DefaultDocumentModelFactory</code> it's used If no SourceNode implementation was contributed to the
+     * service, <code>FileSourceNode</code> it's used
      *
      * @param executor
      * @param destinationPath
@@ -76,23 +65,16 @@ public interface DefaultImporterService {
      * @param interactive
      * @throws ClientException
      */
-    String importDocuments(AbstractImporterExecutor executor,
-            String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize,
-            int noImportingThreads, boolean interactive) throws ClientException;
+    String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
+            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive)
+            throws ClientException;
 
     /***
-     * Imports documents using a the given executor and the contributed
-     * documentModelFactory and SourceNode implementations; Allows to overwrite
-     * the leaf and folderish types used by the documentModelFactory when
-     * importing; if one of them is not specified then the contributed one is
-     * used
-     *
-     * If no documentModelFactory implementation was contributed to the service,
-     * <code>DefaultDocumentModelFactory</code> it's used
-     *
-     * If no SourceNode implementation was contributed to the service,
-     * <code>FileSourceNode</code> it's used
+     * Imports documents using a the given executor and the contributed documentModelFactory and SourceNode
+     * implementations; Allows to overwrite the leaf and folderish types used by the documentModelFactory when
+     * importing; if one of them is not specified then the contributed one is used If no documentModelFactory
+     * implementation was contributed to the service, <code>DefaultDocumentModelFactory</code> it's used If no
+     * SourceNode implementation was contributed to the service, <code>FileSourceNode</code> it's used
      *
      * @param executor
      * @param destinationPath
@@ -103,15 +85,13 @@ public interface DefaultImporterService {
      * @param interactive
      * @throws ClientException
      */
-    String importDocuments(AbstractImporterExecutor executor, String leafType,
-            String folderishType, String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize,
+    String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
+            String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException;
 
     void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
 
-    void setDocModelFactoryClass(
-            Class<? extends ImporterDocumentModelFactory> docModelFactoryClass);
+    void setDocModelFactoryClass(Class<? extends ImporterDocumentModelFactory> docModelFactoryClass);
 
     void setLeafDocType(String fileDocType);
 
@@ -126,6 +106,7 @@ public interface DefaultImporterService {
 
     /**
      * Added waiting the importer refactoring. Only used by Scan Importer.
+     * 
      * @since 5.7.3
      */
     @Deprecated
@@ -133,6 +114,7 @@ public interface DefaultImporterService {
 
     /**
      * Added waiting the importer refactoring. Only used by Scan Importer.
+     * 
      * @since 5.7.3
      */
     @Deprecated

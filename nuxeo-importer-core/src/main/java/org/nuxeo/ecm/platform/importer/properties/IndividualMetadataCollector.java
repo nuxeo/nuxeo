@@ -25,8 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * The properties are mapped by the collector using as key the path of the
- * file/folder to import.
+ * The properties are mapped by the collector using as key the path of the file/folder to import.
  */
 public class IndividualMetadataCollector extends MetadataCollector {
 
@@ -36,8 +35,7 @@ public class IndividualMetadataCollector extends MetadataCollector {
         addPropertyFile(propertyFile, contextPath);
     }
 
-    public void addPropertyFile(File propertyFile, String contextPath)
-            throws Exception {
+    public void addPropertyFile(File propertyFile, String contextPath) throws Exception {
         Properties mdProperties = new Properties();
         mdProperties.load(new FileInputStream(propertyFile));
         Map<String, String> stringMap = new HashMap<String, String>();

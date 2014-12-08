@@ -24,7 +24,7 @@ public class TestImportListener extends ImportTestCase {
     @Test
     public void testTrigger() throws Exception {
 
-        EventContext ctx= new EventContextImpl(null,null);
+        EventContext ctx = new EventContextImpl(null, null);
         ctx.setProperty("Testing", true);
         Event evt = ctx.newEvent(IngestionTrigger.START_EVENT);
 

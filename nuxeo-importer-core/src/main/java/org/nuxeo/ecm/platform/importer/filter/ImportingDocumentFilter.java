@@ -20,16 +20,14 @@ package org.nuxeo.ecm.platform.importer.filter;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
- * Interface for filters used to chose if a {@code SourceNode} should be
- * imported or not.
+ * Interface for filters used to chose if a {@code SourceNode} should be imported or not.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public interface ImportingDocumentFilter {
 
     /**
-     * Returns {@code true} if the given {@code SourceNode} should be imported,
-     * {@code false} otherwise.
+     * Returns {@code true} if the given {@code SourceNode} should be imported, {@code false} otherwise.
      */
     public boolean shouldImportDocument(SourceNode sourceNode);
 

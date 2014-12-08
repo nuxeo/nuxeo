@@ -25,10 +25,8 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
 
     protected static final String MIME_LISTENER = "mimetypeIconUpdater";
 
-    public EventServiceConfiguratorFilter(
-            Boolean blockSyncPostCommitProcessing,
-            Boolean blockAsyncProcessing, Boolean blockMimeTypeDetection,
-            Boolean bulkMode) {
+    public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing, Boolean blockAsyncProcessing,
+            Boolean blockMimeTypeDetection, Boolean bulkMode) {
         if (blockAsyncProcessing != null) {
             this.blockAsyncProcessing = blockAsyncProcessing;
         }
@@ -93,7 +91,6 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
     public String toString() {
         return String.format(
                 "blockSyncPostCommitProcessing set %b, blockAsyncProcessing set %b, blockMimeTypeDetection set %b and blockNotifications set %b",
-                blockSyncPostCommitProcessing, blockAsyncProcessing,
-                blockMimeTypeDetection, blockNotifications);
+                blockSyncPostCommitProcessing, blockAsyncProcessing, blockMimeTypeDetection, blockNotifications);
     }
 }

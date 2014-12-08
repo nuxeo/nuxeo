@@ -25,11 +25,9 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Descriptor that can be used to define how Nuxeo DocumentModel properties are
- * filled from the input XML
+ * Descriptor that can be used to define how Nuxeo DocumentModel properties are filled from the input XML
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @XObject("attributeConfig")
 public class AttributeConfigDescriptor {
@@ -55,8 +53,8 @@ public class AttributeConfigDescriptor {
     public AttributeConfigDescriptor() {
     }
 
-    public AttributeConfigDescriptor(String tagName, String targetDocProperty,
-            Map<String, String> mapping, String filter) {
+    public AttributeConfigDescriptor(String tagName, String targetDocProperty, Map<String, String> mapping,
+            String filter) {
         this.tagName = tagName;
         this.targetDocProperty = targetDocProperty;
         if (mapping == null) {
@@ -67,8 +65,7 @@ public class AttributeConfigDescriptor {
         this.filter = filter;
     }
 
-    public AttributeConfigDescriptor(String tagName, String targetDocProperty,
-            String xmlPath, String filter) {
+    public AttributeConfigDescriptor(String tagName, String targetDocProperty, String xmlPath, String filter) {
         this.tagName = tagName;
         this.targetDocProperty = targetDocProperty;
         this.xmlPath = xmlPath;
@@ -104,8 +101,7 @@ public class AttributeConfigDescriptor {
     @Override
     public String toString() {
         String msg = "AttributeConfig\n\tTag Name: %s\n\tTarget Doc Property: %s\n\tFilter %s\n\tXML Path: %s\n\tMapping:\n";
-        String result = String.format(msg, tagName, targetDocProperty, filter,
-                xmlPath);
+        String result = String.format(msg, tagName, targetDocProperty, filter, xmlPath);
         if (mapping != null && !mapping.keySet().isEmpty()) {
             for (String key : mapping.keySet()) {
                 result += "\t\t" + key + ": " + mapping.get(key) + "\n";

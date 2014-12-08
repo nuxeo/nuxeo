@@ -40,24 +40,19 @@ public class TestImport extends ImportTestCase {
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.platform.importer.core",
-                "OSGI-INF/default-importer-service.xml");
-        deployContrib("org.nuxeo.ecm.platform.scanimporter",
-                "OSGI-INF/default-scan-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "needed-contribution-for-factory-deployment.xml");
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/core-type-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.importer.core", "OSGI-INF/default-importer-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/default-scan-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "needed-contribution-for-factory-deployment.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/core-type-test-contrib.xml");
         openSession();
-        deployContrib("org.nuxeo.ecm.platform.scanimporter",
-                "OSGI-INF/importerservice-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
-       closeSession();
-       super.tearDown();
+        closeSession();
+        super.tearDown();
     }
 
     @Test
@@ -67,8 +62,7 @@ public class TestImport extends ImportTestCase {
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/importerservice-test-contrib3.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib3.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -86,8 +80,7 @@ public class TestImport extends ImportTestCase {
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
-            log.info("imported : " + doc.getPathAsString() + "-"
-                    + doc.getType());
+            log.info("imported : " + doc.getPathAsString() + "-" + doc.getType());
         }
 
         assertEquals(1, alldocs.size());
@@ -98,24 +91,20 @@ public class TestImport extends ImportTestCase {
         assertEquals("3-77-2", doc.getPropertyValue("dc:title"));
         assertEquals("12345", doc.getPropertyValue("dc:coverage"));
 
-        assertEquals("testFile.txt",
-                ((Blob) doc.getPropertyValue("file:content")).getFilename());
-        assertEquals("This is a test.",
-                ((Blob) doc.getPropertyValue("file:content")).getString());
+        assertEquals("testFile.txt", ((Blob) doc.getPropertyValue("file:content")).getFilename());
+        assertEquals("This is a test.", ((Blob) doc.getPropertyValue("file:content")).getString());
 
         assertFalse(new File(testPath + "/descriptor.xml").exists());
 
     }
 
     @Test
-    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled()
-            throws Exception {
+    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled() throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/importerservice-test-contrib3.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib3.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -143,14 +132,12 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled()
-            throws Exception {
+    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled() throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/importerservice-test-contrib3.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib3.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -184,8 +171,7 @@ public class TestImport extends ImportTestCase {
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/importerservice-test-contrib3.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib3.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -211,8 +197,7 @@ public class TestImport extends ImportTestCase {
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/importerservice-test-contrib4.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib4.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -229,8 +214,7 @@ public class TestImport extends ImportTestCase {
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
-            log.info("imported : " + doc.getPathAsString() + "-"
-                    + doc.getType());
+            log.info("imported : " + doc.getPathAsString() + "-" + doc.getType());
         }
 
         assertEquals(1, alldocs.size());
@@ -247,8 +231,7 @@ public class TestImport extends ImportTestCase {
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "OSGI-INF/importerservice-test-contrib6.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib6.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -265,8 +248,7 @@ public class TestImport extends ImportTestCase {
         DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
-            log.info("imported : " + doc.getPathAsString() + "-"
-                    + doc.getType());
+            log.info("imported : " + doc.getPathAsString() + "-" + doc.getType());
         }
 
         assertEquals(1, alldocs.size());

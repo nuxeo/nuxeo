@@ -25,11 +25,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * XMap Descriptor for importer config
  *
  * @author Thierry Delprat
- *
  */
 @XObject("importerConfig")
 public class ImporterConfig implements Serializable {
@@ -86,9 +84,7 @@ public class ImporterConfig implements Serializable {
     }
 
     /**
-     *
      * @since 5.9.4
-     *
      */
     public Integer getTransactionTimeout() {
         return transactionTimeout;
@@ -142,13 +138,11 @@ public class ImporterConfig implements Serializable {
     }
 
     /**
-    *
-    * @since 5.9.4
-    *
-    */
-   public void setTransactionTimeout(Integer transactionTimeout) {
-       this.transactionTimeout = transactionTimeout;
-   }
+     * @since 5.9.4
+     */
+    public void setTransactionTimeout(Integer transactionTimeout) {
+        this.transactionTimeout = transactionTimeout;
+    }
 
     public void setTargetPath(String tagetPath) {
         this.targetPath = tagetPath;

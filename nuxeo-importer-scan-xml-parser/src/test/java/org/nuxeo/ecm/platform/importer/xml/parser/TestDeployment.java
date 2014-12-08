@@ -32,14 +32,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 5.7.3
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({
-        "org.nuxeo.ecm.core.api",
-        "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.core.schema",
+@Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.schema",
         "org.nuxeo.ecm.platform.importer.core:OSGI-INF/default-importer-service.xml",
         "nuxeo-importer-scan-xml-parser-test:OSGI-INF/xml-importer-scan-config-without-requires.xml" })
 public class TestDeployment {
@@ -51,11 +47,9 @@ public class TestDeployment {
         DefaultImporterService service = Framework.getLocalService(DefaultImporterService.class);
         assertNotNull(service);
 
-        assertEquals(
-                "org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory",
+        assertEquals("org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory",
                 service.getDocModelFactoryClass().getName());
-        assertEquals(
-                "org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode",
+        assertEquals("org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode",
                 service.getSourceNodeClass().getName());
 
     }

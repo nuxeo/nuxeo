@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.platform.importer.log;
 
 /**
- *
  * @author Thierry Delprat
- *
  */
 public interface ImporterLogger {
 

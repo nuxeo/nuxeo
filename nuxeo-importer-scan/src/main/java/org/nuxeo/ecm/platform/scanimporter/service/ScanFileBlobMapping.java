@@ -24,11 +24,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * XMap descriptor for Blob mapping
  *
  * @author Thierry Delprat
- *
  */
 @XObject("blobMapping")
 public class ScanFileBlobMapping implements Serializable {

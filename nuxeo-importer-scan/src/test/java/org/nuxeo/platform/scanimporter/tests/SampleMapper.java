@@ -13,7 +13,6 @@ import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
  * Sample {@link DocumentTypeMapper} impl : get document type from XML
  *
  * @author Thierry Delprat
- *
  */
 public class SampleMapper implements DocumentTypeMapper {
 
@@ -21,14 +20,13 @@ public class SampleMapper implements DocumentTypeMapper {
         try {
             XPath xpath = new Dom4jXPath("//resource-definition");
             List<?> nodes = xpath.selectNodes(xmlDoc);
-            if (nodes.size()>=1) {
-                DefaultElement  elem = (DefaultElement ) nodes.get(0);
+            if (nodes.size() >= 1) {
+                DefaultElement elem = (DefaultElement) nodes.get(0);
                 return elem.attribute("name").getValue();
             } else {
                 return "File";
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return "File";
         }
     }

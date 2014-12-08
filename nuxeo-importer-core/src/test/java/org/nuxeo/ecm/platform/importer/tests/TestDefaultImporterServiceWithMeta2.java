@@ -42,8 +42,7 @@ public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployBundle(IMPORTER_CORE_BUNDLE);
-        deployContrib(IMPORTER_CORE_TEST_BUNDLE,
-                "test-importer-service-contrib2.xml");
+        deployContrib(IMPORTER_CORE_TEST_BUNDLE, "test-importer-service-contrib2.xml");
     }
 
     @Test
@@ -54,8 +53,7 @@ public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
         File source = FileUtils.getResourceFileFromContext("import-src-with-metadatas");
         String targetPath = "/default-domain/workspaces/";
 
-        importerService.importDocuments(targetPath, source.getPath(), false, 5,
-                5);
+        importerService.importDocuments(targetPath, source.getPath(), false, 5, 5);
 
         session.save();
 
@@ -80,8 +78,7 @@ public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
 
         DocumentModel folder11 = session.getChild(folder.getRef(), "branch11");
 
-        DocumentModel file11 = session.getChild(folder11.getRef(),
-                "hello11.pdf");
+        DocumentModel file11 = session.getChild(folder11.getRef(), "hello11.pdf");
         String[] contributors = (String[]) file11.getPropertyValue("dc:subjects");
         assertNotNull(contributors);
         assertEquals("subject6", contributors[0]);

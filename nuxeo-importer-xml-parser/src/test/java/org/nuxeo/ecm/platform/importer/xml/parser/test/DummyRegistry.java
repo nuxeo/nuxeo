@@ -28,11 +28,9 @@ import org.nuxeo.ecm.platform.importer.xml.parser.DocConfigDescriptor;
 import org.nuxeo.ecm.platform.importer.xml.parser.ParserConfigRegistry;
 
 /**
- * Hard coded config used for testing imported outside of service / extension
- * point infrastructure
+ * Hard coded config used for testing imported outside of service / extension point infrastructure
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class DummyRegistry implements ParserConfigRegistry {
 
@@ -45,26 +43,21 @@ public class DummyRegistry implements ParserConfigRegistry {
         if (attConfig == null) {
             attConfig = new ArrayList<AttributeConfigDescriptor>();
 
-            attConfig.add(new AttributeConfigDescriptor("titre", "dc:title", "text()",
-                    null)); // use xpath
+            attConfig.add(new AttributeConfigDescriptor("titre", "dc:title", "text()", null)); // use xpath
             attConfig.add(new AttributeConfigDescriptor("dossierActe", "dc:source",
                     "#{'Seance ' + currentDocument.name}", null)); // MVEL
 
-            attConfig.add(new AttributeConfigDescriptor("document", "dc:title", "@nom",
-                    null));
-            attConfig.add(new AttributeConfigDescriptor("document", "dc:source", "@type",
-                    null));
+            attConfig.add(new AttributeConfigDescriptor("document", "dc:title", "@nom", null));
+            attConfig.add(new AttributeConfigDescriptor("document", "dc:source", "@type", null));
 
-            attConfig.add(new AttributeConfigDescriptor("signature", "dc:format",
-                    "@formatSignature", null));
+            attConfig.add(new AttributeConfigDescriptor("signature", "dc:format", "@formatSignature", null));
 
             Map<String, String> complex = new HashMap<String, String>();
             complex.put("filename", "@nom");
             complex.put("mimetype", "mimetype/text()");
             complex.put("content", "@nom");
 
-            attConfig.add(new AttributeConfigDescriptor("document", "file:content",
-                    complex, null));
+            attConfig.add(new AttributeConfigDescriptor("document", "file:content", complex, null));
 
         }
 
@@ -75,21 +68,16 @@ public class DummyRegistry implements ParserConfigRegistry {
     public List<DocConfigDescriptor> getDocCreationConfigs() {
         if (docConfig == null) {
             docConfig = new ArrayList<DocConfigDescriptor>();
-            docConfig.add(new DocConfigDescriptor("seance", "Workspace", null,
-                    "@idSeance")); // pure xpath
+            docConfig.add(new DocConfigDescriptor("seance", "Workspace", null, "@idSeance")); // pure xpath
 
-            String findParent = "#{"
-                    + "nodes = currentElement.selectNodes('@refSeance');"
-                    + "if (nodes.size()>0) {"
+            String findParent = "#{" + "nodes = currentElement.selectNodes('@refSeance');" + "if (nodes.size()>0) {"
                     + "  String seanceRef = nodes.get(0).getText();"
                     + "  String parentRef = '//seance[@idSeance=\"' + seanceRef + '\"]';"
-                    + "  return xml.selectNodes(parentRef).get(0);"
-                    + " } else {" + "  return root.getPathAsString();" + " }"
-                    + "}";
+                    + "  return xml.selectNodes(parentRef).get(0);" + " } else {" + "  return root.getPathAsString();"
+                    + " }" + "}";
 
             // xpath resolution inside String + complex MVEL Parent resolution
-            docConfig.add(new DocConfigDescriptor("dossierActe", "Folder", findParent,
-                    "Acte-{{@idActe}}"));
+            docConfig.add(new DocConfigDescriptor("dossierActe", "Folder", findParent, "Acte-{{@idActe}}"));
             docConfig.add(new DocConfigDescriptor("document", "File", "..", "@nom"));
         }
         return docConfig;

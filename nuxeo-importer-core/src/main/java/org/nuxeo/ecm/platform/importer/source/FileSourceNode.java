@@ -28,11 +28,9 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
- *
  * Simple Filesystem based {@link SourceNode}
  *
  * @author Thierry Delprat
- *
  */
 public class FileSourceNode implements SourceNode {
 
@@ -68,8 +66,8 @@ public class FileSourceNode implements SourceNode {
         return file.getName();
     }
 
-    public String getSourcePath(){
-       return file.getAbsolutePath();
+    public String getSourcePath() {
+        return file.getAbsolutePath();
     }
 
     public File getFile() {

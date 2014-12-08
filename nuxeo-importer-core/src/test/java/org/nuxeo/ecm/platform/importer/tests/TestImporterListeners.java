@@ -89,9 +89,10 @@ class ImporterExecutorWithListeners extends DefaultImporterExecutor {
     }
 
     @Override
-    public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize, Integer nbTheards, Boolean interactive) throws Exception {
-        importer = new GenericMultiThreadedImporter(source, targetPath,
-                skipRootContainerCreation, batchSize, nbTheards, getLogger());
+    public String run(SourceNode source, String targetPath, Boolean skipRootContainerCreation, Integer batchSize,
+            Integer nbTheards, Boolean interactive) throws Exception {
+        importer = new GenericMultiThreadedImporter(source, targetPath, skipRootContainerCreation, batchSize,
+                nbTheards, getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
 

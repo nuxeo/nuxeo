@@ -40,7 +40,6 @@ import com.google.inject.Inject;
  * Test low level importer (outside of service and extension point system)
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -65,32 +64,37 @@ public class TestMapper {
 
         List<DocumentModel> docs = session.query("select * from Workspace");
         Assert.assertEquals("we should have only one Seance", 1, docs.size());
-        DocumentModel seanceDoc  = docs.get(0);
+        DocumentModel seanceDoc = docs.get(0);
 
         docs = session.query("select * from Document where ecm:primaryType='Folder'");
-        Assert.assertEquals("we should have 4 actes",4, docs.size());
+        Assert.assertEquals("we should have 4 actes", 4, docs.size());
 
         docs = session.query("select * from Document where ecm:primaryType='File'");
-        Assert.assertEquals("we should have 13 files",13, docs.size());
+        Assert.assertEquals("we should have 13 files", 13, docs.size());
 
-        docs = session.query("select * from Document where ecm:primaryType='Folder' AND ecm:parentId='" + seanceDoc.getId() + "'");
-        Assert.assertEquals("we should have 3 actes in the seance",3, docs.size());
+        docs = session.query("select * from Document where ecm:primaryType='Folder' AND ecm:parentId='"
+                + seanceDoc.getId() + "'");
+        Assert.assertEquals("we should have 3 actes in the seance", 3, docs.size());
 
-        docs = session.query("select * from Document where ecm:primaryType='Folder'  AND ecm:parentId!='" + seanceDoc.getId() + "'");
-        Assert.assertEquals("we should have only 1 actes ouside of the seance",1, docs.size());
+        docs = session.query("select * from Document where ecm:primaryType='Folder'  AND ecm:parentId!='"
+                + seanceDoc.getId() + "'");
+        Assert.assertEquals("we should have only 1 actes ouside of the seance", 1, docs.size());
 
-        docs = session.query("select * from Document where ecm:primaryType='File'  AND ecm:parentId='" + seanceDoc.getId() + "'");
-        Assert.assertEquals("we should have only 4 files in the seance",4, docs.size());
+        docs = session.query("select * from Document where ecm:primaryType='File'  AND ecm:parentId='"
+                + seanceDoc.getId() + "'");
+        Assert.assertEquals("we should have only 4 files in the seance", 4, docs.size());
 
         docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {
-            if(!doc.getId().equals(root.getId())) {
-                System.out.println("> [" +  doc.getType() + "] " + doc.getPathAsString() + " : " + " - title: '" + doc.getTitle() + "', dc:source: '" + doc.getPropertyValue("dc:source"));
+            if (!doc.getId().equals(root.getId())) {
+                System.out.println("> [" + doc.getType() + "] " + doc.getPathAsString() + " : " + " - title: '"
+                        + doc.getTitle() + "', dc:source: '" + doc.getPropertyValue("dc:source"));
                 BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                if (bh!=null) {
+                if (bh != null) {
                     Blob blob = bh.getBlob();
-                    if (blob!=null) {
-                        System.out.println(" ------ > File " + blob.getFilename() + " " + blob.getMimeType() + " " + blob.getLength());
+                    if (blob != null) {
+                        System.out.println(" ------ > File " + blob.getFilename() + " " + blob.getMimeType() + " "
+                                + blob.getLength());
                     }
                 }
             }

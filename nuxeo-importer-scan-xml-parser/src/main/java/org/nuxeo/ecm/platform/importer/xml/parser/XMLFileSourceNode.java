@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  * Source Node filtering only Folder, XML and ZIP files.
  *
  * @since 5.7.3
- *
  */
 public class XMLFileSourceNode extends FileSourceNode {
 
@@ -45,12 +44,10 @@ public class XMLFileSourceNode extends FileSourceNode {
 
         File[] childrenFile = file.listFiles();
         for (File child : childrenFile) {
-            if (child.getName().endsWith(".xml")
-                    || child.getName().endsWith(".zip") || child.isDirectory()) {
+            if (child.getName().endsWith(".xml") || child.getName().endsWith(".zip") || child.isDirectory()) {
                 children.add(new XMLFileSourceNode(child));
             } else {
-                log.info("File ignored as not xml or zip or directory file "
-                        + child.getAbsolutePath());
+                log.info("File ignored as not xml or zip or directory file " + child.getAbsolutePath());
             }
         }
         return children;

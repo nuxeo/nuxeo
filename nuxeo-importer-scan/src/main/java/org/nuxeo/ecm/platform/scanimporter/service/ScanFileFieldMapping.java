@@ -25,19 +25,16 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- *
  * XMap descriptor for meta-data mapping
  *
  * @author Thierry Delprat
- *
  */
 @XObject("fieldMapping")
 public class ScanFileFieldMapping implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(
-            "yyyy-MM-dd'T'hh:mm:ss.sss'Z'");
+    public static final SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.sss'Z'");
 
     @XNode("@sourceXPath")
     protected String sourceXPath;

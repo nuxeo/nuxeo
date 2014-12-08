@@ -26,11 +26,9 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
 
 /**
- * Listen to Scheduler events to check if new scanned files are availables
- * Trigger the importer if not already busy.
+ * Listen to Scheduler events to check if new scanned files are availables Trigger the importer if not already busy.
  *
  * @author Thierry Delprat
- *
  */
 public class IngestionTrigger implements EventListener {
 

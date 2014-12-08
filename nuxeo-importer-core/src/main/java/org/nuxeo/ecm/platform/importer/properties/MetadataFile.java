@@ -59,21 +59,19 @@ public class MetadataFile {
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromDocument(DocumentModel doc)
-            throws ClientException {
+    public static MetadataFile createFromDocument(DocumentModel doc) throws ClientException {
         MetadataFile mdFile = new MetadataFile(doc);
         mdFile.load();
         return mdFile;
     }
 
     /**
-     * Create a {@code MetadataFile} from the listed schemas (with all
-     * properties) and the listed properties of a {@code DocumentModel}
+     * Create a {@code MetadataFile} from the listed schemas (with all properties) and the listed properties of a
+     * {@code DocumentModel}
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromSchemasAndProperties(
-            DocumentModel doc, List<String> allPropertiesSchemas,
+    public static MetadataFile createFromSchemasAndProperties(DocumentModel doc, List<String> allPropertiesSchemas,
             List<String> properties) throws ClientException {
         MetadataFile mdFile = new MetadataFile(doc);
         mdFile.load(allPropertiesSchemas, properties);
@@ -81,35 +79,29 @@ public class MetadataFile {
     }
 
     /**
-     * Create a {@code MetadataFile} from the listed schemas (with all
-     * properties) of a {@code DocumentModel}
+     * Create a {@code MetadataFile} from the listed schemas (with all properties) of a {@code DocumentModel}
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromSchemas(DocumentModel doc,
-            List<String> allPropertiesSchemas) throws ClientException {
-        return createFromSchemasAndProperties(doc, allPropertiesSchemas,
-                Collections.<String> emptyList());
+    public static MetadataFile createFromSchemas(DocumentModel doc, List<String> allPropertiesSchemas)
+            throws ClientException {
+        return createFromSchemasAndProperties(doc, allPropertiesSchemas, Collections.<String> emptyList());
     }
 
     /**
-     * Create a {@code MetadataFile} from the listed properties of a
-     * {@code DocumentModel}
+     * Create a {@code MetadataFile} from the listed properties of a {@code DocumentModel}
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromProperties(DocumentModel doc,
-            List<String> properties) throws ClientException {
-        return createFromSchemasAndProperties(doc,
-                Collections.<String> emptyList(), properties);
+    public static MetadataFile createFromProperties(DocumentModel doc, List<String> properties) throws ClientException {
+        return createFromSchemasAndProperties(doc, Collections.<String> emptyList(), properties);
     }
 
     protected MetadataFile(DocumentModel doc) {
         this.doc = doc;
     }
 
-    protected void load(List<String> allPropertiesSchemas,
-            List<String> properties) throws ClientException {
+    protected void load(List<String> allPropertiesSchemas, List<String> properties) throws ClientException {
         if (!metadataProperties.isEmpty()) {
             return;
         }
@@ -122,9 +114,8 @@ public class MetadataFile {
             try {
                 addProperty(property, doc.getPropertyValue(property));
             } catch (PropertyException e) {
-                String message = String.format(
-                        "Property '%s' not found on document type: %s. Skipping it.",
-                        property, doc.getType());
+                String message = String.format("Property '%s' not found on document type: %s. Skipping it.", property,
+                        doc.getType());
                 log.debug(message);
             }
         }
@@ -152,8 +143,7 @@ public class MetadataFile {
                         list = new ArrayList<String>(list);
                         list.add("");
                     }
-                    metadataProperties.put(propertyKey, StringUtils.join(list,
-                            MetadataCollector.LIST_SEPARATOR));
+                    metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.LIST_SEPARATOR));
                 }
             } catch (ClassCastException e) {
                 // do nothing
@@ -165,8 +155,7 @@ public class MetadataFile {
                     list = new ArrayList<String>(list);
                     list.add("");
                 }
-                metadataProperties.put(propertyKey, StringUtils.join(list,
-                        MetadataCollector.ARRAY_SEPARATOR));
+                metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.ARRAY_SEPARATOR));
             }
         } else if (value instanceof Calendar) {
             metadataProperties.put(propertyKey, new DateType().encode(value));
@@ -197,9 +186,7 @@ public class MetadataFile {
             fos = new FileOutputStream(file);
             metadataProperties.store(fos, null);
         } catch (IOException e) {
-            throw new ClientException(
-                    "Unable to write the metadata properties to "
-                            + file.getAbsolutePath(), e);
+            throw new ClientException("Unable to write the metadata properties to " + file.getAbsolutePath(), e);
         } finally {
             if (fos != null) {
                 try {

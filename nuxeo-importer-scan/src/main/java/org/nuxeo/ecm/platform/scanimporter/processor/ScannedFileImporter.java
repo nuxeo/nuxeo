@@ -40,11 +40,9 @@ import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * Setup the importer with the rights factories
  *
  * @author Thierry Delprat
- *
  */
 public class ScannedFileImporter {
 
@@ -115,8 +113,7 @@ public class ScannedFileImporter {
     public void doImport(File folder, ImporterConfig config) throws Exception {
 
         if (folder == null || !folder.exists()) {
-            throw new ClientException("Unable to access source folder "
-                    + folder);
+            throw new ClientException("Unable to access source folder " + folder);
         }
         if (config.getTargetPath() == null) {
             throw new ClientException("target path must be set");
@@ -127,15 +124,13 @@ public class ScannedFileImporter {
             return;
         }
 
-        log.info("Starting import process on path " + config.getTargetPath()
-                + " from source " + folder.getAbsolutePath());
+        log.info("Starting import process on path " + config.getTargetPath() + " from source "
+                + folder.getAbsolutePath());
         SourceNode src = initSourceNode(folder);
 
         ScanedFileSourceNode.useXMLMapping = config.useXMLMapping();
-        GenericMultiThreadedImporter importer = new GenericMultiThreadedImporter(
-                src, config.getTargetPath(), !config.isCreateInitialFolder(),
-                config.getBatchSize(), config.getNbThreads(), new BasicLogger(
-                        log));
+        GenericMultiThreadedImporter importer = new GenericMultiThreadedImporter(src, config.getTargetPath(),
+                !config.isCreateInitialFolder(), config.getBatchSize(), config.getNbThreads(), new BasicLogger(log));
 
         ImporterDocumentModelFactory factory = initDocumentModelFactory(config);
         importer.setFactory(factory);
@@ -155,11 +150,11 @@ public class ScannedFileImporter {
      * @throws InstantiationException
      * @since 5.7.3
      */
-    private ImporterDocumentModelFactory initDocumentModelFactory(
-            ImporterConfig config) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private ImporterDocumentModelFactory initDocumentModelFactory(ImporterConfig config) throws InstantiationException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getLocalService(
                 DefaultImporterService.class).getDocModelFactoryClass();
-//        Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
+        // Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
         Constructor<? extends ImporterDocumentModelFactory> cst = null;
 
         try {
@@ -175,12 +170,10 @@ public class ScannedFileImporter {
      * @since 5.7.3
      */
     private SourceNode initSourceNode(File file) throws Exception {
-        Class<? extends SourceNode> srcClass = Framework.getLocalService(
-                DefaultImporterService.class).getSourceNodeClass();
-//        Class<? extends SourceNode> srcClass = ScanedFileSourceNode.class;
+        Class<? extends SourceNode> srcClass = Framework.getLocalService(DefaultImporterService.class).getSourceNodeClass();
+        // Class<? extends SourceNode> srcClass = ScanedFileSourceNode.class;
         if (!FileSourceNode.class.isAssignableFrom(srcClass)) {
-            throw new Exception(
-                    "Waiting source node extending FileSourceNode for Scan Importer");
+            throw new Exception("Waiting source node extending FileSourceNode for Scan Importer");
         }
 
         Constructor<? extends SourceNode> cst = srcClass.getConstructor(File.class);

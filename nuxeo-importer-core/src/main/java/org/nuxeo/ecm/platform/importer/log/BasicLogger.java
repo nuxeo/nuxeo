@@ -22,12 +22,9 @@ package org.nuxeo.ecm.platform.importer.log;
 import org.apache.commons.logging.Log;
 
 /**
- *
- * Simple logger that wraps a bufferized string logger (for remote retrieval)
- * and a log4J logger
+ * Simple logger that wraps a bufferized string logger (for remote retrieval) and a log4J logger
  *
  * @author tiry
- *
  */
 public class BasicLogger implements ImporterLogger {
 

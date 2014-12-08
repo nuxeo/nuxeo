@@ -15,8 +15,7 @@ public class PartialTextExtractor implements Converter {
 
     public static final double TEXT_RATIO = 0.01;
 
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         try {
             Blob blob = blobHolder.getBlob();
 
@@ -26,8 +25,7 @@ public class PartialTextExtractor implements Converter {
             return new SimpleBlobHolder(new StringBlob(txtData));
 
         } catch (Exception e) {
-            throw new ConversionException(
-                    "error extracting partial text content", e);
+            throw new ConversionException("error extracting partial text content", e);
         }
     }
 

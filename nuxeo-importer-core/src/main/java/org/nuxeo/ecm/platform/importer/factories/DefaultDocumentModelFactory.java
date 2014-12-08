@@ -33,22 +33,16 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
- *
- * Default implementation for DocumentModel factory The default empty
- * constructor create Folder for folderish file and File for other. But you can
- * specify them using the other constructor.
- *
- * Also, if you are using .properties files to setup metada, you can use
- * the ecm:primaryType xpath to specify the type of document to create. This
- * will override the default ones, and works for files and folders. If no
- * .properties file is provided of it the current node has a .properties
- * file but no ecm:primaryType, the default types are created. This works
- * for leafType but also for folderish type.
+ * Default implementation for DocumentModel factory The default empty constructor create Folder for folderish file and
+ * File for other. But you can specify them using the other constructor. Also, if you are using .properties files to
+ * setup metada, you can use the ecm:primaryType xpath to specify the type of document to create. This will override the
+ * default ones, and works for files and folders. If no .properties file is provided of it the current node has a
+ * .properties file but no ecm:primaryType, the default types are created. This works for leafType but also for
+ * folderish type.
  *
  * @author Thierry Delprat
  * @author Daniel Tellez
  * @author Thibaud Arguillere
- *
  */
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
@@ -68,8 +62,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     }
 
     /**
-     * Instantiate a DefaultDocumentModelFactory that creates specified types
-     * doc
+     * Instantiate a DefaultDocumentModelFactory that creates specified types doc
      *
      * @param folderishType the folderish type
      * @param leafType the other type
@@ -81,34 +74,31 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
     /*
      * (non-Javadoc)
-     *
      * @seeorg.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#
-     * createFolderishNode(org.nuxeo.ecm.core.api.CoreSession,
-     * org.nuxeo.ecm.core.api.DocumentModel,
+     * createFolderishNode(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel,
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     @Override
-    public DocumentModel createFolderishNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws Exception {
 
         String name = getValidNameFromFileName(node.getName());
 
         BlobHolder bh = node.getBlobHolder();
         String folderishTypeToUse = getDocTypeToUse(bh);
-        if(folderishTypeToUse == null) {
+        if (folderishTypeToUse == null) {
             folderishTypeToUse = folderishType;
         }
         List<String> facets = getFacetsToUse(bh);
 
-        DocumentModel doc = session.createDocumentModel(
-                parent.getPathAsString(), name, folderishTypeToUse);
+        DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), name, folderishTypeToUse);
         for (String facet : facets) {
             doc.addFacet(facet);
         }
         doc.setProperty("dublincore", "title", node.getName());
         doc = session.createDocument(doc);
 
-        if(bh != null) {
+        if (bh != null) {
             doc = setDocumentProperties(session, bh.getProperties(), doc);
         }
 
@@ -117,24 +107,21 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
     /*
      * (non-Javadoc)
-     *
      * @seeorg.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#
-     * createLeafNode(org.nuxeo.ecm.core.api.CoreSession,
-     * org.nuxeo.ecm.core.api.DocumentModel,
+     * createLeafNode(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel,
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     @Override
-    public DocumentModel createLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
         return defaultCreateLeafNode(session, parent, node);
     }
 
-    protected DocumentModel defaultCreateLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws Exception {
 
         BlobHolder bh = node.getBlobHolder();
         String leafTypeToUse = getDocTypeToUse(bh);
-        if(leafTypeToUse == null) {
+        if (leafTypeToUse == null) {
             leafTypeToUse = leafType;
         }
         List<String> facets = getFacetsToUse(bh);
@@ -147,8 +134,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
 
-        DocumentModel doc = session.createDocumentModel(
-                parent.getPathAsString(), name, leafTypeToUse);
+        DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), name, leafTypeToUse);
         for (String facet : facets) {
             doc.addFacet(facet);
         }
@@ -158,7 +144,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
         doc = session.createDocument(doc);
 
-        if(bh != null) {
+        if (bh != null) {
             doc = setDocumentProperties(session, bh.getProperties(), doc);
         }
 
@@ -166,22 +152,20 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     }
 
     /*
-     * Return null if DOCTYPE_KEY_NAME is not in the properties or has been
-     * set to nothing.
+     * Return null if DOCTYPE_KEY_NAME is not in the properties or has been set to nothing.
      */
     protected String getDocTypeToUse(BlobHolder inBH) {
         String type = null;
 
-        if(inBH != null) {
+        if (inBH != null) {
             Map<String, Serializable> props = inBH.getProperties();
-            if(props != null) {
+            if (props != null) {
                 type = (String) props.get(DOCTYPE_KEY_NAME);
-                if(type!= null && type.isEmpty()) {
+                if (type != null && type.isEmpty()) {
                     type = null;
                 }
             }
         }
-
 
         return type;
     }

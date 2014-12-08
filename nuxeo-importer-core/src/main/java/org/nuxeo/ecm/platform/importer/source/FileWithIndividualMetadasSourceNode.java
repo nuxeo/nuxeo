@@ -30,14 +30,9 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.importer.properties.IndividualMetadataCollector;
 
 /**
- * 
- * {@link SourceNode} implementation that manages Meta-data from properties
- * files per document
+ * {@link SourceNode} implementation that manages Meta-data from properties files per document
  * <p>
- * The properties are mapped by the collector using as key the path of the
- * file/folder to import.
- * 
- * 
+ * The properties are mapped by the collector using as key the path of the file/folder to import.
  */
 public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
@@ -57,8 +52,7 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
     @Override
     public BlobHolder getBlobHolder() {
-        BlobHolder bh = new SimpleBlobHolderWithProperties(new FileBlob(file),
-                collector.getProperties(file));
+        BlobHolder bh = new SimpleBlobHolderWithProperties(new FileBlob(file), collector.getProperties(file));
         return bh;
     }
 
@@ -70,8 +64,7 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
     public List<SourceNode> getChildren() {
         List<SourceNode> children = new ArrayList<SourceNode>();
         File[] listFiles = file.listFiles();
-        log.trace("Element " + this.getSourcePath() + " has children"
-                + listFiles.toString());
+        log.trace("Element " + this.getSourcePath() + " has children" + listFiles.toString());
         for (File child : listFiles) {
             if (isPropertyFile(child)) {
                 try {
@@ -95,16 +88,14 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
     protected String getPropertyTargetKey(File propFile, File[] listFiles) {
         String fileName = propFile.getName();
-        String absFileName = fileName.substring(0,
-                fileName.lastIndexOf(PROPERTY_FILE_SUFIX));
+        String absFileName = fileName.substring(0, fileName.lastIndexOf(PROPERTY_FILE_SUFIX));
         for (File file2 : listFiles) {
             if (file2.isDirectory() && file2.getName().equals(absFileName)) {
                 return file2.getAbsolutePath();
             }
         }
         for (File file2 : listFiles) {
-            if (file2.isFile() && !isPropertyFile(file2)
-                    && getFileNameNoExt(file2).equals(absFileName)) {
+            if (file2.isFile() && !isPropertyFile(file2) && getFileNameNoExt(file2).equals(absFileName)) {
                 return file2.getAbsolutePath();
             }
         }

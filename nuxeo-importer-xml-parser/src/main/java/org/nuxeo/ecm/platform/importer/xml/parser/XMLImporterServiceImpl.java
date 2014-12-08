@@ -61,7 +61,6 @@ import org.nuxeo.runtime.api.Framework;
  * Main implementation class for delivering the Import logic
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public class XMLImporterServiceImpl {
 
@@ -69,8 +68,7 @@ public class XMLImporterServiceImpl {
             + "No element \"%s\" found in %s, use the DOC_TYPE-INDEX value";
 
     private static final String MSG_CREATION = "**CREATION**\n"
-            + "Try to create document in %s with name %s based on \"%s\" fragment "
-            + "with the following conf: %s\n";
+            + "Try to create document in %s with name %s based on \"%s\" fragment " + "with the following conf: %s\n";
 
     private static final String MSG_UPDATE_PROPERTY_TRACE = "**PROPERTY UPDATE**\n"
             + "Value found for %s in %s is \"%s\". With the following conf: %s";
@@ -94,13 +92,11 @@ public class XMLImporterServiceImpl {
 
     protected ParserConfigRegistry registry;
 
-    public XMLImporterServiceImpl(DocumentModel rootDoc,
-            ParserConfigRegistry registry) {
+    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry) {
         this(rootDoc, registry, null);
     }
 
-    public XMLImporterServiceImpl(DocumentModel rootDoc,
-            ParserConfigRegistry registry, Map<String, Object> mvelContext) {
+    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry, Map<String, Object> mvelContext) {
         if (mvelContext != null) {
             mvelCtx.putAll(mvelContext);
         }
@@ -184,8 +180,7 @@ public class XMLImporterServiceImpl {
             workingDirectory = file.getParentFile();
         } catch (Exception e) {
             File tmp = new File(System.getProperty("java.io.tmpdir"));
-            directory = new File(tmp, file.getName()
-                    + System.currentTimeMillis());
+            directory = new File(tmp, file.getName() + System.currentTimeMillis());
             directory.mkdir();
             ZipUtils.unzip(file, directory);
             for (File child : directory.listFiles()) {
@@ -193,8 +188,7 @@ public class XMLImporterServiceImpl {
                     return parse(child);
                 }
             }
-            throw new ClientException(
-                    "Can not find XML file inside the zip archive", e);
+            throw new ClientException("Can not find XML file inside the zip archive", e);
         } finally {
             FileUtils.deleteQuietly(directory);
         }
@@ -213,16 +207,14 @@ public class XMLImporterServiceImpl {
     protected Object resolveComplex(Element el, AttributeConfigDescriptor conf) {
         Map<String, Object> propValue = new HashMap<>();
         for (String name : conf.getMapping().keySet()) {
-            propValue.put(name,
-                    resolveAndEvaluateXmlNode(el, conf.getMapping().get(name)));
+            propValue.put(name, resolveAndEvaluateXmlNode(el, conf.getMapping().get(name)));
         }
         return propValue;
     }
 
     protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> propValues = (Map<String, Object>) resolveComplex(
-                el, conf);
+        Map<String, Object> propValues = (Map<String, Object>) resolveComplex(el, conf);
 
         if (propValues.containsKey("content")) {
             Blob blob = null;
@@ -247,22 +239,19 @@ public class XMLImporterServiceImpl {
         return null;
     }
 
-    protected void processDocAttributes(DocumentModel doc, Element el,
-            AttributeConfigDescriptor conf) {
+    protected void processDocAttributes(DocumentModel doc, Element el, AttributeConfigDescriptor conf) {
         String targetDocProperty = conf.getTargetDocProperty();
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format(MSG_UPDATE_PROPERTY, targetDocProperty,
-                    el.getUniquePath(), doc.getPathAsString(), doc.getType(),
-                    conf.toString()));
+            log.debug(String.format(MSG_UPDATE_PROPERTY, targetDocProperty, el.getUniquePath(), doc.getPathAsString(),
+                    doc.getType(), conf.toString()));
         }
         Property property = doc.getProperty(targetDocProperty);
 
         if (property.isScalar()) {
             Object value = resolveAndEvaluateXmlNode(el, conf.getSingleXpath());
             if (log.isTraceEnabled()) {
-                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                        targetDocProperty, el.getUniquePath(), value,
+                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                         conf.toString()));
             }
             property.setValue(value);
@@ -272,16 +261,14 @@ public class XMLImporterServiceImpl {
             if (property instanceof BlobProperty) {
                 Object value = resolveBlob(el, conf);
                 if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                            targetDocProperty, el.getUniquePath(), value,
+                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                             conf.toString()));
                 }
                 property.setValue(value);
             } else {
                 Object value = resolveComplex(el, conf);
                 if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                            targetDocProperty, el.getUniquePath(), value,
+                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                             conf.toString()));
                 }
                 property.setValue(value);
@@ -294,8 +281,7 @@ public class XMLImporterServiceImpl {
             Serializable value;
 
             if (lType.getFieldType().isSimpleType()) {
-                value = (Serializable) resolveAndEvaluateXmlNode(el,
-                        conf.getSingleXpath());
+                value = (Serializable) resolveAndEvaluateXmlNode(el, conf.getSingleXpath());
                 if (value != null) {
                     Object values = property.getValue();
                     if (values instanceof List) {
@@ -303,13 +289,11 @@ public class XMLImporterServiceImpl {
                         property.setValue(values);
                     } else if (values instanceof Object[]) {
                         List<Object> valuesList = new ArrayList<>();
-                        Collections.addAll(valuesList,
-                                (Object[]) property.getValue());
+                        Collections.addAll(valuesList, (Object[]) property.getValue());
                         valuesList.add(value);
                         property.setValue(valuesList.toArray());
                     } else {
-                        log.error("Simple multi value property "
-                                + targetDocProperty
+                        log.error("Simple multi value property " + targetDocProperty
                                 + " is neither a List nor an Array");
                     }
                 }
@@ -321,8 +305,7 @@ public class XMLImporterServiceImpl {
             }
 
             if (log.isTraceEnabled()) {
-                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                        targetDocProperty, el.getUniquePath(), value,
+                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                         conf.toString()));
             }
         }
@@ -331,8 +314,7 @@ public class XMLImporterServiceImpl {
     protected Map<String, Object> getMVELContext(Element el) {
         mvelCtx.put("currentDocument", docsStack.peek());
         mvelCtx.put("currentElement", el);
-        mvelCtx.put("Fn", new MVELImporterFunction(session, docsStack, elToDoc,
-                el));
+        mvelCtx.put("Fn", new MVELImporterFunction(session, docsStack, elToDoc, el));
         return mvelCtx;
     }
 
@@ -457,8 +439,7 @@ public class XMLImporterServiceImpl {
         String name = null;
         if (nameOb == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(),
-                        el.getUniquePath()));
+                log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath()));
             }
             int idx = 1;
             for (int i = 0; i < docsStack.size(); i++) {
@@ -473,15 +454,13 @@ public class XMLImporterServiceImpl {
         doc.setPathInfo(path, name);
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format(MSG_CREATION, path, name,
-                    el.getUniquePath(), conf.toString()));
+            log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
         }
 
         try {
             doc = session.createDocument(doc);
         } catch (Exception e) {
-            throw new RuntimeException(String.format(MSG_CREATION, path, name,
-                    el.getUniquePath(), conf.toString()), e);
+            throw new RuntimeException(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()), e);
         }
         pushInStack(doc);
         elToDoc.put(el, doc);
@@ -505,8 +484,7 @@ public class XMLImporterServiceImpl {
             if (createConf != null) {
                 String chain = createConf.getAutomationChain();
                 if (chain != null && !"".equals(chain.trim())) {
-                    OperationContext ctx = new OperationContext(session,
-                            mvelCtx);
+                    OperationContext ctx = new OperationContext(session, mvelCtx);
                     ctx.setInput(doc);
                     try {
                         getAutomationService().run(ctx, chain);

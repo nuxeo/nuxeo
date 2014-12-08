@@ -29,11 +29,9 @@ import org.nuxeo.ecm.platform.importer.threading.DefaultMultiThreadingPolicy;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
 
 /**
- *
  * base class for importers
  *
  * @author Thierry Delprat
- *
  */
 public abstract class AbstractImporterExecutor {
 
@@ -76,7 +74,7 @@ public abstract class AbstractImporterExecutor {
 
     public String kill() {
         if (executorMainThread != null) {
-            if (lastRunner!=null) {
+            if (lastRunner != null) {
                 lastRunner.stopImportProcrocess();
             }
             executorMainThread.interrupt();
@@ -95,8 +93,7 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
-    protected String doRun(ImporterRunner runner, Boolean interactive)
-            throws Exception {
+    protected String doRun(ImporterRunner runner, Boolean interactive) throws Exception {
         if (isRunning()) {
             throw new Exception("Task is already running");
         }
@@ -136,35 +133,29 @@ public abstract class AbstractImporterExecutor {
     }
 
     /**
-     *
      * @since 5.9.4
-     *
      */
     public int getTransactionTimeout() {
         return transactionTimeout;
     }
 
     /**
-     *
      * @since 5.9.4
-     *
      */
     public void setTransactionTimeout(int transactionTimeout) {
         this.transactionTimeout = transactionTimeout;
     }
 
     /***
-     * since 5.5 this method is invoked when using the
-     * <code>DefaultImporterService</code> and passing the executor to the
-     * importDocuments method
+     * since 5.5 this method is invoked when using the <code>DefaultImporterService</code> and passing the executor to
+     * the importDocuments method
      *
      * @param runner
      * @param interactive
      * @return
      * @throws Exception
      */
-    public String run(ImporterRunner runner, Boolean interactive)
-            throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
         return doRun(runner, interactive);
     }
 }

@@ -20,9 +20,7 @@
 package org.nuxeo.ecm.platform.importer.random;
 
 /**
- *
  * @author Thierry Delprat
- *
  */
 public interface DictionaryHolder {
 

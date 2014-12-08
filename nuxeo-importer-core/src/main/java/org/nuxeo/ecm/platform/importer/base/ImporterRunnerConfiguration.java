@@ -42,8 +42,7 @@ public class ImporterRunnerConfiguration {
 
         private String jobName;
 
-        public Builder(SourceNode sourceNode, String importWritePath,
-                ImporterLogger log) {
+        public Builder(SourceNode sourceNode, String importWritePath, ImporterLogger log) {
             this.sourceNode = sourceNode;
             this.importWritePath = importWritePath;
             this.log = log;
@@ -78,8 +77,8 @@ public class ImporterRunnerConfiguration {
         }
 
         public ImporterRunnerConfiguration build() {
-            return new ImporterRunnerConfiguration(sourceNode, importWritePath,
-                    log, skipRootContainerCreation, batchSize, nbThreads, jobName);
+            return new ImporterRunnerConfiguration(sourceNode, importWritePath, log, skipRootContainerCreation,
+                    batchSize, nbThreads, jobName);
         }
 
     }
@@ -98,10 +97,8 @@ public class ImporterRunnerConfiguration {
 
     public final ImporterLogger log;
 
-    protected ImporterRunnerConfiguration(SourceNode sourceNode,
-            String importWritePath, ImporterLogger log,
-            boolean skipRootContainerCreation, int batchSize, int nbThreads,
-            String jobName) {
+    protected ImporterRunnerConfiguration(SourceNode sourceNode, String importWritePath, ImporterLogger log,
+            boolean skipRootContainerCreation, int batchSize, int nbThreads, String jobName) {
         this.sourceNode = sourceNode;
         this.importWritePath = importWritePath;
         this.log = log;

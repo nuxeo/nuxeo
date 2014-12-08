@@ -32,11 +32,9 @@ import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
 
 /**
- *
  * Random {@link SourceNode} to be used for load testing
  *
  * @author Thierry Delprat
- *
  */
 public class RandomTextSourceNode implements SourceNode {
 
@@ -76,8 +74,7 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected boolean onlyText = true;
 
-    public RandomTextSourceNode(boolean folderish, int level, int idx,
-            boolean onlyText) {
+    public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText) {
         this.folderish = folderish;
         hazard = new Random(System.currentTimeMillis());
         this.level = level;
@@ -89,13 +86,12 @@ public class RandomTextSourceNode implements SourceNode {
         return init(maxSize, null, true);
     }
 
-    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB,
-            boolean onlyText) throws Exception {
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) throws Exception {
         return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"));
     }
 
-    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB,
-            boolean onlyText, DictionaryHolder dictionaryHolder) throws Exception {
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText,
+            DictionaryHolder dictionaryHolder) throws Exception {
         gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;
@@ -103,8 +99,7 @@ public class RandomTextSourceNode implements SourceNode {
         size = new Long(0);
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
         minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
-        minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders,
-                (1.0 / maxDepth));
+        minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0 / maxDepth));
         return new RandomTextSourceNode(true, 0, 0, onlyText);
     }
 
@@ -115,7 +110,6 @@ public class RandomTextSourceNode implements SourceNode {
             return "text/partial";
         }
     }
-
 
     public BlobHolder getBlobHolder() {
         if (folderish) {
@@ -190,8 +184,7 @@ public class RandomTextSourceNode implements SourceNode {
         if (level < maxDepth) {
             int nbFolderish = getMaxFolderish();
             for (int i = 0; i < nbFolderish; i++) {
-                children.add(new RandomTextSourceNode(true, level + 1, i,
-                        onlyText));
+                children.add(new RandomTextSourceNode(true, level + 1, i, onlyText));
             }
             synchronized (nbFolders) {
                 nbFolders = nbFolders + nbFolderish;
@@ -212,8 +205,7 @@ public class RandomTextSourceNode implements SourceNode {
                 name = "file";
             }
             if (level == 0 && folderish) {
-                name = name + "-" + (System.currentTimeMillis() % 10000)
-                        + hazard.nextInt(100);
+                name = name + "-" + (System.currentTimeMillis() % 10000) + hazard.nextInt(100);
             } else {
                 name = name + "-" + level + "-" + idx;
             }
@@ -239,7 +231,7 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     @Override
-    public String getSourcePath(){
+    public String getSourcePath() {
         return null;
     }
 }

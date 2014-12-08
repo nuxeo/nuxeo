@@ -29,12 +29,10 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 
 /**
- *
- * Extended implementation of {@link BlobHolder} - stores properties extracted
- * from XML - stores documentType extracted from XML
+ * Extended implementation of {@link BlobHolder} - stores properties extracted from XML - stores documentType extracted
+ * from XML
  *
  * @author Thierry Delprat
- *
  */
 public class ScanFileBlobHolder extends SimpleBlobHolder {
 
@@ -42,8 +40,7 @@ public class ScanFileBlobHolder extends SimpleBlobHolder {
 
     protected String targetType = null;
 
-    public ScanFileBlobHolder(List<Blob> blobs,
-            Map<String, Serializable> properties, String targetType) {
+    public ScanFileBlobHolder(List<Blob> blobs, Map<String, Serializable> properties, String targetType) {
         super(blobs);
         this.properties = properties;
         this.targetType = targetType;

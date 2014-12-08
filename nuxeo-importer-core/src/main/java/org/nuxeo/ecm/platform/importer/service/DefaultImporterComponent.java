@@ -40,8 +40,7 @@ public class DefaultImporterComponent extends DefaultComponent {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (IMPORTER_CONFIGURATION_XP.equals(extensionPoint)) {
 
             ImporterConfigurationDescriptor descriptor = (ImporterConfigurationDescriptor) contribution;

@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 import java.util.List;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public interface ParserConfigRegistry {
 

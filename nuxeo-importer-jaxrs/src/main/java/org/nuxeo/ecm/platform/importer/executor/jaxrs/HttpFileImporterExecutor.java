@@ -23,26 +23,18 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
         return log;
     }
 
-
-
-
     @GET
     @Path("run")
     @Produces("text/plain; charset=UTF-8")
-    public String run(
-            @QueryParam("leafType") String leafType,
-            @QueryParam("folderishType") String folderishType,
-            @QueryParam("inputPath") String inputPath,
-            @QueryParam("targetPath") String targetPath,
+    public String run(@QueryParam("leafType") String leafType, @QueryParam("folderishType") String folderishType,
+            @QueryParam("inputPath") String inputPath, @QueryParam("targetPath") String targetPath,
             @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
-            @QueryParam("batchSize") Integer batchSize,
-            @QueryParam("nbThreads") Integer nbThreads,
-            @QueryParam("interactive") Boolean interactive,
-            @QueryParam("transactionTimeout") Integer transactionTimeout) throws Exception {
+            @QueryParam("batchSize") Integer batchSize, @QueryParam("nbThreads") Integer nbThreads,
+            @QueryParam("interactive") Boolean interactive, @QueryParam("transactionTimeout") Integer transactionTimeout)
+            throws Exception {
 
         if (inputPath == null || targetPath == null) {
-            return "Can not import, missing "
-                    + (inputPath == null ? "inputPath" : "targetPath");
+            return "Can not import, missing " + (inputPath == null ? "inputPath" : "targetPath");
         }
         if (skipRootContainerCreation == null) {
             skipRootContainerCreation = false;
@@ -64,22 +56,18 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
 
         if (leafType != null || folderishType != null) {
             log.info("Importing with the specified doc types");
-            return getImporterService().importDocuments(this, leafType,
-                    folderishType, targetPath, inputPath,
-                    skipRootContainerCreation, batchSize, nbThreads,
-                    interactive);
+            return getImporterService().importDocuments(this, leafType, folderishType, targetPath, inputPath,
+                    skipRootContainerCreation, batchSize, nbThreads, interactive);
         } else {
             log.info("Importing with the deafult doc types");
-            return getImporterService().importDocuments(this, targetPath,
-                    inputPath, skipRootContainerCreation, batchSize, nbThreads,
-                    interactive);
+            return getImporterService().importDocuments(this, targetPath, inputPath, skipRootContainerCreation,
+                    batchSize, nbThreads, interactive);
         }
 
     }
 
     @Override
-    public String run(ImporterRunner runner, Boolean interactive)
-            throws Exception {
+    public String run(ImporterRunner runner, Boolean interactive) throws Exception {
         return doRun(runner, interactive);
     }
 

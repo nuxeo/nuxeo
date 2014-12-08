@@ -24,11 +24,9 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- *
  * Random text generator to be used for load testing
  *
  * @author Thierry Delprat
- *
  */
 public class RandomTextGenerator {
 

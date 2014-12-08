@@ -25,30 +25,25 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * DocumentModel factory based on the {@code FileManager}. Use the {@code
- * FileManager} to create Folderish and Leaf Nodes.
+ * DocumentModel factory based on the {@code FileManager}. Use the {@code FileManager} to create Folderish and Leaf
+ * Nodes.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class FileManagerDocumentModelFactory extends
-        AbstractDocumentModelFactory {
+public class FileManagerDocumentModelFactory extends AbstractDocumentModelFactory {
 
     protected FileManager fileManager;
 
-    public DocumentModel createFolderishNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createFolderishNode(CoreSession session, DocumentModel parent, SourceNode node)
+            throws Exception {
         FileManager fileManager = getFileManager();
-        return fileManager.createFolder(session,
-                node.getName(),
-                parent.getPathAsString());
+        return fileManager.createFolder(session, node.getName(), parent.getPathAsString());
     }
 
-    public DocumentModel createLeafNode(CoreSession session,
-            DocumentModel parent, SourceNode node) throws Exception {
+    public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws Exception {
         FileManager fileManager = getFileManager();
         BlobHolder bh = node.getBlobHolder();
-        DocumentModel doc = fileManager.createDocumentFromBlob(session,
-                bh.getBlob(), parent.getPathAsString(), true,
+        DocumentModel doc = fileManager.createDocumentFromBlob(session, bh.getBlob(), parent.getPathAsString(), true,
                 node.getName());
         doc = setDocumentProperties(session, bh.getProperties(), doc);
         return doc;

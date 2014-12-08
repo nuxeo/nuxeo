@@ -83,8 +83,7 @@ public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
         checkTypeRecur(session.getChildren(new PathRef(targetPath)), "Note");
     }
 
-    protected void checkTypeRecur(DocumentModelList docs, String type)
-            throws ClientException {
+    protected void checkTypeRecur(DocumentModelList docs, String type) throws ClientException {
         for (DocumentModel doc : docs) {
             if (doc.isFolder()) {
                 checkTypeRecur(session.getChildren(doc.getRef()), type);

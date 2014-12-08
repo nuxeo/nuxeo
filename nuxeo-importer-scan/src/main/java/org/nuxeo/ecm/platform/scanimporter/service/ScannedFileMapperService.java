@@ -22,11 +22,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *
  * Service interface
  *
  * @author Thierry Delprat
- *
  */
 public interface ScannedFileMapperService {
 

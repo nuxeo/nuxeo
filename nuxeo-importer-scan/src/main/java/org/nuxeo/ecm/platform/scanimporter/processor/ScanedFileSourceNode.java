@@ -38,13 +38,9 @@ import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- * Custom implementation of {@link SourceNode}.
- *
- * Uses XML descriptors to get meta-data and binary files location.
+ * Custom implementation of {@link SourceNode}. Uses XML descriptors to get meta-data and binary files location.
  *
  * @author Thierry Delprat
- *
  */
 public class ScanedFileSourceNode extends FileSourceNode {
 
@@ -93,8 +89,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
                     if (bh != null) {
                         children.add(new ScanedFileSourceNode(child, bh));
                     } else {
-                        log.error(child.getAbsolutePath()
-                                + " can not be parsed ");
+                        log.error(child.getAbsolutePath() + " can not be parsed ");
                     }
                 } catch (Exception e) {
                     log.error("Error during properties parsing", e);
@@ -114,8 +109,7 @@ public class ScanedFileSourceNode extends FileSourceNode {
                     }
                 }
             } else if (!useXMLMapping) {
-                ScanFileBlobHolder bh = new ScanFileBlobHolder(new FileBlob(
-                        child), sfms.getTargetLeafType());
+                ScanFileBlobHolder bh = new ScanFileBlobHolder(new FileBlob(child), sfms.getTargetLeafType());
                 children.add(new ScanedFileSourceNode(child, bh));
             }
         }

@@ -34,51 +34,42 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base class for classes implementing {@code ImporterDocumentModelFactory}.
- * Contains common methods.
+ * Base class for classes implementing {@code ImporterDocumentModelFactory}. Contains common methods.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public abstract class AbstractDocumentModelFactory implements
-        ImporterDocumentModelFactory {
+public abstract class AbstractDocumentModelFactory implements ImporterDocumentModelFactory {
 
     private static final Log log = LogFactory.getLog(AbstractDocumentModelFactory.class);
 
     /**
-     * By default there is no process bound to a folderish node creation error,
-     * and the global import task will continue.
+     * By default there is no process bound to a folderish node creation error, and the global import task will
+     * continue.
      * <p>
-     * You should override this method if you want a specific process to be
-     * executed after such an error and/or if you want the global import task to
-     * stop immediately after the error occurs, in which case the method should
-     * return false.
+     * You should override this method if you want a specific process to be executed after such an error and/or if you
+     * want the global import task to stop immediately after the error occurs, in which case the method should return
+     * false.
      * </p>
      */
     @Override
-    public boolean processFolderishNodeCreationError(CoreSession session,
-            DocumentModel parent, SourceNode node) {
-        log.info(String.format(
-                "Nothing to process after error while trying to create the folderish node %s.",
+    public boolean processFolderishNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node) {
+        log.info(String.format("Nothing to process after error while trying to create the folderish node %s.",
                 node.getSourcePath()));
         log.info("Global import task will continue.");
         return true;
     }
 
     /**
-     * By default there is no process bound to a leaf node creation error, and
-     * the global import task will continue.
+     * By default there is no process bound to a leaf node creation error, and the global import task will continue.
      * <p>
-     * You should override this method if you want a specific process to be
-     * executed after such an error and/or if you want the global import task to
-     * stop immediately after the error occurs, in which case the method should
-     * return false.
+     * You should override this method if you want a specific process to be executed after such an error and/or if you
+     * want the global import task to stop immediately after the error occurs, in which case the method should return
+     * false.
      * </p>
      */
     @Override
-    public boolean processLeafNodeCreationError(CoreSession session,
-            DocumentModel parent, SourceNode node) {
-        log.info(String.format(
-                "Nothing to process after error while trying to create the leaf node %s.",
+    public boolean processLeafNodeCreationError(CoreSession session, DocumentModel parent, SourceNode node) {
+        log.info(String.format("Nothing to process after error while trying to create the leaf node %s.",
                 node.getSourcePath()));
         log.info("Global import task will continue.");
         return true;
@@ -86,9 +77,7 @@ public abstract class AbstractDocumentModelFactory implements
 
     /*
      * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory#
-     * isTargetDocumentModelFolderish
+     * @see org.nuxeo.ecm.platform.importer.base.ImporterDocumentModelFactory# isTargetDocumentModelFolderish
      * (org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
     public boolean isTargetDocumentModelFolderish(SourceNode node) {
@@ -102,8 +91,7 @@ public abstract class AbstractDocumentModelFactory implements
         String normalize(String name) throws ClientException;
     }
 
-    protected static class CompatFilenameNormalizer implements
-            FilenameNormalizer {
+    protected static class CompatFilenameNormalizer implements FilenameNormalizer {
 
         @Override
         public String normalize(String name) {
@@ -117,14 +105,12 @@ public abstract class AbstractDocumentModelFactory implements
 
     }
 
-    protected static class DefaultFilenameNormalizer implements
-            FilenameNormalizer {
+    protected static class DefaultFilenameNormalizer implements FilenameNormalizer {
 
         @Override
         public String normalize(String name) throws ClientException {
             DocumentModel fake = new DocumentModelImpl("/", name, "File");
-            return Framework.getLocalService(PathSegmentService.class).generatePathSegment(
-                    fake);
+            return Framework.getLocalService(PathSegmentService.class).generatePathSegment(fake);
         }
     }
 
@@ -134,27 +120,23 @@ public abstract class AbstractDocumentModelFactory implements
      * @throws ClientException
      * @throws PropertyException
      */
-    protected String getValidNameFromFileName(String fileName)
-            throws ClientException {
+    protected String getValidNameFromFileName(String fileName) throws ClientException {
         return filenameNormalizer.normalize(fileName);
     }
 
     /**
-     * Set all the properties to the given {@code doc}. The key is field xpath,
-     * the value is the value to set on the document.
-     *
+     * Set all the properties to the given {@code doc}. The key is field xpath, the value is the value to set on the
+     * document.
      */
-    protected DocumentModel setDocumentProperties(CoreSession session,
-            Map<String, Serializable> properties, DocumentModel doc)
-            throws ClientException {
+    protected DocumentModel setDocumentProperties(CoreSession session, Map<String, Serializable> properties,
+            DocumentModel doc) throws ClientException {
         if (properties != null) {
 
             for (Map.Entry<String, Serializable> entry : properties.entrySet()) {
                 try {
                     doc.setPropertyValue(entry.getKey(), entry.getValue());
                 } catch (PropertyNotFoundException e) {
-                    String message = String.format(
-                            "Property '%s' not found on document type: %s. Skipping it.",
+                    String message = String.format("Property '%s' not found on document type: %s. Skipping it.",
                             entry.getKey(), doc.getType());
                     log.debug(message);
                 }

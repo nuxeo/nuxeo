@@ -36,11 +36,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- *
  * Collects meta-data from a FileSystem and manage inheritence
  *
  * @author Thierry Delprat
- *
  */
 public class MetadataCollector {
 
@@ -62,8 +60,7 @@ public class MetadataCollector {
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public void addPropertiesFromStrings(String contextPath,
-            Map<String, String> properties) {
+    public void addPropertiesFromStrings(String contextPath, Map<String, String> properties) {
         Map<String, Serializable> collectedProperties = new HashMap<String, Serializable>();
         for (String name : properties.keySet()) {
             Serializable value = parseFromString(name, properties.get(name));
@@ -72,8 +69,7 @@ public class MetadataCollector {
         addProperties(contextPath, collectedProperties);
     }
 
-    public void addProperties(String contextPath,
-            Map<String, Serializable> collectedProperties) {
+    public void addProperties(String contextPath, Map<String, Serializable> collectedProperties) {
         try {
             lock.writeLock().lock();
             contextPath = FilenameUtils.normalizeNoEndSeparator(contextPath);
@@ -85,8 +81,7 @@ public class MetadataCollector {
                     if (parentProperties != null) {
                         for (String name : parentProperties.keySet()) {
                             if (!collectedProperties.containsKey(name)) {
-                                collectedProperties.put(name,
-                                        parentProperties.get(name));
+                                collectedProperties.put(name, parentProperties.get(name));
                             }
                         }
                     }
@@ -105,8 +100,7 @@ public class MetadataCollector {
 
         Serializable prop = value;
         if (useIntrospection) {
-            throw new UnsupportedOperationException(
-                    "Introspection mode not available");
+            throw new UnsupportedOperationException("Introspection mode not available");
         } else {
             if (value.contains(ARRAY_SEPARATOR)) {
                 prop = value.split(REGEXP_ARRAY_SEPARATOR);

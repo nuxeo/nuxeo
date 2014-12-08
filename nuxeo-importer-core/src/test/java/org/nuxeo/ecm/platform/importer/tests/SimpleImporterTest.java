@@ -49,22 +49,12 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
         openSession();
     }
 
-
     /*
      * @Test
-     * @Ignore
-     * public void testImport() throws Exception {
-     *
-     *     String inputPath = "/home/tiry/docs/tests/"; String targetPath =
-     *        "/default-domain/workspaces/";
-     *
-     *    DefaultImporterExecutor executor = new DefaultImporterExecutor(session);
-     *
-     *    executor.run(inputPath, targetPath, 5, 5, true);
-     *
-     *    long createdDocs = executor.getCreatedDocsCounter();
-     *    assertTrue(createdDocs > 0);
-     * }
+     * @Ignore public void testImport() throws Exception { String inputPath = "/home/tiry/docs/tests/"; String
+     * targetPath = "/default-domain/workspaces/"; DefaultImporterExecutor executor = new
+     * DefaultImporterExecutor(session); executor.run(inputPath, targetPath, 5, 5, true); long createdDocs =
+     * executor.getCreatedDocsCounter(); assertTrue(createdDocs > 0); }
      */
 
     @Override

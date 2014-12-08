@@ -71,14 +71,12 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
      * @since 6.0
      */
     protected void loadDic() throws IOException {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                dicName);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(dicName);
         if (url == null) {
             log.error("not found: " + dicName);
             return;
         }
-        try (InputStream in = url.openStream();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+        try (InputStream in = url.openStream(); BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 int idx = line.indexOf("/");

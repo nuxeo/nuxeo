@@ -42,8 +42,7 @@ public class TestRandomNodes {
 
         RandomTextSourceNode root = RandomTextSourceNode.init(target);
         browse(root);
-        log.info("browsing completed : " + (nbNodes + nbFolderish)
-                + " nodes visited");
+        log.info("browsing completed : " + (nbNodes + nbFolderish) + " nodes visited");
         log.info("   Folderish Nodes : " + (nbFolderish));
         log.info("        Data Nodes : " + (nbNodes));
         // deactivated because non-deterministic and sometimes fails
@@ -56,8 +55,8 @@ public class TestRandomNodes {
         if (children == null) {
             return;
         }
-        log.debug("browsing folder node number " + nbNodes + ": "
-                + node.getName() + " (" + children.size() + " children)");
+        log.debug("browsing folder node number " + nbNodes + ": " + node.getName() + " (" + children.size()
+                + " children)");
         for (SourceNode child : children) {
             if (child.isFolderish()) {
                 nbFolderish++;

@@ -48,7 +48,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.core.api" })
+@Deploy({ "org.nuxeo.ecm.core.api" })
 public class TestMetadataFile {
 
     @Inject
@@ -75,10 +75,8 @@ public class TestMetadataFile {
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
         Date date = formatDate((String) properties.get("dc:expired")).getTime();
-        DateFormat dateFormat = new SimpleDateFormat(
-                MetadataCollector.DATE_FORMAT);
-        assertEquals(dateFormat.format(calendar.getTime()),
-                dateFormat.format(date));
+        DateFormat dateFormat = new SimpleDateFormat(MetadataCollector.DATE_FORMAT);
+        assertEquals(dateFormat.format(calendar.getTime()), dateFormat.format(date));
         assertEquals("testIcon", properties.get("common:icon"));
         assertEquals("0", properties.get("uid:major_version"));
         assertEquals("0", properties.get("uid:minor_version"));
@@ -89,8 +87,7 @@ public class TestMetadataFile {
     public void generateOneSchemaMetadataFile() throws Exception {
         DocumentModel testFile = createTestFile();
 
-        MetadataFile mdFile = MetadataFile.createFromSchemas(testFile,
-                Arrays.asList(new String[] { "dublincore" }));
+        MetadataFile mdFile = MetadataFile.createFromSchemas(testFile, Arrays.asList(new String[] { "dublincore" }));
 
         File file = File.createTempFile("mdf", null);
         mdFile.writeTo(file);
@@ -105,19 +102,16 @@ public class TestMetadataFile {
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
         Date date = formatDate((String) properties.get("dc:expired")).getTime();
-        DateFormat dateFormat = new SimpleDateFormat(
-                MetadataCollector.DATE_FORMAT);
-        assertEquals(dateFormat.format(calendar.getTime()),
-                dateFormat.format(date));
+        DateFormat dateFormat = new SimpleDateFormat(MetadataCollector.DATE_FORMAT);
+        assertEquals(dateFormat.format(calendar.getTime()), dateFormat.format(date));
     }
 
     @Test
     public void generateOneSchemaWithPropertiesMetadataFile() throws Exception {
         DocumentModel testFile = createTestFile();
 
-        MetadataFile mdFile = MetadataFile.createFromSchemasAndProperties(
-                testFile, Arrays.asList(new String[] { "common" }),
-                Arrays.asList(new String[] { "dc:title" }));
+        MetadataFile mdFile = MetadataFile.createFromSchemasAndProperties(testFile,
+                Arrays.asList(new String[] { "common" }), Arrays.asList(new String[] { "dc:title" }));
 
         File file = File.createTempFile("mdf", null);
         mdFile.writeTo(file);
@@ -139,8 +133,7 @@ public class TestMetadataFile {
         DocumentModel testFile = createTestFile();
 
         MetadataFile mdFile = MetadataFile.createFromProperties(testFile,
-                Arrays.asList(new String[] { "dc:title", "common:icon",
-                        "dc:description", "common:size" }));
+                Arrays.asList(new String[] { "dc:title", "common:icon", "dc:description", "common:size" }));
 
         File file = File.createTempFile("mdf", null);
         mdFile.writeTo(file);
@@ -158,8 +151,7 @@ public class TestMetadataFile {
     }
 
     protected DocumentModel createTestFile() throws ClientException {
-        DocumentModel file = session.createDocumentModel("/", "testfile",
-                "File");
+        DocumentModel file = session.createDocumentModel("/", "testfile", "File");
         file.setPropertyValue("dc:title", "testTitle");
         file.setPropertyValue("dc:description", "testDescription");
         file.setPropertyValue("dc:coverage", "testCoverage");

@@ -101,8 +101,7 @@ public class TestMetadataCollector {
         assertEquals("value33", mc.getProperty("/node21/node31", "str3"));
         assertEquals("value22", mc.getProperty("/node21/node31", "str2"));
         assertNull(mc.getProperty("/node21/node31", "doesnotexist"));
-        List<String> list2 = (List<String>) mc.getProperty("/node21/node31",
-                "lst");
+        List<String> list2 = (List<String>) mc.getProperty("/node21/node31", "lst");
         assertNotNull(list2);
         assertEquals(3, list2.size());
 

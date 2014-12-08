@@ -23,12 +23,10 @@ import java.io.File;
 import org.dom4j.Document;
 
 /**
- *
- * This interface may be used to have a custom logic for type mapping. This
- * allows to determine target DocumentModel type based on the descriptor file.
+ * This interface may be used to have a custom logic for type mapping. This allows to determine target DocumentModel
+ * type based on the descriptor file.
  *
  * @author Thierry Delprat
- *
  */
 public interface DocumentTypeMapper {
 

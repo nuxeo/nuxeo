@@ -30,11 +30,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
 
 /**
- *
  * Top level descriptor for mapping
  *
  * @author Thierry Delprat
- *
  */
 @XObject("mapping")
 public class ScanFileMappingDescriptor implements Serializable {

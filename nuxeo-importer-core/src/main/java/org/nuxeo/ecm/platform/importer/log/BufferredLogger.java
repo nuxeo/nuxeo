@@ -25,9 +25,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.logging.Log;
 
 /**
- *
  * @author Thierry Delprat
- *
  */
 public class BufferredLogger extends BasicLogger {
 
@@ -115,8 +113,7 @@ public class BufferredLogger extends BasicLogger {
         super.debug(message, t);
         if (bufferActive) {
             logInStack("DEBUG", message);
-            logInStack("=>ERR", t.getClass().getSimpleName() + ":"
-                    + t.getMessage());
+            logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
         }
     }
 
@@ -133,8 +130,7 @@ public class BufferredLogger extends BasicLogger {
         super.error(message, t);
         if (bufferActive) {
             logInStack("ERROR", message);
-            logInStack("=>ERR", t.getClass().getSimpleName() + ":"
-                    + t.getMessage());
+            logInStack("=>ERR", t.getClass().getSimpleName() + ":" + t.getMessage());
         }
     }
 
