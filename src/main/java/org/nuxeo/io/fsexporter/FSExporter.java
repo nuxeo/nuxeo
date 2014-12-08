@@ -35,8 +35,7 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
     protected FSExporterPlugin exporter = new DefaultExporterPlugin();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         ExportLogicDescriptor exportLogicDesc = (ExportLogicDescriptor) contribution;
         if (exportLogicDesc.plugin != null) {
@@ -49,34 +48,31 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
     }
 
     @Override
-    public void export(CoreSession session, String rootPath, String fspath,
-            String PageProvider) throws ClientException, IOException, Exception {
+    public void export(CoreSession session, String rootPath, String fspath, String PageProvider)
+            throws ClientException, IOException, Exception {
         DocumentModel root = session.getDocument(new PathRef(rootPath));
         serializeStructure(session, fspath, root, PageProvider);
     }
 
-    private void serializeStructure(CoreSession session, String fsPath,
-            DocumentModel doc, String PageProvider) throws ClientException,
-            IOException, Exception {
+    private void serializeStructure(CoreSession session, String fsPath, DocumentModel doc, String PageProvider)
+            throws ClientException, IOException, Exception {
 
         exporter.serialize(session, doc, fsPath);
 
         if (doc.isFolder()) {
 
-            DocumentModelList children = exporter.getChildren(session, doc,
-                    PageProvider);
+            DocumentModelList children = exporter.getChildren(session, doc, PageProvider);
 
             // getChildrenIterator
             for (DocumentModel child : children) {
-                serializeStructure(session, fsPath + "/" + doc.getName(),
-                        child, PageProvider);
+                serializeStructure(session, fsPath + "/" + doc.getName(), child, PageProvider);
             }
         }
     }
 
     @Override
-    public void exportXML(CoreSession session, String rootName,
-            String fileSystemTarget) throws ClientException, Exception {
+    public void exportXML(CoreSession session, String rootName, String fileSystemTarget) throws ClientException,
+            Exception {
         // TODO Auto-generated method stub
         //
         throw new UnsupportedOperationException();

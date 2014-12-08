@@ -40,7 +40,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- *
  * @author annejubert
  */
 @RunWith(FeaturesRunner.class)
@@ -58,8 +57,7 @@ public class FSExporterTestAttachedFiles {
     public void shouldExportFile() throws Exception {
 
         // creation of folders
-        DocumentModel folder = session.createDocumentModel("/default-domain/",
-                "myfolder1", "Folder");
+        DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder1", "Folder");
         folder.setPropertyValue("dc:title", "Mon premier repertoire");
         session.createDocument(folder);
 
@@ -81,8 +79,7 @@ public class FSExporterTestAttachedFiles {
         listblobs.add(mapBlob2);
 
         // creation of myfile
-        DocumentModel file = session.createDocumentModel(
-                folder.getPathAsString(), "myfile", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "myfile", "File");
         file.setPropertyValue("dc:title", "Mon premier fichier");
 
         Blob blob = new StringBlob("some content");
@@ -98,16 +95,13 @@ public class FSExporterTestAttachedFiles {
         Framework.getLocalService(FSExporter.class);
         service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 
-        String targetPath = "/tmp" + folder.getPathAsString() + "/"
-                + blob.getFilename();
+        String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());
 
         // verify that the blobs exist
-        String targetPathBlob1 = "/tmp" + folder.getPathAsString() + "/"
-                + blob1.getFilename();
+        String targetPathBlob1 = "/tmp" + folder.getPathAsString() + "/" + blob1.getFilename();
         Assert.assertTrue(new File(targetPathBlob1).exists());
-        String targetPathBlob2 = "/tmp" + folder.getPathAsString() + "/"
-                + blob2.getFilename();
+        String targetPathBlob2 = "/tmp" + folder.getPathAsString() + "/" + blob2.getFilename();
         Assert.assertTrue(new File(targetPathBlob2).exists());
     }
 }

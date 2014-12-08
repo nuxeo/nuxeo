@@ -35,7 +35,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- *
  * @author annejubert
  */
 @RunWith(FeaturesRunner.class)
@@ -52,13 +51,11 @@ public class FSExporterTestCase {
     @Test
     public void shouldExportFile() throws Exception {
 
-        DocumentModel folder = session.createDocumentModel("/default-domain/",
-                "myfolder", "Folder");
+        DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder", "Folder");
         folder.setPropertyValue("dc:title", "Mon premier repertoire");
         session.createDocument(folder);
 
-        DocumentModel file = session.createDocumentModel(
-                folder.getPathAsString(), "myfile", "File");
+        DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "myfile", "File");
         file.setPropertyValue("dc:title", "Mon premier fichier");
 
         Blob blob = new StringBlob("some content");
@@ -73,8 +70,7 @@ public class FSExporterTestCase {
         service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 
         // Assure que cela s'est passe comme attendu
-        String targetPath = "/tmp" + folder.getPathAsString() + "/"
-                + blob.getFilename();
+        String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());
     }
 }

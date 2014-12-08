@@ -40,9 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
-    public DocumentModelList getChildren(CoreSession session,
-            DocumentModel doc, String myPageProvider) throws ClientException,
-            Exception {
+    public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String myPageProvider)
+            throws ClientException, Exception {
 
         PageProviderService ppService = null;
         try {
@@ -52,8 +51,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         }
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                (Serializable) session);
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
         PageProvider<DocumentModel> pp = null;
         String query = "";
@@ -72,14 +70,12 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
 
-        pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                "customPP", desc, null, null, null, props,
+        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, null, props,
                 new Object[] { doc.getId() });
 
         int countPages = 1;
         // get all the documents of the first page
-        DocumentModelList children = new DocumentModelListImpl(
-                pp.getCurrentPage());
+        DocumentModelList children = new DocumentModelListImpl(pp.getCurrentPage());
 
         // if there is more than one page, get the children of all the other
         // pages and put into one list
@@ -100,8 +96,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
     }
 
     @Override
-    public File serialize(CoreSession session, DocumentModel docfrom,
-            String fsPath) throws Exception {
+    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
         File folder = null;
         File newFolder = null;
         folder = new File(fsPath);
@@ -138,8 +133,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         return folder;
     }
 
-    protected String getFileName(Blob blob, DocumentModel docfrom, File folder,
-            int i) {
+    protected String getFileName(Blob blob, DocumentModel docfrom, File folder, int i) {
         String prefix = "";
         // if not principal file, prefix = name of the file which contains
         // the blobs

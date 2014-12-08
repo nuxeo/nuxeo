@@ -31,8 +31,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
 public class CustomExporterPlugin extends DefaultExporterPlugin {
 
     @Override
-    public File serialize(CoreSession session, DocumentModel docfrom,
-            String fsPath) throws Exception {
+    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
 
         // code to export XML
         BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
@@ -47,21 +46,18 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
                 FileXMLNameToExport = getFileName(blob, docfrom, folder, i);
                 i++;
             }
-            exportFileInXML(session, docfrom, fsPath + "/"
-                    + FileXMLNameToExport);
+            exportFileInXML(session, docfrom, fsPath + "/" + FileXMLNameToExport);
         }
         // export with default exporter all the documents
         super.serialize(session, docfrom, fsPath);
         return null;
     }
 
-    protected void exportFileInXML(CoreSession session, DocumentModel docfrom,
-            String pathtoexport) throws Exception {
+    protected void exportFileInXML(CoreSession session, DocumentModel docfrom, String pathtoexport) throws Exception {
         DocumentPipe pipe = new DocumentPipeImpl(10);
         SingleDocumentReader reader = new SingleDocumentReader(session, docfrom);
         pipe.setReader(reader);
-        XMLDocumentWriter writer = new XMLDocumentWriter(new File(pathtoexport
-                + ".xml"));
+        XMLDocumentWriter writer = new XMLDocumentWriter(new File(pathtoexport + ".xml"));
         pipe.setWriter(writer);
         pipe.run();
     }

@@ -53,8 +53,7 @@ public class ExportStructureToFS {
         try {
             if (session == null) {
                 isSessionNull = true;
-                Repository repository = Framework.getService(
-                        RepositoryManager.class).getDefaultRepository();
+                Repository repository = Framework.getService(RepositoryManager.class).getDefaultRepository();
                 session = repository.open();
 
             }

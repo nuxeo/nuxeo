@@ -36,7 +36,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- *
  * @author annejubert
  */
 @RunWith(FeaturesRunner.class)
@@ -54,53 +53,46 @@ public class FSExporterTestStructure {
     public void shouldExportFile() throws Exception {
 
         // creation of subfolders in sections, templates and workspaces
-        DocumentModel mySection = session.createDocumentModel(
-                "/default-domain/sections", "mySection", "Folder");
+        DocumentModel mySection = session.createDocumentModel("/default-domain/sections", "mySection", "Folder");
         mySection.setPropertyValue("dc:title", "My first section");
         session.createDocument(mySection);
 
-        DocumentModel myWorkspace = session.createDocumentModel(
-                "/default-domain/workspaces", "myWorkspace", "Folder");
+        DocumentModel myWorkspace = session.createDocumentModel("/default-domain/workspaces", "myWorkspace", "Folder");
         myWorkspace.setPropertyValue("dc:title", "my first workspace");
         session.createDocument(myWorkspace);
 
-        DocumentModel myTemplate = session.createDocumentModel(
-                "/default-domain/templates", "myTemplate", "Folder");
+        DocumentModel myTemplate = session.createDocumentModel("/default-domain/templates", "myTemplate", "Folder");
         myTemplate.setPropertyValue("dc:title", "my first template");
         session.createDocument(myTemplate);
 
         // creation of files in the new subfolders
-        DocumentModel fileInSection = session.createDocumentModel(
-                mySection.getPathAsString(), "fileInSection", "File");
+        DocumentModel fileInSection = session.createDocumentModel(mySection.getPathAsString(), "fileInSection", "File");
         fileInSection.setPropertyValue("dc:title", "my file in section");
 
         Blob blobSection = new StringBlob("some content");
         blobSection.setFilename("My File In Section.txt");
         blobSection.setMimeType("text/plain");
-        fileInSection.setPropertyValue("file:content",
-                (Serializable) blobSection);
+        fileInSection.setPropertyValue("file:content", (Serializable) blobSection);
         session.createDocument(fileInSection);
 
-        DocumentModel fileInWorkspace = session.createDocumentModel(
-                myWorkspace.getPathAsString(), "fileInWorkspace", "File");
+        DocumentModel fileInWorkspace = session.createDocumentModel(myWorkspace.getPathAsString(), "fileInWorkspace",
+                "File");
         fileInWorkspace.setPropertyValue("dc:title", "my file in workspace");
 
         Blob blobWorkspace = new StringBlob("some content");
         blobWorkspace.setFilename("My File In Workspace.txt");
         blobWorkspace.setMimeType("text/plain");
-        fileInWorkspace.setPropertyValue("file:content",
-                (Serializable) blobWorkspace);
+        fileInWorkspace.setPropertyValue("file:content", (Serializable) blobWorkspace);
         session.createDocument(fileInWorkspace);
 
-        DocumentModel fileInTemplate = session.createDocumentModel(
-                myTemplate.getPathAsString(), "fileInTemplate", "File");
+        DocumentModel fileInTemplate = session.createDocumentModel(myTemplate.getPathAsString(), "fileInTemplate",
+                "File");
         fileInTemplate.setPropertyValue("dc:title", "my file in template");
 
         Blob blobTemplate = new StringBlob("some content");
         blobTemplate.setFilename("My File In Template.txt");
         blobTemplate.setMimeType("text/plain");
-        fileInTemplate.setPropertyValue("file:content",
-                (Serializable) blobTemplate);
+        fileInTemplate.setPropertyValue("file:content", (Serializable) blobTemplate);
         session.createDocument(fileInTemplate);
 
         session.save();
@@ -109,18 +101,15 @@ public class FSExporterTestStructure {
         service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 
         // verify that My File In Section.txt exists
-        String targetPathSection = "/tmp" + mySection.getPathAsString() + "/"
-                + blobSection.getFilename();
+        String targetPathSection = "/tmp" + mySection.getPathAsString() + "/" + blobSection.getFilename();
         Assert.assertTrue(new File(targetPathSection).exists());
 
         // verify that My File In Workspace.txt exists
-        String targetPathWorkspace = "/tmp" + myWorkspace.getPathAsString()
-                + "/" + blobWorkspace.getFilename();
+        String targetPathWorkspace = "/tmp" + myWorkspace.getPathAsString() + "/" + blobWorkspace.getFilename();
         Assert.assertTrue(new File(targetPathWorkspace).exists());
 
         // verify that My File In Template.txt exists
-        String targetPathTemplate = "/tmp" + myTemplate.getPathAsString() + "/"
-                + blobTemplate.getFilename();
+        String targetPathTemplate = "/tmp" + myTemplate.getPathAsString() + "/" + blobTemplate.getFilename();
         Assert.assertTrue(new File(targetPathTemplate).exists());
 
     }
