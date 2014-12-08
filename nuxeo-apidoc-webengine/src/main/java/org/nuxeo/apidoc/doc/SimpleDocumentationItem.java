@@ -25,8 +25,7 @@ import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 
-public class SimpleDocumentationItem extends AbstractDocumentationItem
-        implements DocumentationItem {
+public class SimpleDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
 
     protected final List<String> applicableVersion = new ArrayList<String>();
 

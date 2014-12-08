@@ -47,17 +47,16 @@ public class RedirectFilter extends BaseApiDocFilter {
         return true;
     }
 
-    protected void redirectToWebEngineView(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse) throws IOException {
+    protected void redirectToWebEngineView(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException {
         String base = VirtualHostHelper.getBaseURL(httpRequest);
         String location = base + "site/distribution/";
         httpResponse.sendRedirect(location);
     }
 
     @Override
-    protected void internalDoFilter(ServletRequest request,
-            ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    protected void internalDoFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;

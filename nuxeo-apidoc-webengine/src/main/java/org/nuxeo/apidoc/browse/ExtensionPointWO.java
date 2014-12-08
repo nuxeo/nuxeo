@@ -38,8 +38,8 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionPointInfo getTargetExtensionPointInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()).getExtensionPoint(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getExtensionPoint(
+                nxArtifactId);
     }
 
     @Override

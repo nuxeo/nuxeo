@@ -44,8 +44,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
     }
 
     public ComponentInfo getTargetComponentInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()).getComponent(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getComponent(nxArtifactId);
     }
 
     @Override
@@ -66,8 +65,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
         List<ExtensionPointWO> result = new ArrayList<ExtensionPointWO>();
         ComponentInfo ci = getTargetComponentInfo();
         for (ExtensionPointInfo ei : ci.getExtensionPoints()) {
-            result.add((ExtensionPointWO) ctx.newObject("extensionPoint",
-                    ei.getId()));
+            result.add((ExtensionPointWO) ctx.newObject("extensionPoint", ei.getId()));
         }
         return result;
     }
@@ -76,8 +74,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
         List<ContributionWO> result = new ArrayList<ContributionWO>();
         ComponentInfo ci = getTargetComponentInfo();
         for (ExtensionInfo ei : ci.getExtensions()) {
-            result.add((ContributionWO) ctx.newObject("contribution",
-                    ei.getId()));
+            result.add((ContributionWO) ctx.newObject("contribution", ei.getId()));
         }
         return result;
     }

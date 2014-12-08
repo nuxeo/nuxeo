@@ -51,24 +51,21 @@ public interface SnapshotManager {
 
     List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) throws OperationException;
 
-    void exportSnapshot(CoreSession session, String key, OutputStream out)
-            throws Exception;
+    void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception;
 
     void importSnapshot(CoreSession session, InputStream is) throws Exception;
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session)
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException, OperationException;
+
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException,
+            OperationException;
+
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter)
             throws ClientException, OperationException;
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name)
-            throws ClientException, OperationException;
-
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
-            String name, SnapshotFilter filter) throws ClientException, OperationException;
-
-    void validateImportedSnapshot(CoreSession session, String name,
-            String version, String pathSegment, String title) throws Exception;
-
-    DocumentModel importTmpSnapshot(CoreSession session, InputStream is)
+    void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment, String title)
             throws Exception;
+
+    DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws Exception;
 
 }

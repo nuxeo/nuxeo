@@ -89,11 +89,9 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
         Map<String, ResourceDocumentationItem> liveDoc = new HashMap<String, ResourceDocumentationItem>();
         BundleInfoImpl bi = (BundleInfoImpl) runtimeSnapshot.getBundle("org.nuxeo.ecm.core.api");
 
-        ResourceDocumentationItem desc = new ResourceDocumentationItem(
-                "readMe.md", "<p>Hello this is core API</p>", bi,
-                DefaultDocumentationType.DESCRIPTION.toString());
-        ResourceDocumentationItem ht = new ResourceDocumentationItem(
-                "HowTo.md", "This is simple", bi,
+        ResourceDocumentationItem desc = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core API</p>",
+                bi, DefaultDocumentationType.DESCRIPTION.toString());
+        ResourceDocumentationItem ht = new ResourceDocumentationItem("HowTo.md", "This is simple", bi,
                 DefaultDocumentationType.HOW_TO.toString());
 
         liveDoc.put(DefaultDocumentationType.DESCRIPTION.toString(), desc);
@@ -102,11 +100,9 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
         bi.setLiveDoc(liveDoc);
 
         Map<String, ResourceDocumentationItem> liveDocP = new HashMap<String, ResourceDocumentationItem>();
-        ResourceDocumentationItem descP = new ResourceDocumentationItem(
-                "readMe.md", "<p>Hello this is core</p>", bi,
+        ResourceDocumentationItem descP = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core</p>", bi,
                 DefaultDocumentationType.DESCRIPTION.toString());
-        ResourceDocumentationItem htP = new ResourceDocumentationItem(
-                "HowTo.md", "This is simple !", bi,
+        ResourceDocumentationItem htP = new ResourceDocumentationItem("HowTo.md", "This is simple !", bi,
                 DefaultDocumentationType.HOW_TO.toString());
 
         liveDocP.put(DefaultDocumentationType.DESCRIPTION.toString(), descP);
@@ -116,8 +112,7 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
 
         ((BundleGroupImpl) bi.getBundleGroup()).addLiveDoc(bi.getParentLiveDoc());
 
-        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(
-                session);
+        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
         assertNotNull(persistent);
 
         session.save();
@@ -136,23 +131,18 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
         docs = session.query("select * from NXDocumentation");
         assertEquals(nbDocs, docs.size());
 
-        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(),
-                session);
+        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
 
-        AssociatedDocuments docItems = persistent.getBundle(
-                "org.nuxeo.ecm.core.api").getAssociatedDocuments(session);
+        AssociatedDocuments docItems = persistent.getBundle("org.nuxeo.ecm.core.api").getAssociatedDocuments(session);
         assertNotNull(docItems);
         assertEquals(2, docItems.getDocumentationItems(session).size());
-        assertEquals("<p>Hello this is core API</p>",
-                docItems.getDescription(session).getContent().trim());
+        assertEquals("<p>Hello this is core API</p>", docItems.getDescription(session).getContent().trim());
 
-        docItems = persistent.getBundleGroup("grp:org.nuxeo.ecm.core").getAssociatedDocuments(
-                session);
+        docItems = persistent.getBundleGroup("grp:org.nuxeo.ecm.core").getAssociatedDocuments(session);
         assertNotNull(docItems);
         assertEquals(2, docItems.getDocumentationItems(session).size());
-        assertEquals("<p>Hello this is core</p>",
-                docItems.getDescription(session).getContent().trim());
+        assertEquals("<p>Hello this is core</p>", docItems.getDescription(session).getContent().trim());
 
         session.save();
 

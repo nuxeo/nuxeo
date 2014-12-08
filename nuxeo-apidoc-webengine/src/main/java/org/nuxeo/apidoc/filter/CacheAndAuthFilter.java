@@ -47,9 +47,8 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
     }
 
     @Override
-    protected void internalDoFilter(ServletRequest request,
-            ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+    protected void internalDoFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -61,9 +60,7 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
             activateCaching = true;
         } else {
             // deactivate anonymous login
-            httpRequest.setAttribute(
-                    AnonymousAuthenticator.BLOCK_ANONYMOUS_LOGIN_KEY,
-                    Boolean.TRUE);
+            httpRequest.setAttribute(AnonymousAuthenticator.BLOCK_ANONYMOUS_LOGIN_KEY, Boolean.TRUE);
         }
 
         if (activateCaching) {
@@ -76,20 +73,16 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
 
     private static DateFormat httpExpiresDateFormat() {
         // formatted http Expires: Thu, 01 Dec 1994 16:00:00 GMT
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                Locale.US);
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         return df;
     }
 
-    public static void addCacheHeader(HttpServletResponse httpResponse,
-            boolean isPrivate, String cacheTime) {
+    public static void addCacheHeader(HttpServletResponse httpResponse, boolean isPrivate, String cacheTime) {
         if (isPrivate) {
-            httpResponse.addHeader("Cache-Control", "private, max-age="
-                    + cacheTime);
+            httpResponse.addHeader("Cache-Control", "private, max-age=" + cacheTime);
         } else {
-            httpResponse.addHeader("Cache-Control", "public, max-age="
-                    + cacheTime);
+            httpResponse.addHeader("Cache-Control", "public, max-age=" + cacheTime);
         }
 
         // Generating expires using current date and adding cache time.

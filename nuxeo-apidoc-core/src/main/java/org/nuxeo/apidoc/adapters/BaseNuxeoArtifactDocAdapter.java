@@ -55,8 +55,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
         return IdUtils.generateId(name, "-", true, 500);
     }
 
-    protected static String getRootPath(CoreSession session, String basePath,
-            String suffix) throws ClientException {
+    protected static String getRootPath(CoreSession session, String basePath, String suffix) throws ClientException {
         PathRef rootRef = new PathRef(basePath);
         if (session.exists(rootRef)) {
             Path path = new Path(basePath).append(suffix);
@@ -99,8 +98,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {
         try {
-            List<DocumentModel> parents = getCoreSession().getParentDocuments(
-                    doc.getRef());
+            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
             for (DocumentModel parent : parents) {
                 T result = parent.getAdapter(artifactClass);
                 if (result != null) {
@@ -140,8 +138,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     @Override
     public String getHierarchyPath() {
         try {
-            List<DocumentModel> parents = getCoreSession().getParentDocuments(
-                    doc.getRef());
+            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
             Collections.reverse(parents);
 
             String path = "";

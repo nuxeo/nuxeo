@@ -90,8 +90,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
         return new ArtifactLabel(component, label, null);
     }
 
-    public static ArtifactLabel createLabelFromExtensionPoint(
-            String extensionPoint) {
+    public static ArtifactLabel createLabelFromExtensionPoint(String extensionPoint) {
         String[] parts = extensionPoint.split("--");
         String component = parts[0];
         String ep = parts[1];

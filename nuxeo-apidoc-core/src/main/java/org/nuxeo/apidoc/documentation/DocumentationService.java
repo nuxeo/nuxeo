@@ -28,22 +28,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface DocumentationService {
 
-    DocumentationItem createDocumentationItem(CoreSession session,
-            NuxeoArtifact item, String title, String content, String type,
-            List<String> applicableVersions, boolean approved,
-            String renderingType) throws ClientException;
-
-    DocumentationItem updateDocumentationItem(CoreSession session,
-            DocumentationItem docItem) throws ClientException;
-
-    void deleteDocumentationItem(CoreSession session, String uuid)
+    DocumentationItem createDocumentationItem(CoreSession session, NuxeoArtifact item, String title, String content,
+            String type, List<String> applicableVersions, boolean approved, String renderingType)
             throws ClientException;
 
-    List<DocumentationItem> findDocumentItems(CoreSession session,
-            NuxeoArtifact nxItem) throws ClientException;
+    DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem) throws ClientException;
 
-    List<DocumentationItem> findDocumentationItemVariants(CoreSession session,
-            DocumentationItem item) throws ClientException;
+    void deleteDocumentationItem(CoreSession session, String uuid) throws ClientException;
+
+    List<DocumentationItem> findDocumentItems(CoreSession session, NuxeoArtifact nxItem) throws ClientException;
+
+    List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item)
+            throws ClientException;
 
     Map<String, String> getCategories() throws Exception;
 
@@ -55,11 +51,9 @@ public interface DocumentationService {
 
     String getDocumentationStats(CoreSession session);
 
-    Map<String, List<DocumentationItem>> listDocumentationItems(
-            CoreSession session, String category, String targetType)
+    Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType)
             throws Exception;
 
-    Map<String, DocumentationItem> getAvailableDescriptions(
-            CoreSession session, String targetType) throws Exception;
+    Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType) throws Exception;
 
 }

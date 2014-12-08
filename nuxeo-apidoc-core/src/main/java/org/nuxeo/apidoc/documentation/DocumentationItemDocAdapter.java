@@ -29,8 +29,7 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-public class DocumentationItemDocAdapter extends AbstractDocumentationItem
-        implements DocumentationItem {
+public class DocumentationItemDocAdapter extends AbstractDocumentationItem implements DocumentationItem {
 
     protected static final Log log = LogFactory.getLog(DocumentationItemDocAdapter.class);
 
@@ -69,8 +68,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem
             }
             return blob.getString();
         } catch (Exception e) {
-            log.error("Error while reading content with encoding " + encoding,
-                    e);
+            log.error("Error while reading content with encoding " + encoding, e);
             return "ERROR : " + e.getMessage();
         }
     }
@@ -160,12 +158,10 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem
             if (atts != null) {
                 for (Map<String, Serializable> att : atts) {
                     Blob attBlob = (Blob) att.get("file");
-                    if (attBlob.getEncoding() == null
-                            || attBlob.getEncoding().equals("")) {
+                    if (attBlob.getEncoding() == null || attBlob.getEncoding().equals("")) {
                         attBlob.setEncoding("utf-8");
                     }
-                    attachments.put((String) att.get("filename"),
-                            attBlob.getString());
+                    attachments.put((String) att.get("filename"), attBlob.getString());
                 }
             }
         } catch (Exception e) {

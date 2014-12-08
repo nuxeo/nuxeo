@@ -37,8 +37,7 @@ public class ServiceWO extends NuxeoArtifactWebObject {
     }
 
     public ServiceInfo getServiceInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()).getService(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getService(nxArtifactId);
     }
 
     @Override

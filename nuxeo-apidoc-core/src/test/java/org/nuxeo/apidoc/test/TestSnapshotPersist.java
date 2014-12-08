@@ -82,8 +82,7 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
             for (int i = 0; i <= info.getLevel(); i++) {
                 pad += " ";
             }
-            sb.append(pad + "- " + info.getGroup().getName() + "("
-                    + info.getGroup().getId() + ")");
+            sb.append(pad + "- " + info.getGroup().getName() + "(" + info.getGroup().getId() + ")");
             sb.append(" *** ");
             sb.append(info.getGroup().getHierarchyPath());
             sb.append("\n");
@@ -154,21 +153,18 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         log.info("Live Dump:");
         log.info(rtDump);
 
-        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(
-                session);
+        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
         assertNotNull(persistent);
 
         session.save();
 
-        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(),
-                session);
+        persistent = getSnapshotManager().getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
         session.save();
 
         /*
-         * DocumentModelList docs = session.query("select * from NXBundle"); for
-         * (DocumentModel doc : docs) { log.info("Bundle : " + doc.getTitle() +
-         * " --- " + doc.getPathAsString()); }
+         * DocumentModelList docs = session.query("select * from NXBundle"); for (DocumentModel doc : docs) {
+         * log.info("Bundle : " + doc.getTitle() + " --- " + doc.getPathAsString()); }
          */
 
         String pDump = dumpSnapshot(persistent);
@@ -176,13 +172,8 @@ public class TestSnapshotPersist extends SQLRepositoryTestCase {
         log.info(pDump);
 
         /*
-         *
-         * String[] rtDumpLines = rtDump.trim().split("\n"); String[] pDumpLines
-         * = pDump.trim().split("\n");
-         *
-         * assertEquals(rtDumpLines.length, pDumpLines.length);
-         *
-         * for (int i = 0; i < rtDumpLines.length; i++) {
+         * String[] rtDumpLines = rtDump.trim().split("\n"); String[] pDumpLines = pDump.trim().split("\n");
+         * assertEquals(rtDumpLines.length, pDumpLines.length); for (int i = 0; i < rtDumpLines.length; i++) {
          * assertEquals(rtDumpLines[i], pDumpLines[i]); }
          */
 

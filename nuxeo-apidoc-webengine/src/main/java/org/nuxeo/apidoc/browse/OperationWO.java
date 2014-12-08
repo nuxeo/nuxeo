@@ -39,8 +39,7 @@ public class OperationWO extends NuxeoArtifactWebObject {
     }
 
     public OperationInfo getTargetComponentInfo() throws OperationException {
-        return getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()).getOperation(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getOperation(nxArtifactId);
     }
 
     @Override

@@ -71,14 +71,12 @@ public class JavaDocHelper {
         return BASE_URL + base + "/" + docVersion;
     }
 
-    public static JavaDocHelper getHelper(String distribName,
-            String distribVersion) {
+    public static JavaDocHelper getHelper(String distribName, String distribVersion) {
 
         String base = DEFAULT_DIST;
         if (!distribVersion.startsWith("5.")) {
             // version < 5.5 : before merge of DAM/DAM/CAP/CMF ...
-            if (distribName.toUpperCase().contains("CM")
-                    || distribName.toUpperCase().contains("CASE")) {
+            if (distribName.toUpperCase().contains("CM") || distribName.toUpperCase().contains("CASE")) {
                 base = CM_BASE;
             } else if (distribName.toUpperCase().contains("DAM")) {
                 base = DAM_BASE;

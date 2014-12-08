@@ -64,8 +64,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @Override
     public Template getView(String viewId) {
-        return super.getView(viewId).arg(Distribution.DIST_ID,
-                getDistributionId()).arg("enableDocumentationView",
+        return super.getView(viewId).arg(Distribution.DIST_ID, getDistributionId()).arg("enableDocumentationView",
                 Boolean.TRUE);
     }
 
@@ -85,11 +84,9 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path("updateDocumentation")
-    public Object doUpdateDocumentation(DocumentationItem docItem)
-            throws Exception {
+    public Object doUpdateDocumentation(DocumentationItem docItem) throws Exception {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
-            throw new WebSecurityException(
-                    "You are not allowed to do this operation");
+            throw new WebSecurityException("You are not allowed to do this operation");
         }
 
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
@@ -129,29 +126,23 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path("createDocumentation")
-    public Object doCreateDocumentation(DocumentationItem docItem)
-            throws Exception {
+    public Object doCreateDocumentation(DocumentationItem docItem) throws Exception {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
-            throw new WebSecurityException(
-                    "You are not allowed to do this operation");
+            throw new WebSecurityException("You are not allowed to do this operation");
         }
 
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-        ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(),
-                docItem.getTitle(), docItem.getContent(), docItem.getType(),
-                docItem.getApplicableVersion(), docItem.isApproved(),
-                docItem.getRenderingType());
+        ds.createDocumentationItem(ctx.getCoreSession(), getNxArtifact(), docItem.getTitle(), docItem.getContent(),
+                docItem.getType(), docItem.getApplicableVersion(), docItem.isApproved(), docItem.getRenderingType());
         return redirect(getDocUrl());
     }
 
     @POST
     @Produces("text/html")
     @Path("deleteDocumentation")
-    public Object doDeleteDocumentation(@FormParam("uuid") String uuid)
-            throws Exception {
+    public Object doDeleteDocumentation(@FormParam("uuid") String uuid) throws Exception {
         if (!SecurityHelper.canEditDocumentation(getContext())) {
-            throw new WebSecurityException(
-                    "You are not allowed to do this operation");
+            throw new WebSecurityException("You are not allowed to do this operation");
         }
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         ds.deleteDocumentationItem(ctx.getCoreSession(), uuid);
@@ -163,8 +154,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDefault() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("default").arg("nxItem", nxItem).arg("docs", docs).arg(
-                "selectedTab", "defView");
+        return getView("default").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "defView");
     }
 
     @GET
@@ -173,8 +163,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDoc() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("../documentation").arg("nxItem", nxItem).arg("docs",
-                docs).arg("selectedTab", "docView");
+        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "docView");
     }
 
     @GET
@@ -183,26 +172,22 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewAggregated() throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg(
-                "selectedTab", "aggView");
+        return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "aggView");
     }
 
     @GET
     @Produces("text/html")
     @Path("createForm")
-    public Object doAddDoc(@QueryParam("inline") Boolean inline,
-            @QueryParam("type") String type) throws Exception {
+    public Object doAddDoc(@QueryParam("inline") Boolean inline, @QueryParam("type") String type) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
-        List<String> versions = getSnapshotManager().getAvailableVersions(
-                ctx.getCoreSession(), nxItem);
+        List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentationItem docItem = new SimpleDocumentationItem(nxItem);
         String targetView = "../docForm";
         if (inline != null && inline.equals(Boolean.TRUE)) {
             targetView = "../../docItemForm";
         }
-        return getView(targetView).arg("nxItem", nxItem).arg("mode", "create").arg(
-                "docItem", docItem).arg("versions", versions).arg(
-                "selectedTab", "docView").arg("preselectedType", type);
+        return getView(targetView).arg("nxItem", nxItem).arg("mode", "create").arg("docItem", docItem).arg("versions",
+                versions).arg("selectedTab", "docView").arg("preselectedType", type);
     }
 
     @GET
@@ -210,28 +195,23 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Path("editForm/{uuid}")
     public Object doEditDoc(@PathParam("uuid") String uuid) throws Exception {
         NuxeoArtifact nxItem = getNxArtifact();
-        List<String> versions = getSnapshotManager().getAvailableVersions(
-                ctx.getCoreSession(), nxItem);
-        DocumentModel existingDoc = ctx.getCoreSession().getDocument(
-                new IdRef(uuid));
+        List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
+        DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
         DocumentationItem docItem = existingDoc.getAdapter(DocumentationItem.class);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode", "edit").arg(
-                "docItem", docItem).arg("versions", versions).arg(
-                "selectedTab", "docView");
+        return getView("../docForm").arg("nxItem", nxItem).arg("mode", "edit").arg("docItem", docItem).arg("versions",
+                versions).arg("selectedTab", "docView");
     }
 
     @GET
     @Produces("text/plain")
     @Path("quickEdit/{editId}")
-    public Object quickEdit(@PathParam("editId") String editId)
-            throws Exception {
+    public Object quickEdit(@PathParam("editId") String editId) throws Exception {
 
         if (editId == null || editId.startsWith("placeholder_")) {
             return "";
         }
 
-        DocumentModel doc = getContext().getCoreSession().getDocument(
-                new IdRef(editId));
+        DocumentModel doc = getContext().getCoreSession().getDocument(new IdRef(editId));
         DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
         return item.getContent();
@@ -240,8 +220,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @POST
     @Produces("text/plain")
     @Path("quickEdit/{editId}")
-    public Object quickEditSave(@PathParam("editId") String editId)
-            throws Exception {
+    public Object quickEditSave(@PathParam("editId") String editId) throws Exception {
 
         String title = getContext().getForm().getString("title");
         String content = getContext().getForm().getString("content");
@@ -251,23 +230,19 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         }
 
         String renderingType = "wiki";
-        if (content.contains("<ul>") || content.contains("<p>")
-                || content.contains("<br/>")) {
+        if (content.contains("<ul>") || content.contains("<p>") || content.contains("<br/>")) {
             renderingType = "html";
         }
 
         List<String> applicableVersions = new ArrayList<String>();
-        applicableVersions.add(getSnapshotManager().getSnapshot(
-                getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX
-                                                                                   // !!!
+        applicableVersions.add(getSnapshotManager().getSnapshot(getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX
+                                                                                                                                   // !!!
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         if (editId == null || editId.startsWith("placeholder_")) {
-            ds.createDocumentationItem(getContext().getCoreSession(),
-                    getNxArtifact(), title, content, type, applicableVersions,
-                    false, renderingType);
+            ds.createDocumentationItem(getContext().getCoreSession(), getNxArtifact(), title, content, type,
+                    applicableVersions, false, renderingType);
         } else {
-            DocumentModel doc = getContext().getCoreSession().getDocument(
-                    new IdRef(editId));
+            DocumentModel doc = getContext().getCoreSession().getDocument(new IdRef(editId));
             doc.setPropertyValue("dc:title", title);
             doc.setPropertyValue("file:content", new StringBlob(content));
             DocumentationItem item = doc.getAdapter(DocumentationItem.class);

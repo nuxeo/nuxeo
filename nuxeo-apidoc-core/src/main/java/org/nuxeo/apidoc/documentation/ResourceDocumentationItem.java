@@ -13,8 +13,7 @@ import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 
 import com.cforcoding.jmd.MarkDownParserAndSanitizer;
 
-public class ResourceDocumentationItem extends AbstractDocumentationItem
-        implements DocumentationItem {
+public class ResourceDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
 
     protected String content;
 
@@ -24,16 +23,14 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem
 
     protected String type;
 
-    public ResourceDocumentationItem(String filename, String content,
-            BundleInfoImpl target, String type) {
+    public ResourceDocumentationItem(String filename, String content, BundleInfoImpl target, String type) {
         this.content = content;
         this.filename = filename;
         this.target = target;
         this.type = type;
     }
 
-    public ResourceDocumentationItem(ResourceDocumentationItem other,
-            BundleGroupImpl target) {
+    public ResourceDocumentationItem(ResourceDocumentationItem other, BundleGroupImpl target) {
         this.content = other.content;
         this.filename = other.filename;
         this.target = target;

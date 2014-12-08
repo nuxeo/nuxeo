@@ -52,8 +52,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
     }
 
     @Override
-    public Map<String, List<DocumentationItem>> getDocumentationItems(
-            CoreSession session) throws Exception {
+    public Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         Map<String, String> categories = getCategories();
@@ -79,8 +78,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
                     result.get(catLabel).add(liveDoc.get(vCat));
                     empty.remove(catLabel);
                 } else {
-                    log.warn("Live doc for category " + catLabel
-                            + " won't be visible");
+                    log.warn("Live doc for category " + catLabel + " won't be visible");
                 }
             }
         }
@@ -104,8 +102,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
     }
 
     @Override
-    public DocumentationItem getDescription(CoreSession session)
-            throws Exception {
+    public DocumentationItem getDescription(CoreSession session) throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         for (DocumentationItem docItem : docItems) {
@@ -141,8 +138,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             public String getTitle() {
                 if (item.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)) {
                     return ((ExtensionPointInfo) item).getName();
-                } else if (item.getArtifactType().equals(
-                        ExtensionInfo.TYPE_NAME)) {
+                } else if (item.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
                     return ((ExtensionInfo) item).getExtensionPoint();
                 } else if (item.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
                     String id = item.getId();
@@ -177,8 +173,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
             @Override
             public String getContent() {
-                String content = liveDoc.get(
-                        DefaultDocumentationType.DESCRIPTION.getValue()).getContent();
+                String content = liveDoc.get(DefaultDocumentationType.DESCRIPTION.getValue()).getContent();
                 if (content == null) {
                     content = "";
                 }

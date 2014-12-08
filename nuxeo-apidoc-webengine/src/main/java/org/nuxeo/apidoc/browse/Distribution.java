@@ -67,8 +67,7 @@ public class Distribution extends ModuleRoot {
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(
-                    getTemplate("error/error_404.ftl")).type("text/html").build();
+            return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
         } else {
             return super.handleError(e);
         }
@@ -128,8 +127,7 @@ public class Distribution extends ModuleRoot {
 
     @Path("latest")
     public Resource getLatest() {
-        List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots(
-                (ctx.getCoreSession()));
+        List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
 
         List<String> keys = new ArrayList<String>();
         for (DistributionSnapshot snap : snaps) {
@@ -148,8 +146,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @Path("{distributionId}")
-    public Resource viewDistribution(
-            @PathParam("distributionId") String distributionId) {
+    public Resource viewDistribution(@PathParam("distributionId") String distributionId) {
         try {
             if (distributionId == null || "".equals(distributionId)) {
                 return this;
@@ -159,26 +156,20 @@ public class Distribution extends ModuleRoot {
             if ("adm".equals(distributionId)) {
                 embeddedMode = Boolean.TRUE;
             } else {
-                List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots(
-                        (ctx.getCoreSession()));
+                List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
                 snaps.add(getSnapshotManager().getRuntimeSnapshot());
-                distributionId = SnapshotResolverHelper.findBestMatch(snaps,
-                        distributionId);
+                distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
             }
             if (distributionId == null || "".equals(distributionId)) {
                 distributionId = "current";
             }
 
             if (!orgDistributionId.equals(distributionId)) {
-                return ctx.newObject("redirectWO", orgDistributionId,
-                        distributionId);
+                return ctx.newObject("redirectWO", orgDistributionId, distributionId);
             }
 
             ctx.setProperty("embeddedMode", embeddedMode);
-            ctx.setProperty(
-                    "distribution",
-                    getSnapshotManager().getSnapshot(distributionId,
-                            ctx.getCoreSession()));
+            ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()));
             ctx.setProperty(DIST_ID, distributionId);
             return ctx.newObject("apibrowser", distributionId, embeddedMode);
         } catch (Exception e) {
@@ -187,8 +178,7 @@ public class Distribution extends ModuleRoot {
     }
 
     public List<DistributionSnapshotDesc> getAvailableDistributions() {
-        return getSnapshotManager().getAvailableDistributions(
-                ctx.getCoreSession());
+        return getSnapshotManager().getAvailableDistributions(ctx.getCoreSession());
     }
 
     public String getRuntimeDistributionName() {
@@ -200,8 +190,7 @@ public class Distribution extends ModuleRoot {
     }
 
     public List<DistributionSnapshot> listPersistedDistributions() {
-        return getSnapshotManager().listPersistentSnapshots(
-                ctx.getCoreSession());
+        return getSnapshotManager().listPersistentSnapshots(ctx.getCoreSession());
     }
 
     public Map<String, DistributionSnapshot> getPersistedDistributions() {
@@ -211,10 +200,8 @@ public class Distribution extends ModuleRoot {
     public DistributionSnapshot getCurrentDistribution() {
         String distId = (String) ctx.getProperty(DIST_ID);
         DistributionSnapshot currentDistribution = (DistributionSnapshot) ctx.getProperty("currentDistribution");
-        if (currentDistribution == null
-                || !currentDistribution.getKey().equals(distId)) {
-            currentDistribution = getSnapshotManager().getSnapshot(distId,
-                    ctx.getCoreSession());
+        if (currentDistribution == null || !currentDistribution.getKey().equals(distId)) {
+            currentDistribution = getSnapshotManager().getSnapshot(distId, ctx.getCoreSession());
             ctx.setProperty("currentDistribution", currentDistribution);
         }
         return currentDistribution;
@@ -233,14 +220,12 @@ public class Distribution extends ModuleRoot {
         log.info("Start Snapshot...");
         boolean startedTx = false;
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx != null
-                && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+        if (tx != null && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             tx.begin();
             startedTx = true;
         }
         try {
-            getSnapshotManager().persistRuntimeSnapshot(
-                    getContext().getCoreSession(), distribLabel);
+            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel);
         } catch (Exception e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -290,14 +275,12 @@ public class Distribution extends ModuleRoot {
         log.info("Start Snapshot...");
         boolean startedTx = false;
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx != null
-                && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+        if (tx != null && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             tx.begin();
             startedTx = true;
         }
         try {
-            getSnapshotManager().persistRuntimeSnapshot(
-                    getContext().getCoreSession(), distribLabel, filter);
+            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel, filter);
         } catch (Exception e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -339,26 +322,22 @@ public class Distribution extends ModuleRoot {
         out.flush();
         out.close();
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
-        return Response.ok(aFile).header("Content-Disposition",
-                "attachment;filename=" + "nuxeo-documentation.zip").type(
+        return Response.ok(aFile).header("Content-Disposition", "attachment;filename=" + "nuxeo-documentation.zip").type(
                 "application/zip").build();
     }
 
     @GET
     @Path("download/{distributionId}")
-    public Response downloadDistrib(
-            @PathParam("distributionId") String distribId) throws Exception {
+    public Response downloadDistrib(@PathParam("distributionId") String distribId) throws Exception {
         File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
-        getSnapshotManager().exportSnapshot(getContext().getCoreSession(),
-                distribId, out);
+        getSnapshotManager().exportSnapshot(getContext().getCoreSession(), distribId, out);
         out.close();
         String fName = "nuxeo-distribution-" + distribId + ".zip";
         fName = fName.replace(" ", "_");
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
-        return Response.ok(aFile).header("Content-Disposition",
-                "attachment;filename=" + fName).type("application/zip").build();
+        return Response.ok(aFile).header("Content-Disposition", "attachment;filename=" + fName).type("application/zip").build();
     }
 
     @POST
@@ -370,10 +349,8 @@ public class Distribution extends ModuleRoot {
         }
         Blob blob = getContext().getForm().getFirstBlob();
 
-        getSnapshotManager().importSnapshot(getContext().getCoreSession(),
-                blob.getStream());
-        getSnapshotManager().readPersistentSnapshots(
-                getContext().getCoreSession());
+        getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
+        getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
 
         return getView("index");
     }
@@ -389,15 +366,13 @@ public class Distribution extends ModuleRoot {
         if (blob == null || blob.getLength() == 0) {
             return null;
         }
-        DocumentModel snap = getSnapshotManager().importTmpSnapshot(
-                getContext().getCoreSession(), blob.getStream());
+        DocumentModel snap = getSnapshotManager().importTmpSnapshot(getContext().getCoreSession(), blob.getStream());
         if (snap == null) {
             log.error("Unable to import archive");
             return null;
         }
         DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
-        return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject",
-                snapObject);
+        return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject", snapObject);
     }
 
     @POST
@@ -414,11 +389,8 @@ public class Distribution extends ModuleRoot {
         String pathSegment = formData.getString("pathSegment");
         String title = formData.getString("title");
 
-        getSnapshotManager().validateImportedSnapshot(
-                getContext().getCoreSession(), name, version, pathSegment,
-                title);
-        getSnapshotManager().readPersistentSnapshots(
-                getContext().getCoreSession());
+        getSnapshotManager().validateImportedSnapshot(getContext().getCoreSession(), name, version, pathSegment, title);
+        getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
         return getView("importDone");
     }
 
@@ -444,8 +416,7 @@ public class Distribution extends ModuleRoot {
     }
 
     public boolean isEmbeddedMode() {
-        Boolean embed = (Boolean) getContext().getProperty("embeddedMode",
-                Boolean.FALSE);
+        Boolean embed = (Boolean) getContext().getProperty("embeddedMode", Boolean.FALSE);
         return embed == null ? false : embed.booleanValue();
     }
 

@@ -43,10 +43,8 @@ public class DocumentationWO extends DefaultObject {
     @Produces("text/html")
     public Object viewAll() throws Exception {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(
-                getContext().getCoreSession(), null, null);
-        return getView("index").arg("distId", ctx.getProperty("distId")).arg(
-                "docsByCat", docs);
+        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null, null);
+        return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
     }
 
     @GET
@@ -57,8 +55,7 @@ public class DocumentationWO extends DefaultObject {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
         ArtifactSearcher searcher = Framework.getLocalService(ArtifactSearcher.class);
-        List<DocumentationItem> items = searcher.searchDocumentation(
-                getContext().getCoreSession(),
+        List<DocumentationItem> items = searcher.searchDocumentation(getContext().getCoreSession(),
                 (String) ctx.getProperty("distId"), fulltext, null);
         Map<String, String> categories = ds.getCategories();
 
@@ -76,22 +73,19 @@ public class DocumentationWO extends DefaultObject {
                 docs.put(catLabel, itemList);
             }
         }
-        return getView("index").arg("distId", ctx.getProperty("distId")).arg(
-                "docsByCat", docs).arg("searchFilter", fulltext);
+        return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs).arg("searchFilter",
+                fulltext);
     }
 
     @GET
     @Produces("text/html")
     @Path("view/{docUUID}")
-    public Object viewDoc(@PathParam("docUUID") String docUUID)
-            throws Exception {
+    public Object viewDoc(@PathParam("docUUID") String docUUID) throws Exception {
         DocumentRef docRef = new IdRef(docUUID);
-        DocumentModel docModel = getContext().getCoreSession().getDocument(
-                docRef);
+        DocumentModel docModel = getContext().getCoreSession().getDocument(docRef);
         DocumentationItem doc = docModel.getAdapter(DocumentationItem.class);
 
-        return getView("viewSingleDoc").arg("distId", ctx.getProperty("distId")).arg(
-                "doc", doc);
+        return getView("viewSingleDoc").arg("distId", ctx.getProperty("distId")).arg("doc", doc);
     }
 
 }

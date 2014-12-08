@@ -69,36 +69,30 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
         } else if (obj.getArtifactType().equals(ComponentInfo.TYPE_NAME)) {
             ComponentInfo ci = ds.getComponent(obj.getId());
             if (!ci.getExtensionPoints().isEmpty()) {
-                result.add(new VirtualNode(ci,
-                        VirtualNodesConsts.ExtensionPoints_VNODE,
+                result.add(new VirtualNode(ci, VirtualNodesConsts.ExtensionPoints_VNODE,
                         VirtualNodesConsts.ExtensionPoints_VNODE_NAME));
             }
             if (!ci.getServices().isEmpty()) {
-                result.add(new VirtualNode(ci,
-                        VirtualNodesConsts.Services_VNODE,
+                result.add(new VirtualNode(ci, VirtualNodesConsts.Services_VNODE,
                         VirtualNodesConsts.Services_VNODE_NAME));
             }
             if (!ci.getExtensions().isEmpty()) {
-                result.add(new VirtualNode(ci,
-                        VirtualNodesConsts.Contributions_VNODE,
+                result.add(new VirtualNode(ci, VirtualNodesConsts.Contributions_VNODE,
                         VirtualNodesConsts.Contributions_VNODE_NAME));
             }
-        } else if (obj.getArtifactType().equals(
-                VirtualNodesConsts.ExtensionPoints_VNODE)) {
+        } else if (obj.getArtifactType().equals(VirtualNodesConsts.ExtensionPoints_VNODE)) {
             String cid = ((VirtualNode) obj).getComponentId();
             ComponentInfo ci = ds.getComponent(cid);
             for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
                 result.add(epi);
             }
-        } else if (obj.getArtifactType().equals(
-                VirtualNodesConsts.Contributions_VNODE)) {
+        } else if (obj.getArtifactType().equals(VirtualNodesConsts.Contributions_VNODE)) {
             String cid = ((VirtualNode) obj).getComponentId();
             ComponentInfo ci = ds.getComponent(cid);
             for (ExtensionInfo ei : ci.getExtensions()) {
                 result.add(ei);
             }
-        } else if (obj.getArtifactType().equals(
-                VirtualNodesConsts.Services_VNODE)) {
+        } else if (obj.getArtifactType().equals(VirtualNodesConsts.Services_VNODE)) {
             String cid = ((VirtualNode) obj).getComponentId();
             ComponentInfo ci = ds.getComponent(cid);
             for (ServiceInfo si : ci.getServices()) {
@@ -160,8 +154,8 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
         NuxeoArtifact obj = (NuxeoArtifact) ob;
 
         return !(obj.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)
-                || obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME)
-                || obj.getArtifactType().equals(ServiceInfo.TYPE_NAME));
+                || obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME) || obj.getArtifactType().equals(
+                ServiceInfo.TYPE_NAME));
     }
 
 }

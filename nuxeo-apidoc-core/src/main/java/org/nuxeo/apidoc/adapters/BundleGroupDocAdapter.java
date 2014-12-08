@@ -30,11 +30,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements BundleGroup {
+public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleGroup {
 
-    public static BundleGroupDocAdapter create(BundleGroup bundleGroup,
-            CoreSession session, String containerPath) throws ClientException {
+    public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath)
+            throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bg-" + bundleGroup.getId());

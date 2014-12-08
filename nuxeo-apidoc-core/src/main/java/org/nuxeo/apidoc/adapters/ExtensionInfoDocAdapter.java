@@ -36,11 +36,10 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.model.ComponentName;
 
-public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements ExtensionInfo {
+public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
 
-    public static ExtensionInfoDocAdapter create(ExtensionInfo xi,
-            CoreSession session, String containerPath) throws Exception {
+    public static ExtensionInfoDocAdapter create(ExtensionInfo xi, CoreSession session, String containerPath)
+            throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -57,8 +56,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue(PROP_CONTRIB_ID, xi.getId());
         doc.setPropertyValue(PROP_DOC, xi.getDocumentation());
         doc.setPropertyValue(PROP_EXTENSION_POINT, xi.getExtensionPoint());
-        doc.setPropertyValue(PROP_TARGET_COMPONENT_NAME,
-                xi.getTargetComponentName().getName());
+        doc.setPropertyValue(PROP_TARGET_COMPONENT_NAME, xi.getTargetComponentName().getName());
 
         Blob xmlBlob = new StringBlob(xi.getXml());
         xmlBlob.setFilename("contrib.xml"); // !!!!!
@@ -142,8 +140,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public String getHierarchyPath() {
         String path = super.getHierarchyPath() + "###";
         String toReplace = "/" + getId() + "###";
-        return path.replace(toReplace, "/"
-                + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
+        return path.replace(toReplace, "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
     }
 
     public List<ContributionItem> getContributionItems() {

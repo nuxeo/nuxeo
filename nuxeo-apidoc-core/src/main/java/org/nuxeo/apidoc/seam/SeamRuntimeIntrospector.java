@@ -44,8 +44,7 @@ public class SeamRuntimeIntrospector {
         return names;
     }
 
-    public static List<SeamComponentInfo> listNuxeoComponents(
-            HttpServletRequest request) {
+    public static List<SeamComponentInfo> listNuxeoComponents(HttpServletRequest request) {
 
         ServletLifecycle.beginRequest(request);
         ServletContexts.instance().setRequest(request);

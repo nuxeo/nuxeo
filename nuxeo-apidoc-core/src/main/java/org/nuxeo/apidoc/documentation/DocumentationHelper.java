@@ -50,13 +50,11 @@ public class DocumentationHelper {
     }
 
     /**
-     * Transforms Nuxeo extension point {@code <documentation>} content into
-     * HTML.
+     * Transforms Nuxeo extension point {@code <documentation>} content into HTML.
      * <p>
      * <ul>
      * <li>standalone newlines are turned into {@code <br/>}</li>
-     * <li>{@code <code>} blocks are turned into a {@code <div class="code">}
-     * with a {@code <pre>}</li>
+     * <li>{@code <code>} blocks are turned into a {@code <div class="code">} with a {@code <pre>}</li>
      * <li>{@code @author} blocks are removed</li>
      * </ul>
      */
@@ -82,8 +80,7 @@ public class DocumentationHelper {
         for (String line : doc.split("\n")) {
             if (!code) {
                 line = line.trim();
-                if ("".equals(line) || BR.equals(line) || BR2.equals(line)
-                        || BR3.equals(line) || P.equals(line)
+                if ("".equals(line) || BR.equals(line) || BR2.equals(line) || BR3.equals(line) || P.equals(line)
                         || P2.equals(line)) {
                     if (!newline) {
                         lines.add(P);
@@ -142,15 +139,11 @@ public class DocumentationHelper {
         if (xml == null || !xml.contains("assword")) {
             return xml;
         }
-        xml = xml.replaceAll(
-                "<([a-zA-Z]*[pP])assword>[^<]*</([a-zA-Z]*)assword>",
-                "<$1assword>********</$2assword>");
+        xml = xml.replaceAll("<([a-zA-Z]*[pP])assword>[^<]*</([a-zA-Z]*)assword>", "<$1assword>********</$2assword>");
         // attributes: nuxeo-core-auth
-        xml = xml.replaceAll("([a-zA-Z]*[pP])assword=\"[^\"]*\"",
-                "$1assword=\"********\"");
+        xml = xml.replaceAll("([a-zA-Z]*[pP])assword=\"[^\"]*\"", "$1assword=\"********\"");
         // property: default-repository-config
-        xml = xml.replaceAll("([a-zA-Z]*[pP])assword\">[^<]*<",
-                "$1assword\">********<");
+        xml = xml.replaceAll("([a-zA-Z]*[pP])assword\">[^<]*<", "$1assword\">********<");
         return xml;
     }
 

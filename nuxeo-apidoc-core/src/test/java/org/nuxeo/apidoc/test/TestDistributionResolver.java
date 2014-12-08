@@ -22,9 +22,8 @@ import static org.junit.Assert.assertNotNull;
 
 public class TestDistributionResolver {
 
-    protected static final String[] alldistribs = { "cap-5.5", "cap-5.5-RC1",
-            "cap-5.5-SNAPSHOT", "cap-5.6-SNAPSHOT", "cap-5.6-RC1", "dm-5.5",
-            "Nuxeo DM-5.4.1", "Nuxeo Platform-5.6-RC1" };
+    protected static final String[] alldistribs = { "cap-5.5", "cap-5.5-RC1", "cap-5.5-SNAPSHOT", "cap-5.6-SNAPSHOT",
+            "cap-5.6-RC1", "dm-5.5", "Nuxeo DM-5.4.1", "Nuxeo Platform-5.6-RC1" };
 
     protected List<DistributionSnapshot> buildFakeSnaps() {
 
@@ -217,8 +216,7 @@ public class TestDistributionResolver {
         return snaps;
     }
 
-    protected String testResolution(List<DistributionSnapshot> snaps,
-            String target) {
+    protected String testResolution(List<DistributionSnapshot> snaps, String target) {
         String match = SnapshotResolverHelper.findBestMatch(snaps, target);
         assertNotNull(match);
         System.out.println(target + " => " + match);

@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 /**
  * Adapter from a Nuxeo document to the {@link OperationInfo} interface.
  */
-public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements OperationInfo {
+public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements OperationInfo {
 
     protected OperationInfoDocAdapter(DocumentModel doc) {
         super(doc);
@@ -60,8 +59,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String[] getAliases() {
         try {
-            return ((List<String>) doc.getPropertyValue(PROP_ALIASES))
-                    .toArray(new String[0]);
+            return ((List<String>) doc.getPropertyValue(PROP_ALIASES)).toArray(new String[0]);
         } catch (Exception e) {
             log.error("Unable to get signature field", e);
         }
@@ -134,8 +132,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
                 Long order = (Long) map.get(PROP_PARAM_ORDER);
                 p.order = order == null ? 0 : order.intValue();
                 Boolean required = (Boolean) map.get(PROP_PARAM_REQUIRED);
-                p.isRequired = required == null ? false
-                        : required.booleanValue();
+                p.isRequired = required == null ? false : required.booleanValue();
                 params.add(p);
             }
         }
@@ -152,8 +149,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     /**
      * Creates an actual document from the {@link OperationInfo}.
      */
-    public static OperationInfo create(OperationInfo oi, CoreSession session,
-            String containerPath) throws Exception {
+    public static OperationInfo create(OperationInfo oi, CoreSession session, String containerPath) throws Exception {
         String name = computeDocumentName(oi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exists = session.exists(new PathRef(targetPath));
@@ -196,8 +192,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
         return new OperationInfoDocAdapter(doc);
     }
-    
-    
+
     @Override
     public String getOperationClass() {
         return safeGet(PROP_OP_CLASS);

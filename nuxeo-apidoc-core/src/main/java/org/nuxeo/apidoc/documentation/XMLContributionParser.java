@@ -32,8 +32,7 @@ public class XMLContributionParser {
         return writter.toString();
     }
 
-    public static List<ContributionItem> extractContributionItems(String xml)
-            throws Exception {
+    public static List<ContributionItem> extractContributionItems(String xml) throws Exception {
 
         List<ContributionItem> items = new ArrayList<ContributionItem>();
 
@@ -85,8 +84,7 @@ public class XMLContributionParser {
         String data = node.asXML();
         data = data.substring(node.getName().length() + 2);
         if (data.length() > node.getName().length()) {
-            data = data.substring(0, data.length() - node.getName().length()
-                    - 3);
+            data = data.substring(0, data.length() - node.getName().length() - 3);
         }
         data = data.trim();
         return data;

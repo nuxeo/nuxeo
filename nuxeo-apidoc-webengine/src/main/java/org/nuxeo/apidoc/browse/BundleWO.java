@@ -45,8 +45,7 @@ public class BundleWO extends NuxeoArtifactWebObject {
     }
 
     public BundleInfo getTargetBundleInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()).getBundle(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundle(nxArtifactId);
     }
 
     @Override
@@ -73,8 +72,7 @@ public class BundleWO extends NuxeoArtifactWebObject {
         List<ComponentWO> result = new ArrayList<ComponentWO>();
         BundleInfo bundle = getTargetBundleInfo();
 
-        List<ComponentInfo> cis = new ArrayList<ComponentInfo>(
-                bundle.getComponents());
+        List<ComponentInfo> cis = new ArrayList<ComponentInfo>(bundle.getComponents());
         Collections.sort(cis, new ComponentInfoSorter());
 
         for (ComponentInfo ci : cis) {

@@ -30,8 +30,7 @@ public class QueryHelper {
     private QueryHelper() {
     }
 
-    public static final String NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " <> '"
-            + LifeCycleConstants.DELETED_STATE + "'";
+    public static final String NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " <> '" + LifeCycleConstants.DELETED_STATE + "'";
 
     /**
      * @deprecated since 5.7, 5.6.0-HF08 use {{@link NXQL#escapeString} instead
@@ -45,19 +44,15 @@ public class QueryHelper {
      * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString()
      */
     public static String select(String type, DocumentModel doc) {
-        return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH
-                + " STARTSWITH " + NXQL.escapeString(doc.getPathAsString())
-                + " AND " + NOT_DELETED;
+        return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH + " STARTSWITH "
+                + NXQL.escapeString(doc.getPathAsString()) + " AND " + NOT_DELETED;
     }
 
     /**
-     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop
-     * = value
+     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop = value
      */
-    public static String select(String type, DocumentModel doc, String prop,
-            String value) {
-        return select(type, doc) + " AND " + prop + " = "
-                + NXQL.escapeString(value);
+    public static String select(String type, DocumentModel doc, String prop, String value) {
+        return select(type, doc) + " AND " + prop + " = " + NXQL.escapeString(value);
     }
 
 }

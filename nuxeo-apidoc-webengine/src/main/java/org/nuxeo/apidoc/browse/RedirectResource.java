@@ -33,8 +33,7 @@ public class RedirectResource extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path("/{subPath:.*}")
-    public Object catchAll(@PathParam("subPath")
-    String subPath) {
+    public Object catchAll(@PathParam("subPath") String subPath) {
         return newLocation(targetDistributionId, subPath);
     }
 

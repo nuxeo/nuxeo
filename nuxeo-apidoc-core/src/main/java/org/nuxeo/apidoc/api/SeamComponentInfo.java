@@ -18,8 +18,7 @@ package org.nuxeo.apidoc.api;
 
 import java.util.List;
 
-public interface SeamComponentInfo extends NuxeoArtifact,
-        Comparable<SeamComponentInfo> {
+public interface SeamComponentInfo extends NuxeoArtifact, Comparable<SeamComponentInfo> {
 
     String TYPE_NAME = "NXSeamComponent";
 

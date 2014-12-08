@@ -73,8 +73,7 @@ public class VirtualNode implements NuxeoArtifact {
         } else if (VirtualNodesConsts.Contributions_VNODE.equals(type)) {
             return basePath + "/" + VirtualNodesConsts.Contributions_VNODE_NAME;
         } else if (VirtualNodesConsts.ExtensionPoints_VNODE.equals(type)) {
-            return basePath + "/"
-                    + VirtualNodesConsts.ExtensionPoints_VNODE_NAME;
+            return basePath + "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME;
         }
         return "";
     }

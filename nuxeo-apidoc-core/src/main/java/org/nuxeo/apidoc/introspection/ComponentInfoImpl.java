@@ -39,8 +39,7 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 
-public class ComponentInfoImpl extends BaseNuxeoArtifact implements
-        ComponentInfo {
+public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
 
     protected final BundleInfoImpl bundle;
 
@@ -182,8 +181,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements
             if (jar.getAbsolutePath().endsWith(".xml")) {
                 xml = FileUtils.read(new FileInputStream(jar));
             } else if (jar.isDirectory()) {
-                File file = new File(new Path(jar.getAbsolutePath()).append(
-                        parts[1]).toString());
+                File file = new File(new Path(jar.getAbsolutePath()).append(parts[1]).toString());
                 if (!file.exists()) {
                     return "Unable to locate file :" + file.getAbsolutePath();
                 }

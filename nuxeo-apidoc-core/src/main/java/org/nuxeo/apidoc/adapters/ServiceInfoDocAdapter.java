@@ -24,15 +24,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements ServiceInfo {
+public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ServiceInfo {
 
     public ServiceInfoDocAdapter(DocumentModel doc) {
         super(doc);
     }
 
-    public static ServiceInfoDocAdapter create(ServiceInfo si,
-            CoreSession session, String containerPath) throws Exception {
+    public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath)
+            throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -89,7 +88,6 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public String getHierarchyPath() {
         String path = super.getHierarchyPath() + "###";
         String toReplace = "/" + getId() + "###";
-        return path.replace(toReplace, "/"
-                + VirtualNodesConsts.Services_VNODE_NAME + "/" + getId());
+        return path.replace(toReplace, "/" + VirtualNodesConsts.Services_VNODE_NAME + "/" + getId());
     }
 }

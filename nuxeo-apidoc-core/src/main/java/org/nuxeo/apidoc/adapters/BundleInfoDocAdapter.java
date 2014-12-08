@@ -32,11 +32,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
-public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
-        BundleInfo {
+public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleInfo {
 
-    public static BundleInfoDocAdapter create(BundleInfo bundleInfo,
-            CoreSession session, String containerPath) throws ClientException {
+    public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath)
+            throws ClientException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bundle-" + bundleInfo.getId());
@@ -48,11 +47,9 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleInfo.getBundleId());
-        doc.setPropertyValue(PROP_ARTIFACT_GROUP_ID,
-                bundleInfo.getArtifactGroupId());
+        doc.setPropertyValue(PROP_ARTIFACT_GROUP_ID, bundleInfo.getArtifactGroupId());
         doc.setPropertyValue(PROP_ARTIFACT_ID, bundleInfo.getArtifactId());
-        doc.setPropertyValue(PROP_ARTIFACT_VERSION,
-                bundleInfo.getArtifactVersion());
+        doc.setPropertyValue(PROP_ARTIFACT_VERSION, bundleInfo.getArtifactVersion());
         doc.setPropertyValue(PROP_BUNDLE_ID, bundleInfo.getId());
         doc.setPropertyValue(PROP_JAR_NAME, bundleInfo.getFileName());
         Blob manifestBlob = new StringBlob(bundleInfo.getManifest());
@@ -88,8 +85,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         List<ComponentInfo> components = new ArrayList<ComponentInfo>();
 
         try {
-            List<DocumentModel> children = getCoreSession().getChildren(
-                    doc.getRef());
+            List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
 
             for (DocumentModel child : children) {
                 ComponentInfo comp = child.getAdapter(ComponentInfo.class);

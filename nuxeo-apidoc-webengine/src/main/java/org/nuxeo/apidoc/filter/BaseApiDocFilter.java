@@ -45,13 +45,12 @@ public abstract class BaseApiDocFilter implements Filter {
         return activated.booleanValue();
     }
 
-    protected abstract void internalDoFilter(ServletRequest request,
-            ServletResponse response, FilterChain chain) throws IOException,
-            ServletException;
+    protected abstract void internalDoFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
 
         if (!isFilterActivated()) {
             chain.doFilter(request, response);

@@ -55,12 +55,12 @@ public class SnapshotFilter {
     }
 
     public boolean includeBundleId(String bundleId) {
-     for (String bprefix : bundlePrefixes) {
-         if (bundleId.startsWith(bprefix)) {
-             return true;
-         }
-     }
-     return false;
+        for (String bprefix : bundlePrefixes) {
+            if (bundleId.startsWith(bprefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean includeSeamComponent(SeamComponentInfo seamComponent) {
@@ -84,4 +84,3 @@ public class SnapshotFilter {
         return false;
     }
 }
-

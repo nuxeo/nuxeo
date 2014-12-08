@@ -42,8 +42,7 @@ public class BundleIdReader {
     public synchronized void load(File file) {
         DataInputStream in = null;
         try {
-            in = new DataInputStream(new BufferedInputStream(
-                    new FileInputStream(file)));
+            in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
             count = in.readLong();
             int size = in.readInt();
             for (int i = 0; i < size; i++) {

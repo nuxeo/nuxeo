@@ -36,11 +36,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.DocumentationItem;
 
 @Provider
-public class DocumentationItemReader implements
-        MessageBodyReader<DocumentationItem> {
+public class DocumentationItemReader implements MessageBodyReader<DocumentationItem> {
 
-    public static final MediaType DocumentationItemMediaType = new MediaType(
-            "application", "x-www-form-urlencoded");
+    public static final MediaType DocumentationItemMediaType = new MediaType("application", "x-www-form-urlencoded");
 
     protected static final Log log = LogFactory.getLog(DocumentationItemReader.class);
 
@@ -48,15 +46,13 @@ public class DocumentationItemReader implements
     protected HttpServletRequest request;
 
     @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return DocumentationItemMediaType.equals(mediaType);
     }
 
     @Override
-    public DocumentationItem readFrom(Class<DocumentationItem> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    public DocumentationItem readFrom(Class<DocumentationItem> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
         SimpleDocumentationItem item = new SimpleDocumentationItem();

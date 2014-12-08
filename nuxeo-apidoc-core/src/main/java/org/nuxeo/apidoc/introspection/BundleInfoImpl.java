@@ -170,8 +170,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.liveDoc = liveDoc;
     }
 
-    public void setParentLiveDoc(
-            Map<String, ResourceDocumentationItem> parentLiveDoc) {
+    public void setParentLiveDoc(Map<String, ResourceDocumentationItem> parentLiveDoc) {
         this.parentLiveDoc = parentLiveDoc;
     }
 

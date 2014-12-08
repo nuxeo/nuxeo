@@ -52,8 +52,7 @@ public class TestBrowse extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.usermanager.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployContrib("org.nuxeo.apidoc.core",
-                "OSGI-INF/snapshot-service-framework.xml");
+        deployContrib("org.nuxeo.apidoc.core", "OSGI-INF/snapshot-service-framework.xml");
     }
 
     protected SnapshotManager getSnapshotManager() {
@@ -73,8 +72,7 @@ public class TestBrowse extends NXRuntimeTestCase {
             for (int i = 0; i <= info.getLevel(); i++) {
                 pad = pad + " ";
             }
-            log.info(pad + "- " + info.getGroup().getName() + "("
-                    + info.getGroup().getId() + ")");
+            log.info(pad + "- " + info.getGroup().getName() + "(" + info.getGroup().getId() + ")");
         }
 
         for (String bid : runtimeSnapshot.getBundleIds()) {

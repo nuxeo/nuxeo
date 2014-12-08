@@ -54,8 +54,7 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     @Override
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/"
-                + VirtualNodesConsts.Services_VNODE_NAME + "/" + this.getId();
+        return component.getHierarchyPath() + "/" + VirtualNodesConsts.Services_VNODE_NAME + "/" + this.getId();
     }
 
 }

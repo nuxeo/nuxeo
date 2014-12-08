@@ -21,8 +21,7 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
     public int compareTo(DocumentationItem o) {
 
         List<String> myVersions = new ArrayList<String>(getApplicableVersion());
-        List<String> otherVersions = new ArrayList<String>(
-                o.getApplicableVersion());
+        List<String> otherVersions = new ArrayList<String>(o.getApplicableVersion());
 
         Collections.sort(myVersions);
         Collections.sort(otherVersions);

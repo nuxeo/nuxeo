@@ -84,8 +84,8 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
         } else {
             if (obj instanceof VirtualNode) {
                 VirtualNode vn = (VirtualNode) obj;
-                url = ctx.getRoot().getURL() + "/" + distId + "/viewComponent/"
-                        + vn.getComponentId() + "#" + vn.getAnchor();
+                url = ctx.getRoot().getURL() + "/" + distId + "/viewComponent/" + vn.getComponentId() + "#"
+                        + vn.getAnchor();
             } else {
                 url = "todo";
             }
@@ -97,8 +97,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
     protected JSONObject item2JSON(TreeItem item, JSONArray children) {
         JSONObject json = new JSONObject();
         String[] classes = { "folder", "Folder" };
-        json.element("text", item.getLabel()).element("id",
-                item.getPath().toString()).element("href", getUrl(item)).element(
+        json.element("text", item.getLabel()).element("id", item.getPath().toString()).element("href", getUrl(item)).element(
                 "classes", classes).element("class", classes);
         json.element("expanded", item.isExpanded());
         if (item.isContainer()) {

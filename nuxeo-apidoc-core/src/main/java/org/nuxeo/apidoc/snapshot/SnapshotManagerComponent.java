@@ -56,8 +56,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class SnapshotManagerComponent extends DefaultComponent implements
-        SnapshotManager {
+public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
     protected DistributionSnapshot runtimeSnapshot;
 
@@ -95,21 +94,18 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<DistributionSnapshot> readPersistentSnapshots(
-            CoreSession session) {
+    public List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
         List<DistributionSnapshot> snaps = RepositoryDistributionSnapshot.readPersistentSnapshots(session);
         return snaps;
     }
 
-    public List<DistributionSnapshot> listPersistentSnapshots(
-            CoreSession session) {
+    public List<DistributionSnapshot> listPersistentSnapshots(CoreSession session) {
 
         List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
 
         Collections.sort(distribs, new Comparator<DistributionSnapshot>() {
             @Override
-            public int compare(DistributionSnapshot dist0,
-                    DistributionSnapshot dist1) {
+            public int compare(DistributionSnapshot dist0, DistributionSnapshot dist1) {
                 if (dist0.getVersion().equals(dist1.getVersion())) {
                     return dist0.getName().compareTo(dist1.getName());
                 } else {
@@ -122,8 +118,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public Map<String, DistributionSnapshot> getPersistentSnapshots(
-            CoreSession session) {
+    public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
 
         Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
 
@@ -142,8 +137,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public List<DistributionSnapshotDesc> getAvailableDistributions(
-            CoreSession session) {
+    public List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session) {
         List<DistributionSnapshotDesc> names = new ArrayList<DistributionSnapshotDesc>();
         names.addAll(getPersistentSnapshots(session).values());
         names.add(0, getRuntimeSnapshot());
@@ -151,30 +145,27 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session)
-            throws ClientException, OperationException {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session) throws ClientException, OperationException {
         return persistRuntimeSnapshot(session, null);
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
-            String name) throws ClientException, OperationException {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) throws ClientException,
+            OperationException {
         return persistRuntimeSnapshot(session, name, null);
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
-            String name, SnapshotFilter filter) throws ClientException, OperationException {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter)
+            throws ClientException, OperationException {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap = persister.persist(liveSnapshot, session,
-                name, filter);
+        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter);
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
 
     @Override
-    public List<String> getAvailableVersions(CoreSession session,
-            NuxeoArtifact nxItem) throws OperationException {
+    public List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) throws OperationException {
         List<String> versions = new ArrayList<String>();
 
         List<DistributionSnapshot> distribs = new ArrayList<DistributionSnapshot>();
@@ -229,8 +220,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void exportSnapshot(CoreSession session, String key, OutputStream out)
-            throws Exception {
+    public void exportSnapshot(CoreSession session, String key, OutputStream out) throws Exception {
 
         DistributionSnapshot snap = getSnapshot(key, session);
 
@@ -239,8 +229,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements
         }
 
         if (snap.isLive()) {
-            throw new Exception(
-                    "Can not export a live distribution snapshot : " + key);
+            throw new Exception("Can not export a live distribution snapshot : " + key);
         }
 
         RepositoryDistributionSnapshot docSnap = (RepositoryDistributionSnapshot) snap;
@@ -257,8 +246,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void importSnapshot(CoreSession session, InputStream is)
-            throws Exception {
+    public void importSnapshot(CoreSession session, InputStream is) throws Exception {
         try {
             String importPath = persister.getDistributionRoot(session).getPathAsString();
             DocumentReader reader = new NuxeoArchiveReader(is);
@@ -276,12 +264,11 @@ public class SnapshotManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void validateImportedSnapshot(CoreSession session, String name,
-            String version, String pathSegment, String title) throws Exception {
+    public void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment,
+            String title) throws Exception {
 
         DocumentModel container = persister.getDistributionRoot(session);
-        DocumentRef tmpRef = new PathRef(container.getPathAsString(),
-                IMPORT_TMP);
+        DocumentRef tmpRef = new PathRef(container.getPathAsString(), IMPORT_TMP);
 
         DocumentModel tmp = null;
 
@@ -296,21 +283,18 @@ public class SnapshotManagerComponent extends DefaultComponent implements
 
             DocumentModel targetContainer = session.getParentDocument(tmp.getRef());
 
-            session.move(snapDoc.getRef(), targetContainer.getRef(),
-                    pathSegment);
+            session.move(snapDoc.getRef(), targetContainer.getRef(), pathSegment);
             session.removeDocument(tmp.getRef());
         }
 
     }
 
     @Override
-    public DocumentModel importTmpSnapshot(CoreSession session, InputStream is)
-            throws Exception {
+    public DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws Exception {
         try {
 
             DocumentModel container = persister.getDistributionRoot(session);
-            DocumentRef tmpRef = new PathRef(container.getPathAsString(),
-                    IMPORT_TMP);
+            DocumentRef tmpRef = new PathRef(container.getPathAsString(), IMPORT_TMP);
 
             DocumentModel tmp = null;
 
@@ -318,16 +302,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements
                 tmp = session.getChild(container.getRef(), IMPORT_TMP);
                 session.removeChildren(tmp.getRef());
             } else {
-                tmp = session.createDocumentModel(container.getPathAsString(),
-                        IMPORT_TMP, "Workspace");
+                tmp = session.createDocumentModel(container.getPathAsString(), IMPORT_TMP, "Workspace");
                 tmp.setPropertyValue("dc:title", "tmpImport");
                 tmp = session.createDocument(tmp);
                 session.save();
             }
 
             DocumentReader reader = new NuxeoArchiveReader(is);
-            DocumentWriter writer = new DocumentModelWriter(session,
-                    tmp.getPathAsString());
+            DocumentWriter writer = new DocumentModelWriter(session, tmp.getPathAsString());
 
             DocumentPipe pipe = new DocumentPipeImpl(10);
             pipe.setReader(reader);

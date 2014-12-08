@@ -89,8 +89,7 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
 
     }
 
-    protected void doTestDocumentationOnArtifact(NuxeoArtifact artifact)
-            throws Exception {
+    protected void doTestDocumentationOnArtifact(NuxeoArtifact artifact) throws Exception {
 
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
 
@@ -98,17 +97,15 @@ public class TestDocumentationService extends SQLRepositoryTestCase {
         applicableVersions.add(artifact.getVersion());
 
         // create and verify
-        DocumentationItem item = ds.createDocumentationItem(session, artifact,
-                "testTitle", "testContent", "", applicableVersions, true, "");
+        DocumentationItem item = ds.createDocumentationItem(session, artifact, "testTitle", "testContent", "",
+                applicableVersions, true, "");
         assertNotNull(item);
-        List<DocumentationItem> variants = ds.findDocumentationItemVariants(
-                session, item);
+        List<DocumentationItem> variants = ds.findDocumentationItemVariants(session, item);
         assertEquals(1, variants.size());
         assertEquals("testTitle", variants.get(0).getTitle());
         assertEquals("testContent", variants.get(0).getContent());
 
-        List<DocumentationItem> foundItems = ds.findDocumentItems(session,
-                artifact);
+        List<DocumentationItem> foundItems = ds.findDocumentItems(session, artifact);
         assertEquals(1, foundItems.size());
         assertEquals("testTitle", foundItems.get(0).getTitle());
         assertEquals("testContent", foundItems.get(0).getContent());

@@ -22,8 +22,7 @@ import java.util.List;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 
-public class SeamComponentInfoImpl extends BaseNuxeoArtifact implements
-        SeamComponentInfo {
+public class SeamComponentInfoImpl extends BaseNuxeoArtifact implements SeamComponentInfo {
 
     protected String name;
 

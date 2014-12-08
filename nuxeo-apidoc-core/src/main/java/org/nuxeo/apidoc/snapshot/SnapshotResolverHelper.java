@@ -8,11 +8,9 @@ import java.util.Map;
 
 public class SnapshotResolverHelper {
 
-    protected static final String[] capaliases = { "cap", "Nuxeo Platform",
-            "Nuxeo cap", "Nuxeo DM", "dm" };
+    protected static final String[] capaliases = { "cap", "Nuxeo Platform", "Nuxeo cap", "Nuxeo DM", "dm" };
 
-    public static String findBestMatch(List<DistributionSnapshot> snaps,
-            String distributionId) {
+    public static String findBestMatch(List<DistributionSnapshot> snaps, String distributionId) {
 
         if (distributionId == null || "".equals(distributionId.trim())) {
             return null;

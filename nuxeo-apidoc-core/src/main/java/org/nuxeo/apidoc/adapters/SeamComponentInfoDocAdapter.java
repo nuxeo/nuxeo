@@ -26,8 +26,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements SeamComponentInfo {
+public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements SeamComponentInfo {
 
     protected SeamComponentInfoDocAdapter(DocumentModel doc) {
         super(doc);
@@ -91,8 +90,8 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         return getClassName().compareTo(o.getClassName());
     }
 
-    public static SeamComponentInfo create(SeamComponentInfo sci,
-            CoreSession session, String containerPath) throws Exception {
+    public static SeamComponentInfo create(SeamComponentInfo sci, CoreSession session, String containerPath)
+            throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -110,8 +109,7 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue(PROP_COMPONENT_NAME, sci.getName());
         doc.setPropertyValue(PROP_CLASS_NAME, sci.getClassName());
         doc.setPropertyValue(PROP_SCOPE, sci.getScope());
-        doc.setPropertyValue(PROP_INTERFACES,
-                (Serializable) sci.getInterfaceNames());
+        doc.setPropertyValue(PROP_INTERFACES, (Serializable) sci.getInterfaceNames());
 
         if (exist) {
             doc = session.saveDocument(doc);

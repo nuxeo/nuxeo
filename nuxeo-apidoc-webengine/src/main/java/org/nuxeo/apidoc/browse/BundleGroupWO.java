@@ -38,17 +38,14 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     @Path("introspection")
     public Object doGet() throws Exception {
         BundleGroup group = getTargetBundleGroup();
-        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(
-                getSnapshotManager().getSnapshot(getDistributionId(),
-                        ctx.getCoreSession()));
+        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(getSnapshotManager().getSnapshot(getDistributionId(),
+                ctx.getCoreSession()));
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupSubTree(nxArtifactId);
-        return getView("view").arg("group", group).arg("groupId", nxArtifactId).arg(
-                "tree", tree);
+        return getView("view").arg("group", group).arg("groupId", nxArtifactId).arg("tree", tree);
     }
 
     public BundleGroup getTargetBundleGroup() {
-        return getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()).getBundleGroup(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundleGroup(nxArtifactId);
     }
 
     @Override
@@ -58,12 +55,9 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
 
     /*
      * @GET
-     *
-     * @Produces("text/html") public Object doViewAggregated() throws Exception
-     * { NuxeoArtifact nxItem = getNxArtifact(); AssociatedDocuments docs =
-     * nxItem.getAssociatedDocuments(ctx.getCoreSession()); BundleGroup group =
-     * getTargetBundleGroup(); return getView("aggregated").arg("nxItem",
-     * nxItem).arg("docs",
+     * @Produces("text/html") public Object doViewAggregated() throws Exception { NuxeoArtifact nxItem =
+     * getNxArtifact(); AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession()); BundleGroup
+     * group = getTargetBundleGroup(); return getView("aggregated").arg("nxItem", nxItem).arg("docs",
      * docs).arg("selectedTab","aggView").arg("group",group); }
      */
 

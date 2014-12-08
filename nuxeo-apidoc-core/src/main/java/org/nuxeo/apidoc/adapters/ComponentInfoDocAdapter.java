@@ -38,15 +38,14 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
-public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements ComponentInfo {
+public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
 
     public ComponentInfoDocAdapter(DocumentModel doc) {
         super(doc);
     }
 
-    public static ComponentInfoDocAdapter create(ComponentInfo componentInfo,
-            CoreSession session, String containerPath) throws Exception {
+    public static ComponentInfoDocAdapter create(ComponentInfo componentInfo, CoreSession session, String containerPath)
+            throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -61,14 +60,10 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         doc.setPropertyValue("dc:title", componentInfo.getName());
         doc.setPropertyValue(PROP_COMPONENT_ID, componentInfo.getId());
         doc.setPropertyValue(PROP_COMPONENT_NAME, componentInfo.getName());
-        doc.setPropertyValue(PROP_COMPONENT_CLASS,
-                componentInfo.getComponentClass());
-        doc.setPropertyValue(PROP_BUILT_IN_DOC,
-                componentInfo.getDocumentation());
-        doc.setPropertyValue(PROP_IS_XML,
-                Boolean.valueOf(componentInfo.isXmlPureComponent()));
-        doc.setPropertyValue(PROP_SERVICES,
-                (Serializable) componentInfo.getServiceNames());
+        doc.setPropertyValue(PROP_COMPONENT_CLASS, componentInfo.getComponentClass());
+        doc.setPropertyValue(PROP_BUILT_IN_DOC, componentInfo.getDocumentation());
+        doc.setPropertyValue(PROP_IS_XML, Boolean.valueOf(componentInfo.isXmlPureComponent()));
+        doc.setPropertyValue(PROP_SERVICES, (Serializable) componentInfo.getServiceNames());
 
         Blob xmlBlob = new StringBlob(componentInfo.getXmlFileContent());
         xmlBlob.setFilename(componentInfo.getXmlFileName());
@@ -86,8 +81,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public BundleInfo getBundle() {
         try {
-            DocumentModel parent = getCoreSession().getDocument(
-                    doc.getParentRef());
+            DocumentModel parent = getCoreSession().getDocument(doc.getParentRef());
             return parent.getAdapter(BundleInfo.class);
         } catch (Exception e) {
             // TODO: handle exception
@@ -185,8 +179,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     @Override
     public String getXmlFileName() {
         Blob xml = safeGet(Blob.class, "file:content", null);
-        return xml == null ? "" : xml.getFilename() == null ? ""
-                : xml.getFilename();
+        return xml == null ? "" : xml.getFilename() == null ? "" : xml.getFilename();
     }
 
     @Override

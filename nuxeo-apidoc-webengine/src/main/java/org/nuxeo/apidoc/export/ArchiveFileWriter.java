@@ -36,10 +36,8 @@ import org.nuxeo.ecm.webengine.WebException;
 public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
 
     @Override
-    public void writeTo(ArchiveFile t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException {
+    public void writeTo(ArchiveFile t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         FileInputStream in = null;
         try {
             in = new FileInputStream(t);
@@ -58,15 +56,13 @@ public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
     }
 
     @Override
-    public long getSize(ArchiveFile arg0, Class<?> arg1, Type arg2,
-            Annotation[] arg3, MediaType arg4) {
+    public long getSize(ArchiveFile arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
         long n = arg0.length();
         return n <= 0 ? -1 : n;
     }
 
     @Override
-    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
-            MediaType arg3) {
+    public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2, MediaType arg3) {
         return ArchiveFile.class.isAssignableFrom(arg0);
     }
 

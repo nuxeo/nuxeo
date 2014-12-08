@@ -43,9 +43,8 @@ public class DateTimeFormat {
      * @return The created java.util.Date
      */
     public static Date parse(String value) {
-        SimpleDateFormat formatter = new SimpleDateFormat(
-                value.endsWith("Z") ? "yyyyMMdd'T'hhmmss'Z'"
-                        : "yyyyMMdd'T'hhmmssZ");
+        SimpleDateFormat formatter = new SimpleDateFormat(value.endsWith("Z") ? "yyyyMMdd'T'hhmmss'Z'"
+                : "yyyyMMdd'T'hhmmssZ");
         try {
             return formatter.parse(value);
         } catch (ParseException e) {
@@ -110,28 +109,16 @@ public class DateTimeFormat {
             int hoff = 0, moff = 0, doff = -1;
             if (m.group(9) != null) {
                 doff = m.group(9).equals("-") ? 1 : -1;
-                hoff = doff
-                        * (m.group(10) != null ? Integer.parseInt(m.group(10))
-                                : 0);
-                moff = doff
-                        * (m.group(11) != null ? Integer.parseInt(m.group(11))
-                                : 0);
+                hoff = doff * (m.group(10) != null ? Integer.parseInt(m.group(10)) : 0);
+                moff = doff * (m.group(11) != null ? Integer.parseInt(m.group(11)) : 0);
             }
             c.set(Calendar.YEAR, Integer.parseInt(m.group(1)));
-            c.set(Calendar.MONTH,
-                    m.group(2) != null ? Integer.parseInt(m.group(2)) - 1 : 0);
-            c.set(Calendar.DATE,
-                    m.group(3) != null ? Integer.parseInt(m.group(3)) : 1);
-            c.set(Calendar.HOUR_OF_DAY,
-                    m.group(4) != null ? Integer.parseInt(m.group(4)) + hoff
-                            : 0);
-            c.set(Calendar.MINUTE,
-                    m.group(5) != null ? Integer.parseInt(m.group(5)) + moff
-                            : 0);
-            c.set(Calendar.SECOND,
-                    m.group(6) != null ? Integer.parseInt(m.group(6)) : 0);
-            c.set(Calendar.MILLISECOND,
-                    m.group(7) != null ? Integer.parseInt(m.group(7)) : 0);
+            c.set(Calendar.MONTH, m.group(2) != null ? Integer.parseInt(m.group(2)) - 1 : 0);
+            c.set(Calendar.DATE, m.group(3) != null ? Integer.parseInt(m.group(3)) : 1);
+            c.set(Calendar.HOUR_OF_DAY, m.group(4) != null ? Integer.parseInt(m.group(4)) + hoff : 0);
+            c.set(Calendar.MINUTE, m.group(5) != null ? Integer.parseInt(m.group(5)) + moff : 0);
+            c.set(Calendar.SECOND, m.group(6) != null ? Integer.parseInt(m.group(6)) : 0);
+            c.set(Calendar.MILLISECOND, m.group(7) != null ? Integer.parseInt(m.group(7)) : 0);
             return c.getTime();
         } else {
             throw new IllegalArgumentException("Invalid Date Format");

@@ -19,8 +19,7 @@ public class EmbeddedDocExtractor {
 
     public static final String PARENT_DOC_PREFIX = "doc-parent/";
 
-    public static void extractEmbeddedDoc(ZipFile jarFile, BundleInfoImpl bi)
-            throws IOException {
+    public static void extractEmbeddedDoc(ZipFile jarFile, BundleInfoImpl bi) throws IOException {
 
         Enumeration<? extends ZipEntry> entries = jarFile.entries();
 
@@ -29,28 +28,21 @@ public class EmbeddedDocExtractor {
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
 
-            if (entry.getName().startsWith(PARENT_DOC_PREFIX)
-                    && !entry.isDirectory()) {
+            if (entry.getName().startsWith(PARENT_DOC_PREFIX) && !entry.isDirectory()) {
                 InputStream is = jarFile.getInputStream(entry);
                 String content = FileUtils.read(is);
                 is.close();
                 String name = new Path(entry.getName()).lastSegment();
-                if (name.length() >= 6
-                        && name.substring(0, 6).equalsIgnoreCase("readme")) {
+                if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
 
-                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(
-                            name, content, bi,
+                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
                             DefaultDocumentationType.DESCRIPTION.toString());
 
-                    parentDocs.put(
-                            DefaultDocumentationType.DESCRIPTION.toString(),
-                            docItem);
+                    parentDocs.put(DefaultDocumentationType.DESCRIPTION.toString(), docItem);
                 } else {
-                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(
-                            name, content, bi,
+                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
                             DefaultDocumentationType.HOW_TO.toString());
-                    parentDocs.put(DefaultDocumentationType.HOW_TO.toString(),
-                            docItem);
+                    parentDocs.put(DefaultDocumentationType.HOW_TO.toString(), docItem);
                 }
             }
             if (entry.getName().startsWith(DOC_PREFIX) && !entry.isDirectory()) {
@@ -58,21 +50,15 @@ public class EmbeddedDocExtractor {
                 String content = FileUtils.read(is);
                 is.close();
                 String name = new Path(entry.getName()).lastSegment();
-                if (name.length() >= 6
-                        && name.substring(0, 6).equalsIgnoreCase("readme")) {
+                if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
 
-                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(
-                            name, content, bi,
+                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
                             DefaultDocumentationType.DESCRIPTION.toString());
-                    localDocs.put(
-                            DefaultDocumentationType.DESCRIPTION.toString(),
-                            docItem);
+                    localDocs.put(DefaultDocumentationType.DESCRIPTION.toString(), docItem);
                 } else {
-                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(
-                            name, content, bi,
+                    ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
                             DefaultDocumentationType.HOW_TO.toString());
-                    localDocs.put(DefaultDocumentationType.HOW_TO.toString(),
-                            docItem);
+                    localDocs.put(DefaultDocumentationType.HOW_TO.toString(), docItem);
                 }
             }
         }

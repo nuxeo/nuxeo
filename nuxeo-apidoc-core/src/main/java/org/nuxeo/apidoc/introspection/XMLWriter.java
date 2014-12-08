@@ -189,8 +189,7 @@ public class XMLWriter {
         if (element == null) { // the root
             if (emitHeader) {
                 if (encoding != null) {
-                    writer.write("<?xml version=\"1.0\" encoding=" + encoding
-                            + "?>");
+                    writer.write("<?xml version=\"1.0\" encoding=" + encoding + "?>");
                 } else {
                     writer.write("<?xml version=\"1.0\"?>");
                 }
@@ -443,8 +442,7 @@ public class XMLWriter {
 
     /**
      * <p>
-     * Escape the <code>toString</code> of the given object. For use as body
-     * text.
+     * Escape the <code>toString</code> of the given object. For use as body text.
      * </p>
      *
      * @param value escape <code>value.toString()</code>
@@ -476,8 +474,7 @@ public class XMLWriter {
 
     /**
      * <p>
-     * Escape the <code>toString</code> of the given object. For use in an
-     * attribute value.
+     * Escape the <code>toString</code> of the given object. For use in an attribute value.
      * </p>
      *
      * @param value escape <code>value.toString()</code>

@@ -29,8 +29,7 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.runtime.model.ComponentName;
 
-public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
-        ExtensionInfo {
+public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
 
     protected final String id;
 
@@ -114,8 +113,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements
 
     @Override
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/"
-                + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
+        return component.getHierarchyPath() + "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
     }
 
     public List<ContributionItem> getContributionItems() {

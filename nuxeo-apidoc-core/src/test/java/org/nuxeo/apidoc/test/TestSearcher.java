@@ -77,20 +77,17 @@ public class TestSearcher extends SQLRepositoryTestCase {
 
         // DistributionSnapshot runtimeSnapshot =
         // getSnapshotManager().getRuntimeSnapshot();
-        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(
-                session);
+        DistributionSnapshot persistent = getSnapshotManager().persistRuntimeSnapshot(session);
         assertNotNull(persistent);
         session.save();
 
-        List<NuxeoArtifact> artifacts = searcher.searchArtifact(session,
-                "event");
+        List<NuxeoArtifact> artifacts = searcher.searchArtifact(session, "event");
         log.info("Found " + artifacts.size() + " artifacts");
         for (NuxeoArtifact artifact : artifacts) {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }
 
-        artifacts = searcher.filterArtifact(session, persistent.getKey(),
-                "NXComponent", "event");
+        artifacts = searcher.filterArtifact(session, persistent.getKey(), "NXComponent", "event");
         log.info("Found " + artifacts.size() + " components");
         for (NuxeoArtifact artifact : artifacts) {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());

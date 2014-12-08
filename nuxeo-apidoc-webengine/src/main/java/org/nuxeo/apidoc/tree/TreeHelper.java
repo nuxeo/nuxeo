@@ -34,12 +34,10 @@ public class TreeHelper {
     protected static final Log log = LogFactory.getLog(TreeHelper.class);
 
     public static NuxeoArtifactTree getOrBuildAnonymousTree(WebContext ctx) {
-        NuxeoArtifactTree tree = (NuxeoArtifactTree) ctx.getRequest().getAttribute(
-                "tree--" + ctx.getProperty("distId"));
+        NuxeoArtifactTree tree = (NuxeoArtifactTree) ctx.getRequest().getAttribute("tree--" + ctx.getProperty("distId"));
         if (tree == null) {
             tree = buildTree(ctx);
-            ctx.getRequest().setAttribute("tree--" + ctx.getProperty("distId"),
-                    tree);
+            ctx.getRequest().setAttribute("tree--" + ctx.getProperty("distId"), tree);
         }
         return tree;
     }
@@ -47,8 +45,7 @@ public class TreeHelper {
     public static NuxeoArtifactTree getOrBuildTree(WebContext ctx) {
 
         HttpSession httpSession = ctx.getRequest().getSession(true);
-        NuxeoArtifactTree tree = (NuxeoArtifactTree) httpSession.getAttribute("tree--"
-                + ctx.getProperty("distId"));
+        NuxeoArtifactTree tree = (NuxeoArtifactTree) httpSession.getAttribute("tree--" + ctx.getProperty("distId"));
         if (tree == null) {
             tree = buildTree(ctx);
             httpSession.setAttribute("tree--" + ctx.getProperty("distId"), tree);
@@ -62,12 +59,10 @@ public class TreeHelper {
 
         String id = "tree--ds--" + ctx.getProperty("distId");
 
-        DistributionSnapshot ds = (DistributionSnapshot) ctx.getRequest().getAttribute(
-                id);
+        DistributionSnapshot ds = (DistributionSnapshot) ctx.getRequest().getAttribute(id);
         if (ds == null) {
             SnapshotManager sm = Framework.getLocalService(SnapshotManager.class);
-            ds = sm.getSnapshot((String) ctx.getProperty("distId"),
-                    ctx.getCoreSession());
+            ds = sm.getSnapshot((String) ctx.getProperty("distId"), ctx.getCoreSession());
             ctx.getRequest().setAttribute(id, ds);
         }
 
@@ -110,15 +105,13 @@ public class TreeHelper {
                     if (lastNode != null) {
                         lastNode.collapse();
                     } else {
-                        log.warn("Unable to find previous selected tree node at path "
-                                + lastPath);
+                        log.warn("Unable to find previous selected tree node at path " + lastPath);
                     }
 
                     String lastBranch = new Path(lastPath).segment(0);
                     String currentBranch = new Path(source).segment(0);
                     if (!currentBranch.equals(lastBranch)) {
-                        TreeItem lastBranchItem = tree.getTree().find(
-                                lastBranch);
+                        TreeItem lastBranchItem = tree.getTree().find(lastBranch);
                         if (lastBranchItem != null) {
                             lastBranchItem.collapse();
                         } else {

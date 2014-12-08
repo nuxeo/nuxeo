@@ -57,9 +57,8 @@ import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 
 /**
- * The entry point to the server runtime introspection To build a description of
- * the current running server you need to create a {@link ServerInfo} object
- * using the method {@link #build(String, String)}.
+ * The entry point to the server runtime introspection To build a description of the current running server you need to
+ * create a {@link ServerInfo} object using the method {@link #build(String, String)}.
  * <p>
  * Example
  * 
@@ -67,19 +66,15 @@ import org.w3c.dom.Document;
  * ServerInfo info = ServerInfo.build();
  * </pre>
  * 
- * The server name and version will be fetched form the runtime properties:
- * <code>org.nuxeo.ecm.product.name</code> and
- * <code>org.nuxeo.ecm.product.version</code> If you ant to use another name and
- * version just call {@link #build(String, String)} instead to build your server
- * information.
+ * The server name and version will be fetched form the runtime properties: <code>org.nuxeo.ecm.product.name</code> and
+ * <code>org.nuxeo.ecm.product.version</code> If you ant to use another name and version just call
+ * {@link #build(String, String)} instead to build your server information.
  * <p>
- * After building a <code>ServerInfo</code> object you can start browsing the
- * bundles deployed on the server by calling {@link #getBundles()} or fetch a
- * specific bundle given its symbolic name {@link #getBundle(String)}.
+ * After building a <code>ServerInfo</code> object you can start browsing the bundles deployed on the server by calling
+ * {@link #getBundles()} or fetch a specific bundle given its symbolic name {@link #getBundle(String)}.
  * <p>
- * To write down the server information as XML use {@link #toXML(Writer)} and to
- * read it back use {@link #fromXML(Reader)}.
- * 
+ * To write down the server information as XML use {@link #toXML(Writer)} and to read it back use
+ * {@link #fromXML(Reader)}.
  * <p>
  * Example:
  * 
@@ -162,9 +157,8 @@ public class ServerInfo {
     }
 
     public static ServerInfo build() {
-        return build(Framework.getProperty("org.nuxeo.ecm.product.name",
-                "Nuxeo"), Framework.getProperty(
-                "org.nuxeo.ecm.product.version", "unknown"));
+        return build(Framework.getProperty("org.nuxeo.ecm.product.name", "Nuxeo"),
+                Framework.getProperty("org.nuxeo.ecm.product.version", "unknown"));
     }
 
     protected static BundleInfoImpl computeBundleInfo(Bundle bundle) {
@@ -205,26 +199,17 @@ public class ServerInfo {
                     DocumentBuilder b = documentBuilderFactory.newDocumentBuilder();
                     Document doc = b.parse(new FileInputStream(pom));
                     XPath xpath = xpathFactory.newXPath();
-                    String groupId = (String) xpath.evaluate(
-                            "//project/groupId", doc, XPathConstants.STRING);
+                    String groupId = (String) xpath.evaluate("//project/groupId", doc, XPathConstants.STRING);
                     if ("".equals(groupId)) {
-                        groupId = (String) xpath.evaluate(
-                                "//project/parent/groupId", doc,
-                                XPathConstants.STRING);
+                        groupId = (String) xpath.evaluate("//project/parent/groupId", doc, XPathConstants.STRING);
                     }
-                    String artifactId = (String) xpath.evaluate(
-                            "//project/artifactId", doc, XPathConstants.STRING);
+                    String artifactId = (String) xpath.evaluate("//project/artifactId", doc, XPathConstants.STRING);
                     if ("".equals(artifactId)) {
-                        artifactId = (String) xpath.evaluate(
-                                "//project/parent/artifactId", doc,
-                                XPathConstants.STRING);
+                        artifactId = (String) xpath.evaluate("//project/parent/artifactId", doc, XPathConstants.STRING);
                     }
-                    String version = (String) xpath.evaluate(
-                            "//project/version", doc, XPathConstants.STRING);
+                    String version = (String) xpath.evaluate("//project/version", doc, XPathConstants.STRING);
                     if ("".equals(version)) {
-                        version = (String) xpath.evaluate(
-                                "//project/parent/version", doc,
-                                XPathConstants.STRING);
+                        version = (String) xpath.evaluate("//project/parent/version", doc, XPathConstants.STRING);
                     }
                     binfo.setArtifactId(artifactId);
                     binfo.setGroupId(groupId);
@@ -243,8 +228,7 @@ public class ServerInfo {
                     ZipEntry entry = entries.nextElement();
                     if (entry.getName().endsWith(POM_PROPERTIES)) {
                         InputStream is = zFile.getInputStream(entry);
-                        PropertyResourceBundle prb = new PropertyResourceBundle(
-                                is);
+                        PropertyResourceBundle prb = new PropertyResourceBundle(is);
                         String groupId = prb.getString("groupId");
                         String artifactId = prb.getString("artifactId");
                         String version = prb.getString("version");
@@ -285,8 +269,7 @@ public class ServerInfo {
     public static ServerInfo build(String name, String version) {
         RuntimeService runtime = Framework.getRuntime();
         ServerInfo server = new ServerInfo(name, version);
-        BundleInfoImpl configVirtualBundle = new BundleInfoImpl(
-                "org.nuxeo.ecm.config");
+        BundleInfoImpl configVirtualBundle = new BundleInfoImpl("org.nuxeo.ecm.config");
         server.addBundle(configVirtualBundle);
 
         Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<String, ExtensionPointInfoImpl>();
@@ -319,8 +302,7 @@ public class ServerInfo {
             ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
             if (ri.getExtensionPoints() != null) {
                 for (ExtensionPoint xp : ri.getExtensionPoints()) {
-                    ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(
-                            component, xp.getName());
+                    ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(component, xp.getName());
                     Class<?>[] ctypes = xp.getContributions();
                     String[] descriptors = new String[ctypes.length];
 
@@ -347,8 +329,7 @@ public class ServerInfo {
 
             if (ri.getExtensions() != null) {
                 for (Extension xt : ri.getExtensions()) {
-                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component,
-                            xt.getExtensionPoint());
+                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint());
                     xtinfo.setTargetComponentName(xt.getTargetComponent());
                     xtinfo.setContribution(xt.getContributions());
                     xtinfo.setDocumentation(xt.getDocumentation());

@@ -27,8 +27,7 @@ public interface AssociatedDocuments {
 
     Map<String, String> getCategories() throws Exception;
 
-    Map<String, List<DocumentationItem>> getDocumentationItems(
-            CoreSession session) throws Exception;
+    Map<String, List<DocumentationItem>> getDocumentationItems(CoreSession session) throws Exception;
 
     DocumentationItem getDescription(CoreSession session) throws Exception;
 

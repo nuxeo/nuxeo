@@ -45,13 +45,11 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 
 import com.google.common.collect.Lists;
 
-public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
-        implements DistributionSnapshot {
+public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
 
     protected JavaDocHelper jdocHelper = null;
 
-    public static RepositoryDistributionSnapshot create(
-            DistributionSnapshot distrib, CoreSession session,
+    public static RepositoryDistributionSnapshot create(DistributionSnapshot distrib, CoreSession session,
             String containerPath, String label) throws ClientException {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
@@ -87,11 +85,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         return new RepositoryDistributionSnapshot(doc);
     }
 
-    public static List<DistributionSnapshot> readPersistentSnapshots(
-            CoreSession session) {
+    public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
         List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
-        String query = "SELECT * FROM " + TYPE_NAME
-                + " where ecm:currentLifeCycleState != 'deleted'";
+        String query = "SELECT * FROM " + TYPE_NAME + " where ecm:currentLifeCycleState != 'deleted'";
         try {
             DocumentModelList docs = session.query(query);
             for (DocumentModel child : docs) {
@@ -127,10 +123,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         return result;
     }
 
-    protected <T> T getChild(Class<T> adapter, String docType, String idField,
-            String id) {
-        String query = QueryHelper.select(docType, doc) + " AND " + idField
-                + " = " + NXQL.escapeString(id);
+    protected <T> T getChild(Class<T> adapter, String docType, String idField, String id) {
+        String query = QueryHelper.select(docType, doc) + " AND " + idField + " = " + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             if (docs.isEmpty()) {
@@ -149,19 +143,16 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public BundleInfo getBundle(String id) {
-        return getChild(BundleInfo.class, BundleInfo.TYPE_NAME,
-                BundleInfo.PROP_BUNDLE_ID, id);
+        return getChild(BundleInfo.class, BundleInfo.TYPE_NAME, BundleInfo.PROP_BUNDLE_ID, id);
     }
 
     @Override
     public BundleGroup getBundleGroup(String groupId) {
-        return getChild(BundleGroup.class, BundleGroup.TYPE_NAME,
-                BundleGroup.PROP_KEY, groupId);
+        return getChild(BundleGroup.class, BundleGroup.TYPE_NAME, BundleGroup.PROP_KEY, groupId);
     }
 
     protected DocumentModel getBundleContainer() {
-        DocumentRef ref = new PathRef(doc.getPathAsString(),
-                SnapshotPersister.Bundle_Root_NAME);
+        DocumentRef ref = new PathRef(doc.getPathAsString(), SnapshotPersister.Bundle_Root_NAME);
         if (getCoreSession().exists(ref)) {
             return getCoreSession().getDocument(ref);
         } else {
@@ -174,8 +165,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     public List<BundleGroup> getBundleGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
         try {
-            String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc,
-                    NXQL.ECM_PARENTID, getBundleContainer().getId());
+            String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc, NXQL.ECM_PARENTID,
+                    getBundleContainer().getId());
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel child : docs) {
                 BundleGroup bg = child.getAdapter(BundleGroup.class);
@@ -200,15 +191,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public ComponentInfo getComponent(String id) {
-        return getChild(ComponentInfo.class, ComponentInfo.TYPE_NAME,
-                ComponentInfo.PROP_COMPONENT_ID, id);
+        return getChild(ComponentInfo.class, ComponentInfo.TYPE_NAME, ComponentInfo.PROP_COMPONENT_ID, id);
     }
 
     @Override
     public List<String> getComponentIds() {
         List<String> ids = new ArrayList<String>();
-        for (ComponentInfo ci : getChildren(ComponentInfo.class,
-                ComponentInfo.TYPE_NAME)) {
+        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
             ids.add(ci.getId());
         }
         return ids;
@@ -216,15 +205,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public ExtensionInfo getContribution(String id) {
-        return getChild(ExtensionInfo.class, ExtensionInfo.TYPE_NAME,
-                ExtensionInfo.PROP_CONTRIB_ID, id);
+        return getChild(ExtensionInfo.class, ExtensionInfo.TYPE_NAME, ExtensionInfo.PROP_CONTRIB_ID, id);
     }
 
     @Override
     public List<String> getContributionIds() {
         List<String> ids = new ArrayList<String>();
-        for (ExtensionInfo xi : getChildren(ExtensionInfo.class,
-                ExtensionInfo.TYPE_NAME)) {
+        for (ExtensionInfo xi : getChildren(ExtensionInfo.class, ExtensionInfo.TYPE_NAME)) {
             ids.add(xi.getId());
         }
         return ids;
@@ -237,15 +224,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public ExtensionPointInfo getExtensionPoint(String id) {
-        return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME,
-                ExtensionPointInfo.PROP_EP_ID, id);
+        return getChild(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME, ExtensionPointInfo.PROP_EP_ID, id);
     }
 
     @Override
     public List<String> getExtensionPointIds() {
         List<String> ids = new ArrayList<String>();
-        for (ExtensionPointInfo xpi : getChildren(ExtensionPointInfo.class,
-                ExtensionPointInfo.TYPE_NAME)) {
+        for (ExtensionPointInfo xpi : getChildren(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME)) {
             ids.add(xpi.getId());
         }
         return ids;
@@ -253,15 +238,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public List<String> getBundleGroupChildren(String groupId) {
-        BundleGroup bg = getChild(BundleGroup.class, BundleGroup.TYPE_NAME,
-                BundleGroup.PROP_KEY, groupId);
+        BundleGroup bg = getChild(BundleGroup.class, BundleGroup.TYPE_NAME, BundleGroup.PROP_KEY, groupId);
         return bg.getBundleIds();
     }
 
     public List<String> getBundleGroupIds() {
         List<String> ids = new ArrayList<String>();
-        for (BundleGroup bg : getChildren(BundleGroup.class,
-                BundleGroup.TYPE_NAME)) {
+        for (BundleGroup bg : getChildren(BundleGroup.class, BundleGroup.TYPE_NAME)) {
             ids.add(bg.getId());
         }
         return ids;
@@ -332,9 +315,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
 
     @Override
     public ServiceInfo getService(String id) {
-        String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc())
-                + " AND " + ServiceInfo.PROP_CLASS_NAME + " = "
-                + NXQL.escapeString(id);
+        String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc()) + " AND " + ServiceInfo.PROP_CLASS_NAME
+                + " = " + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             if (docs.size() == 1) {
@@ -352,8 +334,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     @Override
     public List<String> getJavaComponentIds() {
         List<String> ids = new ArrayList<String>();
-        for (ComponentInfo ci : getChildren(ComponentInfo.class,
-                ComponentInfo.TYPE_NAME)) {
+        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
             if (!ci.isXmlPureComponent()) {
                 ids.add(ci.getId());
             }
@@ -364,8 +345,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     @Override
     public List<String> getXmlComponentIds() {
         List<String> ids = new ArrayList<String>();
-        for (ComponentInfo ci : getChildren(ComponentInfo.class,
-                ComponentInfo.TYPE_NAME)) {
+        for (ComponentInfo ci : getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME)) {
             if (ci.isXmlPureComponent()) {
                 ids.add(ci.getId());
             }
@@ -391,11 +371,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
     @Override
     public SeamComponentInfo getSeamComponent(String id) {
         String name = id.replace("seam:", "");
-        String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc())
-                + " AND "
-                + SeamComponentInfo.PROP_COMPONENT_NAME
-                + " = "
-                + NXQL.escapeString(name);
+        String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc()) + " AND "
+                + SeamComponentInfo.PROP_COMPONENT_NAME + " = " + NXQL.escapeString(name);
         try {
             DocumentModelList docs = getCoreSession().query(query);
             return docs.get(0).getAdapter(SeamComponentInfo.class);
@@ -445,13 +422,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
-        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc())
-                + " AND " + OperationInfo.PROP_NAME + " = "
-                + NXQL.escapeString(id);
+        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME
+                + " = " + NXQL.escapeString(id);
         try {
             DocumentModelList docs = getCoreSession().query(query);
-            return docs.size() == 0 ? null : docs.get(0).getAdapter(
-                    OperationInfo.class);
+            return docs.size() == 0 ? null : docs.get(0).getAdapter(OperationInfo.class);
         } catch (Exception e) {
             log.error("Unable to fetch Seam Component", e);
             return null;
@@ -488,7 +463,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         try {
             List<DocumentRef> refs = new ArrayList<>();
             DocumentModelList docs = getCoreSession().query(query);
-            for(DocumentModel doc : docs) {
+            for (DocumentModel doc : docs) {
                 refs.add(doc.getRef());
             }
             getCoreSession().removeDocuments(refs.toArray(new DocumentRef[refs.size()]));

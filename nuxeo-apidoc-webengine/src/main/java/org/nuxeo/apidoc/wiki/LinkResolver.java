@@ -87,8 +87,7 @@ public class LinkResolver implements WikiFilter {
         return links.toString();
     }
 
-    protected String buildLink(String basePath, StringBuffer relativePath,
-            String str) {
+    protected String buildLink(String basePath, StringBuffer relativePath, String str) {
         return String.format(LINK_TEMPLATE, basePath + relativePath, str);
     }
 

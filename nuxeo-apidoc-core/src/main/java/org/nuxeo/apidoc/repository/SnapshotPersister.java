@@ -92,8 +92,7 @@ public class SnapshotPersister {
 
         protected final boolean setAcl;
 
-        public UnrestrictedRootCreator(CoreSession session, String parentPath,
-                String name, boolean setAcl) {
+        public UnrestrictedRootCreator(CoreSession session, String parentPath, String name, boolean setAcl) {
             super(session);
             this.name = name;
             this.parentPath = parentPath;
@@ -107,8 +106,7 @@ public class SnapshotPersister {
         @Override
         public void run() throws ClientException {
 
-            DocumentModel root = session.createDocumentModel(parentPath, name,
-                    "Workspace");
+            DocumentModel root = session.createDocumentModel(parentPath, name, "Workspace");
             root.setProperty("dublincore", "title", name);
             root = session.createDocument(root);
 
@@ -128,143 +126,115 @@ public class SnapshotPersister {
 
     }
 
-    public DocumentModel getSubRoot(CoreSession session, DocumentModel root,
-            String name) throws ClientException {
+    public DocumentModel getSubRoot(CoreSession session, DocumentModel root, String name) throws ClientException {
 
         DocumentRef rootRef = new PathRef(root.getPathAsString() + name);
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session,
-                root.getPathAsString(), name, false);
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, root.getPathAsString(), name, false);
         creator.runUnrestricted();
         // flush caches
         session.save();
         return session.getDocument(creator.getRootRef());
     }
 
-    public DocumentModel getDistributionRoot(CoreSession session)
-            throws ClientException {
+    public DocumentModel getDistributionRoot(CoreSession session) throws ClientException {
         DocumentRef rootRef = new PathRef(Root_PATH + Root_NAME);
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session,
-                Root_PATH, Root_NAME, true);
+        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, Root_PATH, Root_NAME, true);
         creator.runUnrestricted();
         // flush caches
         session.save();
         return session.getDocument(creator.getRootRef());
     }
 
-    public DistributionSnapshot persist(DistributionSnapshot snapshot,
-            CoreSession session, String label, SnapshotFilter filter)
-            throws ClientException, OperationException {
+    public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label,
+            SnapshotFilter filter) throws ClientException, OperationException {
 
-        RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
-                snapshot, session, label);
+        RepositoryDistributionSnapshot distribContainer = createDistributionDoc(snapshot, session, label);
 
         if (filter == null) {
             // If no filter, clean old entries
             distribContainer.cleanPreviousArtifacts();
         }
 
-        DocumentModel bundleContainer = getSubRoot(session,
-                distribContainer.getDoc(), Bundle_Root_NAME);
+        DocumentModel bundleContainer = getSubRoot(session, distribContainer.getDoc(), Bundle_Root_NAME);
 
         if (filter != null) {
             // create VGroup that contain,s only the target bundles
-            BundleGroupImpl vGroup = new BundleGroupImpl(
-                    filter.getBundleGroupName(), snapshot.getVersion());
+            BundleGroupImpl vGroup = new BundleGroupImpl(filter.getBundleGroupName(), snapshot.getVersion());
             for (String bundleId : snapshot.getBundleIds()) {
                 if (filter.includeBundleId(bundleId)) {
                     vGroup.add(bundleId);
                 }
             }
-            persistBundleGroup(snapshot, vGroup, session, label + "-bundles",
-                    bundleContainer);
+            persistBundleGroup(snapshot, vGroup, session, label + "-bundles", bundleContainer);
         } else {
             List<BundleGroup> bundleGroups = snapshot.getBundleGroups();
             for (BundleGroup bundleGroup : bundleGroups) {
-                persistBundleGroup(snapshot, bundleGroup, session, label,
-                        bundleContainer);
+                persistBundleGroup(snapshot, bundleGroup, session, label, bundleContainer);
             }
         }
 
-        DocumentModel seamContainer = getSubRoot(session,
-                distribContainer.getDoc(), Seam_Root_NAME);
-        persistSeamComponents(snapshot, snapshot.getSeamComponents(), session,
-                label, seamContainer, filter);
+        DocumentModel seamContainer = getSubRoot(session, distribContainer.getDoc(), Seam_Root_NAME);
+        persistSeamComponents(snapshot, snapshot.getSeamComponents(), session, label, seamContainer, filter);
 
-        DocumentModel opContainer = getSubRoot(session,
-                distribContainer.getDoc(), Operation_Root_NAME);
-        persistOperations(snapshot, snapshot.getOperations(), session, label,
-                opContainer, filter);
+        DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
+        persistOperations(snapshot, snapshot.getOperations(), session, label, opContainer, filter);
 
         return distribContainer;
     }
 
-    public void persistSeamComponents(DistributionSnapshot snapshot,
-            List<SeamComponentInfo> seamComponents, CoreSession session,
-            String label, DocumentModel parent, SnapshotFilter filter)
-            throws ClientException {
+    public void persistSeamComponents(DistributionSnapshot snapshot, List<SeamComponentInfo> seamComponents,
+            CoreSession session, String label, DocumentModel parent, SnapshotFilter filter) throws ClientException {
         for (SeamComponentInfo seamComponent : seamComponents) {
             if (filter == null || filter.includeSeamComponent(seamComponent)) {
-                persistSeamComponent(snapshot, seamComponent, session, label,
-                        parent);
+                persistSeamComponent(snapshot, seamComponent, session, label, parent);
             }
         }
     }
 
-    public void persistSeamComponent(DistributionSnapshot snapshot,
-            SeamComponentInfo seamComponent, CoreSession session, String label,
-            DocumentModel parent) throws ClientException {
+    public void persistSeamComponent(DistributionSnapshot snapshot, SeamComponentInfo seamComponent,
+            CoreSession session, String label, DocumentModel parent) throws ClientException {
         try {
-            SeamComponentInfoDocAdapter.create(seamComponent, session,
-                    parent.getPathAsString());
+            SeamComponentInfoDocAdapter.create(seamComponent, session, parent.getPathAsString());
         } catch (Exception e) {
-            throw new ClientException(
-                    "Errors while persisting Seam Component as document", e);
+            throw new ClientException("Errors while persisting Seam Component as document", e);
         }
     }
 
-    public void persistOperations(DistributionSnapshot snapshot,
-            List<OperationInfo> operations, CoreSession session, String label,
-            DocumentModel parent, SnapshotFilter filter) throws ClientException {
+    public void persistOperations(DistributionSnapshot snapshot, List<OperationInfo> operations, CoreSession session,
+            String label, DocumentModel parent, SnapshotFilter filter) throws ClientException {
         for (OperationInfo op : operations) {
-            if (filter == null
-                    || (op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op))) {
+            if (filter == null || (op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op))) {
                 persistOperation(snapshot, op, session, label, parent);
             }
         }
     }
 
-    public void persistOperation(DistributionSnapshot snapshot,
-            OperationInfo op, CoreSession session, String label,
+    public void persistOperation(DistributionSnapshot snapshot, OperationInfo op, CoreSession session, String label,
             DocumentModel parent) throws ClientException {
         try {
-            OperationInfoDocAdapter.create(op, session,
-                    parent.getPathAsString());
+            OperationInfoDocAdapter.create(op, session, parent.getPathAsString());
         } catch (Exception e) {
-            throw new ClientException(
-                    "Errors while persisting Operation as document", e);
+            throw new ClientException("Errors while persisting Operation as document", e);
         }
     }
 
-    public void persistBundleGroup(DistributionSnapshot snapshot,
-            BundleGroup bundleGroup, CoreSession session, String label,
-            DocumentModel parent) throws ClientException {
+    public void persistBundleGroup(DistributionSnapshot snapshot, BundleGroup bundleGroup, CoreSession session,
+            String label, DocumentModel parent) throws ClientException {
         log.info("Persist bundle group " + bundleGroup.getId());
 
-        DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup,
-                session, label, parent);
+        DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup, session, label, parent);
 
         // save GitHub doc
         if (bundleGroup instanceof BundleGroupImpl) {
             Map<String, ResourceDocumentationItem> liveDoc = ((BundleGroupImpl) bundleGroup).getLiveDoc();
             if (liveDoc != null && liveDoc.size() > 0) {
-                persistLiveDoc(liveDoc,
-                        bundleGroupDoc.getAdapter(BundleGroup.class), session);
+                persistLiveDoc(liveDoc, bundleGroupDoc.getAdapter(BundleGroup.class), session);
             }
         }
 
@@ -274,41 +244,33 @@ public class SnapshotPersister {
         }
 
         for (BundleGroup subGroup : bundleGroup.getSubGroups()) {
-            persistBundleGroup(snapshot, subGroup, session, label,
-                    bundleGroupDoc);
+            persistBundleGroup(snapshot, subGroup, session, label, bundleGroupDoc);
         }
     }
 
-    protected void persistLiveDoc(
-            Map<String, ResourceDocumentationItem> liveDoc, NuxeoArtifact item,
+    protected void persistLiveDoc(Map<String, ResourceDocumentationItem> liveDoc, NuxeoArtifact item,
             CoreSession session) throws ClientException {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
-        List<DocumentationItem> existingDocs = ds.findDocumentItems(session,
-                item);
+        List<DocumentationItem> existingDocs = ds.findDocumentItems(session, item);
         for (String cat : liveDoc.keySet()) {
             ResourceDocumentationItem docItem = liveDoc.get(cat);
             DocumentationItem previousDocItem = null;
             for (DocumentationItem exiting : existingDocs) {
-                if (exiting.getTitle().equals(docItem.getTitle())
-                        && exiting.getTarget().equals(docItem.getTarget())) {
+                if (exiting.getTitle().equals(docItem.getTitle()) && exiting.getTarget().equals(docItem.getTarget())) {
                     previousDocItem = exiting;
                     break;
                 }
             }
             if (previousDocItem == null) {
-                ds.createDocumentationItem(session, item, docItem.getTitle(),
-                        docItem.getContent(), cat,
-                        Arrays.asList(item.getVersion()), docItem.isApproved(),
-                        docItem.getRenderingType());
+                ds.createDocumentationItem(session, item, docItem.getTitle(), docItem.getContent(), cat,
+                        Arrays.asList(item.getVersion()), docItem.isApproved(), docItem.getRenderingType());
             } else {
                 if (previousDocItem instanceof DocumentationItemDocAdapter) {
                     DocumentationItemDocAdapter existingDoc = (DocumentationItemDocAdapter) previousDocItem;
                     Blob blob = new StringBlob(docItem.getContent());
-                    Blob oldBlob = (Blob) existingDoc.getDocumentModel().getPropertyValue(
-                            "file:content");
+                    Blob oldBlob = (Blob) existingDoc.getDocumentModel().getPropertyValue("file:content");
                     blob.setFilename(oldBlob.getFilename());
-                    existingDoc.getDocumentModel().setPropertyValue(
-                            "file:content", (Serializable) blob);
+                    existingDoc.getDocumentModel().setPropertyValue("file:content", (Serializable) blob);
                     ds.updateDocumentationItem(session, existingDoc);
                 }
 
@@ -316,20 +278,17 @@ public class SnapshotPersister {
         }
     }
 
-    public void persistBundle(DistributionSnapshot snapshot,
-            BundleInfo bundleInfo, CoreSession session, String label,
+    public void persistBundle(DistributionSnapshot snapshot, BundleInfo bundleInfo, CoreSession session, String label,
             DocumentModel parent) throws ClientException {
         log.info("Persist bundle " + bundleInfo.getId());
 
-        DocumentModel bundleDoc = createBundleDoc(snapshot, session, label,
-                bundleInfo, parent);
+        DocumentModel bundleDoc = createBundleDoc(snapshot, session, label, bundleInfo, parent);
 
         // save GitHub doc
         if (bundleInfo instanceof BundleInfoImpl) {
             Map<String, ResourceDocumentationItem> liveDoc = ((BundleInfoImpl) bundleInfo).getLiveDoc();
             if (liveDoc != null && liveDoc.size() > 0) {
-                persistLiveDoc(liveDoc, bundleDoc.getAdapter(BundleInfo.class),
-                        session);
+                persistLiveDoc(liveDoc, bundleDoc.getAdapter(BundleInfo.class), session);
             }
         }
 
@@ -338,12 +297,10 @@ public class SnapshotPersister {
         }
     }
 
-    public void persistComponent(DistributionSnapshot snapshot,
-            ComponentInfo ci, CoreSession session, String label,
+    public void persistComponent(DistributionSnapshot snapshot, ComponentInfo ci, CoreSession session, String label,
             DocumentModel parent) throws ClientException {
 
-        DocumentModel componentDoc = createComponentDoc(snapshot, session,
-                label, ci, parent);
+        DocumentModel componentDoc = createComponentDoc(snapshot, session, label, ci, parent);
 
         for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
             createExtensionPointDoc(snapshot, session, label, epi, componentDoc);
@@ -357,74 +314,57 @@ public class SnapshotPersister {
         }
     }
 
-    protected DocumentModel createContributionDoc(
-            DistributionSnapshot snapshot, CoreSession session, String label,
+    protected DocumentModel createContributionDoc(DistributionSnapshot snapshot, CoreSession session, String label,
             ExtensionInfo ei, DocumentModel parent) throws ClientException {
         try {
-            return ExtensionInfoDocAdapter.create(ei, session,
-                    parent.getPathAsString()).getDoc();
+            return ExtensionInfoDocAdapter.create(ei, session, parent.getPathAsString()).getDoc();
         } catch (Exception e) {
-            throw new ClientException("Unable to create Contribution Document",
-                    e);
+            throw new ClientException("Unable to create Contribution Document", e);
         }
     }
 
-    protected DocumentModel createServiceDoc(DistributionSnapshot snapshot,
-            CoreSession session, String label, ServiceInfo si,
-            DocumentModel parent) throws ClientException {
+    protected DocumentModel createServiceDoc(DistributionSnapshot snapshot, CoreSession session, String label,
+            ServiceInfo si, DocumentModel parent) throws ClientException {
         try {
-            return ServiceInfoDocAdapter.create(si, session,
-                    parent.getPathAsString()).getDoc();
+            return ServiceInfoDocAdapter.create(si, session, parent.getPathAsString()).getDoc();
         } catch (Exception e) {
-            throw new ClientException("Unable to create Contribution Document",
-                    e);
+            throw new ClientException("Unable to create Contribution Document", e);
         }
     }
 
-    protected DocumentModel createExtensionPointDoc(
-            DistributionSnapshot snapshot, CoreSession session, String label,
-            ExtensionPointInfo epi, DocumentModel parent)
-            throws ClientException {
+    protected DocumentModel createExtensionPointDoc(DistributionSnapshot snapshot, CoreSession session, String label,
+            ExtensionPointInfo epi, DocumentModel parent) throws ClientException {
 
         try {
-            return ExtensionPointInfoDocAdapter.create(epi, session,
-                    parent.getPathAsString()).getDoc();
+            return ExtensionPointInfoDocAdapter.create(epi, session, parent.getPathAsString()).getDoc();
         } catch (Exception e) {
-            throw new ClientException(
-                    "Unable to create ExtensionPoint Document", e);
+            throw new ClientException("Unable to create ExtensionPoint Document", e);
         }
     }
 
-    protected DocumentModel createComponentDoc(DistributionSnapshot snapshot,
-            CoreSession session, String label, ComponentInfo ci,
-            DocumentModel parent) throws ClientException {
+    protected DocumentModel createComponentDoc(DistributionSnapshot snapshot, CoreSession session, String label,
+            ComponentInfo ci, DocumentModel parent) throws ClientException {
         try {
-            return ComponentInfoDocAdapter.create(ci, session,
-                    parent.getPathAsString()).getDoc();
+            return ComponentInfoDocAdapter.create(ci, session, parent.getPathAsString()).getDoc();
         } catch (Exception e) {
             throw new ClientException("Unable to create Component Doc", e);
         }
     }
 
-    protected DocumentModel createBundleDoc(DistributionSnapshot snapshot,
-            CoreSession session, String label, BundleInfo bi,
+    protected DocumentModel createBundleDoc(DistributionSnapshot snapshot, CoreSession session, String label,
+            BundleInfo bi, DocumentModel parent) throws ClientException {
+        return BundleInfoDocAdapter.create(bi, session, parent.getPathAsString()).getDoc();
+    }
+
+    protected RepositoryDistributionSnapshot createDistributionDoc(DistributionSnapshot snapshot, CoreSession session,
+            String label) throws ClientException {
+        return RepositoryDistributionSnapshot.create(snapshot, session, getDistributionRoot(session).getPathAsString(),
+                label);
+    }
+
+    protected DocumentModel createBundleGroupDoc(BundleGroup bundleGroup, CoreSession session, String label,
             DocumentModel parent) throws ClientException {
-        return BundleInfoDocAdapter.create(bi, session,
-                parent.getPathAsString()).getDoc();
-    }
-
-    protected RepositoryDistributionSnapshot createDistributionDoc(
-            DistributionSnapshot snapshot, CoreSession session, String label)
-            throws ClientException {
-        return RepositoryDistributionSnapshot.create(snapshot, session,
-                getDistributionRoot(session).getPathAsString(), label);
-    }
-
-    protected DocumentModel createBundleGroupDoc(BundleGroup bundleGroup,
-            CoreSession session, String label, DocumentModel parent)
-            throws ClientException {
-        return BundleGroupDocAdapter.create(bundleGroup, session,
-                parent.getPathAsString()).getDoc();
+        return BundleGroupDocAdapter.create(bundleGroup, session, parent.getPathAsString()).getDoc();
     }
 
 }

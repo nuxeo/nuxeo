@@ -43,8 +43,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.runtime.api.Framework;
 
-public class RuntimeSnapshot extends BaseNuxeoArtifact implements
-        DistributionSnapshot {
+public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
 
     public static final String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
 
@@ -168,8 +167,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
                 for (String grp : subGroups) {
                     List<String> grpArtifactIds = new ArrayList<String>();
                     for (String aid : artifactIds) {
-                        if (aid.startsWith(grp)
-                                || ("grp:" + aid).startsWith(grp)) {
+                        if (aid.startsWith(grp) || ("grp:" + aid).startsWith(grp)) {
                             grpArtifactIds.add(aid);
                         }
                     }
@@ -185,8 +183,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         }
 
         for (String grpId : mavenGroups.keySet()) {
-            BundleGroupImpl bGroup = buildBundleGroup(grpId,
-                    serverInfo.getVersion());
+            BundleGroupImpl bGroup = buildBundleGroup(grpId, serverInfo.getVersion());
             bundleGroups.add(bGroup);
         }
         return serverInfo;
@@ -230,8 +227,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         return null;
     }
 
-    protected void browseBundleGroup(BundleGroup group, int level,
-            List<BundleGroupFlatTree> tree) {
+    protected void browseBundleGroup(BundleGroup group, int level, List<BundleGroupFlatTree> tree) {
         BundleGroupFlatTree info = new BundleGroupFlatTree(group, level);
         tree.add(info);
 
@@ -424,7 +420,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         seamInitialized = true;
     }
 
-    public void initOperations() throws OperationException{
+    public void initOperations() throws OperationException {
         if (opsInitialized) {
             return;
         }
@@ -435,8 +431,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
             throw new RuntimeException(e);
         }
         for (OperationType op : ops) {
-            operations.add(new OperationInfoImpl(op.getDocumentation(),
-                    getVersion(), op.getType().getCanonicalName(),
+            operations.add(new OperationInfoImpl(op.getDocumentation(), getVersion(), op.getType().getCanonicalName(),
                     op.getContributingComponent()));
         }
         opsInitialized = true;

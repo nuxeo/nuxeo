@@ -27,8 +27,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 /**
  * DTO for an {@link OperationInfo}, used for the runtime implementation.
  */
-public class OperationInfoImpl extends BaseNuxeoArtifact implements
-        OperationInfo {
+public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInfo {
 
     public final OperationDocumentation op;
 
@@ -38,18 +37,19 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
 
     protected final String contributingComponent;
 
-    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass, String contributingComponent) {
+    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass,
+            String contributingComponent) {
         this.op = op;
         this.version = version;
-        this.operationClass=operationClass;
-        if (contributingComponent==null || contributingComponent.isEmpty()) {
+        this.operationClass = operationClass;
+        if (contributingComponent == null || contributingComponent.isEmpty()) {
             this.contributingComponent = OperationInfo.BUILT_IN;
         } else {
             String[] parts = contributingComponent.split(":");
-            if (parts.length>1) {
-                this.contributingComponent=parts[1];
+            if (parts.length > 1) {
+                this.contributingComponent = parts[1];
             } else {
-                this.contributingComponent=contributingComponent;
+                this.contributingComponent = contributingComponent;
             }
         }
     }

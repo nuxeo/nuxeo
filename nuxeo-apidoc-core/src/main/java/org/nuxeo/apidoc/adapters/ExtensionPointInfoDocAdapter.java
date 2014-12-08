@@ -34,11 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
-public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
-        implements ExtensionPointInfo {
+public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
 
-    public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi,
-            CoreSession session, String containerPath) throws Exception {
+    public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi, CoreSession session, String containerPath)
+            throws Exception {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -100,8 +99,8 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             while (!DistributionSnapshot.TYPE_NAME.equals(dist.getType())) {
                 dist = getCoreSession().getParentDocument(dist.getRef());
             }
-            String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist,
-                    ExtensionInfo.PROP_EXTENSION_POINT, getId());
+            String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist, ExtensionInfo.PROP_EXTENSION_POINT,
+                    getId());
             DocumentModelList docs = getCoreSession().query(query);
             for (DocumentModel contribDoc : docs) {
                 ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
@@ -163,8 +162,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
     public String getHierarchyPath() {
         String path = super.getHierarchyPath() + "###";
         String toReplace = "/" + getId() + "###";
-        return path.replace(toReplace, "/"
-                + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId());
+        return path.replace(toReplace, "/" + VirtualNodesConsts.ExtensionPoints_VNODE_NAME + "/" + getId());
     }
 
 }
