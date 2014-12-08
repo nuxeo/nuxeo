@@ -37,21 +37,18 @@ public class ListStandardWidgetPage extends Page {
 
     public ListWidgetElement getS2HtmlTextComplexListEditWidget() {
         goToOverviewTab();
-        return new ListWidgetElement(AbstractTest.driver,
-                S2_HTML_TEXT_COMPLEX_LIST_WIDGET_EDIT_ID);
+        return new ListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_EDIT_ID);
     }
 
     public ListWidgetElement getS2HtmlTextComplexListViewWidget() {
         goToOverviewTab();
-        return new ListWidgetElement(AbstractTest.driver,
-                S2_HTML_TEXT_COMPLEX_LIST_WIDGET_VIEW_ID);
+        return new ListWidgetElement(AbstractTest.driver, S2_HTML_TEXT_COMPLEX_LIST_WIDGET_VIEW_ID);
     }
 
     public ListStandardWidgetPage submitS2HtmlTextComplexListWidget() {
         AjaxRequestManager a = new AjaxRequestManager(AbstractTest.driver);
         a.watchAjaxRequests();
-        AbstractTest.driver.findElement(
-                By.id(S2_HTML_TEXT_COMPLEX_LIST_WIDGET_SUBMIT_ID)).click();
+        AbstractTest.driver.findElement(By.id(S2_HTML_TEXT_COMPLEX_LIST_WIDGET_SUBMIT_ID)).click();
         a.waitForAjaxRequests();
         return AbstractTest.asPage(ListStandardWidgetPage.class);
     }

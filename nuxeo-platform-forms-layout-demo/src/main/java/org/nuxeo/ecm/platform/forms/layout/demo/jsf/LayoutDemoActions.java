@@ -46,8 +46,8 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Seam component providing a document model for layout demo and testing, and
- * handling reset of this document model when the page changes.
+ * Seam component providing a document model for layout demo and testing, and handling reset of this document model when
+ * the page changes.
  *
  * @author Anahide Tchertchian
  */
@@ -90,8 +90,7 @@ public class LayoutDemoActions implements Serializable {
         return layoutDemoDocument;
     }
 
-    public String initContextFromRestRequest(DocumentView docView)
-            throws ClientException {
+    public String initContextFromRestRequest(DocumentView docView) throws ClientException {
 
         DemoWidgetType widgetType = null;
         boolean isPreviewFrame = false;
@@ -112,8 +111,7 @@ public class LayoutDemoActions implements Serializable {
     }
 
     public void setCurrentWidgetType(DemoWidgetType newWidgetType) {
-        if (currentWidgetType != null
-                && !currentWidgetType.equals(newWidgetType)) {
+        if (currentWidgetType != null && !currentWidgetType.equals(newWidgetType)) {
             // reset demo doc too
             layoutDemoDocument = null;
             viewPreviewLayoutDef = null;
@@ -134,8 +132,7 @@ public class LayoutDemoActions implements Serializable {
         if (currentWidgetType != null) {
             String type = currentWidgetType.getName();
             LayoutStore lm = Framework.getLocalService(LayoutStore.class);
-            return lm.getWidgetTypeDefinition(
-                    currentWidgetType.getWidgetTypeCategory(), type);
+            return lm.getWidgetTypeDefinition(currentWidgetType.getWidgetTypeCategory(), type);
         }
         return null;
     }
@@ -158,8 +155,7 @@ public class LayoutDemoActions implements Serializable {
         this.currentSubTabId = currentSubTabId;
     }
 
-    protected PreviewLayoutDefinition createPreviewLayoutDefinition(
-            DemoWidgetType widgetType) {
+    protected PreviewLayoutDefinition createPreviewLayoutDefinition(DemoWidgetType widgetType) {
         String type = widgetType.getName();
 
         Map<String, Serializable> props = new HashMap<>();
@@ -169,20 +165,16 @@ public class LayoutDemoActions implements Serializable {
         if (type != null && type.contains("Aggregate")) {
             // fill up aggregates mapping as default properties
             if (type.contains("Aggregate")) {
-                props.put("selectOptions",
-                        "#{layoutDemoAggregates['dir_terms'].buckets}");
+                props.put("selectOptions", "#{layoutDemoAggregates['dir_terms'].buckets}");
             } else {
-                props.put("selectOptions",
-                        "#{layoutDemoAggregates['string_terms'].buckets}");
+                props.put("selectOptions", "#{layoutDemoAggregates['string_terms'].buckets}");
             }
             props.put("directoryName", "layout_demo_crew");
         }
-        PreviewLayoutDefinition def = new PreviewLayoutDefinition(
-                widgetType.getName(), widgetType.getFields(), props);
+        PreviewLayoutDefinition def = new PreviewLayoutDefinition(widgetType.getName(), widgetType.getFields(), props);
 
         LayoutStore lm = Framework.getLocalService(LayoutStore.class);
-        WidgetTypeDefinition wtDef = lm.getWidgetTypeDefinition(
-                widgetType.getWidgetTypeCategory(), type);
+        WidgetTypeDefinition wtDef = lm.getWidgetTypeDefinition(widgetType.getWidgetTypeCategory(), type);
         if (def != null) {
             WidgetTypeConfiguration wtConf = wtDef.getConfiguration();
             if (wtConf.isAcceptingSubWidgets()) {
@@ -210,8 +202,7 @@ public class LayoutDemoActions implements Serializable {
         return def;
     }
 
-    protected List<WidgetDefinition> retrieveSubWidgets(
-            LayoutDefinition layoutDef) {
+    protected List<WidgetDefinition> retrieveSubWidgets(LayoutDefinition layoutDef) {
         List<WidgetDefinition> res = new ArrayList<WidgetDefinition>();
         LayoutRowDefinition[] rows = layoutDef.getRows();
         if (rows != null && rows.length > 0) {

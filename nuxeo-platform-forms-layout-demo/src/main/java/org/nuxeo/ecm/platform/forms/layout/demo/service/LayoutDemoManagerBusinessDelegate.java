@@ -44,8 +44,7 @@ public class LayoutDemoManagerBusinessDelegate implements Serializable {
             try {
                 layoutDemoManager = Framework.getService(LayoutDemoManager.class);
             } catch (Exception e) {
-                final String errMsg = "Error connecting to LayoutDemoManager. "
-                        + e.getMessage();
+                final String errMsg = "Error connecting to LayoutDemoManager. " + e.getMessage();
                 throw new ClientException(errMsg, e);
             }
             if (layoutDemoManager == null) {

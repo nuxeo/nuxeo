@@ -62,8 +62,7 @@ public class PreviewLayoutDefinition implements Serializable {
 
     protected List<WidgetDefinition> subWidgets;
 
-    public PreviewLayoutDefinition(String widgetType, List<String> fields,
-            Map<String, Serializable> defaultProperties) {
+    public PreviewLayoutDefinition(String widgetType, List<String> fields, Map<String, Serializable> defaultProperties) {
         super();
         this.widgetType = widgetType;
         this.fields = fields;
@@ -151,8 +150,7 @@ public class PreviewLayoutDefinition implements Serializable {
         return customProperties;
     }
 
-    public void setCustomProperties(
-            List<Map<String, Serializable>> customProperties) {
+    public void setCustomProperties(List<Map<String, Serializable>> customProperties) {
         this.customProperties = customProperties;
     }
 
@@ -170,17 +168,15 @@ public class PreviewLayoutDefinition implements Serializable {
     }
 
     /**
-     * Removes empty properties as the JSF component may not accept empty
-     * values for some properties like "converter" or "validator".
+     * Removes empty properties as the JSF component may not accept empty values for some properties like "converter" or
+     * "validator".
      */
-    protected Map<String, Serializable> cleanUpProperties(
-            Map<String, Serializable> props) {
+    protected Map<String, Serializable> cleanUpProperties(Map<String, Serializable> props) {
         Map<String, Serializable> res = new HashMap<String, Serializable>();
         if (props != null) {
             for (Map.Entry<String, Serializable> prop : props.entrySet()) {
                 Serializable value = prop.getValue();
-                if (value == null
-                        || (value instanceof String && StringUtils.isEmpty((String) value))) {
+                if (value == null || (value instanceof String && StringUtils.isEmpty((String) value))) {
                     continue;
                 }
                 res.put(prop.getKey(), value);
@@ -196,9 +192,8 @@ public class PreviewLayoutDefinition implements Serializable {
         return prop;
     }
 
-    protected Map<String, Serializable> convertCustomProperties(
-            List<Map<String, Serializable>> listProps, boolean ignoreErrors)
-            throws ValidatorException {
+    protected Map<String, Serializable> convertCustomProperties(List<Map<String, Serializable>> listProps,
+            boolean ignoreErrors) throws ValidatorException {
         Map<String, Serializable> values = new HashMap<String, Serializable>();
         if (listProps != null) {
             for (Map<String, Serializable> entry : listProps) {
@@ -208,18 +203,15 @@ public class PreviewLayoutDefinition implements Serializable {
                     if (ignoreErrors) {
                         continue;
                     }
-                    FacesMessage message = new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR, "Invalid empty key",
-                            null);
+                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid empty key", null);
                     throw new ValidatorException(message);
                 }
                 if (values.containsKey(key)) {
                     if (ignoreErrors) {
                         continue;
                     }
-                    FacesMessage message = new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR, String.format(
-                                    "Duplicate key '%s'", key), null);
+                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, String.format(
+                            "Duplicate key '%s'", key), null);
                     throw new ValidatorException(message);
                 }
                 values.put(key, value);
@@ -229,12 +221,9 @@ public class PreviewLayoutDefinition implements Serializable {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void validateCustomProperties(FacesContext context,
-            UIComponent component, Object value) {
+    public void validateCustomProperties(FacesContext context, UIComponent component, Object value) {
         if (value != null && !(value instanceof List)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Invalid value: " + value,
-                    null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid value: " + value, null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);

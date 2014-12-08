@@ -28,13 +28,11 @@ import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
  */
 public class DemoFolderTemplateFactory extends SimpleTemplateBasedFactory {
 
-    private final static String[] TOKENS = { "aaaabb", "aaaccc", "aaaddd",
-            "aaaaeee", "aaaafff", "aaaggg", "aaahhh", "aaaiii", "aaaajjj",
-            "aaakkk", };
+    private final static String[] TOKENS = { "aaaabb", "aaaccc", "aaaddd", "aaaaeee", "aaaafff", "aaaggg", "aaahhh",
+            "aaaiii", "aaaajjj", "aaakkk", };
 
     @Override
-    public void createContentStructure(DocumentModel eventDoc)
-            throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
         initSession(eventDoc);
 
         if (eventDoc.isVersion() || !isTargetEmpty(eventDoc)) {
@@ -51,24 +49,21 @@ public class DemoFolderTemplateFactory extends SimpleTemplateBasedFactory {
             if (item.getPath() != null) {
                 itemPath += "/" + item.getPath();
             }
-            newChild = session.createDocumentModel(itemPath, item.getId(),
-                    item.getTypeName());
+            newChild = session.createDocumentModel(itemPath, item.getId(), item.getTypeName());
             newChild.setProperty("dublincore", "title", item.getTitle());
-            newChild.setProperty("dublincore", "description",
-                    item.getDescription());
+            newChild.setProperty("dublincore", "description", item.getDescription());
             setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
 
             if (newChild.isFolder()) {
-                DocumentModel newGrantChild = session.createDocumentModel(
-                        newChild.getPathAsString() + "/", "defaultId", "File");
+                DocumentModel newGrantChild = session.createDocumentModel(newChild.getPathAsString() + "/",
+                        "defaultId", "File");
                 newGrantChild.setProperty("dublincore", "title", "Some sample text");
                 newGrantChild = session.createDocument(newGrantChild);
                 for (String token : TOKENS) {
                     final String id = token + a;
-                    newGrantChild = session.createDocumentModel(
-                            newChild.getPathAsString() + "/", id, "File");
+                    newGrantChild = session.createDocumentModel(newChild.getPathAsString() + "/", id, "File");
                     newGrantChild.setProperty("dublincore", "title", id);
                     newGrantChild = session.createDocument(newGrantChild);
                 }
