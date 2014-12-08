@@ -84,8 +84,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
     private String HOST;
 
     @Override
-    public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, String baseURL) {
+    public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         HttpSession session = httpRequest.getSession(false);
         if (session == null || session.getAttribute(ONE_FACTOR_CHECK) == null
                 || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
@@ -102,13 +101,11 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                     session.setAttribute(ONE_FACTOR_CHECK, Boolean.FALSE);
                     return Boolean.FALSE;
                 }
-                String request_sig = DuoWeb.signRequest(IKEY, SKEY, AKEY,
-                        userName);
+                String request_sig = DuoWeb.signRequest(IKEY, SKEY, AKEY, userName);
                 parameters.put(SIG_REQUEST, request_sig);
                 parameters.put(HOST_REQUEST, HOST);
                 parameters.put(POST_ACTION, postUrl);
-                redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,
-                        parameters);
+                redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
                 httpResponse.sendRedirect(redirectUrl);
             } catch (IOException e) {
                 log.error(e, e);
@@ -119,14 +116,13 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
     }
 
     @Override
-    public UserIdentificationInfo handleRetrieveIdentity(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         HttpSession session = httpRequest.getSession(false);
         if (session == null) {
             return null;
         }
-        if (session.getAttribute(ONE_FACTOR_CHECK) == null
-                || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
+        if (session.getAttribute(ONE_FACTOR_CHECK) == null || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
             userIdent = super.handleRetrieveIdentity(httpRequest, httpResponse);
             if (userIdent != null) {
                 try {
@@ -135,8 +131,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                         session.setAttribute(ONE_FACTOR_CHECK, Boolean.TRUE);
                         return null;
                     } else {
-                        httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR,
-                                NXAuthConstants.LOGIN_FAILED);
+                        httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR, NXAuthConstants.LOGIN_FAILED);
                         return null;
                     }
                 } catch (LoginException | ClientException e) {
@@ -150,10 +145,8 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         } else if (session.getAttribute(TWO_FACTORS_CHECK) == null
                 || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK)) {
             String sigResponse = httpRequest.getParameter(SIG_RESPONSE);
-            String response = DuoWeb.verifyResponse(IKEY, SKEY, AKEY,
-                    sigResponse);
-            session.setAttribute(TWO_FACTORS_CHECK,
-                    response != null ? Boolean.TRUE : Boolean.FALSE);
+            String response = DuoWeb.verifyResponse(IKEY, SKEY, AKEY, sigResponse);
+            session.setAttribute(TWO_FACTORS_CHECK, response != null ? Boolean.TRUE : Boolean.FALSE);
             if (response == null) {
                 return null;
             }
@@ -199,8 +192,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             } else {
                 principal = manager.getPrincipal(username);
                 if (principal == null) {
-                    throw new LoginException(String.format(
-                            "principal %s does not exist", username));
+                    throw new LoginException(String.format("principal %s does not exist", username));
                 }
             }
             String principalId = String.valueOf(random.nextLong());
@@ -208,8 +200,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             return principal;
         } catch (LoginException | ClientException e) {
             log.error("createIdentity failed", e);
-            LoginException le = new LoginException("createIdentity failed for"
-                    + " user " + username);
+            LoginException le = new LoginException("createIdentity failed for" + " user " + username);
             le.initCause(e);
             throw le;
         }
@@ -222,8 +213,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
             // we don't use a specific plugin
-            if (manager.checkUsernamePassword(userIdent.getUserName(),
-                    userIdent.getPassword())) {
+            if (manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword())) {
                 return (NuxeoPrincipal) createIdentity(userIdent.getUserName());
             } else {
                 return null;
@@ -231,8 +221,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         } else {
             LoginPlugin lp = loginPluginManager.getPlugin(loginPluginName);
             if (lp == null) {
-                log.error("Can't authenticate against a null loginModule "
-                        + "plugin");
+                log.error("Can't authenticate against a null loginModule " + "plugin");
                 return null;
             }
             // set the parameters and reinit if needed
@@ -250,8 +239,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                 if (init) {
                     lpd.setInitialized(true);
                 } else {
-                    log.error("Unable to initialize LoginModulePlugin "
-                            + lp.getName());
+                    log.error("Unable to initialize LoginModulePlugin " + lp.getName());
                     return null;
                 }
             }
