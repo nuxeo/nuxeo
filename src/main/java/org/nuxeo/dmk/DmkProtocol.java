@@ -38,8 +38,7 @@ public class DmkProtocol {
 
     @Override
     public String toString() {
-        return "DmkProtocol [name=" + name + ", port=" + port + ", user="
-                + user + "]";
+        return "DmkProtocol [name=" + name + ", port=" + port + ", user=" + user + "]";
     }
 
 }

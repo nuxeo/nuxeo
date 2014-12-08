@@ -60,12 +60,10 @@ public class DmkComponent extends DefaultComponent {
 
     protected HtmlAdaptorServer newAdaptor(DmkProtocol config) {
         HtmlAdaptorServer adaptor = new HtmlAdaptorServer();
-        adaptor.addUserAuthenticationInfo(new AuthInfo(config.user,
-                config.password));
+        adaptor.addUserAuthenticationInfo(new AuthInfo(config.user, config.password));
         adaptor.setPort(config.port);
         try {
-            ObjectName name = new ObjectName(
-                    "org.nuxeo:type=jmx-adaptor,format=html");
+            ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,format=html");
             mbs.registerMBean(adaptor, name);
         } catch (JMException e) {
             throw new RuntimeException(e);
@@ -75,8 +73,7 @@ public class DmkComponent extends DefaultComponent {
 
     protected void destroyAdaptor(HtmlAdaptorServer adaptor) {
         try {
-            ObjectName name = new ObjectName(
-                    "org.nuxeo:type=jmx-adaptor,format=html");
+            ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,format=html");
             mbs.unregisterMBean(name);
         } catch (JMException e) {
             throw new RuntimeException(e);
@@ -90,15 +87,12 @@ public class DmkComponent extends DefaultComponent {
     protected JDMKServerConnector newConnector(DmkProtocol config) {
         try {
             String protocol = "jdmk-".concat(config.name);
-            JMXServiceURL httpURL = new JMXServiceURL(protocol, null,
-                    config.port);
+            JMXServiceURL httpURL = new JMXServiceURL(protocol, null, config.port);
             JDMKServerConnector connector = (JDMKServerConnector) JMXConnectorServerFactory.newJMXConnectorServer(
                     httpURL, null, mbs);
             GenericHttpConnectorServer server = (GenericHttpConnectorServer) connector.getWrapped();
-            server.addUserAuthenticationInfo(new AuthInfo(config.user,
-                    config.password));
-            ObjectName name = new ObjectName(
-                    "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
+            server.addUserAuthenticationInfo(new AuthInfo(config.user, config.password));
+            ObjectName name = new ObjectName("org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
             mbs.registerMBean(connector, name);
             return connector;
         } catch (JMException | IOException e) {
@@ -109,8 +103,7 @@ public class DmkComponent extends DefaultComponent {
     protected void destroyConnector(JDMKServerConnector connector) {
         String protocol = connector.getAddress().getProtocol();
         try {
-            ObjectName name = new ObjectName(
-                    "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
+            ObjectName name = new ObjectName("org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
             mbs.unregisterMBean(name);
         } catch (JMException e) {
             throw new RuntimeException(e);
@@ -155,8 +148,7 @@ public class DmkComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("protocols".equals(extensionPoint)) {
             DmkProtocol protocol = (DmkProtocol) contribution;
             configs.put(protocol.name, protocol);
@@ -171,14 +163,12 @@ public class DmkComponent extends DefaultComponent {
         }
         if (configs.containsKey("http")) {
             httpConnector = newConnector(configs.get("http"));
-            log.info("JMX HTTP connector available at "
-                    + httpConnector.getAddress()
+            log.info("JMX HTTP connector available at " + httpConnector.getAddress()
                     + " (not active, to be started in JMX console)");
         }
         if (configs.containsKey("https")) {
             httpsConnector = newConnector(configs.get("https"));
-            log.info("JMX HTTPS connector available at "
-                    + httpConnector.getAddress()
+            log.info("JMX HTTPS connector available at " + httpConnector.getAddress()
                     + " (not active, to be started in JMX console)");
         }
     }
