@@ -36,8 +36,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @since 5.7
  */
-public class StyleGuideServiceImpl extends DefaultComponent implements
-        StyleGuideService {
+public class StyleGuideServiceImpl extends DefaultComponent implements StyleGuideService {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,8 +53,7 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof IconDescriptor) {
             IconDescriptor icon = (IconDescriptor) contribution;
             log.info(String.format("Register icon '%s'", icon.getPath()));
@@ -65,14 +63,12 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (contribution instanceof IconDescriptor) {
             IconDescriptor icon = (IconDescriptor) contribution;
             log.info(String.format("Unregister icon '%s'", icon.getPath()));
             unregisterIcon(icon);
-            log.info(String.format("Done unregistering icon '%s'",
-                    icon.getPath()));
+            log.info(String.format("Done unregistering icon '%s'", icon.getPath()));
         }
     }
 
@@ -87,8 +83,7 @@ public class StyleGuideServiceImpl extends DefaultComponent implements
     // Service API
 
     @Override
-    public Map<String, List<IconDescriptor>> getIconsByCat(ExternalContext ctx,
-            String path) {
+    public Map<String, List<IconDescriptor>> getIconsByCat(ExternalContext ctx, String path) {
         List<String> iconPaths = resolvePaths(ctx, path);
         Map<String, List<IconDescriptor>> res = new HashMap<String, List<IconDescriptor>>();
         // add "unknown" cat by default

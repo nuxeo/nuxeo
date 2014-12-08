@@ -30,8 +30,8 @@ import org.nuxeo.ecm.styleguide.service.descriptors.IconDescriptor;
 public interface StyleGuideService extends Serializable {
 
     /**
-     * Returns a map of all icons given a path, creating descriptors from them
-     * and putting all unknown icons in the "unknown" category.
+     * Returns a map of all icons given a path, creating descriptors from them and putting all unknown icons in the
+     * "unknown" category.
      */
     Map<String, List<IconDescriptor>> getIconsByCat(ExternalContext cts, String path);
 

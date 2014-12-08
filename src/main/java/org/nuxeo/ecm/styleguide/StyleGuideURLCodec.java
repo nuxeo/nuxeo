@@ -116,8 +116,7 @@ public class StyleGuideURLCodec extends AbstractDocumentViewCodec {
                     }
                 }
 
-                final DocumentLocation docLoc = new DocumentLocationImpl(null,
-                        null);
+                final DocumentLocation docLoc = new DocumentLocationImpl(null, null);
 
                 return new DocumentViewImpl(docLoc, null, params);
             }
@@ -160,8 +159,7 @@ public class StyleGuideURLCodec extends AbstractDocumentViewCodec {
                     }
                 }
 
-                final DocumentLocation docLoc = new DocumentLocationImpl(null,
-                        null);
+                final DocumentLocation docLoc = new DocumentLocationImpl(null, null);
 
                 return new DocumentViewImpl(docLoc, DEFAULT_VIEW_ID, params);
             }

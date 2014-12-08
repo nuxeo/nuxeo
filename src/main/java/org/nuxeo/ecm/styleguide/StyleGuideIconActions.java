@@ -41,13 +41,11 @@ import org.nuxeo.runtime.api.Framework;
 public class StyleGuideIconActions {
 
     @Factory("styleGuideIcons")
-    public Map<String, List<IconDescriptor>> getIcons()
-            throws MalformedURLException, IOException, URISyntaxException,
+    public Map<String, List<IconDescriptor>> getIcons() throws MalformedURLException, IOException, URISyntaxException,
             Exception {
         FacesContext ctx = FacesContext.getCurrentInstance();
         StyleGuideService service = Framework.getService(StyleGuideService.class);
-        Map<String, List<IconDescriptor>> res = service.getIconsByCat(
-                ctx.getExternalContext(), "/icons");
+        Map<String, List<IconDescriptor>> res = service.getIconsByCat(ctx.getExternalContext(), "/icons");
         return res;
     }
 

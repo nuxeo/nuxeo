@@ -22,8 +22,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 /**
  * @since 5.7
  */
-public class StyleGuideIconRegistry extends
-        SimpleContributionRegistry<IconDescriptor> {
+public class StyleGuideIconRegistry extends SimpleContributionRegistry<IconDescriptor> {
 
     @Override
     public String getContributionId(IconDescriptor contrib) {
