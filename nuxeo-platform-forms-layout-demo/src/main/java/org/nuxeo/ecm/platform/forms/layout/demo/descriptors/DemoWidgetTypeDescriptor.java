@@ -39,8 +39,7 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     protected String name;
 
     /**
-     * Additional name that can be used when describing a widget type in a
-     * different category.
+     * Additional name that can be used when describing a widget type in a different category.
      *
      * @since 5.9.1
      */

@@ -44,8 +44,7 @@ public class TestLayoutDemoURLCodec {
         Map<String, String> params = new HashMap<String, String>();
         params.put("tabId", "TAB_CONTENT");
         params.put("conversationId", "3");
-        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents",
-                params);
+        DocumentView docView = new DocumentViewImpl(docLoc, "view_documents", params);
 
         String url = "applicationPrefix/view_documents/TAB_CONTENT";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
@@ -83,8 +82,7 @@ public class TestLayoutDemoURLCodec {
     }
 
     /**
-     * tests that js, img,... resources are not handled by the coded because
-     * tab and sub tab ids holds a "." character
+     * tests that js, img,... resources are not handled by the coded because tab and sub tab ids holds a "." character
      */
     @Test
     public void testGetDocumentViewFromResourceURL() {

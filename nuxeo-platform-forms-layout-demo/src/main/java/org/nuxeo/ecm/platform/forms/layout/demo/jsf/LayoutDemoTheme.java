@@ -23,8 +23,7 @@ import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.theme.negotiation.Scheme;
 
 /**
- * Overrides default theme negotiator to return the "galaxy/popup" mode
- * whenever browsing layoutDemo pages.
+ * Overrides default theme negotiator to return the "galaxy/popup" mode whenever browsing layoutDemo pages.
  *
  * @author Anahide Tchertchian
  */
@@ -33,9 +32,7 @@ public final class LayoutDemoTheme implements Scheme {
     public String getOutcome(final Object context) {
         ExternalContext eContext = ((FacesContext) context).getExternalContext();
         String servletPath = eContext.getRequestServletPath();
-        if (servletPath != null
-                && servletPath.startsWith("/"
-                        + LayoutDemoManager.APPLICATION_PATH)) {
+        if (servletPath != null && servletPath.startsWith("/" + LayoutDemoManager.APPLICATION_PATH)) {
             if (servletPath.contains("preview")) {
                 return "layoutDemo/frame";
             }

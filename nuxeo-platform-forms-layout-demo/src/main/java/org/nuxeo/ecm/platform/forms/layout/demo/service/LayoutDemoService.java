@@ -31,8 +31,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author Anahide Tchertchian
  */
-public class LayoutDemoService extends DefaultComponent implements
-        LayoutDemoManager {
+public class LayoutDemoService extends DefaultComponent implements LayoutDemoManager {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,16 +46,14 @@ public class LayoutDemoService extends DefaultComponent implements
     private final Map<String, String> widgetTypeByViewId = new HashMap<String, String>();
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             registerWidgetType(contribution);
         }
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(WIDGET_TYPES_EP_NAME)) {
             unregisterWidgetType(contribution);
         }
@@ -66,8 +63,7 @@ public class LayoutDemoService extends DefaultComponent implements
         DemoWidgetTypeDescriptor desc = (DemoWidgetTypeDescriptor) contribution;
         String name = desc.getName();
         if (widgetTypeRegistry.containsKey(name)) {
-            log.error(String.format("Overriding definition for widget type %s",
-                    name));
+            log.error(String.format("Overriding definition for widget type %s", name));
             widgetTypeRegistry.remove(name);
         }
         String category = desc.getCategory();
@@ -78,11 +74,9 @@ public class LayoutDemoService extends DefaultComponent implements
         String viewId = desc.getViewId();
         // TODO: query the layout service to get more information about this
         // widget type and use it in the demo
-        DemoWidgetType widgetType = new DemoWidgetTypeImpl(
-                desc.getWidgetTypeName(), desc.getLabel(), viewId, category,
-                wtCat, desc.isPreviewEnabled(), desc.isPreviewHideViewMode(),
-                desc.getFields(), desc.getDefaultProperties(),
-                desc.getDemoLayouts());
+        DemoWidgetType widgetType = new DemoWidgetTypeImpl(desc.getWidgetTypeName(), desc.getLabel(), viewId, category,
+                wtCat, desc.isPreviewEnabled(), desc.isPreviewHideViewMode(), desc.getFields(),
+                desc.getDefaultProperties(), desc.getDemoLayouts());
         widgetTypeRegistry.put(name, widgetType);
         if (category != null) {
             List<String> byCat = widgetTypesByCategory.get(category);
@@ -97,9 +91,8 @@ public class LayoutDemoService extends DefaultComponent implements
         if (widgetTypeByViewId.containsKey(viewId)) {
             String existingWidget = widgetTypeByViewId.get(viewId);
             if (!name.equals(existingWidget)) {
-                log.warn(String.format(
-                        "Changing view id '%s' from widget '%s' to widget '%s'",
-                        viewId, existingWidget, name));
+                log.warn(String.format("Changing view id '%s' from widget '%s' to widget '%s'", viewId, existingWidget,
+                        name));
             }
         }
         widgetTypeByViewId.put(viewId, name);

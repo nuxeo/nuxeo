@@ -57,8 +57,7 @@ import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
 import org.nuxeo.ecm.platform.query.core.BucketTerm;
 
 /**
- * Seam component providing information contextual to a session on the
- * application.
+ * Seam component providing information contextual to a session on the application.
  *
  * @author Anahide Tchertchian
  */
@@ -166,8 +165,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutDemoDocuments", scope = EVENT)
-    public PageSelections<DocumentModel> getDemoDocuments()
-            throws ClientException, Exception {
+    public PageSelections<DocumentModel> getDemoDocuments() throws ClientException, Exception {
         if (demoDocuments == null) {
             try {
                 List<PageSelection<DocumentModel>> docs = new ArrayList<PageSelection<DocumentModel>>();
@@ -183,41 +181,31 @@ public class LayoutDemoContext implements Serializable {
         return demoDocuments;
     }
 
-    protected DocumentModel fillPreviewDocumentProperties(DocumentModel doc,
-            int index) throws ClientException {
+    protected DocumentModel fillPreviewDocumentProperties(DocumentModel doc, int index) throws ClientException {
         // fill all fields used in preview
         if (index <= 1) {
             doc.setPropertyValue("lds:textField", "Some sample text");
             doc.setPropertyValue("lds:anotherTextField", "");
-            doc.setPropertyValue("lds:textareaField",
-                    "Some sample text with\nseveral lines.");
-            doc.setPropertyValue("lds:htmlField",
-                    "Some sample text<br/> with html <b>tags</b>.");
+            doc.setPropertyValue("lds:textareaField", "Some sample text with\nseveral lines.");
+            doc.setPropertyValue("lds:htmlField", "Some sample text<br/> with html <b>tags</b>.");
             doc.setPropertyValue("lds:secretField", "Some secret text");
             doc.setPropertyValue("lds:selectVocabularyField", "cartman");
-            doc.setPropertyValue("lds:selectMultiVocabularyField",
-                    new String[] { "cartman", "marsh" });
+            doc.setPropertyValue("lds:selectMultiVocabularyField", new String[] { "cartman", "marsh" });
             doc.setPropertyValue("lds:selectVocabularyLocalizedField", "europe");
-            doc.setPropertyValue("lds:selectMultiVocabularyLocalizedField",
-                    new String[] { "europe" });
+            doc.setPropertyValue("lds:selectMultiVocabularyLocalizedField", new String[] { "europe" });
             doc.setPropertyValue("lds:selectVocabularyL10NField", "europe");
-            doc.setPropertyValue("lds:selectMultiVocabularyL10NField",
-                    new String[] { "europe", "africa" });
+            doc.setPropertyValue("lds:selectMultiVocabularyL10NField", new String[] { "europe", "africa" });
             doc.setPropertyValue("lds:select_coverage_field", "africa/Botswana");
-            doc.setPropertyValue("lds:select_subjects_multi_fields",
-                    new String[] { "art/art history", "art/culture",
-                            "sciences/logic" });
+            doc.setPropertyValue("lds:select_subjects_multi_fields", new String[] { "art/art history", "art/culture",
+                    "sciences/logic" });
             doc.setPropertyValue("lds:select_user_field", "Administrator");
-            doc.setPropertyValue("lds:select_users_multi_fields",
-                    new String[] { "Administrator" });
+            doc.setPropertyValue("lds:select_users_multi_fields", new String[] { "Administrator" });
             doc.setPropertyValue("lds:select_doc_field", "");
-            doc.setPropertyValue("lds:select_docs_multi_fields",
-                    new String[] {});
+            doc.setPropertyValue("lds:select_docs_multi_fields", new String[] {});
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(666));
             doc.setPropertyValue("lds:booleanField", Boolean.FALSE);
-            StringBlob blob = new StringBlob("Hello!\nThis is a sample text.",
-                    "text/plain", "UTF-8");
+            StringBlob blob = new StringBlob("Hello!\nThis is a sample text.", "text/plain", "UTF-8");
             blob.setFilename("hello.txt");
             doc.setPropertyValue("lds:fileField", blob);
 
@@ -246,32 +234,25 @@ public class LayoutDemoContext implements Serializable {
         } else {
             doc.setPropertyValue("lds:textField", "Some other sample text");
             doc.setPropertyValue("lds:anotherTextField", "");
-            doc.setPropertyValue("lds:textareaField",
-                    "Some other sample text with\nseveral lines.");
-            doc.setPropertyValue("lds:htmlField",
-                    "Some other sample text<br/> with html <b>tags</b>.");
+            doc.setPropertyValue("lds:textareaField", "Some other sample text with\nseveral lines.");
+            doc.setPropertyValue("lds:htmlField", "Some other sample text<br/> with html <b>tags</b>.");
             doc.setPropertyValue("lds:secretField", "Some other secret text");
             doc.setPropertyValue("lds:selectVocabularyField", "marsh");
-            doc.setPropertyValue("lds:selectMultiVocabularyField",
-                    new String[] { "cartman" });
+            doc.setPropertyValue("lds:selectMultiVocabularyField", new String[] { "cartman" });
             doc.setPropertyValue("select_coverage_field", "africa/Botswana");
-            doc.setPropertyValue("lds:select_subjects_multi_fields",
-                    new String[] { "art/art history", "art/culture",
-                            "sciences/logic" });
+            doc.setPropertyValue("lds:select_subjects_multi_fields", new String[] { "art/art history", "art/culture",
+                    "sciences/logic" });
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(667));
             doc.setPropertyValue("lds:booleanField", Boolean.TRUE);
-            StringBlob blob = new StringBlob(
-                    "Hello!\nThis is another sample text.", "text/plain",
-                    "UTF-8");
+            StringBlob blob = new StringBlob("Hello!\nThis is another sample text.", "text/plain", "UTF-8");
             blob.setFilename("hello-again.txt");
             doc.setPropertyValue("lds:fileField", blob);
         }
         return doc;
     }
 
-    protected DocumentModel fillListingDocumentProperties(DocumentModel doc,
-            int index) throws ClientException {
+    protected DocumentModel fillListingDocumentProperties(DocumentModel doc, int index) throws ClientException {
         if (index <= 1) {
             doc.prefetchCurrentLifecycleState("project");
         } else {
@@ -305,8 +286,7 @@ public class LayoutDemoContext implements Serializable {
         return doc;
     }
 
-    protected DocumentModel getListingDemoDocument(int index)
-            throws ClientException {
+    protected DocumentModel getListingDemoDocument(int index) throws ClientException {
         DocumentModel doc = generateBareDemoDocument();
         doc.setPathInfo("/", "demoDoc_" + index);
         fillListingDocumentProperties(doc, index);
@@ -320,8 +300,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutDemoCustomActions", scope = EVENT)
-    public List<Action> getLayoutDemoCustomActions() throws ClientException,
-            Exception {
+    public List<Action> getLayoutDemoCustomActions() throws ClientException, Exception {
         if (layoutDemoCustomActions == null) {
             try {
                 layoutDemoCustomActions = new ArrayList<Action>();
@@ -330,8 +309,7 @@ public class LayoutDemoContext implements Serializable {
                     throw new IllegalArgumentException("Faces context is null");
                 }
                 ActionContext ctx = new JSFActionContext(faces);
-                List<Action> actions = actionManager.getActions(
-                        "LAYOUT_DEMO_ACTIONS", ctx);
+                List<Action> actions = actionManager.getActions("LAYOUT_DEMO_ACTIONS", ctx);
                 if (actions != null) {
                     layoutDemoCustomActions.addAll(actions);
                 }
@@ -346,14 +324,12 @@ public class LayoutDemoContext implements Serializable {
      * @since 6.0
      */
     @Factory(value = "layoutDemoAggregates", scope = EVENT)
-    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates()
-            throws ClientException, Exception {
+    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates() throws ClientException, Exception {
         if (layoutDemoAggregates == null) {
             layoutDemoAggregates = new HashMap<>();
 
             AggregateDefinition mockDef = new AggregateDescriptor();
             mockDef.setId("mock");
-
 
             List<Bucket> buckets = new ArrayList<>();
             buckets.add(new BucketTerm("eric", 10));

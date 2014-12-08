@@ -49,11 +49,9 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     protected List<DemoLayout> demoLayouts;
 
-    public DemoWidgetTypeImpl(String name, String label, String viewId,
-            String category, String widgetTypeCategory, boolean previewEnabled,
-            boolean previewHideViewMode, List<String> fields,
-            Map<String, Serializable> defaultProperties,
-            List<DemoLayout> demoLayouts) {
+    public DemoWidgetTypeImpl(String name, String label, String viewId, String category, String widgetTypeCategory,
+            boolean previewEnabled, boolean previewHideViewMode, List<String> fields,
+            Map<String, Serializable> defaultProperties, List<DemoLayout> demoLayouts) {
         super();
         this.name = name;
         this.label = label;
@@ -131,8 +129,8 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     @Override
     public String toString() {
-        return String.format("DemoWidgetTypeImpl [name=%s, label=%s, "
-                + "viewId=%s, category=%s]", name, label, viewId, category);
+        return String.format("DemoWidgetTypeImpl [name=%s, label=%s, " + "viewId=%s, category=%s]", name, label,
+                viewId, category);
     }
 
 }

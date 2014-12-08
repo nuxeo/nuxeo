@@ -42,10 +42,8 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.demo",
-                "OSGI-INF/layout-demo-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.demo",
-                "OSGI-INF/layout-demo-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.demo", "OSGI-INF/layout-demo-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.demo", "OSGI-INF/layout-demo-contrib.xml");
 
         service = Framework.getService(LayoutDemoManager.class);
     }
@@ -58,10 +56,8 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
     public void tearDown() throws Exception {
         service = null;
 
-        undeployContrib("org.nuxeo.ecm.platform.forms.layout.demo",
-                "OSGI-INF/layout-demo-contrib.xml");
-        undeployContrib("org.nuxeo.ecm.platform.forms.layout.demo",
-                "OSGI-INF/layout-demo-framework.xml");
+        undeployContrib("org.nuxeo.ecm.platform.forms.layout.demo", "OSGI-INF/layout-demo-contrib.xml");
+        undeployContrib("org.nuxeo.ecm.platform.forms.layout.demo", "OSGI-INF/layout-demo-framework.xml");
 
         super.tearDown();
     }
@@ -72,8 +68,7 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals("text", textWidget.getName());
         assertEquals("Text", textWidget.getLabel());
         assertEquals("textWidget", textWidget.getViewId());
-        assertEquals(LayoutDemoManager.APPLICATION_PATH + "textWidget",
-                textWidget.getUrl());
+        assertEquals(LayoutDemoManager.APPLICATION_PATH + "textWidget", textWidget.getUrl());
         assertEquals("standard", textWidget.getCategory());
         List<String> fields = textWidget.getFields();
         assertNotNull(fields);
@@ -88,37 +83,30 @@ public class TestLayoutDemoService extends NXRuntimeTestCase {
         assertEquals(2, demoLayouts.size());
         assertEquals("textWidgetLayout", demoLayouts.get(0).getName());
         assertFalse(demoLayouts.get(0).isListing());
-        assertEquals(LayoutDemoManager.APPLICATION_PATH
-                + "sources/OSGI-INF/demo/layout-demo-text-widget.xml",
+        assertEquals(LayoutDemoManager.APPLICATION_PATH + "sources/OSGI-INF/demo/layout-demo-text-widget.xml",
                 demoLayouts.get(0).getSourcePath());
         assertEquals("textWidgetListingLayout", demoLayouts.get(1).getName());
         assertTrue(demoLayouts.get(1).isListing());
-        assertEquals(LayoutDemoManager.APPLICATION_PATH
-                + "sources/OSGI-INF/demo/layout-demo-text-listing-widget.xml",
+        assertEquals(LayoutDemoManager.APPLICATION_PATH + "sources/OSGI-INF/demo/layout-demo-text-listing-widget.xml",
                 demoLayouts.get(1).getSourcePath());
 
         DemoWidgetType textareaWidget = service.getWidgetType("textarea");
         assertEquals("textarea", textareaWidget.getName());
         assertEquals("Textarea", textareaWidget.getLabel());
         assertEquals("textareaWidget", textareaWidget.getViewId());
-        assertEquals(LayoutDemoManager.APPLICATION_PATH + "textareaWidget",
-                textareaWidget.getUrl());
+        assertEquals(LayoutDemoManager.APPLICATION_PATH + "textareaWidget", textareaWidget.getUrl());
         assertEquals("standard", textareaWidget.getCategory());
         demoLayouts = textareaWidget.getDemoLayouts();
         assertNotNull(demoLayouts);
         assertEquals(2, demoLayouts.size());
         assertEquals("textareaWidgetLayout", demoLayouts.get(0).getName());
         assertFalse(demoLayouts.get(0).isListing());
-        assertEquals(LayoutDemoManager.APPLICATION_PATH
-                + "sources/OSGI-INF/demo/layout-demo-textarea-widget.xml",
+        assertEquals(LayoutDemoManager.APPLICATION_PATH + "sources/OSGI-INF/demo/layout-demo-textarea-widget.xml",
                 demoLayouts.get(0).getSourcePath());
-        assertEquals("textareaWidgetListingLayout",
-                demoLayouts.get(1).getName());
+        assertEquals("textareaWidgetListingLayout", demoLayouts.get(1).getName());
         assertTrue(demoLayouts.get(1).isListing());
-        assertEquals(
-                LayoutDemoManager.APPLICATION_PATH
-                        + "sources/OSGI-INF/demo/layout-demo-textarea-listing-widget.xml",
-                demoLayouts.get(1).getSourcePath());
+        assertEquals(LayoutDemoManager.APPLICATION_PATH
+                + "sources/OSGI-INF/demo/layout-demo-textarea-listing-widget.xml", demoLayouts.get(1).getSourcePath());
     }
 
     @Test

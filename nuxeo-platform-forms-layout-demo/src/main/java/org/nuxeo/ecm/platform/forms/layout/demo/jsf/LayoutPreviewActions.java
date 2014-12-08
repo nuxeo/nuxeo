@@ -52,43 +52,35 @@ public class LayoutPreviewActions {
     // XXX: use hard coded JSF category for now
     public static final String LAYOUT_CATEGORY = "jsf";
 
-    public String getPreviewLayoutURL(PreviewLayoutDefinition previewLayoutDef,
-            String layoutMode, String layoutTemplate)
+    public String getPreviewLayoutURL(PreviewLayoutDefinition previewLayoutDef, String layoutMode, String layoutTemplate)
             throws UnsupportedEncodingException, ClientException {
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("layoutDefinition",
-                getEncodedLayoutDefinition(previewLayoutDef));
+        parameters.put("layoutDefinition", getEncodedLayoutDefinition(previewLayoutDef));
         parameters.put("layoutMode", layoutMode);
         parameters.put("layoutTemplate", layoutTemplate);
         return URIUtils.addParametersToURIQuery(LayoutDemoManager.PREVIEW_PATH
                 + LayoutDemoURLCodec.LAYOUT_PREVIEW_FRAME_VIEW_ID, parameters);
     }
 
-    public LayoutDefinition getLayoutDefinition(
-            PreviewLayoutDefinition previewLayoutDef) {
+    public LayoutDefinition getLayoutDefinition(PreviewLayoutDefinition previewLayoutDef) {
         if (previewLayoutDef == null) {
             return null;
         }
-        WidgetDefinition widgetDef = new WidgetDefinitionImpl("preview_widget",
-                previewLayoutDef.getWidgetType(), previewLayoutDef.getLabel(),
-                previewLayoutDef.getHelpLabel(),
-                Boolean.TRUE.equals(previewLayoutDef.getTranslated()), null,
-                previewLayoutDef.getFieldDefinitions(),
-                previewLayoutDef.getWidgetProperties(),
-                previewLayoutDef.getSubWidgets());
+        WidgetDefinition widgetDef = new WidgetDefinitionImpl("preview_widget", previewLayoutDef.getWidgetType(),
+                previewLayoutDef.getLabel(), previewLayoutDef.getHelpLabel(),
+                Boolean.TRUE.equals(previewLayoutDef.getTranslated()), null, previewLayoutDef.getFieldDefinitions(),
+                previewLayoutDef.getWidgetProperties(), previewLayoutDef.getSubWidgets());
         widgetDef.setHandlingLabels(Boolean.TRUE.equals(previewLayoutDef.getHandlingLabels()));
         return new LayoutDefinitionImpl("preview_layout", null, widgetDef);
     }
 
-    public String getEncodedLayoutDefinition(
-            PreviewLayoutDefinition previewLayoutDef)
+    public String getEncodedLayoutDefinition(PreviewLayoutDefinition previewLayoutDef)
             throws UnsupportedEncodingException {
         LayoutDefinition def = getLayoutDefinition(previewLayoutDef);
         return getEncodedLayoutDefinition(def);
     }
 
-    public String getEncodedLayoutDefinition(LayoutDefinition def)
-            throws UnsupportedEncodingException {
+    public String getEncodedLayoutDefinition(LayoutDefinition def) throws UnsupportedEncodingException {
         JSONObject json = JSONLayoutExporter.exportToJson(LAYOUT_CATEGORY, def);
         if (log.isDebugEnabled()) {
             log.debug("Encoded layout definition: " + json.toString());
@@ -96,9 +88,8 @@ public class LayoutPreviewActions {
         return JSONLayoutExporter.encode(json);
     }
 
-    public LayoutDefinition getDecodedLayoutDefinition(
-            String jsonEncodedLayoutDef) throws UnsupportedEncodingException,
-            ClientException {
+    public LayoutDefinition getDecodedLayoutDefinition(String jsonEncodedLayoutDef)
+            throws UnsupportedEncodingException, ClientException {
         if (StringUtils.isBlank(jsonEncodedLayoutDef)) {
             return null;
         }

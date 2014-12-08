@@ -44,24 +44,21 @@ public abstract class Page {
     protected WebElement previewTabLink;
 
     public OverviewTab goToOverviewTab() {
-        if (!overviewTabLink.findElement(By.xpath("ancestor::li")).getAttribute(
-                "class").equals(SELECTED_TAB_CSS_CLASS)) {
+        if (!overviewTabLink.findElement(By.xpath("ancestor::li")).getAttribute("class").equals(SELECTED_TAB_CSS_CLASS)) {
             overviewTabLink.click();
         }
         return AbstractTest.asPage(OverviewTab.class);
     }
 
     public PreviewTab goToPreviewTab() {
-        if (!previewTabLink.findElement(By.xpath("ancestor::li")).getAttribute(
-                "class").equals(SELECTED_TAB_CSS_CLASS)) {
+        if (!previewTabLink.findElement(By.xpath("ancestor::li")).getAttribute("class").equals(SELECTED_TAB_CSS_CLASS)) {
             previewTabLink.click();
         }
         return AbstractTest.asPage(PreviewTab.class);
     }
 
     public ReferenceTab goToReferenceTab() {
-        if (!referenceTabLink.findElement(By.xpath("ancestor::li")).getAttribute(
-                "class").equals(SELECTED_TAB_CSS_CLASS)) {
+        if (!referenceTabLink.findElement(By.xpath("ancestor::li")).getAttribute("class").equals(SELECTED_TAB_CSS_CLASS)) {
             referenceTabLink.click();
         }
         return AbstractTest.asPage(ReferenceTab.class);
