@@ -38,16 +38,13 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- *
- *
  * @since 5.8
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = MultiTenantRepositoryInit.class)
 @Jetty(port = 18080)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common" })
+@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml" })
 public class TestRestAPIWithMultiTenant {
@@ -59,8 +56,6 @@ public class TestRestAPIWithMultiTenant {
     protected DirectoryService directoryService;
 
     HttpAutomationClient client = new HttpAutomationClient("http://localhost:18080/automation/");
-
-
 
     @Test
     public void restAPICanAccessTenantSpecifyingDomainPart() throws Exception {

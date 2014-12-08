@@ -44,11 +44,9 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
     @Override
     public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal) {
         final List<String> groups = new ArrayList<String>();
-        final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue(
-                "user:tenantId");
+        final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue("user:tenantId");
         if (!StringUtils.isBlank(tenantId)) {
-            String defaultRepositoryName = Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepositoryName();
+            String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepositoryName();
 
             boolean transactionStarted = false;
             if (!TransactionHelper.isTransactionActive()) {
@@ -60,8 +58,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                     @Override
                     public void run() throws ClientException {
 
-                        String query = String.format(
-                                "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
+                        String query = String.format("SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
                                 tenantId);
                         List<DocumentModel> docs = session.query(query);
                         if (!docs.isEmpty()) {

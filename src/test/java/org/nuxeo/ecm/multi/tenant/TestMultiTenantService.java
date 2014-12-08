@@ -80,10 +80,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({
-        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
 public class TestMultiTenantService {
 
@@ -143,8 +141,7 @@ public class TestMultiTenantService {
         multiTenantService.enableTenantIsolation(session);
         assertTrue(multiTenantService.isTenantIsolationEnabled(session));
 
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
         assertNotNull(domain);
         assertTrue(domain.hasFacet(TENANT_CONFIG_FACET));
         ACL acl = domain.getACP().getOrCreateACL();
@@ -170,17 +167,14 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldEnableTenantIsolationForNewDomain()
-            throws ClientException {
+    public void shouldEnableTenantIsolationForNewDomain() throws ClientException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel newDomain = session.createDocumentModel("/", "newDomain",
-                "Domain");
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
         newDomain = session.createDocument(newDomain);
         session.save();
         assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
-        assertEquals(newDomain.getName(),
-                newDomain.getPropertyValue(TENANT_ID_PROPERTY));
+        assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
 
         Session session = null;
         try {
@@ -194,8 +188,7 @@ public class TestMultiTenantService {
             }
             DocumentModel doc = docs.get(1);
             assertEquals(newDomain.getName(), doc.getPropertyValue("tenant:id"));
-            assertEquals(newDomain.getTitle(),
-                    doc.getPropertyValue("tenant:label"));
+            assertEquals(newDomain.getTitle(), doc.getPropertyValue("tenant:label"));
         } finally {
             if (session != null) {
                 session.close();
@@ -208,12 +201,10 @@ public class TestMultiTenantService {
         multiTenantService.enableTenantIsolation(session);
 
         assertTrue(multiTenantService.isTenantIsolationEnabled(session));
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
         assertNotNull(domain);
         assertTrue(domain.hasFacet(TENANT_CONFIG_FACET));
-        assertEquals("default-domain",
-                domain.getPropertyValue(TENANT_ID_PROPERTY));
+        assertEquals("default-domain", domain.getPropertyValue(TENANT_ID_PROPERTY));
 
         ACP acp = domain.getACP();
         ACL acl = acp.getOrCreateACL();
@@ -226,8 +217,7 @@ public class TestMultiTenantService {
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
-            assertEquals(domain.getTitle(),
-                    doc.getPropertyValue("tenant:label"));
+            assertEquals(domain.getTitle(), doc.getPropertyValue("tenant:label"));
         } finally {
             if (session != null) {
                 session.close();
@@ -236,29 +226,23 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldGiveManageEverythingRightForTenantManager()
-            throws ClientException, LoginException {
+    public void shouldGiveManageEverythingRightForTenantManager() throws ClientException, LoginException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
         assertNotNull(domain);
         assertTrue(domain.hasFacet(TENANT_CONFIG_FACET));
-        assertEquals(domain.getName(),
-                domain.getPropertyValue(TENANT_ID_PROPERTY));
+        assertEquals(domain.getName(), domain.getPropertyValue(TENANT_ID_PROPERTY));
 
         NuxeoPrincipal bender = createUser("bender", false, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("bender");
         try (CoreSession benderSession = openSession()) {
-            assertTrue(benderSession.hasPermission(domain.getRef(),
-                    SecurityConstants.READ));
-            assertFalse(benderSession.hasPermission(domain.getRef(),
-                    SecurityConstants.EVERYTHING));
+            assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.READ));
+            assertFalse(benderSession.hasPermission(domain.getRef(), SecurityConstants.EVERYTHING));
         }
         loginContext.logout();
 
-        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY,
-                (Serializable) Arrays.asList("bender"));
+        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) Arrays.asList("bender"));
         session.saveDocument(domain);
         session.save();
 
@@ -266,34 +250,28 @@ public class TestMultiTenantService {
         loginContext = Framework.loginAsUser("bender");
         try (CoreSession benderSession = openSession()) {
             benderSession.save();
-            assertTrue(benderSession.hasPermission(domain.getRef(),
-                    SecurityConstants.READ));
-            assertTrue(benderSession.hasPermission(domain.getRef(),
-                    SecurityConstants.EVERYTHING));
+            assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.READ));
+            assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.EVERYTHING));
         }
         loginContext.logout();
     }
 
     @Test
-    public void tenantManagerShouldCreateGroupsForTenant()
-            throws ClientException, LoginException {
+    public void tenantManagerShouldCreateGroupsForTenant() throws ClientException, LoginException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
 
         createUser("fry", true, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup nuxeoGroup = createGroup("testGroup");
-        assertEquals("tenant_" + domain.getName() + "_testGroup",
-                nuxeoGroup.getName());
+        assertEquals("tenant_" + domain.getName() + "_testGroup", nuxeoGroup.getName());
 
         List<DocumentModel> groups = userManager.searchGroups(null);
         assertEquals(1, groups.size());
         DocumentModel group = groups.get(0);
-        assertEquals("tenant_" + domain.getName() + "_testGroup",
-                group.getPropertyValue("group:groupname"));
+        assertEquals("tenant_" + domain.getName() + "_testGroup", group.getPropertyValue("group:groupname"));
         assertEquals(domain.getName(), group.getPropertyValue("group:tenantId"));
 
         loginContext.logout();
@@ -309,14 +287,11 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldGiveWriteRightOnTenant() throws ClientException,
-            LoginException {
+    public void shouldGiveWriteRightOnTenant() throws ClientException, LoginException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
-        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY,
-                (Serializable) Arrays.asList("fry"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
+        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) Arrays.asList("fry"));
         session.saveDocument(domain);
         session.save();
 
@@ -324,8 +299,7 @@ public class TestMultiTenantService {
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup nuxeoGroup = createGroup("supermembers");
-        assertEquals("tenant_" + domain.getName() + "_supermembers",
-                nuxeoGroup.getName());
+        assertEquals("tenant_" + domain.getName() + "_supermembers", nuxeoGroup.getName());
 
         try (CoreSession frySession = openSession()) {
             // add the Read ACL
@@ -361,22 +335,19 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void tenantManagerShouldModifyOnlyTenantGroups()
-            throws ClientException, LoginException {
+    public void tenantManagerShouldModifyOnlyTenantGroups() throws ClientException, LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         NuxeoGroup noTenantGroup = createGroup("noTenantGroup");
         assertEquals("noTenantGroup", noTenantGroup.getName());
 
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
 
         createUser("fry", true, domain.getName());
         LoginContext loginContext = Framework.loginAsUser("fry");
 
         NuxeoGroup tenantGroup = createGroup("tenantGroup");
-        assertEquals("tenant_" + domain.getName() + "_tenantGroup",
-                tenantGroup.getName());
+        assertEquals("tenant_" + domain.getName() + "_tenantGroup", tenantGroup.getName());
 
         // cannot delete
         try {
@@ -418,16 +389,13 @@ public class TestMultiTenantService {
     public void shouldRewriteACLs() throws ClientException {
         multiTenantService.enableTenantIsolation(session);
 
-        DocumentModel newDomain = session.createDocumentModel("/", "newDomain",
-                "Domain");
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
         newDomain = session.createDocument(newDomain);
         session.save();
         assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
-        assertEquals(newDomain.getName(),
-                newDomain.getPropertyValue(TENANT_ID_PROPERTY));
+        assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
 
-        DocumentModel newWS = session.createDocumentModel(
-                newDomain.getPathAsString(), "newFolder", "Workspace");
+        DocumentModel newWS = session.createDocumentModel(newDomain.getPathAsString(), "newFolder", "Workspace");
         newWS = session.createDocument(newWS);
         session.save();
 
@@ -470,15 +438,14 @@ public class TestMultiTenantService {
         }
 
         DocumentModel powerUsers = userManager.getBareGroupModel();
-        powerUsers.setPropertyValue("group:groupname",
-                Constants.POWER_USERS_GROUP);
+        powerUsers.setPropertyValue("group:groupname", Constants.POWER_USERS_GROUP);
         powerUsers = userManager.createGroup(powerUsers);
         login.logout();
         return powerUsers.getId();
     }
 
-    protected NuxeoPrincipal createUser(String username, boolean isPowerUser,
-            String tenant) throws ClientException, LoginException {
+    protected NuxeoPrincipal createUser(String username, boolean isPowerUser, String tenant) throws ClientException,
+            LoginException {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);

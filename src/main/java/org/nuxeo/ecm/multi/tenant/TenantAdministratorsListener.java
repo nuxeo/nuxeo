@@ -12,8 +12,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.EventService;
 
 /**
- * Listeners invalidating the principals cache when the tenant administrators
- * are changed.
+ * Listeners invalidating the principals cache when the tenant administrators are changed.
  *
  * @since 5.9.2
  */
@@ -34,8 +33,7 @@ public class TenantAdministratorsListener implements EventListener {
             if (property.isDirty()) {
                 // flush the principals cache
                 EventService eventService = Framework.getLocalService(EventService.class);
-                eventService.sendEvent(new org.nuxeo.runtime.services.event.Event(
-                        UserManagerImpl.USERMANAGER_TOPIC,
+                eventService.sendEvent(new org.nuxeo.runtime.services.event.Event(UserManagerImpl.USERMANAGER_TOPIC,
                         "invalidateAllPrincipals", null, null));
             }
         }

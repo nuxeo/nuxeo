@@ -55,20 +55,17 @@ public class MultiTenantHelper {
     protected static final String NO_TENANT = "NO_TENANT";
 
     protected final static Cache<String, String> pathCache = CacheBuilder.newBuilder().concurrencyLevel(
-            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
-            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     protected final static Cache<String, String> tenantBinding = CacheBuilder.newBuilder().concurrencyLevel(
-            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
-            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     private MultiTenantHelper() {
         // helper class
     }
 
     public static String computeTenantAdministratorsGroup(String tenantId) {
-        return TENANT_GROUP_PREFIX + tenantId
-                + TENANT_ADMINISTRATORS_GROUP_SUFFIX;
+        return TENANT_GROUP_PREFIX + tenantId + TENANT_ADMINISTRATORS_GROUP_SUFFIX;
     }
 
     public static String computeTenantMembersGroup(String tenantId) {
@@ -76,15 +73,12 @@ public class MultiTenantHelper {
     }
 
     /**
-     * Returns the current tenantId for the given {@code principal}, or from the
-     * principal stored in the login stack.
+     * Returns the current tenantId for the given {@code principal}, or from the principal stored in the login stack.
      * <p>
-     * The {@code principal} is used if it is a {@link SystemPrincipal}, then
-     * the tenantId is retrieved from the Principal matching the
-     * {@link SystemPrincipal#getOriginatingUser()}.
+     * The {@code principal} is used if it is a {@link SystemPrincipal}, then the tenantId is retrieved from the
+     * Principal matching the {@link SystemPrincipal#getOriginatingUser()}.
      */
-    public static String getCurrentTenantId(Principal principal)
-            throws ClientException {
+    public static String getCurrentTenantId(Principal principal) throws ClientException {
         if (principal instanceof SystemPrincipal) {
             UserManager userManager = Framework.getLocalService(UserManager.class);
             String originatingUser = ((SystemPrincipal) principal).getOriginatingUser();
@@ -101,8 +95,7 @@ public class MultiTenantHelper {
     }
 
     /**
-     * Returns the tenantId for the given {@code username} if any, {@code null}
-     * otherwise.
+     * Returns the tenantId for the given {@code username} if any, {@code null} otherwise.
      */
     public static String getTenantId(String username) throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
@@ -111,20 +104,17 @@ public class MultiTenantHelper {
     }
 
     /**
-     * Returns the path of the tenant document matching the {@code tenantId}, or
-     * {@code null} if there is no document matching.
+     * Returns the path of the tenant document matching the {@code tenantId}, or {@code null} if there is no document
+     * matching.
      */
-    public static String getTenantDocumentPath(CoreSession session,
-            final String tenantId) throws ClientException {
+    public static String getTenantDocumentPath(CoreSession session, final String tenantId) throws ClientException {
         final List<String> paths = new ArrayList<String>();
         String path = pathCache.getIfPresent(tenantId);
         if (path == null) {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
-                    String query = String.format(
-                            "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
-                            tenantId);
+                    String query = String.format("SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'", tenantId);
                     List<DocumentModel> docs = session.query(query);
                     if (!docs.isEmpty()) {
                         paths.add(docs.get(0).getPathAsString());
@@ -143,13 +133,10 @@ public class MultiTenantHelper {
      * Return the Tenant containing the provided DocumentModel if any
      * 
      * @param doc
-     * @return DocumentModel corresponding to the Tenant container, null
-     *         otherwise
-     * 
+     * @return DocumentModel corresponding to the Tenant container, null otherwise
      * @throws ClientException
      */
-    public static String getOwningTenantId(final DocumentModel doc)
-            throws ClientException {
+    public static String getOwningTenantId(final DocumentModel doc) throws ClientException {
         String tenantId = tenantBinding.getIfPresent(doc.getId());
         if (NO_TENANT.equals(tenantId)) {
             return null;

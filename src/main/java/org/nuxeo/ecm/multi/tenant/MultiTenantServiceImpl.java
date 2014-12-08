@@ -55,8 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public class MultiTenantServiceImpl extends DefaultComponent implements
-        MultiTenantService {
+public class MultiTenantServiceImpl extends DefaultComponent implements MultiTenantService {
 
     private static final Log log = LogFactory.getLog(MultiTenantServiceImpl.class);
 
@@ -77,8 +76,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean isTenantIsolationEnabled(CoreSession session)
-            throws ClientException {
+    public boolean isTenantIsolationEnabled(CoreSession session) throws ClientException {
         if (isTenantIsolationEnabled == null) {
             final List<DocumentModel> tenants = new ArrayList<DocumentModel>();
             new UnrestrictedSessionRunner(session) {
@@ -94,15 +92,13 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void enableTenantIsolation(CoreSession session)
-            throws ClientException {
+    public void enableTenantIsolation(CoreSession session) throws ClientException {
         if (!isTenantIsolationEnabled(session)) {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
                     String query = "SELECT * FROM Document WHERE ecm:primaryType = '%s'";
-                    List<DocumentModel> docs = session.query(String.format(
-                            query, configuration.getTenantDocumentType()));
+                    List<DocumentModel> docs = session.query(String.format(query, configuration.getTenantDocumentType()));
                     for (DocumentModel doc : docs) {
                         enableTenantIsolationFor(session, doc);
                     }
@@ -114,8 +110,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void disableTenantIsolation(CoreSession session)
-            throws ClientException {
+    public void disableTenantIsolation(CoreSession session) throws ClientException {
         if (isTenantIsolationEnabled(session)) {
             new UnrestrictedSessionRunner(session) {
                 @Override
@@ -133,8 +128,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void enableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException {
+    public void enableTenantIsolationFor(CoreSession session, DocumentModel doc) throws ClientException {
         if (!doc.hasFacet(TENANT_CONFIG_FACET)) {
             doc.addFacet(TENANT_CONFIG_FACET);
         }
@@ -147,8 +141,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
         session.saveDocument(doc);
     }
 
-    private DocumentModel registerTenant(DocumentModel doc)
-            throws ClientException {
+    private DocumentModel registerTenant(DocumentModel doc) throws ClientException {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         Session session = null;
         try {
@@ -165,23 +158,20 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
         }
     }
 
-    private void setTenantACL(String tenantId, DocumentModel doc)
-            throws ClientException {
+    private void setTenantACL(String tenantId, DocumentModel doc) throws ClientException {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
 
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
         acl.add(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
         String tenantMembersGroup = computeTenantMembersGroup(tenantId);
-        acl.add(new ACE(tenantMembersGroup,
-                configuration.getMembersGroupPermission(), true));
+        acl.add(new ACE(tenantMembersGroup, configuration.getMembersGroupPermission(), true));
         acl.add(new ACE(EVERYONE, EVERYTHING, false));
         doc.setACP(acp, true);
     }
 
     @Override
-    public void disableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException {
+    public void disableTenantIsolationFor(CoreSession session, DocumentModel doc) throws ClientException {
         if (session.exists(doc.getRef())) {
             if (doc.hasFacet(TENANT_CONFIG_FACET)) {
                 doc.removeFacet(TENANT_CONFIG_FACET);
@@ -199,13 +189,11 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
 
         // remove only the ACEs we added
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
-        int tenantAdministratorsGroupACEIndex = acl.indexOf(new ACE(
-                tenantAdministratorsGroup, EVERYTHING, true));
+        int tenantAdministratorsGroupACEIndex = acl.indexOf(new ACE(tenantAdministratorsGroup, EVERYTHING, true));
         if (tenantAdministratorsGroupACEIndex >= 0) {
             List<ACE> newACEs = new ArrayList<ACE>();
             newACEs.addAll(acl.subList(0, tenantAdministratorsGroupACEIndex));
-            newACEs.addAll(acl.subList(tenantAdministratorsGroupACEIndex + 3,
-                    acl.size()));
+            newACEs.addAll(acl.subList(tenantAdministratorsGroupACEIndex + 3, acl.size()));
             acl.setACEs(newACEs.toArray(new ACE[newACEs.size()]));
         }
         doc.setACP(acp, true);
@@ -258,8 +246,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
                 new UnrestrictedSessionRunner(repositoryName) {
                     @Override
                     public void run() throws ClientException {
-                        if (isTenantIsolationEnabledByDefault()
-                                && !isTenantIsolationEnabled(session)) {
+                        if (isTenantIsolationEnabledByDefault() && !isTenantIsolationEnabled(session)) {
                             enableTenantIsolation(session);
                         }
                     }
@@ -280,8 +267,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
             if (configuration != null) {
                 log.warn("Overriding existing multi tenant configuration");
@@ -291,8 +277,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
             if (configuration.equals(contribution)) {
                 configuration = null;
@@ -302,7 +287,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
 
     @Override
     public List<String> getProhibitedGroups() {
-        if (configuration!=null) {
+        if (configuration != null) {
             return configuration.getProhibitedGroups();
         }
         return null;

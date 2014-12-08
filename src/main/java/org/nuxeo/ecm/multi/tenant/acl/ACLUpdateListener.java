@@ -34,11 +34,9 @@ import org.nuxeo.ecm.multi.tenant.MultiTenantService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Intercepts ACL changes and restrict Grant to Tenant bound groups for a
- * configured list of global groups
+ * Intercepts ACL changes and restrict Grant to Tenant bound groups for a configured list of global groups
  * 
  * @author tiry
- * 
  */
 public class ACLUpdateListener implements EventListener {
 
@@ -54,20 +52,16 @@ public class ACLUpdateListener implements EventListener {
             List<String> prohibitedGroups = mts.getProhibitedGroups();
 
             DocumentModel target = ((DocumentEventContext) event.getContext()).getSourceDocument();
-            ACP newACP = (ACP) event.getContext().getProperty(
-                    CoreEventConstants.NEW_ACP);
+            ACP newACP = (ACP) event.getContext().getProperty(CoreEventConstants.NEW_ACP);
 
             for (ACL acl : newACP.getACLs()) {
                 int idx = 0;
                 for (ACE ace : acl.getACEs()) {
-                    if (ace.isGranted()
-                            && prohibitedGroups.contains(ace.getUsername())) {
+                    if (ace.isGranted() && prohibitedGroups.contains(ace.getUsername())) {
                         String tenantId = MultiTenantHelper.getOwningTenantId(target);
                         if (tenantId != null) {
                             acl.set(idx,
-                                    new ACE(
-                                            MultiTenantHelper.computeTenantMembersGroup(tenantId),
-                                            ace.getPermission(),
+                                    new ACE(MultiTenantHelper.computeTenantMembersGroup(tenantId), ace.getPermission(),
                                             ace.isGranted()));
                         }
                     }

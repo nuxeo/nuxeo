@@ -47,8 +47,8 @@ public class MultiTenantConfiguration {
     protected boolean enabledByDefault = false;
 
     @XNodeList(value = "prohibitedGroups/group", type = ArrayList.class, componentType = String.class)
-    private List<String> prohibitedGroups = new ArrayList<String>(Arrays.asList("members",EVERYONE));
-    
+    private List<String> prohibitedGroups = new ArrayList<String>(Arrays.asList("members", EVERYONE));
+
     public String getTenantDocumentType() {
         return tenantDocumentType;
     }
@@ -79,5 +79,5 @@ public class MultiTenantConfiguration {
     public List<String> getProhibitedGroups() {
         return prohibitedGroups;
     }
-    
+
 }

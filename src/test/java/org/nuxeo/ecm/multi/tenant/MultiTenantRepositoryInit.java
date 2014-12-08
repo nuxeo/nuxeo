@@ -26,8 +26,6 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
- *
  * @since 5.8
  */
 public class MultiTenantRepositoryInit implements RepositoryInit {
@@ -37,7 +35,6 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
         MultiTenantService mts = Framework.getLocalService(MultiTenantService.class);
         mts.enableTenantIsolation(session);
 
-
         DocumentModel domain = null;
         DocumentModel ws = null;
 
@@ -45,8 +42,7 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
             domain = session.createDocumentModel("/", "domain" + i, "Domain");
             domain = session.createDocument(domain);
 
-            ws = session.createDocumentModel(domain.getPathAsString(),
-                    "ws" + i, "Workspace");
+            ws = session.createDocumentModel(domain.getPathAsString(), "ws" + i, "Workspace");
             ws = session.createDocument(ws);
 
             createUser("user" + i, domain.getName(), session);
@@ -58,10 +54,8 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
      * @param session
      * @param string
      * @param name
-     *
      */
-    protected NuxeoPrincipal createUser(String username, String tenant,
-            CoreSession session) throws ClientException {
+    protected NuxeoPrincipal createUser(String username, String tenant, CoreSession session) throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);

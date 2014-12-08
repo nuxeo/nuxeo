@@ -29,23 +29,19 @@ import org.nuxeo.ecm.platform.userworkspace.core.service.DefaultUserWorkspaceSer
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Multi tenant aware implementation of the
- * {@link org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService}.
+ * Multi tenant aware implementation of the {@link org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService}.
  * <p>
- * If there is a current tenant, the UserWorkspaceRoot is stored inside the
- * tenant, otherwise it uses the default behavior of
- * {@link DefaultUserWorkspaceServiceImpl}.
+ * If there is a current tenant, the UserWorkspaceRoot is stored inside the tenant, otherwise it uses the default
+ * behavior of {@link DefaultUserWorkspaceServiceImpl}.
  * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public class MultiTenantUserWorkspaceService extends
-        DefaultUserWorkspaceServiceImpl {
+public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceServiceImpl {
 
     private static final long serialVersionUID = 1L;
 
-    protected String getTenantId(CoreSession userCoreSession, String userName)
-            throws ClientException {
+    protected String getTenantId(CoreSession userCoreSession, String userName) throws ClientException {
         String tenantId = null;
         if (userName == null) {
             userName = userCoreSession.getPrincipal().getName();
@@ -56,57 +52,49 @@ public class MultiTenantUserWorkspaceService extends
         }
         return tenantId;
     }
-    
+
     @Override
-    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,String userName,
+    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String userName,
             DocumentModel currentDocument) throws ClientException {
 
         String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
-            return super.computePathUserWorkspaceRoot(userCoreSession,userName,
-                    currentDocument);
+            return super.computePathUserWorkspaceRoot(userCoreSession, userName, currentDocument);
         } else {
             // tenant specific behavior
-            return computePathUserWorkspaceRootForTenant(userCoreSession,
-                    tenantId);
+            return computePathUserWorkspaceRootForTenant(userCoreSession, tenantId);
         }
     }
 
-    protected String computePathUserWorkspaceRootForTenant(CoreSession session,
-            String tenantId) throws ClientException {
-        String tenantDocumentPath = MultiTenantHelper.getTenantDocumentPath(
-                session, tenantId);
+    protected String computePathUserWorkspaceRootForTenant(CoreSession session, String tenantId) throws ClientException {
+        String tenantDocumentPath = MultiTenantHelper.getTenantDocumentPath(session, tenantId);
         Path path = new Path(tenantDocumentPath);
         path = path.append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
         return path.toString();
     }
 
     /**
-     * Overridden to compute the right user workspace path for an user which is
-     * not the current user in the {@code userCoreSession}.
+     * Overridden to compute the right user workspace path for an user which is not the current user in the
+     * {@code userCoreSession}.
      */
     @Override
-    protected String computePathForUserWorkspace(CoreSession userCoreSession,
-            String userName, DocumentModel currentDocument)
-            throws ClientException {
+    protected String computePathForUserWorkspace(CoreSession userCoreSession, String userName,
+            DocumentModel currentDocument) throws ClientException {
 
         String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
-            return super.computePathForUserWorkspace(userCoreSession, userName,
-                    currentDocument);
+            return super.computePathForUserWorkspace(userCoreSession, userName, currentDocument);
         } else {
             // multi-tenant specific
-            return computePathForUserWorkspaceForTenant(userCoreSession,
-                    tenantId, userName);
+            return computePathForUserWorkspaceForTenant(userCoreSession, tenantId, userName);
         }
     }
 
-    protected String computePathForUserWorkspaceForTenant(CoreSession session,
-            String tenantId, String userName) throws ClientException {
-        String rootPath = computePathUserWorkspaceRootForTenant(session,
-                tenantId);
+    protected String computePathForUserWorkspaceForTenant(CoreSession session, String tenantId, String userName)
+            throws ClientException {
+        String rootPath = computePathUserWorkspaceRootForTenant(session, tenantId);
         Path path = new Path(rootPath);
         path = path.append(getUserWorkspaceNameForUser(userName));
         return path.toString();

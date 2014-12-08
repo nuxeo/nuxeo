@@ -32,13 +32,11 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 public class MultiTenantUserManager extends UserManagerWithComputedGroups {
 
     @Override
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
-            boolean anonymous, List<String> groups) throws ClientException {
-        NuxeoPrincipal nuxeoPrincipal = super.makePrincipal(userEntry,
-                anonymous, groups);
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
+            throws ClientException {
+        NuxeoPrincipal nuxeoPrincipal = super.makePrincipal(userEntry, anonymous, groups);
         if (nuxeoPrincipal instanceof NuxeoPrincipalImpl) {
-            nuxeoPrincipal = new MultiTenantPrincipal(
-                    (NuxeoPrincipalImpl) nuxeoPrincipal);
+            nuxeoPrincipal = new MultiTenantPrincipal((NuxeoPrincipalImpl) nuxeoPrincipal);
         }
         return nuxeoPrincipal;
     }

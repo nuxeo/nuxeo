@@ -52,8 +52,8 @@ public class QueryUsers {
 
     public static final String ID = "Services.QueryUsers";
 
-    public static final Set<String> FULLTEXT_FIELDS = new HashSet<String>(
-            Arrays.asList("username", "firstName", "lastName"));
+    public static final Set<String> FULLTEXT_FIELDS = new HashSet<String>(Arrays.asList("username", "firstName",
+            "lastName"));
 
     @Context
     protected UserManager userManager;
@@ -90,8 +90,7 @@ public class QueryUsers {
         return buildResponse(users);
     }
 
-    protected Blob buildResponse(List<DocumentModel> users)
-            throws UnsupportedEncodingException, ClientException {
+    protected Blob buildResponse(List<DocumentModel> users) throws UnsupportedEncodingException, ClientException {
 
         JSONArray array = new JSONArray();
         for (DocumentModel user : users) {
@@ -108,7 +107,6 @@ public class QueryUsers {
         JSONObject result = new JSONObject();
         result.put("users", array);
 
-        return new InputStreamBlob(new ByteArrayInputStream(
-                result.toString().getBytes("UTF-8")), "application/json");
+        return new InputStreamBlob(new ByteArrayInputStream(result.toString().getBytes("UTF-8")), "application/json");
     }
 }

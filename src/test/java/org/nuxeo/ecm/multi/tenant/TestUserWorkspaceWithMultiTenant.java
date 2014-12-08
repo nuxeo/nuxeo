@@ -28,10 +28,11 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common", 
-        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api","org.nuxeo.ecm.platform.userworkspace.core" })
-@LocalDeploy({"org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml","org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml"})
+@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+        "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
 public class TestUserWorkspaceWithMultiTenant {
 
     @Inject
@@ -48,59 +49,59 @@ public class TestUserWorkspaceWithMultiTenant {
 
     @Inject
     protected UserWorkspaceService userWorkspaceService;
-    
+
     @Inject
     protected RepositoryManager rm;
-    
+
     @Test
     public void testUserWorkspace() throws Exception {
-        
+
         DocumentModel defaultDomain = session.getChild(session.getRootDocument().getRef(), "default-domain");
         Assert.assertNotNull(defaultDomain);
-        
-        // ensure the multi-tenant is  activated
+
+        // ensure the multi-tenant is activated
         multiTenantService.enableTenantIsolation(session);
-        
+
         // create 2 tenants
         DocumentModel domain1 = session.createDocumentModel("/", "domain1", "Domain");
         domain1 = session.createDocument(domain1);
         DocumentModel domain2 = session.createDocumentModel("/", "domain2", "Domain");
-        domain2 = session.createDocument(domain2);        
+        domain2 = session.createDocument(domain2);
         session.save();
-        
+
         // create 2 tenant bound users
         NuxeoPrincipal mario = createUser("mario", domain1.getName());
         NuxeoPrincipal yoshi = createUser("yoshi", domain2.getName());
-        
+
         DocumentModel marioWS = userWorkspaceService.getUserPersonalWorkspace(mario, session.getRootDocument());
         DocumentModel yoshiWS = userWorkspaceService.getUserPersonalWorkspace(yoshi, session.getRootDocument());
         Assert.assertNotNull(marioWS);
         Assert.assertNotNull(yoshiWS);
-        
+
         Assert.assertTrue(marioWS.getPathAsString().contains(domain1.getPathAsString()));
         Assert.assertTrue(yoshiWS.getPathAsString().contains(domain2.getPathAsString()));
-        
-        DocumentModel marioWS2 = userWorkspaceService.getUserPersonalWorkspace(mario.getName(), session.getRootDocument());
-        DocumentModel yoshiWS2 = userWorkspaceService.getUserPersonalWorkspace(yoshi.getName(), session.getRootDocument());
+
+        DocumentModel marioWS2 = userWorkspaceService.getUserPersonalWorkspace(mario.getName(),
+                session.getRootDocument());
+        DocumentModel yoshiWS2 = userWorkspaceService.getUserPersonalWorkspace(yoshi.getName(),
+                session.getRootDocument());
         Assert.assertNotNull(marioWS2);
         Assert.assertNotNull(yoshiWS2);
-                
+
         Assert.assertEquals(marioWS.getId(), marioWS2.getId());
-        Assert.assertEquals(yoshiWS.getId(), yoshiWS2.getId());                
-        
-        // check admin WS        
+        Assert.assertEquals(yoshiWS.getId(), yoshiWS2.getId());
+
+        // check admin WS
         DocumentModel adminWS = userWorkspaceService.getCurrentUserPersonalWorkspace(session, session.getRootDocument());
         Assert.assertNotNull(adminWS);
         Assert.assertTrue(adminWS.getPathAsString().contains(defaultDomain.getPathAsString()));
 
-     
-        // check ACLs        
+        // check ACLs
         ACP acp = marioWS.getACP();
         System.out.println(acp);
     }
-    
-    protected NuxeoPrincipal createUser(String username, String tenant)
-            throws ClientException {
+
+    protected NuxeoPrincipal createUser(String username, String tenant) throws ClientException {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);

@@ -34,23 +34,20 @@ public interface MultiTenantService {
 
     String getTenantDocumentType();
 
-    boolean isTenantIsolationEnabled(CoreSession session)
-            throws ClientException;
+    boolean isTenantIsolationEnabled(CoreSession session) throws ClientException;
 
     void enableTenantIsolation(CoreSession session) throws ClientException;
 
     void disableTenantIsolation(CoreSession session) throws ClientException;
 
-    void enableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
+    void enableTenantIsolationFor(CoreSession session, DocumentModel doc) throws ClientException;
 
-    void disableTenantIsolationFor(CoreSession session, DocumentModel doc)
-            throws ClientException;
+    void disableTenantIsolationFor(CoreSession session, DocumentModel doc) throws ClientException;
 
     List<DocumentModel> getTenants() throws ClientException;
 
     boolean isTenantAdministrator(Principal principal);
-    
+
     List<String> getProhibitedGroups();
 
 }

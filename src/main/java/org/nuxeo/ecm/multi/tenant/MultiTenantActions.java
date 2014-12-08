@@ -87,8 +87,7 @@ public class MultiTenantActions implements Serializable {
         multiTenantService.disableTenantIsolation(documentManager);
     }
 
-    public boolean isReadOnlyDirectory(String directoryName)
-            throws ClientException {
+    public boolean isReadOnlyDirectory(String directoryName) throws ClientException {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         if (multiTenantService.isTenantIsolationEnabled(documentManager)) {
             if (multiTenantService.isTenantAdministrator(documentManager.getPrincipal())) {
@@ -100,23 +99,20 @@ public class MultiTenantActions implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public void validateTenantAdministrators(FacesContext context,
-            UIComponent component, Object value) throws ClientException {
+    public void validateTenantAdministrators(FacesContext context, UIComponent component, Object value)
+            throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String currentDocumentTenantId = (String) currentDocument.getPropertyValue(TENANT_ID_PROPERTY);
         NuxeoPrincipal currentUser = (NuxeoPrincipal) documentManager.getPrincipal();
         String currentUserTenantId = currentUser.getTenantId();
-        if (!StringUtils.isBlank(currentDocumentTenantId)
-                && !StringUtils.isBlank(currentUserTenantId)
+        if (!StringUtils.isBlank(currentDocumentTenantId) && !StringUtils.isBlank(currentUserTenantId)
                 && currentUserTenantId.equals(currentDocumentTenantId)) {
             String administratorGroup = MultiTenantHelper.computeTenantAdministratorsGroup(currentDocumentTenantId);
             if (currentUser.isMemberOf(administratorGroup)) {
                 List<String> users = (List<String>) value;
                 if (!users.contains(currentUser.getName())) {
-                    FacesMessage message = new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            ComponentUtils.translate(context,
-                                    TENANT_ADMINISTRATORS_VALIDATION_ERROR), null);
+                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, TENANT_ADMINISTRATORS_VALIDATION_ERROR), null);
                     throw new ValidatorException(message);
                 }
             }

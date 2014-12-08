@@ -31,11 +31,9 @@ public class Constants {
 
     public static final String TENANT_CONFIG_SCHEMA = "tenantconfig";
 
-    public static final String TENANT_ID_PROPERTY = TENANT_CONFIG_SCHEMA
-            + ":tenantId";
+    public static final String TENANT_ID_PROPERTY = TENANT_CONFIG_SCHEMA + ":tenantId";
 
-    public static final String TENANT_ADMINISTRATORS_PROPERTY = TENANT_CONFIG_SCHEMA
-            + ":administrators";
+    public static final String TENANT_ADMINISTRATORS_PROPERTY = TENANT_CONFIG_SCHEMA + ":administrators";
 
     public static final String TENANTS_DIRECTORY = "tenants";
 
