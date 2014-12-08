@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.EventService;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
@@ -75,11 +77,13 @@ public class TestTagService {
     @Inject
     protected TagService tagService;
 
+    @Inject
+    protected TrashService trashService;
+
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.
     public void maybeSleep() throws Exception {
-        if (DatabaseHelper.DATABASE instanceof DatabaseOracle ||
-                DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
+        if (DatabaseHelper.DATABASE instanceof DatabaseOracle || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
             Thread.sleep(5 * 1000);
         }
     }
@@ -91,8 +95,7 @@ public class TestTagService {
         DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
         file1.setPropertyValue("dc:title", "File1");
         file1 = session.createDocument(file1);
-        DocumentModel file2 = session.createDocumentModel("/fold", "bar",
-                "File");
+        DocumentModel file2 = session.createDocumentModel("/fold", "bar", "File");
         file2.setPropertyValue("dc:title", "File2");
         file2 = session.createDocument(file2);
         session.save();
@@ -100,8 +103,7 @@ public class TestTagService {
         String file2Id = file2.getId();
 
         Set<String> file1set = new HashSet<String>(Arrays.asList(file1Id));
-        Set<String> twofiles = new HashSet<String>(Arrays.asList(file1Id,
-                file2Id));
+        Set<String> twofiles = new HashSet<String>(Arrays.asList(file1Id, file2Id));
 
         // add tag
         tagService.tag(session, file1Id, "mytag", "Administrator");
@@ -110,8 +112,7 @@ public class TestTagService {
         session.save();
 
         Set<String> mytag = new HashSet<String>(Arrays.asList("mytag"));
-        Set<String> twotags = new HashSet<String>(Arrays.asList("mytag",
-                "othertag"));
+        Set<String> twotags = new HashSet<String>(Arrays.asList("mytag", "othertag"));
 
         // find tags for doc
         List<Tag> tags;
@@ -144,8 +145,7 @@ public class TestTagService {
         // tag 2
         docIds = tagService.getTagDocumentIds(session, "othertag", null);
         assertEquals(file1set, new HashSet<String>(docIds));
-        docIds = tagService.getTagDocumentIds(session, "othertag",
-                "Administrator");
+        docIds = tagService.getTagDocumentIds(session, "othertag", "Administrator");
         assertEquals(file1set, new HashSet<String>(docIds));
         docIds = tagService.getTagDocumentIds(session, "othertag", "bob");
         assertTrue(docIds.isEmpty());
@@ -175,8 +175,7 @@ public class TestTagService {
         assertEquals(1, tag1.getWeight());
 
         // cloud under root folder
-        cloud = tagService.getTagCloud(session,
-                session.getRootDocument().getId(), null, null);
+        cloud = tagService.getTagCloud(session, session.getRootDocument().getId(), null, null);
         assertEquals(2, cloud.size());
         Collections.sort(cloud, Tag.LABEL_COMPARATOR);
         tag1 = cloud.get(0);
@@ -209,8 +208,7 @@ public class TestTagService {
 
         };
         Arrays.sort(props, propsComparator);
-        int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null),
-                propsComparator);
+        int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null), propsComparator);
         assertTrue(ti > 0);
         String expected = "tags:othertag,mytag";
         String prop = props[ti].toString();
@@ -309,26 +307,48 @@ public class TestTagService {
         tagService.tag(session, fileId, "bar", "leela");
         tagService.tag(session, fileId, "foo", "bender");
 
-        assertEquals(2,
-                tagService.getDocumentTags(session, fileId, null).size());
+        assertEquals(2, tagService.getDocumentTags(session, fileId, null).size());
 
         tagService.removeTags(session, fileId);
 
-        assertEquals(0,
-                tagService.getDocumentTags(session, fileId, null).size());
+        assertEquals(0, tagService.getDocumentTags(session, fileId, null).size());
+    }
+
+    @Test
+    public void testRemoveDoc() throws ClientException {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File1");
+        file = session.createDocument(file);
+        session.save();
+
+        String fileId = file.getId();
+
+        tagService.tag(session, fileId, "foo", "Administrator");
+        tagService.tag(session, fileId, "bar", "leela");
+        tagService.tag(session, fileId, "foo", "bender");
+
+        assertEquals(2, tagService.getDocumentTags(session, fileId, null).size());
+
+        session.removeDocument(file.getRef());
+
+        // wait for async tag removal
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+
+        // check no more tag
+        assertEquals(0, tagService.getDocumentTags(session, fileId, null).size());
     }
 
     @Test
     public void testCopyTags() throws ClientException {
-        DocumentModel srcFile = session.createDocumentModel("/", "srcFile",
-                "File");
+        DocumentModel srcFile = session.createDocumentModel("/", "srcFile", "File");
         srcFile.setPropertyValue("dc:title", "File1");
         srcFile = session.createDocument(srcFile);
         session.save();
         String srcDocId = srcFile.getId();
 
-        DocumentModel dstFile = session.createDocumentModel("/", "dstFile",
-                "File");
+        DocumentModel dstFile = session.createDocumentModel("/", "dstFile", "File");
         dstFile.setPropertyValue("dc:title", "File1");
         dstFile = session.createDocument(dstFile);
         session.save();
@@ -341,41 +361,32 @@ public class TestTagService {
         tagService.tag(session, srcDocId, "bar", "leela");
         tagService.tag(session, srcDocId, "baz", "bender");
 
-        assertEquals(3,
-                tagService.getDocumentTags(session, srcDocId, null).size());
-        assertEquals(0,
-                tagService.getDocumentTags(session, dstDocId, null).size());
+        assertEquals(3, tagService.getDocumentTags(session, srcDocId, null).size());
+        assertEquals(0, tagService.getDocumentTags(session, dstDocId, null).size());
 
         tagService.copyTags(session, srcDocId, dstDocId);
         session.save();
 
-        assertEquals(3,
-                tagService.getDocumentTags(session, srcDocId, null).size());
+        assertEquals(3, tagService.getDocumentTags(session, srcDocId, null).size());
         List<Tag> tags = tagService.getDocumentTags(session, dstDocId, null);
         assertEquals(3, tags.size());
         assertTrue(tags.contains(new Tag("foo", 0)));
         assertTrue(tags.contains(new Tag("bar", 0)));
         assertTrue(tags.contains(new Tag("baz", 0)));
 
-        assertEquals(
-                1,
-                tagService.getDocumentTags(session, dstDocId, "Administrator").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, dstDocId, "leela").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, dstDocId, "bender").size());
+        assertEquals(1, tagService.getDocumentTags(session, dstDocId, "Administrator").size());
+        assertEquals(2, tagService.getDocumentTags(session, dstDocId, "leela").size());
+        assertEquals(2, tagService.getDocumentTags(session, dstDocId, "bender").size());
     }
 
     @Test
     public void testReplaceTags() throws ClientException {
-        DocumentModel srcFile = session.createDocumentModel("/", "srcFile",
-                "File");
+        DocumentModel srcFile = session.createDocumentModel("/", "srcFile", "File");
         srcFile.setPropertyValue("dc:title", "File1");
         srcFile = session.createDocument(srcFile);
         String srcDocId = srcFile.getId();
 
-        DocumentModel dstFile = session.createDocumentModel("/", "dstFile",
-                "File");
+        DocumentModel dstFile = session.createDocumentModel("/", "dstFile", "File");
         dstFile.setPropertyValue("dc:title", "File1");
         dstFile = session.createDocument(dstFile);
         String dstDocId = dstFile.getId();
@@ -393,29 +404,22 @@ public class TestTagService {
         tagService.tag(session, dstDocId, "tag2", "leela");
         tagService.tag(session, dstDocId, "tag2", "bender");
 
-        assertEquals(3,
-                tagService.getDocumentTags(session, srcDocId, null).size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, dstDocId, null).size());
+        assertEquals(3, tagService.getDocumentTags(session, srcDocId, null).size());
+        assertEquals(2, tagService.getDocumentTags(session, dstDocId, null).size());
 
         tagService.replaceTags(session, srcDocId, dstDocId);
         session.save();
 
-        assertEquals(3,
-                tagService.getDocumentTags(session, srcDocId, null).size());
+        assertEquals(3, tagService.getDocumentTags(session, srcDocId, null).size());
         List<Tag> tags = tagService.getDocumentTags(session, dstDocId, null);
         assertEquals(3, tags.size());
         assertTrue(tags.contains(new Tag("foo", 0)));
         assertTrue(tags.contains(new Tag("bar", 0)));
         assertTrue(tags.contains(new Tag("baz", 0)));
 
-        assertEquals(
-                1,
-                tagService.getDocumentTags(session, dstDocId, "Administrator").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, dstDocId, "leela").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, dstDocId, "bender").size());
+        assertEquals(1, tagService.getDocumentTags(session, dstDocId, "Administrator").size());
+        assertEquals(2, tagService.getDocumentTags(session, dstDocId, "leela").size());
+        assertEquals(2, tagService.getDocumentTags(session, dstDocId, "bender").size());
     }
 
     @Test
@@ -444,13 +448,9 @@ public class TestTagService {
         assertTrue(tags.contains(new Tag("bar", 0)));
         assertTrue(tags.contains(new Tag("baz", 0)));
 
-        assertEquals(
-                1,
-                tagService.getDocumentTags(session, versionId, "Administrator").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, versionId, "leela").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, versionId, "bender").size());
+        assertEquals(1, tagService.getDocumentTags(session, versionId, "Administrator").size());
+        assertEquals(2, tagService.getDocumentTags(session, versionId, "leela").size());
+        assertEquals(2, tagService.getDocumentTags(session, versionId, "bender").size());
         // prevents NXP-14608 NXP-14441
         tagService.removeTags(session, versionId);
         tagService.removeTags(session, docId);
@@ -481,13 +481,9 @@ public class TestTagService {
         assertTrue(tags.contains(new Tag("bar", 0)));
         assertTrue(tags.contains(new Tag("baz", 0)));
 
-        assertEquals(
-                1,
-                tagService.getDocumentTags(session, proxyId, "Administrator").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, proxyId, "leela").size());
-        assertEquals(2,
-                tagService.getDocumentTags(session, proxyId, "bender").size());
+        assertEquals(1, tagService.getDocumentTags(session, proxyId, "Administrator").size());
+        assertEquals(2, tagService.getDocumentTags(session, proxyId, "leela").size());
+        assertEquals(2, tagService.getDocumentTags(session, proxyId, "bender").size());
         // prevents NXP-14608 NXP-14441
         tagService.removeTags(session, proxy.getId());
         tagService.removeTags(session, docId);
@@ -513,8 +509,7 @@ public class TestTagService {
         String versionId = version.getId();
 
         assertEquals(3, tagService.getDocumentTags(session, docId, null).size());
-        assertEquals(3,
-                tagService.getDocumentTags(session, versionId, null).size());
+        assertEquals(3, tagService.getDocumentTags(session, versionId, null).size());
 
         // put new tags on the version
         tagService.removeTags(session, versionId);
@@ -540,18 +535,15 @@ public class TestTagService {
         return versionRef;
     }
 
-    protected DocumentModel publishDocument(DocumentModel doc)
-            throws ClientException {
-        DocumentModel proxy = session.publishDocument(doc,
-                session.getRootDocument());
+    protected DocumentModel publishDocument(DocumentModel doc) throws ClientException {
+        DocumentModel proxy = session.publishDocument(doc, session.getRootDocument());
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         return proxy;
     }
 
-    protected DocumentModel restoreToVersion(DocumentRef docRef,
-            DocumentRef versionRef) throws ClientException {
+    protected DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) throws ClientException {
         DocumentModel docModel = session.restoreToVersion(docRef, versionRef);
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -634,5 +626,58 @@ public class TestTagService {
         assertEquals(28, cloud.get(1).getWeight());
         assertEquals(65, cloud.get(2).getWeight());
         assertEquals(100, cloud.get(3).getWeight());
+    }
+
+    @Test
+    public void testTag() throws Exception {
+        int count = buildDocWithProxiesAndTags();
+
+        log.debug("before commit");
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+
+        String nxql = "SELECT * FROM Document, Relation order by ecm:uuid";
+        DocumentModelList docs = session.query(nxql);
+
+        // Due NXP-16154 this gives a random number of docs
+        String digest = getDigest(docs);
+        assertEquals(digest, count, docs.totalSize());
+    }
+
+    private int buildDocWithProxiesAndTags() {
+        int count = 0;
+        DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
+        session.createDocument(folder);
+        folder = session.saveDocument(folder);
+        count += 1; // folder
+        for (int i = 0; i < 5; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+            session.saveDocument(doc);
+            count += 1; // doc
+            tagService.tag(session, doc.getId(), "mytag" + i, "Administrator");
+            count += 2; // tagging + tag
+            session.publishDocument(doc, folder);
+            count += 2; // proxy + tagging
+            count += 2; // version + tagging
+            trashService.trashDocuments(Arrays.asList(doc));
+            count -= 1; // tagging
+        }
+        return count;
+    }
+
+    protected String getDigest(DocumentModelList docs) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        for (DocumentModel doc : docs) {
+            String nameOrTitle = doc.getName();
+            if (nameOrTitle == null || nameOrTitle.isEmpty()) {
+                nameOrTitle = doc.getTitle();
+            }
+            sb.append(String.format("%s %s proxy:%s %s", doc.getId(), doc.getType(), doc.isProxy(), nameOrTitle));
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }
